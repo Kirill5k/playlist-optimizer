@@ -9,11 +9,11 @@ object Utils {
 
     def splitInThree(point1: Int, point2: Int): (Vector[A], Vector[A], Vector[A]) = {
       if (point1 >= point2) throw new IllegalArgumentException("point 1 must be less than point 2")
-      else if (point1 >= vector.size || point2 >= vector.size) throw new IllegalArgumentException("points cannot be greater than size")
+      else if (point1 > vector.size || point2 > vector.size) throw new IllegalArgumentException("points cannot be greater than size")
       else {
-        val (l, m1) = vector.splitAt(point1)
-        val (m2, r) = vector.splitAt(point2)
-        (l, m1++m2, r)
+        val (l, rest) = vector.splitAt(point1)
+        val (m, r) = rest.splitAt(point2-point1-1)
+        (l, m, r)
       }
     }
   }
