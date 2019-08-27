@@ -1,6 +1,6 @@
 package playlistoptimizer.optimizer
 
-import playlistoptimizer.Utils._
+import playlistoptimizer.utils.CollectionUtils._
 import playlistoptimizer.domain.{Key, Playlist}
 
 import scala.util.Random

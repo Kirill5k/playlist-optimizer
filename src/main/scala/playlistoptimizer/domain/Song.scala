@@ -1,6 +1,6 @@
 package playlistoptimizer.domain
 
-import playlistoptimizer.Utils._
+import playlistoptimizer.utils.CommonUtils._
 
 sealed abstract class Mode(val number: Int)
 case object Minor extends Mode(0)

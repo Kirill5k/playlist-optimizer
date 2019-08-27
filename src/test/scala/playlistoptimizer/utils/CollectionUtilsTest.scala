@@ -1,9 +1,9 @@
-package playlistoptimizer
+package playlistoptimizer.utils
 
 import org.scalatest.{FunSpec, Matchers}
-import playlistoptimizer.Utils._
+import playlistoptimizer.utils.CollectionUtils._
 
-class UtilsTest extends FunSpec with Matchers {
+class CollectionUtilsTest extends FunSpec with Matchers {
   describe("VectorModifier") {
     describe("swap") {
       it("swap") {
@@ -62,15 +62,6 @@ class UtilsTest extends FunSpec with Matchers {
       it("removes every 3rd element") {
         val result = List(1, 2, 3, 4, 5, 6, 7, 8).removeNth(3)
         result should contain theSameElementsInOrderAs (List(1, 2, 4, 5, 7, 8))
-      }
-    }
-  }
-
-  describe("BooleanModifier") {
-    describe("toInt") {
-      it("converts boolean to int") {
-        assert(true.toInt === 1)
-        assert(false.toInt === 0)
       }
     }
   }

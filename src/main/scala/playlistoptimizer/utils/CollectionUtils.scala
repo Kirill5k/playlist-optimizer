@@ -1,6 +1,6 @@
-package playlistoptimizer
+package playlistoptimizer.utils
 
-object Utils {
+object CollectionUtils {
   implicit class VectorModifier[A](vector: Vector[A]) {
     def swap(pos1: Int, pos2: Int): Vector[A] =
       if (pos1 >= vector.size || pos2 >= vector.size) throw new IllegalArgumentException("pos cannot be greater than size")
@@ -20,9 +20,5 @@ object Utils {
 
   implicit class ListModifier[A](list: List[A]) {
     def removeNth(n: Int): List[A] = list.zipWithIndex collect { case (x,i) if (i + 1) % n != 0 => x }
-  }
-
-  implicit class BooleanModifier(bool: Boolean) {
-    def toInt = if(bool) 1 else 0
   }
 }
