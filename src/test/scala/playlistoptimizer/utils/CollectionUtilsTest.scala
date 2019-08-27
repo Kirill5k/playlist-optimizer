@@ -4,7 +4,7 @@ import org.scalatest.{FunSpec, Matchers}
 import playlistoptimizer.utils.CollectionUtils._
 
 class CollectionUtilsTest extends FunSpec with Matchers {
-  describe("VectorModifier") {
+  describe("IndexedSeqUtils") {
     describe("swap") {
       it("swap") {
         val result = Vector(1, 2, 3, 4, 5, 6, 7).swap(2, 5)
@@ -52,7 +52,7 @@ class CollectionUtilsTest extends FunSpec with Matchers {
     }
   }
 
-  describe("VectorModifier") {
+  describe("ListUtils") {
     describe("removeNth") {
       it("removes every 2nd element") {
         val result = List(1, 2, 3, 4, 5, 6, 7, 8).removeNth(2)

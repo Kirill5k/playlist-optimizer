@@ -14,6 +14,7 @@ class SongTest extends FunSpec {
       assert(Key.distance(FMajor, BMajor) === 6)
       assert(Key.distance(BMajor, FMajor) === 6)
       assert(Key.distance(BMajor, BMajor) === 0)
+      assert(Key.distance(BMajor, EMajor) === 1)
     }
 
     it("should calculate distance for keys with the different modes") {
