@@ -6,6 +6,8 @@ import playlistoptimizer.domain._
 import scala.util.Random
 
 class OptimizerTest extends FunSpec with Matchers {
+  implicit val random = new Random(1)
+
   describe("Optimizer") {
     val playlist = Playlist(
       Song("song1", "artist", BMajor),

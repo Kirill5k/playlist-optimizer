@@ -6,20 +6,19 @@ import playlistoptimizer.domain.{Key, Playlist}
 import scala.util.Random
 
 sealed trait Optimizer {
-  def optimize: Playlist
+  def optimize(implicit random: Random): Playlist
 }
 
 object Optimizer {
-  private[optimizer] val random = new Random()
-
   private[optimizer] def distributeInPairs[A](population: List[A]): List[(A, A)] = {
     val half = population.removeNth(2)
     half.zip(population.filterNot(half.contains))
   }
 
-  private[optimizer] def mutate(pl: Playlist): Playlist = pl.map(_.swap(random.nextInt(pl.size), random.nextInt(pl.size)))
+  private[optimizer] def mutate(pl: Playlist)(implicit random: Random): Playlist =
+    pl.map(_.swap(random.nextInt(pl.size), random.nextInt(pl.size)))
 
-  private[optimizer] def crossover(pl1: Playlist, pl2: Playlist): Playlist = pl1.zipWith(pl2)((s1, s2) => {
+  private[optimizer] def crossover(pl1: Playlist, pl2: Playlist)(implicit random: Random): Playlist = pl1.zipWith(pl2)((s1, s2) => {
     val half = s1.size / 2
     val point1: Int = random.nextInt(half)
     val point2: Int = random.nextInt(half) + half
@@ -35,12 +34,12 @@ case class GeneticAlgorithmOptimizer(initialPlaylist: Playlist, populationSize: 
 
   private val initialPopulation: List[Playlist] = List.fill(populationSize)(randomizedPlaylist)
 
-  override def optimize(): Playlist =
+  override def optimize(implicit random: Random): Playlist =
     (0 until populationSize)
       .foldLeft(initialPopulation)((currentPopulation, _) => singleIteration(currentPopulation))
       .head
 
-  private def singleIteration(population: List[Playlist]): List[Playlist] = {
+  private def singleIteration(population: List[Playlist])(implicit random: Random): List[Playlist] = {
     val newPopulation = distributeInPairs(population)
       .flatMap { case (p1, p2) => List(crossover(p1, p2), crossover(p2, p1)) }
       .map(m => if (random.nextDouble < mutationFactor) Optimizer.mutate(m) else m)
