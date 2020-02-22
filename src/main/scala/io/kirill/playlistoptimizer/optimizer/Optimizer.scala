@@ -1,8 +1,8 @@
 package io.kirill.playlistoptimizer.optimizer
 
 import io.kirill.playlistoptimizer.domain.{Key, Playlist}
-import playlistoptimizer.utils.CollectionUtils._
-import playlistoptimizer.domain.{Key, Playlist}
+import io.kirill.playlistoptimizer.utils.CollectionUtils._
+import io.kirill.playlistoptimizer.domain.{Key, Playlist}
 
 import scala.util.Random
 

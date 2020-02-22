@@ -5,6 +5,7 @@ import java.io.File
 import cats.effect.testing.scalatest.AsyncIOSpec
 import cats.effect.{ContextShift, IO}
 import cats.implicits._
+import io.kirill.playlistoptimizer.clients.spotify.SpotifyAuthResponse.SpotifyAuthSuccessResponse
 import io.kirill.playlistoptimizer.configs.SpotifyConfig
 import org.scalatest.freespec.AsyncFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -13,25 +14,25 @@ import sttp.client.testing.SttpBackendStub
 import sttp.model.Method
 
 import scala.concurrent.ExecutionContext
+import scala.io.Source
 
 class SpotifyApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
   implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContext.Implicits.global)
 
   val spotifyConfig = SpotifyConfig("http://spotify.com", "/auth", "client-id", "client-secret")
 
-  val authSuccessResponseJson = new File("spotify/auth-success-response.json")
-  val authErrorResponseJson = new File("spotify/auth-error-response.json")
+  val authSuccessResponseJson = Source.fromResource("spotify/auth-success-response.json").getLines.toList.mkString
+  val authErrorResponseJson = Source.fromResource("spotify/auth-error-response.json").getLines.toList.mkString
 
   "A SpotifyApi" - {
-    "return auth token" in {
+    "return auth response when success" in {
       implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
-        .whenRequestMatches(_.uri.path.startsWith(List("a", "b")))
-        .thenRespond("Hello there!")
-        .whenRequestMatches(_.method == Method.POST)
+        .whenRequestMatches(req => req.uri.hostSegment.v == "spotify.com/auth" && req.method == Method.POST)
         .thenRespond(authSuccessResponseJson)
 
       val authResponse = SpotifyApi.authenticate[IO](spotifyConfig)
-      authResponse.asserting(_ must be (1))
+
+      authResponse.asserting(_ must be (SpotifyAuthSuccessResponse("BQC3wD_w-ODtKQsbz7woOZPvffQX5iX7rychivVGQxO3qzgejLCgXwAE5acsqk8LQcih2qpDkaCjrJRRhuY", "Bearer", 3600, "")))
     }
   }
 }

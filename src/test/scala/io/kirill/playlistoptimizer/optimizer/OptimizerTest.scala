@@ -2,7 +2,7 @@ package io.kirill.playlistoptimizer.optimizer
 
 import io.kirill.playlistoptimizer.domain.{AMajor, BMajor, DMajor, EMajor, GMajor, Playlist, Song}
 import org.scalatest.{FunSpec, Matchers}
-import playlistoptimizer.domain._
+import io.kirill.playlistoptimizer.domain._
 
 import scala.util.Random
 
