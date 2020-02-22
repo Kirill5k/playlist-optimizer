@@ -9,6 +9,7 @@ lazy val mockitoVersion = "1.10.3"
 lazy val sttpVersion = "2.0.0-RC13"
 
 libraryDependencies ++= Seq(
+  "com.github.pureconfig" %% "pureconfig" % "0.12.2",
   "org.typelevel" %% "cats-core" % "2.1.0",
   "org.typelevel" %% "cats-effect" % "2.1.1",
   "co.fs2" %% "fs2-core" % "2.2.2",
