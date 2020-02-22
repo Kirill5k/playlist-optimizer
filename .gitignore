@@ -1,3 +1,11 @@
-.idea/**
-target/**
-project/**
+logs
+target
+project/target
+project/target/**
+/.idea
+/.idea_modules
+/.classpath
+/.project
+/.settings
+/RUNNING_PID
+null/

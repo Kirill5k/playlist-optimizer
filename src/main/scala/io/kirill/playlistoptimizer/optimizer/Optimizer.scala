@@ -1,12 +1,13 @@
-package playlistoptimizer.optimizer
+package io.kirill.playlistoptimizer.optimizer
 
+import io.kirill.playlistoptimizer.domain.{Key, Playlist}
 import playlistoptimizer.utils.CollectionUtils._
 import playlistoptimizer.domain.{Key, Playlist}
 
 import scala.util.Random
 
-sealed trait Optimizer {
-  def optimize(implicit rnd: Random): Playlist
+trait Optimizer {
+  def optimize(playlist: Playlist)(implicit random: Random): Playlist
 }
 
 object Optimizer {
@@ -29,11 +30,11 @@ object Optimizer {
   private[optimizer] def evaluate(pl: Playlist): Int = pl.reduce(_.sliding(2).foldLeft(0) { case (acc, s1 +: s2 +: _) => Key.distance(s1.key, s2.key) + acc })
 }
 
-case class GeneticAlgorithmOptimizer(initialPlaylist: Playlist, populationSize: Int, iterations: Int, mutationFactor: Double) extends Optimizer {
-  import playlistoptimizer.optimizer.Optimizer._
+case class GeneticAlgorithmOptimizer(populationSize: Int, iterations: Int, mutationFactor: Double) extends Optimizer {
+  import Optimizer._
 
-  override def optimize(implicit rnd: Random): Playlist = {
-    val initialPopulation: List[Playlist] = List.fill(populationSize)(randomizedPlaylist)
+  override def optimize(initialPlaylist: Playlist)(implicit rnd: Random): Playlist = {
+    val initialPopulation: List[Playlist] = List.fill(populationSize)(initialPlaylist.map(Random.shuffle(_)))
     (0 until populationSize)
       .foldLeft(initialPopulation)((currentPopulation, _) => singleIteration(currentPopulation))
       .head
@@ -46,6 +47,4 @@ case class GeneticAlgorithmOptimizer(initialPlaylist: Playlist, populationSize: 
 
     (newPopulation ++ population).sortBy(evaluate).take(populationSize)
   }
-
-  private def randomizedPlaylist: Playlist = initialPlaylist.map(Random.shuffle(_))
 }

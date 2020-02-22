@@ -1,4 +1,4 @@
-package playlistoptimizer.utils
+package io.kirill.playlistoptimizer.utils
 
 object CollectionUtils {
   implicit class IndexedSeqUtils[A](vector: IndexedSeq[A]) {

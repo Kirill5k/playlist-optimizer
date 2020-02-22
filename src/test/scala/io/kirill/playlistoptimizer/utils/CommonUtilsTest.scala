@@ -1,7 +1,7 @@
-package playlistoptimizer.utils
+package io.kirill.playlistoptimizer.utils
 
 import org.scalatest.{FunSpec, Matchers}
-import playlistoptimizer.utils.CommonUtils._
+import CommonUtils._
 
 class CommonUtilsTest extends FunSpec with Matchers {
   describe("BooleanModifier") {

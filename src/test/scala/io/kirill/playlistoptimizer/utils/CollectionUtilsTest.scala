@@ -1,7 +1,7 @@
-package playlistoptimizer.utils
+package io.kirill.playlistoptimizer.utils
 
 import org.scalatest.{FunSpec, Matchers}
-import playlistoptimizer.utils.CollectionUtils._
+import CollectionUtils._
 
 class CollectionUtilsTest extends FunSpec with Matchers {
   describe("IndexedSeqUtils") {

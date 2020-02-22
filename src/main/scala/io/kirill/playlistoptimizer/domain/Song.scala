@@ -1,6 +1,6 @@
-package playlistoptimizer.domain
+package io.kirill.playlistoptimizer.domain
 
-import playlistoptimizer.utils.CommonUtils._
+import io.kirill.playlistoptimizer.utils.CommonUtils._
 
 sealed abstract class Mode(val number: Int)
 case object Minor extends Mode(0)

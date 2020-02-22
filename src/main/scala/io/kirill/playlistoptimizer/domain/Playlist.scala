@@ -1,4 +1,4 @@
-package playlistoptimizer.domain
+package io.kirill.playlistoptimizer.domain
 
 case class Playlist(songs: IndexedSeq[Song]) {
   def size: Int = songs.size

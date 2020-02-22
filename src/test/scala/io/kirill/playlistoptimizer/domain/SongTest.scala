@@ -1,4 +1,4 @@
-package playlistoptimizer.domain
+package io.kirill.playlistoptimizer.domain
 
 import org.scalatest.{FunSpec}
 
