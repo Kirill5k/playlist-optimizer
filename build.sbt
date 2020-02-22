@@ -22,5 +22,6 @@ libraryDependencies ++= Seq(
 
   "org.mockito" %% "mockito-scala" % mockitoVersion % Test,
   "org.mockito" %% "mockito-scala-scalatest" % mockitoVersion % Test,
-  "org.scalatest" %% "scalatest" % "3.1.1" % Test
+  "org.scalatest" %% "scalatest" % "3.1.1" % Test,
+  "com.codecommit" %% "cats-effect-testing-scalatest" % "0.4.0" % Test
 )
