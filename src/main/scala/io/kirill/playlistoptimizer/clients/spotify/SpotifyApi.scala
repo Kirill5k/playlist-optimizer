@@ -16,7 +16,8 @@ object SpotifyApi {
 
   private val authRequestBody = Map("grant_type" -> "client_credentials")
 
-  def authenticate[F[_]](implicit C: SpotifyConfig, B: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]): F[SpotifyResponse] =
+  def authenticate[F[_]]
+    (implicit C: SpotifyConfig, B: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]): F[SpotifyResponse] =
     basicRequest
       .body(authRequestBody)
       .auth.basic(C.clientId, C.clientSecret)
@@ -26,7 +27,9 @@ object SpotifyApi {
       .send()
       .flatMap(r => mapResponseBody[F, SpotifyAuthResponse, SpotifyAuthError](r.body))
 
-  def audioAnalysis[F[_]](authToken: String, trackId: String)(implicit C: SpotifyConfig, B: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]): F[SpotifyResponse] =
+  def audioAnalysis[F[_]]
+    (authToken: String, trackId: String)
+    (implicit C: SpotifyConfig, B: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]): F[SpotifyResponse] =
     basicRequest
       .auth.bearer(authToken)
       .get(uri"${C.baseUrl}${C.audioAnalysisPath}/$trackId")
@@ -34,7 +37,9 @@ object SpotifyApi {
       .send()
       .flatMap(r => mapResponseBody[F, SpotifyAudioAnalysisResponse, SpotifyRegularError](r.body))
 
-  private def mapResponseBody[F[_], R <: SpotifyResponse, E <: Throwable: Decoder](responseBody: Either[ResponseError[io.circe.Error], R])(implicit M: MonadError[F, Throwable]): F[SpotifyResponse] =
+  private def mapResponseBody[F[_], R <: SpotifyResponse, E <: Throwable : Decoder]
+    (responseBody: Either[ResponseError[io.circe.Error], R])
+    (implicit M: MonadError[F, Throwable]): F[SpotifyResponse] =
     responseBody match {
       case Right(success) => M.pure(success)
       case Left(error) => M.fromEither(decode[E](error.body).flatMap(Left(_)))
