@@ -21,10 +21,10 @@ import scala.io.Source
 class SpotifyApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
   implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContext.Implicits.global)
 
-  implicit val spotifyConfig = SpotifyConfig("http://spotify.com", "/auth", "client-id", "client-secret")
+  implicit val spotifyConfig = SpotifyConfig("http://spotify.com", "/auth", "/audio-analysis", "client-id", "client-secret")
 
-  val authSuccessResponseJson = Source.fromResource("spotify/auth-success-response.json").getLines.toList.mkString
-  val authErrorResponseJson = Source.fromResource("spotify/auth-error-response.json").getLines.toList.mkString
+  val authSuccessResponseJson = Source.fromResource("spotify/auth-response.json").getLines.toList.mkString
+  val authErrorResponseJson = Source.fromResource("spotify/auth-error.json").getLines.toList.mkString
 
   "A SpotifyApi" - {
     "return auth response when success" in {
