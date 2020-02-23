@@ -27,7 +27,7 @@ object SpotifyApi {
       .send()
       .flatMap(r => mapResponseBody[F, SpotifyAuthResponse, SpotifyAuthError](r.body))
 
-  def audioAnalysis[F[_]]
+  def getAudioAnalysis[F[_]]
     (authToken: String, trackId: String)
     (implicit C: SpotifyConfig, B: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]): F[SpotifyResponse] =
     basicRequest
@@ -36,6 +36,17 @@ object SpotifyApi {
       .response(asJson[SpotifyAudioAnalysisResponse])
       .send()
       .flatMap(r => mapResponseBody[F, SpotifyAudioAnalysisResponse, SpotifyRegularError](r.body))
+
+  def getPlaylist[F[_]]
+    (authToken: String, playlistId: String)
+    (implicit C: SpotifyConfig, B: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]): F[SpotifyResponse] =
+    basicRequest
+      .auth.bearer(authToken)
+      .get(uri"${C.baseUrl}${C.playlistPath}/$playlistId")
+      .response(asJson[SpotifyPlaylistResponse])
+      .send()
+      .flatMap(r => mapResponseBody[F, SpotifyPlaylistResponse, SpotifyRegularError](r.body))
+
 
   private def mapResponseBody[F[_], R <: SpotifyResponse, E <: Throwable : Decoder]
     (responseBody: Either[ResponseError[io.circe.Error], R])
