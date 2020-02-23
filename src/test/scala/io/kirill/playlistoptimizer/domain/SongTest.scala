@@ -3,6 +3,8 @@ package io.kirill.playlistoptimizer.domain
 import org.scalatest.{FunSpec}
 
 class SongTest extends FunSpec {
+  import Key._
+
   describe("Key.distance") {
     it("should calculate distance for keys with the same mode") {
       assert(Key.distance(DFlatMajor, BMajor) === 2)

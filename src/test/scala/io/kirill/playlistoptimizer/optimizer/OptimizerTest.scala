@@ -1,12 +1,14 @@
 package io.kirill.playlistoptimizer.optimizer
 
-import io.kirill.playlistoptimizer.domain.{AMajor, BMajor, DMajor, EMajor, GMajor, Playlist, Song}
+import io.kirill.playlistoptimizer.domain.{Playlist, Song}
 import org.scalatest.{FunSpec, Matchers}
 import io.kirill.playlistoptimizer.domain._
 
 import scala.util.Random
 
 class OptimizerTest extends FunSpec with Matchers {
+  import Key._
+
   implicit val random = new Random(1)
 
   describe("Optimizer") {

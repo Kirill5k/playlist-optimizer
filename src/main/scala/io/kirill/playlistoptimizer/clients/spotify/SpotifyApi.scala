@@ -7,10 +7,9 @@ import io.circe.parser._
 import io.kirill.playlistoptimizer.clients.spotify.SpotifyError.SpotifyAuthError
 import io.kirill.playlistoptimizer.clients.spotify.SpotifyResponse.SpotifyAuthResponse
 import io.kirill.playlistoptimizer.configs.SpotifyConfig
-import io.kirill.playlistoptimizer.domain.ApiClientError._
 import sttp.client._
 import sttp.client.circe._
-import sttp.model.{MediaType, StatusCode}
+import sttp.model.{MediaType}
 
 object SpotifyApi {
 
@@ -24,8 +23,8 @@ object SpotifyApi {
       .post(uri"${C.baseUrl}${C.authPath}")
       .response(asJson[SpotifyAuthResponse])
       .send()
-      .flatMap { res =>
-        res.body match {
+      .flatMap {
+        _.body match {
           case Right(success) => M.pure(success)
           case Left(error) => M.fromEither(decode[SpotifyAuthError](error.body).flatMap(Left(_)))
         }
