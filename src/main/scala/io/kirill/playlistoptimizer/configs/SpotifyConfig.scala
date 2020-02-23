@@ -1,10 +1,7 @@
 package io.kirill.playlistoptimizer.configs
 
-final case class SpotifyConfig(
-                                baseUrl: String,
-                                authPath: String,
-                                playlistPath: String,
-                                audioAnalysisPath: String,
-                                clientId: String,
-                                clientSecret: String
-                              )
+final case class SpotifyAuthConfig(baseUrl: String, tokenPath: String, clientId: String, clientSecret: String)
+
+final case class SpotifyApiConfig(baseUrl: String, playlistPath: String, audioAnalysisPath: String)
+
+final case class SpotifyConfig(auth: SpotifyAuthConfig, api: SpotifyApiConfig)

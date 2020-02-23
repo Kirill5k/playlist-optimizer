@@ -20,9 +20,9 @@ object SpotifyApi {
     (implicit C: SpotifyConfig, B: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]): F[SpotifyResponse] =
     basicRequest
       .body(authRequestBody)
-      .auth.basic(C.clientId, C.clientSecret)
+      .auth.basic(C.auth.clientId, C.auth.clientSecret)
       .contentType(MediaType.ApplicationXWwwFormUrlencoded)
-      .post(uri"${C.baseUrl}${C.authPath}")
+      .post(uri"${C.auth.baseUrl}${C.auth.tokenPath}")
       .response(asJson[SpotifyAuthResponse])
       .send()
       .flatMap(r => mapResponseBody[F, SpotifyAuthResponse, SpotifyAuthError](r.body))
@@ -32,7 +32,7 @@ object SpotifyApi {
     (implicit C: SpotifyConfig, B: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]): F[SpotifyResponse] =
     basicRequest
       .auth.bearer(authToken)
-      .get(uri"${C.baseUrl}${C.audioAnalysisPath}/$trackId")
+      .get(uri"${C.api.baseUrl}${C.api.audioAnalysisPath}/$trackId")
       .response(asJson[SpotifyAudioAnalysisResponse])
       .send()
       .flatMap(r => mapResponseBody[F, SpotifyAudioAnalysisResponse, SpotifyRegularError](r.body))
@@ -42,7 +42,7 @@ object SpotifyApi {
     (implicit C: SpotifyConfig, B: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]): F[SpotifyResponse] =
     basicRequest
       .auth.bearer(authToken)
-      .get(uri"${C.baseUrl}${C.playlistPath}/$playlistId")
+      .get(uri"${C.api.baseUrl}${C.api.playlistPath}/$playlistId")
       .response(asJson[SpotifyPlaylistResponse])
       .send()
       .flatMap(r => mapResponseBody[F, SpotifyPlaylistResponse, SpotifyRegularError](r.body))

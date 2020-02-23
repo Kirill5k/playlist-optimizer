@@ -1,13 +1,11 @@
 package io.kirill.playlistoptimizer.clients.spotify
 
-import java.io.File
-
 import cats.effect.testing.scalatest.AsyncIOSpec
 import cats.effect.{ContextShift, IO}
 import cats.implicits._
 import io.kirill.playlistoptimizer.clients.spotify.SpotifyError._
 import io.kirill.playlistoptimizer.clients.spotify.SpotifyResponse._
-import io.kirill.playlistoptimizer.configs.SpotifyConfig
+import io.kirill.playlistoptimizer.configs.{SpotifyApiConfig, SpotifyAuthConfig, SpotifyConfig}
 import org.scalatest.freespec.AsyncFreeSpec
 import org.scalatest.matchers.must.Matchers
 import sttp.client.Response
@@ -21,7 +19,9 @@ import scala.io.Source
 class SpotifyApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
   implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContext.Implicits.global)
 
-  implicit val spotifyConfig = SpotifyConfig("http://spotify.com", "/auth", "/playlists", "/audio-analysis", "client-id", "client-secret")
+  val authConfig = SpotifyAuthConfig("http://account.spotify.com", "/auth", "client-id", "client-secret")
+  val apiConfig = SpotifyApiConfig("http://api.spotify.com", "/playlists", "/audio-analysis")
+  implicit val spotifyConfig = SpotifyConfig(authConfig, apiConfig)
 
   val authSuccessResponseJson = Source.fromResource("spotify/auth-response.json").getLines.toList.mkString
   val audioAnalysisResponseJson = Source.fromResource("spotify/audio-analysis-response.json").getLines.toList.mkString
@@ -32,7 +32,7 @@ class SpotifyApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     "return auth response when success" in {
       implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if r.uri.host == "spotify.com/auth" && r.method == Method.POST => Response.ok(authSuccessResponseJson)
+          case r if r.uri.host == "account.spotify.com/auth" && r.method == Method.POST => Response.ok(authSuccessResponseJson)
           case _ => throw new RuntimeException()
         }
 
@@ -44,7 +44,7 @@ class SpotifyApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     "return auth error when failure" in {
       implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if r.uri.host == "spotify.com/auth" && r.method == Method.POST => Response(authErrorResponseJson, StatusCode.InternalServerError)
+          case r if r.uri.host == "account.spotify.com/auth" && r.method == Method.POST => Response(authErrorResponseJson, StatusCode.InternalServerError)
           case _ => throw new RuntimeException()
         }
 
@@ -56,7 +56,7 @@ class SpotifyApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     "return audio analysis response when success" in {
       implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if r.uri.host == "spotify.com/audio-analysis" && r.uri.path == List("track-1") && r.method == Method.GET && r.headers.contains(new Header("Authorization", "Bearer token")) =>
+          case r if r.uri.host == "api.spotify.com/audio-analysis" && r.uri.path == List("track-1") && r.method == Method.GET && r.headers.contains(new Header("Authorization", "Bearer token")) =>
             Response.ok(audioAnalysisResponseJson)
           case _ => throw new RuntimeException()
         }
@@ -69,7 +69,7 @@ class SpotifyApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     "return playlist response when success" in {
       implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if r.uri.host == "spotify.com/playlists" && r.uri.path == List("playlist-1") && r.method == Method.GET && r.headers.contains(new Header("Authorization", "Bearer token")) =>
+          case r if r.uri.host == "api.spotify.com/playlists" && r.uri.path == List("playlist-1") && r.method == Method.GET && r.headers.contains(new Header("Authorization", "Bearer token")) =>
             Response.ok(playlistResponseJson)
           case _ => throw new RuntimeException()
         }
