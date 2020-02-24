@@ -20,7 +20,7 @@ class SpotifyApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
   implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContext.Implicits.global)
 
   val authConfig = SpotifyAuthConfig("http://account.spotify.com", "/auth", "client-id", "client-secret")
-  val apiConfig = SpotifyApiConfig("http://api.spotify.com", "/playlists", "/audio-analysis")
+  val apiConfig = SpotifyApiConfig("http://api.spotify.com", "/my-playlists", "/playlists", "/audio-analysis")
   implicit val spotifyConfig = SpotifyConfig(authConfig, apiConfig)
 
   val authSuccessResponseJson = Source.fromResource("spotify/auth-response.json").getLines.toList.mkString
@@ -80,7 +80,7 @@ class SpotifyApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
         "59ZbFPES4DQwEjBpWHzrtC",
         "Dinner with Friends",
         "Having friends over for dinner? Here´s the perfect playlist.",
-        PlaylistTracks(List(PlaylistItem(PlaylistTrack("4i9sYtSIlR80bxje5B3rUb", "I'm Not The Only One - Radio Edit", PlaylistTrackAlbum("5GWoXPsTQylMuaZ84PC563", "single", "I'm Not The Only One"), List(PlaylistTrackArtist("2wY79sveU1sp5g7SokKOiI", "Sam Smith")),45.0))),105)
+        PlaylistTracks(Vector(PlaylistItem(PlaylistTrack("4i9sYtSIlR80bxje5B3rUb", "I'm Not The Only One - Radio Edit", PlaylistTrackAlbum("5GWoXPsTQylMuaZ84PC563", "single", "I'm Not The Only One"), List(PlaylistTrackArtist("2wY79sveU1sp5g7SokKOiI", "Sam Smith")),45.0))),105)
       )))
     }
   }
