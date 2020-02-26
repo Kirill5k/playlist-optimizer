@@ -1,16 +1,9 @@
 package io.kirill.playlistoptimizer.domain
 
-case class Playlist(songs: IndexedSeq[Song]) {
-  def size: Int = songs.size
+final case class TrackDetails(name: String, artists: Seq[String], album: Option[String])
 
-  def map(f: IndexedSeq[Song] => IndexedSeq[Song]): Playlist = Playlist(f(songs))
+final case class AudioDetails(tempo: Double, duration: Int, key: Key)
 
-  def zipWith(otherPlaylist: Playlist)(f: (IndexedSeq[Song], IndexedSeq[Song]) => IndexedSeq[Song]): Playlist =
-    Playlist(f(songs, otherPlaylist.songs))
+final case class Track(details: TrackDetails, audio: AudioDetails)
 
-  def reduce[T](f: IndexedSeq[Song] => T): T = f(songs)
-}
-
-object Playlist {
-  def apply(songs: Song*): Playlist = new Playlist(Vector(songs: _*))
-}
+final case class Playlist(name: String, source: String, tracks: IndexedSeq[Song])
