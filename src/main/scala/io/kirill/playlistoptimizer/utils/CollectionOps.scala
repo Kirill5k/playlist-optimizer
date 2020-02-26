@@ -1,7 +1,7 @@
 package io.kirill.playlistoptimizer.utils
 
-object CollectionUtils {
-  implicit class IndexedSeqUtils[A](vector: IndexedSeq[A]) {
+object CollectionOps {
+  implicit class IndexedSeqOps[A](val vector: IndexedSeq[A]) extends AnyVal {
     def swap(pos1: Int, pos2: Int): IndexedSeq[A] =
       if (pos1 >= vector.size || pos2 >= vector.size) throw new IllegalArgumentException("pos cannot be greater than size")
       else if (pos1 == pos2) vector
@@ -18,7 +18,7 @@ object CollectionUtils {
     }
   }
 
-  implicit class ListUtils[A](list: List[A]) {
+  implicit class ListOps[A](list: List[A]) {
     def removeNth(n: Int): List[A] = list.zipWithIndex collect { case (x,i) if (i + 1) % n != 0 => x }
   }
 }
