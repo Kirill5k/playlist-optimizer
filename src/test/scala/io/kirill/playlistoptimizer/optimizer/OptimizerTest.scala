@@ -54,6 +54,9 @@ class OptimizerTest extends AnyWordSpec with Matchers {
       val child = Optimizer.crossover(pl1, pl2)
 
       child must contain theSameElementsAs pl1
+      child must contain theSameElementsAs pl2
+      child must not contain theSameElementsInOrderAs (pl1)
+      child must not contain theSameElementsInOrderAs (pl2)
     }
   }
 }
