@@ -18,7 +18,7 @@ object CollectionOps {
     }
   }
 
-  implicit class ListOps[A](list: List[A]) {
-    def removeNth(n: Int): List[A] = list.zipWithIndex collect { case (x,i) if (i + 1) % n != 0 => x }
+  implicit class ListOps[A](seq: Seq[A]) {
+    def removeNth(n: Int): Seq[A] = seq.zipWithIndex collect { case (x,i) if (i + 1) % n != 0 => x }
   }
 }
