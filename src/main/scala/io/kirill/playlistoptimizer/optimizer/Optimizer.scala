@@ -11,9 +11,8 @@ trait Optimizer[A] {
 object Optimizer {
   implicit def geneticAlgorithmOptimizer[A](populationSize: Int, iterations: Int, mutationFactor: Double): Optimizer[A] = new Optimizer[A] {
     override def optimize(items: IndexedSeq[A])(implicit E: Evaluator[A], R: Random): IndexedSeq[A] = {
-      val initialPopulation: Seq[IndexedSeq[A]] = List.fill(populationSize)(Random.shuffle(items))
-      (0 until populationSize)
-        .foldLeft(initialPopulation)((currentPopulation, _) => singleIteration(currentPopulation))
+      (0 until iterations)
+        .foldLeft(initPopulation(items, populationSize))((currentPopulation, _) => singleIteration(currentPopulation))
         .head
     }
 
@@ -26,6 +25,8 @@ object Optimizer {
     }
   }
 
+  private[optimizer] def initPopulation[A](initialSolution: IndexedSeq[A], size: Int): Seq[IndexedSeq[A]] =
+    List.fill(size)(Random.shuffle(initialSolution))
 
   private[optimizer] def distributeInPairs[A](population: Seq[A]): Seq[(A, A)] = {
     val half = population.removeNth(2)
