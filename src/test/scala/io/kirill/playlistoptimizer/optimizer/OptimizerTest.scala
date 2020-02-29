@@ -41,5 +41,19 @@ class OptimizerTest extends AnyWordSpec with Matchers {
 
       distributedInPairs must contain allOf ((pl1, pl2), (pl3, pl4))
     }
+
+    "mutate solution" in {
+      val mutatedPlaylist = Optimizer.mutate(pl1)
+
+      mutatedPlaylist must not contain theSameElementsInOrderAs (pl1)
+      mutatedPlaylist must contain theSameElementsAs pl1
+    }
+
+    "crossover 2 solutions" in {
+      val pl2 = Random.shuffle(pl1)
+      val child = Optimizer.crossover(pl1, pl2)
+
+      child must contain theSameElementsAs pl1
+    }
   }
 }
