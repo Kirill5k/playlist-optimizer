@@ -12,7 +12,7 @@ class OptimizerTest extends AnyWordSpec with Matchers {
 
   implicit val random = new Random(1)
 
-  val tracks = Vector(
+  val pl1 = Vector(
     track("song 1", BMajor),
     track("song 2", EMajor),
     track("song 3", EMajor),
@@ -28,9 +28,18 @@ class OptimizerTest extends AnyWordSpec with Matchers {
   "An Optimizer" should {
 
     "create initial population" in {
-      val population = Optimizer.initPopulation(tracks, 10)
+      val population = Optimizer.initPopulation(pl1, 10)
 
       population must have size (10)
+    }
+
+    "distribute population in pairs" in {
+      val pl2 = Random.shuffle(pl1)
+      val pl3 = Random.shuffle(pl1)
+      val pl4 = Random.shuffle(pl1)
+      val distributedInPairs = Optimizer.distributeInPairs(List(pl1, pl2, pl3, pl4))
+
+      distributedInPairs must contain allOf ((pl1, pl2), (pl3, pl4))
     }
   }
 }
