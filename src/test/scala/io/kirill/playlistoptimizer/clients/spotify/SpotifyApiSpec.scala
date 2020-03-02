@@ -88,7 +88,7 @@ class SpotifyApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     "return playlists response when success" in {
       implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if r.uri.host == "api.spotify.com/users" && r.uri.path == List("user-1", "playlist") && r.method == Method.GET && r.headers.contains(new Header("Authorization", "Bearer token")) =>
+          case r if r.uri.host == "api.spotify.com/users" && r.uri.path == List("user-1", "playlists") && r.method == Method.GET && r.headers.contains(new Header("Authorization", "Bearer token")) =>
             Response.ok(playlistsResponseJson)
           case _ => throw new RuntimeException()
         }
