@@ -3,6 +3,7 @@ package io.kirill.playlistoptimizer.clients.spotify
 import cats.effect.testing.scalatest.AsyncIOSpec
 import cats.effect.{ContextShift, IO}
 import cats.implicits._
+import io.circe.ParsingFailure
 import io.kirill.playlistoptimizer.clients.spotify.SpotifyError._
 import io.kirill.playlistoptimizer.clients.spotify.SpotifyResponse._
 import io.kirill.playlistoptimizer.configs.{SpotifyApiConfig, SpotifyAuthConfig, SpotifyConfig}
@@ -98,6 +99,18 @@ class SpotifyApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
       response.asserting(_ must be (SpotifyPlaylistsResponse(List(
         PlaylistsItem("53Y8wT46QIMz5H4WQ8O22c", "Wizzlers Big Playlist"),
         PlaylistsItem("1AVZz0mBuGbCEoNRQdYQju", "Another Playlist")),9)))
+    }
+
+    "return error when corrupted json" in {
+      implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
+        .whenRequestMatchesPartial {
+          case r if r.uri.host == "api.spotify.com/users" && r.method == Method.GET  => Response.ok("""{"foo"}""")
+          case _ => throw new RuntimeException()
+        }
+
+      val response = SpotifyApi.getUserPlaylists[IO]("token", "user-1")
+
+      response.assertThrows[ParsingFailure]
     }
   }
 }
