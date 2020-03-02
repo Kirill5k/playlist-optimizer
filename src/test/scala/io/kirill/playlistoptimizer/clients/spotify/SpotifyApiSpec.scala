@@ -20,12 +20,13 @@ class SpotifyApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
   implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContext.Implicits.global)
 
   val authConfig = SpotifyAuthConfig("http://account.spotify.com", "/auth", "client-id", "client-secret")
-  val apiConfig = SpotifyApiConfig("http://api.spotify.com", "/my-playlists", "/playlists", "/audio-analysis")
+  val apiConfig = SpotifyApiConfig("http://api.spotify.com", "/users", "/playlists", "/audio-analysis")
   implicit val spotifyConfig = SpotifyConfig(authConfig, apiConfig)
 
   val authSuccessResponseJson = Source.fromResource("spotify/auth-response.json").getLines.toList.mkString
   val audioAnalysisResponseJson = Source.fromResource("spotify/audio-analysis-response.json").getLines.toList.mkString
   val playlistResponseJson = Source.fromResource("spotify/playlist-response.json").getLines.toList.mkString
+  val playlistsResponseJson = Source.fromResource("spotify/playlists-response.json").getLines.toList.mkString
   val authErrorResponseJson = Source.fromResource("spotify/auth-error.json").getLines.toList.mkString
 
   "A SpotifyApi" - {
@@ -61,9 +62,9 @@ class SpotifyApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
           case _ => throw new RuntimeException()
         }
 
-      val authResponse = SpotifyApi.getAudioAnalysis[IO]("token", "track-1")
+      val response = SpotifyApi.getAudioAnalysis[IO]("token", "track-1")
 
-      authResponse.asserting(_ must be (SpotifyAudioAnalysisResponse(AudioAnalysisTrack(255.34898, 98.002, 5, 0))))
+      response.asserting(_ must be (SpotifyAudioAnalysisResponse(AudioAnalysisTrack(255.34898, 98.002, 5, 0))))
     }
 
     "return playlist response when success" in {
@@ -74,14 +75,29 @@ class SpotifyApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
           case _ => throw new RuntimeException()
         }
 
-      val authResponse = SpotifyApi.getPlaylist[IO]("token", "playlist-1")
+      val response = SpotifyApi.getPlaylist[IO]("token", "playlist-1")
 
-      authResponse.asserting(_ must be (SpotifyPlaylistResponse(
+      response.asserting(_ must be (SpotifyPlaylistResponse(
         "59ZbFPES4DQwEjBpWHzrtC",
         "Dinner with Friends",
         "Having friends over for dinner? Here´s the perfect playlist.",
         PlaylistTracks(Vector(PlaylistItem(PlaylistTrack("4i9sYtSIlR80bxje5B3rUb", "I'm Not The Only One - Radio Edit", PlaylistTrackAlbum("5GWoXPsTQylMuaZ84PC563", "single", "I'm Not The Only One"), List(PlaylistTrackArtist("2wY79sveU1sp5g7SokKOiI", "Sam Smith")),45.0))),105)
       )))
+    }
+
+    "return playlists response when success" in {
+      implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
+        .whenRequestMatchesPartial {
+          case r if r.uri.host == "api.spotify.com/users" && r.uri.path == List("user-1", "playlist") && r.method == Method.GET && r.headers.contains(new Header("Authorization", "Bearer token")) =>
+            Response.ok(playlistsResponseJson)
+          case _ => throw new RuntimeException()
+        }
+
+      val response = SpotifyApi.getUserPlaylists[IO]("token", "user-1")
+
+      response.asserting(_ must be (SpotifyPlaylistsResponse(List(
+        PlaylistsItem("53Y8wT46QIMz5H4WQ8O22c", "Wizzlers Big Playlist"),
+        PlaylistsItem("1AVZz0mBuGbCEoNRQdYQju", "Another Playlist")),9)))
     }
   }
 }

@@ -6,7 +6,7 @@ object SpotifyResponse {
   final case class SpotifyAuthResponse(access_token: String, token_type: String, expires_in: Int, scope: String) extends SpotifyResponse
 
   final case class PlaylistsItem(id: String, name: String)
-  final case class SpotifyPlaylistsResponse(items: Seq[PlaylistsItem], total: Int)
+  final case class SpotifyPlaylistsResponse(items: Seq[PlaylistsItem], total: Int) extends SpotifyResponse
 
   final case class PlaylistTrackArtist(id: String, name: String)
   final case class PlaylistTrackAlbum(id: String, album_type: String, name: String)
