@@ -20,7 +20,7 @@ import scala.io.Source
 class SpotifyApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
   implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContext.Implicits.global)
 
-  val authConfig = SpotifyAuthConfig("http://account.spotify.com", "/auth", "client-id", "client-secret")
+  val authConfig = SpotifyAuthConfig("http://account.spotify.com", "/auth", "client-id", "client-secret", "user-id")
   val apiConfig = SpotifyApiConfig("http://api.spotify.com", "/users", "/playlists", "/audio-analysis")
   implicit val spotifyConfig = SpotifyConfig(authConfig, apiConfig)
 
