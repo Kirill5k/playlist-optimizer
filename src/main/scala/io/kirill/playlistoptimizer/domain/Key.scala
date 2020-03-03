@@ -1,16 +1,28 @@
 package io.kirill.playlistoptimizer.domain
 
+import io.kirill.playlistoptimizer.domain.Key.{BFlatMinor, DFlatMinor, EFlatMinor}
 import io.kirill.playlistoptimizer.utils.CommonUtils._
 
 sealed abstract class Mode(val number: Int)
 object Mode {
   final case object Minor extends Mode(0)
   final case object Major extends Mode(1)
+
+  def apply(number: Int): Mode = number match {
+    case 0 => Minor
+    case 1 => Major
+    case _ => throw new RuntimeException(s"couldn't find mode with number $number")
+  }
 }
 
 sealed abstract class Key(val number: Int, val name: String, val mode: Mode, val abbreviation: String, val altAbbreviation: String = "n/a")
 object Key {
   import Mode._
+
+  val values: Seq[Key] = List(
+    AFlatMinor, EFlatMinor, BFlatMinor, FMinor, CMinor, GMinor, DMinor, AMinor, EMinor, BMinor, FSharpMinor, DFlatMinor,
+    BMajor, FSharpMajor, DFlatMajor, AFlatMajor, EFlatMajor, BFlatMajor, FMajor, CMajor, GMajor, DMajor, AMajor, EMajor
+  )
 
   final case object AFlatMinor extends Key(1, "A-Flat Minor", Minor, "Abm", "G#m")
   final case object BMajor extends Key(1, "B Major", Major, "B")
@@ -45,4 +57,9 @@ object Key {
       case (n1, n2, m1, m2) => math.abs(n1 - n2) + (m1 != m2).toInt
     }
   }
+
+  def apply(number: Int, mode: Mode): Key =
+    values
+      .find(key => key.number == number && key.mode == mode)
+      .getOrElse(throw new RuntimeException(s"couldn't find key with number $number and mode $mode"))
 }
