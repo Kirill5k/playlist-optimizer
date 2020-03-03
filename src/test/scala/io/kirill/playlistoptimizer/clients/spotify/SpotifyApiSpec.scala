@@ -81,7 +81,7 @@ class SpotifyApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
       response.asserting(_ must be (SpotifyPlaylistResponse(
         "59ZbFPES4DQwEjBpWHzrtC",
         "Dinner with Friends",
-        "Having friends over for dinner? Here´s the perfect playlist.",
+        Some("Having friends over for dinner? Here´s the perfect playlist."),
         PlaylistTracks(Vector(PlaylistItem(PlaylistTrack("4i9sYtSIlR80bxje5B3rUb", "I'm Not The Only One - Radio Edit", PlaylistTrackAlbum("5GWoXPsTQylMuaZ84PC563", "single", "I'm Not The Only One"), List(PlaylistTrackArtist("2wY79sveU1sp5g7SokKOiI", "Sam Smith")),45.0))),105)
       )))
     }

@@ -17,7 +17,7 @@ object SpotifyApi {
   private val authRequestBody = Map("grant_type" -> "client_credentials")
 
   def authenticate[F[_]]
-    (implicit C: SpotifyConfig, B: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]): F[SpotifyResponse] =
+    (implicit C: SpotifyConfig, B: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]): F[SpotifyAuthResponse] =
     basicRequest
       .body(authRequestBody)
       .auth.basic(C.auth.clientId, C.auth.clientSecret)
@@ -29,7 +29,7 @@ object SpotifyApi {
 
   def getAudioAnalysis[F[_]]
     (authToken: String, trackId: String)
-    (implicit C: SpotifyConfig, B: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]): F[SpotifyResponse] =
+    (implicit C: SpotifyConfig, B: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]): F[SpotifyAudioAnalysisResponse] =
     basicRequest
       .auth.bearer(authToken)
       .get(uri"${C.api.baseUrl}${C.api.audioAnalysisPath}/$trackId")
@@ -39,7 +39,7 @@ object SpotifyApi {
 
   def getPlaylist[F[_]]
     (authToken: String, playlistId: String)
-    (implicit C: SpotifyConfig, B: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]): F[SpotifyResponse] =
+    (implicit C: SpotifyConfig, B: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]): F[SpotifyPlaylistResponse] =
     basicRequest
       .auth.bearer(authToken)
       .get(uri"${C.api.baseUrl}${C.api.playlistsPath}/$playlistId")
@@ -49,7 +49,7 @@ object SpotifyApi {
 
   def getUserPlaylists[F[_]]
     (authToken: String, userId: String)
-    (implicit C: SpotifyConfig, B: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]): F[SpotifyResponse] =
+    (implicit C: SpotifyConfig, B: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]): F[SpotifyPlaylistsResponse] =
     basicRequest
       .auth.bearer(authToken)
       .get(uri"${C.api.baseUrl}${C.api.usersPath}/$userId/playlists")
@@ -59,7 +59,7 @@ object SpotifyApi {
 
   private def mapResponseBody[F[_], R <: SpotifyResponse, E <: Throwable : Decoder]
     (responseBody: Either[ResponseError[io.circe.Error], R])
-    (implicit M: MonadError[F, Throwable]): F[SpotifyResponse] =
+    (implicit M: MonadError[F, Throwable]): F[R] =
     responseBody match {
       case Right(success) => M.pure(success)
       case Left(error) => M.fromEither(decode[E](error.body).flatMap(Left(_)))
