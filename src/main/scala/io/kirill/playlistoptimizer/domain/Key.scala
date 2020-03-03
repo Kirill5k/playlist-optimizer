@@ -1,6 +1,5 @@
 package io.kirill.playlistoptimizer.domain
 
-import io.kirill.playlistoptimizer.domain.Key.{BFlatMinor, DFlatMinor, EFlatMinor}
 import io.kirill.playlistoptimizer.utils.CommonUtils._
 
 sealed abstract class Mode(val number: Int)
@@ -11,7 +10,7 @@ object Mode {
   def apply(number: Int): Mode = number match {
     case 0 => Minor
     case 1 => Major
-    case _ => throw new RuntimeException(s"couldn't find mode with number $number")
+    case _ => throw new IllegalArgumentException(s"couldn't find mode with number $number")
   }
 }
 
@@ -61,5 +60,5 @@ object Key {
   def apply(number: Int, mode: Mode): Key =
     values
       .find(key => key.number == number && key.mode == mode)
-      .getOrElse(throw new RuntimeException(s"couldn't find key with number $number and mode $mode"))
+      .getOrElse(throw new IllegalArgumentException(s"couldn't find key with number $number and mode $mode"))
 }
