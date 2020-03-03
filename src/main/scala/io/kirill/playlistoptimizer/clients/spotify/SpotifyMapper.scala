@@ -2,14 +2,13 @@ package io.kirill.playlistoptimizer.clients.spotify
 
 import java.util.concurrent.TimeUnit
 
-import io.kirill.playlistoptimizer.clients.spotify.SpotifyResponse.{AudioAnalysisTrack, PlaylistTrack}
 import io.kirill.playlistoptimizer.domain.{AudioDetails, Key, Mode, SongDetails, Track}
 
 import scala.concurrent.duration.Duration
 
 object SpotifyMapper {
 
-  def toDomain(song: PlaylistTrack, audio: AudioAnalysisTrack): Track = {
+  def toDomain(song: SpotifyResponse.PlaylistTrack, audio: SpotifyResponse.AudioAnalysisTrack): Track = {
     val songDetails = SongDetails(
       song.name,
       song.artists.map(artist => artist.name),
