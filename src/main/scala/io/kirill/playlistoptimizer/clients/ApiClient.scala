@@ -24,14 +24,14 @@ object ApiClient {
         playlist <- SpotifyApi.getPlaylist(token, playlistId)
         playListTracks = playlist.tracks.items.map(_.track)
         tracksDetails <- getTrackDetails(token, playListTracks)
-        tracks = tracksDetails.map(t => SpotifyMapper.toDomain(t._1, t._2)).toVector
+        tracks = tracksDetails.map(SpotifyMapper.toDomain.tupled).toVector
       } yield Playlist(playlist.name, playlist.description, PlaylistSource.Spotify, tracks)
     }
 
     private def getPlaylistId(token: String, name: String): IO[String] =
       SpotifyApi.getUserPlaylists(token, userId)
         .map(_.items.find(_.name.equalsIgnoreCase(name)))
-        .map(_.toRight(new RuntimeException(s"couldn't find playlist $name in Spotify for user $userId")))
+        .map(_.toRight(new IllegalArgumentException(s"couldn't find playlist $name in Spotify for user $userId")))
         .flatMap(_.fold(IO.raiseError, IO.pure))
         .map(_.id)
 

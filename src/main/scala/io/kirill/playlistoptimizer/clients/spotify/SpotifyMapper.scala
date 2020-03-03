@@ -8,7 +8,7 @@ import scala.concurrent.duration.Duration
 
 object SpotifyMapper {
 
-  def toDomain(song: SpotifyResponse.PlaylistTrack, audio: SpotifyResponse.AudioAnalysisTrack): Track = {
+  val toDomain: (SpotifyResponse.PlaylistTrack, SpotifyResponse.AudioAnalysisTrack) => Track = (song, audio) => {
     val songDetails = SongDetails(
       song.name,
       song.artists.map(artist => artist.name),

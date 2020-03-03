@@ -42,5 +42,16 @@ class SpotifyMapperSpec extends AnyWordSpec with Matchers {
         SpotifyMapper.toDomain(song, audio.copy(mode = 2))
       } must have message "couldn't find mode with number 2"
     }
+
+    "work with tuples" in {
+      val details = (song, audio)
+
+      val track = SpotifyMapper.toDomain.tupled(details)
+
+      track must be (Track(
+        SongDetails("I'm Not The Only One - Radio Edit", List("Sam Smith", "Bruno Mars"), Some("I'm Not The Only One")),
+        AudioDetails(98.002, Duration(255.34898, TimeUnit.SECONDS), GMinor)
+      ))
+    }
   }
 }
