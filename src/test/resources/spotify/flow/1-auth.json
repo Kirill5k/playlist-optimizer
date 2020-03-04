@@ -1,0 +1,6 @@
+{
+  "access_token": "BQCK-13bJ_7Qp6sa8DPvNBtvviUDasacL___qpx88zl6M2GDFjnL7qzG9WB9j7DtXmGrLML2Dy1DGPutRPabx316KIskN0amIZmdBZd7EKs3kFA1eXyu5HsjmwdHRD5lcpIsBqfb0Slx9fzZuCu_rM3aBDg",
+  "token_type": "Bearer",
+  "expires_in": 3600,
+  "scope": "playlist-read-private playlist-modify-private playlist-modify-public"
+}

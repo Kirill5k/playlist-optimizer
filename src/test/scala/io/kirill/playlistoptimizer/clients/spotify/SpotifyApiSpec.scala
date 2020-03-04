@@ -24,11 +24,11 @@ class SpotifyApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
   val apiConfig = SpotifyApiConfig("http://api.spotify.com", "/users", "/playlists", "/audio-analysis")
   implicit val spotifyConfig = SpotifyConfig(authConfig, apiConfig)
 
-  val authSuccessResponseJson = Source.fromResource("spotify/auth-response.json").getLines.toList.mkString
-  val audioAnalysisResponseJson = Source.fromResource("spotify/audio-analysis-response.json").getLines.toList.mkString
-  val playlistResponseJson = Source.fromResource("spotify/playlist-response.json").getLines.toList.mkString
-  val playlistsResponseJson = Source.fromResource("spotify/playlists-response.json").getLines.toList.mkString
-  val authErrorResponseJson = Source.fromResource("spotify/auth-error.json").getLines.toList.mkString
+  val authSuccessResponseJson = Source.fromResource("spotify/api/auth-response.json").getLines.toList.mkString
+  val audioAnalysisResponseJson = Source.fromResource("spotify/api/audio-analysis-response.json").getLines.toList.mkString
+  val playlistResponseJson = Source.fromResource("spotify/api/playlist-response.json").getLines.toList.mkString
+  val playlistsResponseJson = Source.fromResource("spotify/api/playlists-response.json").getLines.toList.mkString
+  val authErrorResponseJson = Source.fromResource("spotify/api/auth-error.json").getLines.toList.mkString
 
   "A SpotifyApi" - {
     "return auth response when success" in {
