@@ -14,7 +14,10 @@ import sttp.model.MediaType
 
 object SpotifyApi {
 
-  private val authRequestBody = Map("grant_type" -> "client_credentials")
+  private val authRequestBody = Map(
+    "grant_type" -> "client_credentials",
+    "scope" -> "playlist-read-private playlist-modify-public playlist-modify-private"
+  )
 
   def authenticate[F[_]]
     (implicit C: SpotifyConfig, B: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]): F[SpotifyAuthResponse] =
@@ -32,6 +35,7 @@ object SpotifyApi {
     (implicit C: SpotifyConfig, B: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]): F[SpotifyAudioAnalysisResponse] =
     basicRequest
       .auth.bearer(authToken)
+      .contentType(MediaType.ApplicationJson)
       .get(uri"${C.api.baseUrl}${C.api.audioAnalysisPath}/$trackId")
       .response(asJson[SpotifyAudioAnalysisResponse])
       .send()
@@ -42,6 +46,7 @@ object SpotifyApi {
     (implicit C: SpotifyConfig, B: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]): F[SpotifyPlaylistResponse] =
     basicRequest
       .auth.bearer(authToken)
+      .contentType(MediaType.ApplicationJson)
       .get(uri"${C.api.baseUrl}${C.api.playlistsPath}/$playlistId")
       .response(asJson[SpotifyPlaylistResponse])
       .send()
@@ -52,6 +57,7 @@ object SpotifyApi {
     (implicit C: SpotifyConfig, B: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]): F[SpotifyPlaylistsResponse] =
     basicRequest
       .auth.bearer(authToken)
+      .contentType(MediaType.ApplicationJson)
       .get(uri"${C.api.baseUrl}${C.api.usersPath}/$userId/playlists")
       .response(asJson[SpotifyPlaylistsResponse])
       .send()
