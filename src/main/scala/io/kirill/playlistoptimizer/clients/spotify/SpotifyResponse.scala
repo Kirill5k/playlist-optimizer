@@ -17,4 +17,6 @@ object SpotifyResponse {
 
   final case class AudioAnalysisTrack(duration: Double, tempo: Double, key: Int, mode: Int)
   final case class SpotifyAudioAnalysisResponse(track: AudioAnalysisTrack) extends SpotifyResponse
+
+  final case class SpotifyAudioFeaturesResponse(key: Int, mode: Int, duration_ms: Double, tempo: Double) extends SpotifyResponse
 }
