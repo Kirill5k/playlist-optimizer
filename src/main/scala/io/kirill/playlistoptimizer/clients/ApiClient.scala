@@ -14,7 +14,7 @@ trait ApiClient[F[_]] {
 
 object ApiClient {
 
-  def spotifyClient(implicit S: SpotifyConfig, B: SttpBackend[IO, Nothing, NothingT]): ApiClient[IO] = new ApiClient[IO] {
+  def spotifyClient(implicit c: SpotifyConfig, b: SttpBackend[IO, Nothing, NothingT]): ApiClient[IO] = new ApiClient[IO] {
     override def findPlaylistByName(playlistName: String): IO[Playlist] = {
       for {
         token <- SpotifyApi.authenticate.map(_.access_token)
@@ -27,9 +27,9 @@ object ApiClient {
     }
 
     private def getPlaylistId(token: String, name: String): IO[String] =
-      SpotifyApi.getUserPlaylists(token, S.auth.userId)
+      SpotifyApi.getUserPlaylists(token, c.auth.userId)
         .map(_.items.find(_.name.equalsIgnoreCase(name)))
-        .map(_.toRight(new IllegalArgumentException(s"couldn't find playlist $name in Spotify for user ${S.auth.userId}")))
+        .map(_.toRight(new IllegalArgumentException(s"couldn't find playlist $name in Spotify for user ${c.auth.userId}")))
         .flatMap(_.fold(IO.raiseError, IO.pure))
         .map(_.id)
 
