@@ -42,7 +42,7 @@ object SpotifyApi {
       .send()
       .flatMap(r => mapResponseBody[F, SpotifyAudioAnalysisResponse, SpotifyRegularError](r.body))
 
-  def getAudioAnalysis[F[_]](authToken: String, trackId: String)(
+  def getAudioFeatures[F[_]](authToken: String, trackId: String)(
     implicit c: SpotifyConfig, b: SttpBackend[F, Nothing, NothingT], m: MonadError[F, Throwable]
   ): F[SpotifyAudioFeaturesResponse] = ???
 
