@@ -44,7 +44,14 @@ object SpotifyApi {
 
   def getAudioFeatures[F[_]](authToken: String, trackId: String)(
     implicit c: SpotifyConfig, b: SttpBackend[F, Nothing, NothingT], m: MonadError[F, Throwable]
-  ): F[SpotifyAudioFeaturesResponse] = ???
+  ): F[SpotifyAudioFeaturesResponse] =
+    basicRequest
+      .auth.bearer(authToken)
+      .contentType(MediaType.ApplicationJson)
+      .get(uri"${c.api.baseUrl}${c.api.audioFeaturesPath}/$trackId")
+      .response(asJson[SpotifyAudioFeaturesResponse])
+      .send()
+      .flatMap(r => mapResponseBody[F, SpotifyAudioFeaturesResponse, SpotifyRegularError](r.body))
 
   def getPlaylist[F[_]](authToken: String, playlistId: String)(
     implicit c: SpotifyConfig, b: SttpBackend[F, Nothing, NothingT], m: MonadError[F, Throwable]

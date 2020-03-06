@@ -9,6 +9,7 @@ import io.kirill.playlistoptimizer.clients.spotify.SpotifyResponse._
 import io.kirill.playlistoptimizer.configs.{SpotifyApiConfig, SpotifyAuthConfig, SpotifyConfig}
 import org.scalatest.freespec.AsyncFreeSpec
 import org.scalatest.matchers.must.Matchers
+import sttp.client
 import sttp.client.Response
 import sttp.client.asynchttpclient.cats.AsyncHttpClientCatsBackend
 import sttp.client.testing.SttpBackendStub
@@ -58,8 +59,7 @@ class SpotifyApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     "return audio analysis response when success" in {
       implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if r.uri.host == "api.spotify.com/audio-analysis" && r.uri.path == List("track-1") && r.method == Method.GET && r.headers.contains(new Header("Authorization", "Bearer token")) =>
-            Response.ok(audioAnalysisResponseJson)
+          case r if isAuthorized(r, "api.spotify.com/audio-analysis", List("track-1")) => Response.ok(audioAnalysisResponseJson)
           case _ => throw new RuntimeException()
         }
 
@@ -68,11 +68,22 @@ class SpotifyApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
       response.asserting(_ must be (SpotifyAudioAnalysisResponse(AudioAnalysisTrack(255.34898, 98.002, 5, 0))))
     }
 
+    "return audio features response when success" in {
+      implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
+        .whenRequestMatchesPartial {
+          case r if isAuthorized(r, "api.spotify.com/audio-features", List("track-1")) => Response.ok(json("spotify/api/audio-features-response.json"))
+          case _ => throw new RuntimeException()
+        }
+
+      val response = SpotifyApi.getAudioFeatures[IO]("token", "track-1")
+
+      response.asserting(_ must be (SpotifyAudioFeaturesResponse(7,0,535975.0,123.996)))
+    }
+
     "return playlist response when success" in {
       implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if r.uri.host == "api.spotify.com/playlists" && r.uri.path == List("playlist-1") && r.method == Method.GET && r.headers.contains(new Header("Authorization", "Bearer token")) =>
-            Response.ok(playlistResponseJson)
+          case r if isAuthorized(r, "api.spotify.com/playlists", List("playlist-1")) => Response.ok(playlistResponseJson)
           case _ => throw new RuntimeException()
         }
 
@@ -89,8 +100,7 @@ class SpotifyApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     "return playlists response when success" in {
       implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if r.uri.host == "api.spotify.com/users" && r.uri.path == List("user-1", "playlists") && r.method == Method.GET && r.headers.contains(new Header("Authorization", "Bearer token")) =>
-            Response.ok(playlistsResponseJson)
+          case r if isAuthorized(r, "api.spotify.com/users", List("user-1", "playlists")) => Response.ok(playlistsResponseJson)
           case _ => throw new RuntimeException()
         }
 
@@ -104,7 +114,7 @@ class SpotifyApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     "return error when corrupted json" in {
       implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if r.uri.host == "api.spotify.com/users" && r.method == Method.GET  => Response.ok("""{"foo"}""")
+          case r if isAuthorized(r, "api.spotify.com/users")  => Response.ok("""{"foo"}""")
           case _ => throw new RuntimeException()
         }
 
@@ -113,4 +123,10 @@ class SpotifyApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
       response.assertThrows[ParsingFailure]
     }
   }
+
+  def isAuthorized(req: client.Request[_, _], host: String, paths: Seq[String] = Nil, token: String = "token"): Boolean =
+    req.uri.host == host && (paths.isEmpty || req.uri.path == paths) &&
+      req.headers.contains(new Header("Authorization", s"Bearer $token"))
+
+  def json(path: String): String = Source.fromResource(path).getLines.toList.mkString
 }
