@@ -15,7 +15,7 @@ class OptimizerSpec extends AnyWordSpec with Matchers {
 
   implicit val random = new Random(1)
 
-  val pl1 = Vector(
+  val s1 = Vector(
     track("song 1", BMajor),
     track("song 2", EMajor),
     track("song 3", EMajor),
@@ -31,35 +31,50 @@ class OptimizerSpec extends AnyWordSpec with Matchers {
   "An Optimizer" should {
 
     "create initial population" in {
-      val population = Optimizer.initPopulation(pl1, 10)
+      val population = Optimizer.initPopulation(s1, 10)
 
       population must have size (10)
     }
 
     "distribute population in pairs" in {
-      val pl2 = Random.shuffle(pl1)
-      val pl3 = Random.shuffle(pl1)
-      val pl4 = Random.shuffle(pl1)
-      val distributedInPairs = Optimizer.distributeInPairs(List(pl1, pl2, pl3, pl4))
+      val s2 = Random.shuffle(s1)
+      val s3 = Random.shuffle(s1)
+      val s4 = Random.shuffle(s1)
+      val distributedInPairs = Optimizer.distributeInPairs(List(s1, s2, s3, s4))
 
-      distributedInPairs must contain allOf ((pl1, pl2), (pl3, pl4))
+      distributedInPairs must contain allOf ((s1, s2), (s3, s4))
     }
 
     "mutate solution" in {
-      val mutatedPlaylist = Optimizer.mutate(pl1)
+      val mutatedPlaylist = Optimizer.mutate(s1)
 
-      mutatedPlaylist must not contain theSameElementsInOrderAs (pl1)
-      mutatedPlaylist must contain theSameElementsAs pl1
+      mutatedPlaylist must not contain theSameElementsInOrderAs (s1)
+      mutatedPlaylist must contain theSameElementsAs s1
     }
 
     "crossover 2 solutions" in {
-      val pl2 = Random.shuffle(pl1)
-      val child = Optimizer.crossover(pl1, pl2)
+      val s2 = Random.shuffle(s1)
+      val child = Optimizer.crossover(s1, s2)
 
-      child must contain theSameElementsAs pl1
-      child must contain theSameElementsAs pl2
-      child must not contain theSameElementsInOrderAs (pl1)
-      child must not contain theSameElementsInOrderAs (pl2)
+      child must contain theSameElementsAs s1
+      child must contain theSameElementsAs s2
+      child must not contain theSameElementsInOrderAs (s1)
+      child must not contain theSameElementsInOrderAs (s2)
+    }
+  }
+
+  "A GeneticAlgorithmOptimizer" should {
+
+    "optimize a playlist" in {
+      val songs = playlist.tracks
+      val optimizedSongs = Optimizer.geneticAlgorithmOptimizer(100, 250, 0.3).optimize(songs)
+
+      optimizedSongs must contain theSameElementsAs songs
+      optimizedSongs must not contain theSameElementsInOrderAs (songs)
+      Evaluator.tracksEvaluator.evaluate(optimizedSongs) must be < Evaluator.tracksEvaluator.evaluate(songs) / 4
+
+      println(s"original score: ${Evaluator.tracksEvaluator.evaluate(songs)}, optimized score: ${Evaluator.tracksEvaluator.evaluate(optimizedSongs)}")
+      println(optimizedSongs)
     }
   }
 
