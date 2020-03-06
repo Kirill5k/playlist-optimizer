@@ -33,8 +33,7 @@ class SpotifyClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
           case r if r.uri.host == "account.spotify.com/auth" => Response.ok(json("spotify/flow/1-auth.json"))
           case r if isAuthorized(r, "api.spotify.com/users", List("user-1", "playlists")) => Response.ok(json("spotify/flow/2-users-playlists.json"))
           case r if isAuthorized(r, "api.spotify.com/playlists", List("7npAZEYwEwV2JV7XX2n3wq")) => Response.ok(json("spotify/flow/3-playlist.json"))
-          case r if isAuthorized(r, "api.spotify.com/audio-analysis", List("2aJDlirz6v2a4HREki98cP")) => Response.ok(json("spotify/flow/4-audio-analysis-1.json"))
-          case r if isAuthorized(r, "api.spotify.com/audio-analysis", List("6AjUFYqP7oVTUX47cVJins")) => Response.ok(json("spotify/flow/4-audio-analysis-2.json"))
+          case r if isAuthorized(r, "api.spotify.com/audio-features") => Response.ok(json("spotify/flow/4-audio-features-2aJDlirz6v2a4HREki98cP.json"))
           case r => throw new RuntimeException(s"no mocks for ${r.uri.host}/${r.uri.path.mkString("/")}")
         }
 
@@ -47,7 +46,7 @@ class SpotifyClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     }
   }
 
-  def isAuthorized(req: client.Request[_, _], host: String, paths: Seq[String]): Boolean =
+  def isAuthorized(req: client.Request[_, _], host: String, paths: Seq[String] = Nil): Boolean =
     req.uri.host == host && (paths.isEmpty || req.uri.path == paths) &&
       req.headers.contains(new Header("Authorization", "Bearer BQCK-13bJ_7Qp6sa8DPvNBtvviUDasacL___qpx88zl6M2GDFjnL7qzG9WB9j7DtXmGrLML2Dy1DGPutRPabx316KIskN0amIZmdBZd7EKs3kFA1eXyu5HsjmwdHRD5lcpIsBqfb0Slx9fzZuCu_rM3aBDg"))
 

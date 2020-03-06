@@ -3,7 +3,7 @@ package io.kirill.playlistoptimizer.clients
 import cats.effect.IO
 import fs2.Stream
 import io.kirill.playlistoptimizer.clients.spotify.{SpotifyApi, SpotifyMapper}
-import io.kirill.playlistoptimizer.clients.spotify.SpotifyResponse.{AudioAnalysisTrack, PlaylistTrack}
+import io.kirill.playlistoptimizer.clients.spotify.SpotifyResponse.{AudioAnalysisTrack, PlaylistTrack, SpotifyAudioFeaturesResponse}
 import io.kirill.playlistoptimizer.configs.SpotifyConfig
 import io.kirill.playlistoptimizer.domain.{Playlist, PlaylistSource}
 import sttp.client.{NothingT, SttpBackend}
@@ -28,9 +28,9 @@ private[clients] class SpotifyClient(implicit val c: SpotifyConfig, val b: SttpB
       .flatMap(_.fold(IO.raiseError, IO.pure))
       .map(_.id)
 
-  private def getTrackDetails(token: String, tracks: Seq[PlaylistTrack]): IO[Seq[(PlaylistTrack, AudioAnalysisTrack)]] =
+  private def getTrackDetails(token: String, tracks: Seq[PlaylistTrack]): IO[Seq[(PlaylistTrack, SpotifyAudioFeaturesResponse)]] =
     Stream.emits(tracks)
-      .evalMap(track => SpotifyApi.getAudioAnalysis(token, track.id).map(audio => (track, audio.track)))
+      .evalMap(track => SpotifyApi.getAudioFeatures(token, track.id).map(audio => (track, audio)))
       .compile
       .toList
 }
