@@ -67,14 +67,15 @@ class OptimizerSpec extends AnyWordSpec with Matchers {
 
     "optimize a playlist" in {
       val songs = playlist.tracks
-      val optimizedSongs = Optimizer.geneticAlgorithmOptimizer(100, 250, 0.3).optimize(songs)
+      val optimizedSongs = Optimizer.geneticAlgorithmOptimizer(100, 250, 0.4).optimize(songs)
 
       optimizedSongs must contain theSameElementsAs songs
       optimizedSongs must not contain theSameElementsInOrderAs (songs)
-      Evaluator.tracksEvaluator.evaluate(optimizedSongs) must be < Evaluator.tracksEvaluator.evaluate(songs) / 4
+      Evaluator.basicTracksEvaluator.evaluate(optimizedSongs) must be < Evaluator.basicTracksEvaluator.evaluate(songs) / 4
 
-      println(s"original score: ${Evaluator.tracksEvaluator.evaluate(songs)}, optimized score: ${Evaluator.tracksEvaluator.evaluate(optimizedSongs)}")
+      println(s"original score: ${Evaluator.basicTracksEvaluator.evaluate(songs)}, optimized score: ${Evaluator.basicTracksEvaluator.evaluate(optimizedSongs)}")
       println(optimizedSongs)
+      println(optimizedSongs.map(_.audio.key))
     }
   }
 

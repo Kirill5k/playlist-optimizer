@@ -7,7 +7,7 @@ import org.scalatest.wordspec.AnyWordSpec
 class EvaluatorSpec extends AnyWordSpec with Matchers {
   import io.kirill.playlistoptimizer.domain.TrackBuilder._
 
-  "A tracksEvaluator" should {
+  "A basicTracksEvaluator" should {
 
     "evaluate a sequence of tracks" in {
       val tracks = Vector(
@@ -23,7 +23,7 @@ class EvaluatorSpec extends AnyWordSpec with Matchers {
         track("song 10", GMajor)
       )
 
-      Evaluator.tracksEvaluator.evaluate(tracks) must be (4)
+      Evaluator.basicTracksEvaluator.evaluate(tracks) must be (4)
     }
   }
 }
