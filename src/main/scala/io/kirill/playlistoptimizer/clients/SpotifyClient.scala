@@ -17,7 +17,7 @@ private[clients] class SpotifyClient(implicit val c: SpotifyConfig, val b: SttpB
       playlist <- SpotifyApi.getPlaylist(token, playlistId)
       playListTracks = playlist.tracks.items.map(_.track)
       tracksDetails <- getTrackDetails(token, playListTracks)
-      tracks = tracksDetails.map(SpotifyMapper.toDomain.tupled).toVector
+      tracks = tracksDetails.map(details => SpotifyMapper.toDomain(details._1, details._2)).toVector
     } yield Playlist(playlist.name, playlist.description, PlaylistSource.Spotify, tracks)
   }
 
