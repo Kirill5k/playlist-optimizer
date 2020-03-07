@@ -6,6 +6,7 @@ import io.circe.Decoder
 import io.circe.generic.auto._
 import io.circe.parser._
 import io.kirill.playlistoptimizer.clients.spotify.SpotifyError._
+import io.kirill.playlistoptimizer.clients.spotify.SpotifyRequest.AddTracksToPlaylistRequest
 import io.kirill.playlistoptimizer.clients.spotify.SpotifyResponse._
 import io.kirill.playlistoptimizer.configs.SpotifyConfig
 import sttp.client._
@@ -74,6 +75,18 @@ object SpotifyApi {
       .response(asJson[SpotifyPlaylistsResponse])
       .send()
       .flatMap(r => mapResponseBody[F, SpotifyPlaylistsResponse, SpotifyRegularError](r.body))
+
+  def addTracksToPlaylist[F[_]](authToken: String, playlistId: String, uris: Seq[String])(
+    implicit c: SpotifyConfig, b: SttpBackend[F, Nothing, NothingT], m: MonadError[F, Throwable]
+  ): F[SpotifyOperationSuccessResponse] =
+    basicRequest
+      .body(AddTracksToPlaylistRequest(uris, None))
+      .auth.bearer(authToken)
+      .contentType(MediaType.ApplicationJson)
+      .post(uri"${c.api.baseUrl}${c.api.playlistsPath}/$playlistId/tracks")
+      .response(asJson[SpotifyOperationSuccessResponse])
+      .send()
+      .flatMap(r => mapResponseBody[F, SpotifyOperationSuccessResponse, SpotifyRegularError](r.body))
 
   private def mapResponseBody[F[_], R <: SpotifyResponse, E <: Throwable : Decoder](responseBody: Either[ResponseError[io.circe.Error], R])(
     implicit m: MonadError[F, Throwable]
