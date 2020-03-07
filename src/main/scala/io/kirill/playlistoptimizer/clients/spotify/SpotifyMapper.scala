@@ -1,5 +1,6 @@
 package io.kirill.playlistoptimizer.clients.spotify
 
+import java.time.LocalDate
 import java.util.concurrent.TimeUnit
 
 import io.kirill.playlistoptimizer.domain.{AudioDetails, Key, Mode, SongDetails, Track}
@@ -20,7 +21,9 @@ object SpotifyMapper {
       SongDetails(
         track.name,
         track.artists.map(_.name),
-        Some(track.album.name).filter(_.nonEmpty)
+        Some(track.album.name).filter(_.nonEmpty),
+        track.album.release_date_precision.filter(_ == "day").flatMap(_ => track.album.release_date.map(LocalDate.parse)),
+        Some(track.album.album_type)
       )
   }
 

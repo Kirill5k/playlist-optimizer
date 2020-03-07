@@ -33,4 +33,6 @@ private[clients] class SpotifyClient(implicit val c: SpotifyConfig, val b: SttpB
       .evalMap(track => SpotifyApi.getAudioFeatures(token, track.id).map(audio => (track, audio)))
       .compile
       .toList
+
+  override def savePlaylist(playlist: Playlist): IO[Unit] = ???
 }

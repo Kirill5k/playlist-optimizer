@@ -2,7 +2,6 @@ package io.kirill.playlistoptimizer.clients.spotify
 
 import cats.effect.testing.scalatest.AsyncIOSpec
 import cats.effect.{ContextShift, IO}
-import cats.implicits._
 import io.circe.ParsingFailure
 import io.kirill.playlistoptimizer.clients.spotify.SpotifyError._
 import io.kirill.playlistoptimizer.clients.spotify.SpotifyResponse._
@@ -93,7 +92,7 @@ class SpotifyApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
         "59ZbFPES4DQwEjBpWHzrtC",
         "Dinner with Friends",
         Some("Having friends over for dinner? Here´s the perfect playlist."),
-        PlaylistTracks(Vector(PlaylistItem(PlaylistTrack("4i9sYtSIlR80bxje5B3rUb", "I'm Not The Only One - Radio Edit", PlaylistTrackAlbum("5GWoXPsTQylMuaZ84PC563", "single", "I'm Not The Only One"), List(PlaylistTrackArtist("2wY79sveU1sp5g7SokKOiI", "Sam Smith")),45.0))),105)
+        PlaylistTracks(Vector(PlaylistItem(PlaylistTrack("4i9sYtSIlR80bxje5B3rUb", "I'm Not The Only One - Radio Edit", PlaylistTrackAlbum("5GWoXPsTQylMuaZ84PC563", "single", "I'm Not The Only One", Some("2012-10-10"), Some("day")), List(PlaylistTrackArtist("2wY79sveU1sp5g7SokKOiI", "Sam Smith")),45.0))),105)
       )))
     }
 

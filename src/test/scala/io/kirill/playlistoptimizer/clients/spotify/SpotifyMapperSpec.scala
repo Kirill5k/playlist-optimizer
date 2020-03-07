@@ -1,5 +1,6 @@
 package io.kirill.playlistoptimizer.clients.spotify
 
+import java.time.LocalDate
 import java.util.concurrent.TimeUnit
 
 import io.kirill.playlistoptimizer.clients.spotify.SpotifyResponse.{AudioAnalysisTrack, PlaylistTrack, PlaylistTrackAlbum, PlaylistTrackArtist, SpotifyAudioFeaturesResponse}
@@ -16,7 +17,7 @@ class SpotifyMapperSpec extends AnyWordSpec with Matchers {
     val song = PlaylistTrack(
       "track-id",
       "I'm Not The Only One - Radio Edit",
-      PlaylistTrackAlbum("5GWoXPsTQylMuaZ84PC563", "single", "I'm Not The Only One"),
+      PlaylistTrackAlbum("5GWoXPsTQylMuaZ84PC563", "Single", "I'm Not The Only One", Some("2012-10-10"), Some("day")),
       List(PlaylistTrackArtist("2wY79sveU1sp5g7SokKOiI", "Sam Smith"), PlaylistTrackArtist("2wY79sveU1ABCg7SokKOiI", "Bruno Mars")),
       45.0
     )
@@ -28,7 +29,7 @@ class SpotifyMapperSpec extends AnyWordSpec with Matchers {
       val track = SpotifyMapper.toDomain(song, audioAnalysis)
 
       track must be (Track(
-        SongDetails("I'm Not The Only One - Radio Edit", List("Sam Smith", "Bruno Mars"), Some("I'm Not The Only One")),
+        SongDetails("I'm Not The Only One - Radio Edit", List("Sam Smith", "Bruno Mars"), Some("I'm Not The Only One"), Some(LocalDate.of(2012, 10 ,10)), Some("Single")),
         AudioDetails(98.002, Duration(255.34898, TimeUnit.SECONDS), GMinor)
       ))
     }
@@ -37,7 +38,7 @@ class SpotifyMapperSpec extends AnyWordSpec with Matchers {
       val track = SpotifyMapper.toDomain(song, audioFeatures)
 
       track must be (Track(
-        SongDetails("I'm Not The Only One - Radio Edit", List("Sam Smith", "Bruno Mars"), Some("I'm Not The Only One")),
+        SongDetails("I'm Not The Only One - Radio Edit", List("Sam Smith", "Bruno Mars"), Some("I'm Not The Only One"), Some(LocalDate.of(2012, 10 ,10)), Some("Single")),
         AudioDetails(98.002, Duration(255.34898, TimeUnit.SECONDS), GMinor)
       ))
     }
