@@ -1,5 +1,6 @@
 package io.kirill.playlistoptimizer.optimizer
 
+import io.kirill.playlistoptimizer.optimizer.operators.{Crossover, Evaluator, Mutator}
 import io.kirill.playlistoptimizer.utils.CollectionOps._
 
 import scala.util.Random

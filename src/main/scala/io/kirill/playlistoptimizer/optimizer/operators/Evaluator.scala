@@ -1,4 +1,4 @@
-package io.kirill.playlistoptimizer.optimizer
+package io.kirill.playlistoptimizer.optimizer.operators
 
 import io.kirill.playlistoptimizer.domain.{Key, Track}
 

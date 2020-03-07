@@ -1,6 +1,6 @@
-package io.kirill.playlistoptimizer.optimizer
+package io.kirill.playlistoptimizer.optimizer.operators
 
-import io.kirill.playlistoptimizer.domain.Key.{AMajor, BMajor, DMajor, EMajor, GMajor}
+import io.kirill.playlistoptimizer.domain.Key._
 import io.kirill.playlistoptimizer.domain.Track
 import io.kirill.playlistoptimizer.domain.TrackBuilder.track
 import org.scalatest.matchers.must.Matchers
