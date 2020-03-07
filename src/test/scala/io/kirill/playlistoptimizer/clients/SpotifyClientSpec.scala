@@ -32,9 +32,9 @@ class SpotifyClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     "find playlist by name" in {
       implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if r.uri.host == "account.spotify.com/auth" => Response.ok(json("spotify/flow/1-auth.json"))
-          case r if isAuthorized(r, "api.spotify.com/users", List("user-1", "playlists")) => Response.ok(json("spotify/flow/2-users-playlists.json"))
-          case r if isAuthorized(r, "api.spotify.com/playlists", List("7npAZEYwEwV2JV7XX2n3wq")) => Response.ok(json("spotify/flow/3-playlist.json"))
+          case r if r.uri.host == "account.spotify.com/auth" => Response.ok(json("spotify/flow/find/1-auth.json"))
+          case r if isAuthorized(r, "api.spotify.com/users", List("user-1", "playlists")) => Response.ok(json("spotify/flow/find/2-users-playlists.json"))
+          case r if isAuthorized(r, "api.spotify.com/playlists", List("7npAZEYwEwV2JV7XX2n3wq")) => Response.ok(json("spotify/flow/find/3-playlist.json"))
           case r if isAuthorized(r, "api.spotify.com/audio-features") => Response.ok(json(s"spotify/flow/4-audio-features-${r.uri.path.head}.json"))
           case r => throw new RuntimeException(s"no mocks for ${r.uri.host}/${r.uri.path.mkString("/")}")
         }
