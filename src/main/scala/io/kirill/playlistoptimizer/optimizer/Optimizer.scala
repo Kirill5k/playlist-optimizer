@@ -1,6 +1,5 @@
 package io.kirill.playlistoptimizer.optimizer
 
-import io.kirill.playlistoptimizer.domain.Track
 import io.kirill.playlistoptimizer.utils.CollectionOps._
 
 import scala.util.Random
@@ -17,10 +16,10 @@ object Optimizer {
         .head
     }
 
-    private def singleIteration(population: Seq[Seq[A]])(implicit E: Evaluator[A], C: Crossover[A], R: Random): Seq[Seq[A]] = {
+    private def singleIteration(population: Seq[Seq[A]])(implicit E: Evaluator[A], C: Crossover[A], M: Mutator[A], R: Random): Seq[Seq[A]] = {
       val newPopulation = distributeInPairs(population)
         .flatMap { case (p1, p2) => IndexedSeq(C.cross(p1, p2), C.cross(p2, p1)) }
-        .map(m => if (R.nextDouble < mutationFactor) Optimizer.mutate(m) else m)
+        .map(m => if (R.nextDouble < mutationFactor) M.mutate(m) else m)
 
       (newPopulation ++ population).sortBy(E.evaluate).take(populationSize)
     }
@@ -33,8 +32,4 @@ object Optimizer {
     val half = population.removeNth(2)
     half.zip(population.filterNot(half.contains))
   }
-
-  private[optimizer] def mutate[A](is: Seq[A])(implicit R: Random): Seq[A] =
-    is.swap(R.nextInt(is.size), R.nextInt(is.size))
-
 }

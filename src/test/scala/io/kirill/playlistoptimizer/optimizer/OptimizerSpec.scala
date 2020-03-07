@@ -44,13 +44,6 @@ class OptimizerSpec extends AnyWordSpec with Matchers {
 
       distributedInPairs must contain allOf ((s1, s2), (s3, s4))
     }
-
-    "mutate solution" in {
-      val mutatedPlaylist = Optimizer.mutate(s1)
-
-      mutatedPlaylist must not contain theSameElementsInOrderAs (s1)
-      mutatedPlaylist must contain theSameElementsAs s1
-    }
   }
 
   "A GeneticAlgorithmOptimizer" should {

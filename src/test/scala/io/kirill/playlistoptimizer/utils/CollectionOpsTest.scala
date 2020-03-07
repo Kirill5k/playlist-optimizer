@@ -5,23 +5,6 @@ import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
 class CollectionOpsTest extends AnyWordSpec with Matchers {
-  "IndexedSeqOps" should {
-    "swap elements in indexed seq" in {
-      val result = Vector(1, 2, 3, 4, 5, 6, 7).swap(2, 5)
-      result must contain theSameElementsInOrderAs (Vector(1, 2, 6, 4, 5, 3, 7))
-    }
-
-    "return same vector when pos1 == pos2" in {
-      val result = Vector(1, 2, 3, 4, 5, 6, 7).swap(2, 2)
-      result must contain theSameElementsInOrderAs (Vector(1, 2, 3, 4, 5, 6, 7))
-    }
-
-    "throw exception when pos is greater than size" in {
-      the [IllegalArgumentException] thrownBy {
-        Vector(1, 2, 3, 4, 5, 6, 7).swap(2, 10)
-      } must have message "pos cannot be greater than size"
-    }
-  }
 
   "SeqOps" should {
     "split index seq in 3" in {
@@ -53,6 +36,22 @@ class CollectionOpsTest extends AnyWordSpec with Matchers {
     "removes every nth element" in {
       val result = List(1, 2, 3, 4, 5, 6, 7, 8).removeNth(2)
       result must contain theSameElementsInOrderAs (List(1, 3, 5, 7))
+    }
+
+    "swap elements in indexed seq" in {
+      val result = Vector(1, 2, 3, 4, 5, 6, 7).swap(2, 5)
+      result must contain theSameElementsInOrderAs (Vector(1, 2, 6, 4, 5, 3, 7))
+    }
+
+    "return same vector when pos1 == pos2" in {
+      val result = Vector(1, 2, 3, 4, 5, 6, 7).swap(2, 2)
+      result must contain theSameElementsInOrderAs (Vector(1, 2, 3, 4, 5, 6, 7))
+    }
+
+    "throw exception when pos is greater than size" in {
+      the [IllegalArgumentException] thrownBy {
+        Vector(1, 2, 3, 4, 5, 6, 7).swap(2, 10)
+      } must have message "pos cannot be greater than size"
     }
   }
 }
