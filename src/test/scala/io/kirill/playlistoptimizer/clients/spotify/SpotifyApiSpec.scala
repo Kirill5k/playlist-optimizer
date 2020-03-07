@@ -153,14 +153,27 @@ class SpotifyApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
 
       response.asserting(_ must be (SpotifyOperationSuccessResponse("JbtmHBDBAYu3/bt8BOXKjzKx3i0b6LCa/wVjyl6qQ2Yf6nFXkbmzuEa+ZI/U1yF+")))
     }
+
+    "replace tracks in a playlist" in {
+      implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
+        .whenRequestMatchesPartial {
+          case r if isAuthorized(r, "api.spotify.com/playlists", List("playlist-1", "tracks")) && hasBody(r, """{"uris":["uri-1","uri-2","uri-3"]}""", Method.PUT) =>
+            Response(json("spotify/api/operation-success-response.json"), StatusCode.Created)
+          case _ => throw new RuntimeException()
+        }
+
+      val response = SpotifyApi.replaceTracksInPlaylist[IO]("token", "playlist-1", List("uri-1", "uri-2", "uri-3"))
+
+      response.asserting(_ must be (()))
+    }
   }
 
   def isAuthorized(req: client.Request[_, _], host: String, paths: Seq[String] = Nil, token: String = "token"): Boolean =
     req.uri.host == host && (paths.isEmpty || req.uri.path == paths) &&
       req.headers.contains(new Header("Authorization", s"Bearer $token"))
 
-  def hasBody(req: client.Request[_, _], jsonBody: String): Boolean =
-    req.method == Method.POST && req.body.toString.contains(jsonBody)
+  def hasBody(req: client.Request[_, _], jsonBody: String, method: Method = Method.POST): Boolean =
+    req.method == method && req.body.toString.contains(jsonBody)
 
   def json(path: String): String = Source.fromResource(path).getLines.toList.mkString
 }
