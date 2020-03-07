@@ -4,7 +4,7 @@ import CollectionOps._
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-class CollectionOpsTest extends AnyWordSpec with Matchers {
+class CollectionOpsSpec extends AnyWordSpec with Matchers {
 
   "SeqOps" should {
     "split index seq in 3" in {
