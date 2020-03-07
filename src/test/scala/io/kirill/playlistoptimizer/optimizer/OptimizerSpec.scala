@@ -51,16 +51,6 @@ class OptimizerSpec extends AnyWordSpec with Matchers {
       mutatedPlaylist must not contain theSameElementsInOrderAs (s1)
       mutatedPlaylist must contain theSameElementsAs s1
     }
-
-    "crossover 2 solutions" in {
-      val s2 = Random.shuffle(s1)
-      val child = Optimizer.crossover(s1, s2)
-
-      child must contain theSameElementsAs s1
-      child must contain theSameElementsAs s2
-      child must not contain theSameElementsInOrderAs (s1)
-      child must not contain theSameElementsInOrderAs (s2)
-    }
   }
 
   "A GeneticAlgorithmOptimizer" should {
