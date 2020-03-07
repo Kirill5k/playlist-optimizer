@@ -9,7 +9,7 @@ trait Optimizer[A] {
 }
 
 object Optimizer {
-  implicit def geneticAlgorithmOptimizer[A](populationSize: Int, iterations: Int, mutationFactor: Double): Optimizer[A] = new Optimizer[A] {
+  implicit def geneticAlgorithmOptimizer[A: Crossover: Mutator](populationSize: Int, iterations: Int, mutationFactor: Double): Optimizer[A] = new Optimizer[A] {
     override def optimize(items: Seq[A])(implicit E: Evaluator[A], R: Random): Seq[A] = {
       (0 until iterations)
         .foldLeft(initPopulation(items, populationSize))((currentPopulation, _) => singleIteration(currentPopulation))
