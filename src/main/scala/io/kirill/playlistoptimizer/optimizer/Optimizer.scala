@@ -19,7 +19,7 @@ object Optimizer {
 
     private def singleIteration(population: Seq[Seq[A]])(implicit E: Evaluator[A], C: Crossover[A], M: Mutator[A], R: Random): Seq[Seq[A]] = {
       val newPopulation = distributeInPairs(population)
-        .flatMap { case (p1, p2) => IndexedSeq(C.cross(p1, p2), C.cross(p2, p1)) }
+        .flatMap { case (p1, p2) => List(C.cross(p1, p2), C.cross(p2, p1)) }
         .map(m => if (R.nextDouble < mutationFactor) M.mutate(m) else m)
 
       (newPopulation ++ population).sortBy(E.evaluate).take(populationSize)
@@ -29,8 +29,6 @@ object Optimizer {
   private[optimizer] def initPopulation[A](initialSolution: Seq[A], size: Int): Seq[Seq[A]] =
     List.fill(size)(Random.shuffle(initialSolution))
 
-  private[optimizer] def distributeInPairs[A](population: Seq[A]): Seq[(A, A)] = {
-    val half = population.removeNth(2)
-    half.zip(population.filterNot(half.contains))
-  }
+  private[optimizer] def distributeInPairs[A](population: Seq[A]): Seq[(A, A)] =
+    population.zip(population.tail).removeNth(2)
 }

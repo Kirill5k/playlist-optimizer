@@ -49,7 +49,7 @@ class OptimizerSpec extends AnyWordSpec with Matchers {
 
     "optimize a playlist" in {
       implicit val c: Crossover[Track] = Crossover.keySequenceBasedTracksCrossover
-      implicit val m: Mutator[Track] = Mutator.randomSwapMutator[Track]
+      implicit val m: Mutator[Track] = Mutator.neighbourSwapMutator[Track]
 
       val songs = PlaylistBuilder.playlist.tracks
       val optimizedSongs = Optimizer.geneticAlgorithmOptimizer(200, 250, 0.3).optimize(songs)
