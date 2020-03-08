@@ -15,8 +15,8 @@ final case class SongDetails(name: String, artists: Seq[String], releaseName: Op
 
 final case class AudioDetails(tempo: Double, duration: Duration, key: Key)
 
-final case class SourceDetails(uri: String, href: Option[String])
+final case class SourceDetails(uri: String, url: Option[String])
 
-final case class Track(song: SongDetails, audio: AudioDetails)
+final case class Track(song: SongDetails, audio: AudioDetails, source: SourceDetails)
 
 final case class Playlist(name: String, description: Option[String], source: PlaylistSource, tracks: IndexedSeq[Track])

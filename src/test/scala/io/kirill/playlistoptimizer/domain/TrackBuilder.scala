@@ -9,6 +9,7 @@ object TrackBuilder {
   def track(name: String, key: Key, artist: String = "Artist"): Track = {
     val details = SongDetails(name, List(artist), None, None, None)
     val audio = AudioDetails(140, Duration(3, TimeUnit.MINUTES), key)
-    Track(details, audio)
+    val source = SourceDetails(s"file://$artist-$name", None)
+    Track(details, audio, source)
   }
 }
