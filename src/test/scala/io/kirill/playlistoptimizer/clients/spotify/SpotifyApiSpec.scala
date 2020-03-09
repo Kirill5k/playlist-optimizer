@@ -2,7 +2,6 @@ package io.kirill.playlistoptimizer.clients.spotify
 
 import cats.effect.testing.scalatest.AsyncIOSpec
 import cats.effect.{ContextShift, IO}
-import cats.implicits._
 import io.circe.ParsingFailure
 import io.kirill.playlistoptimizer.clients.spotify.SpotifyError._
 import io.kirill.playlistoptimizer.clients.spotify.SpotifyResponse._
@@ -93,11 +92,11 @@ class SpotifyApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
         "59ZbFPES4DQwEjBpWHzrtC",
         "Dinner with Friends",
         Some("Having friends over for dinner? Here´s the perfect playlist."),
-        PlaylistTracks(Vector(PlaylistItem(PlaylistTrack("4i9sYtSIlR80bxje5B3rUb", "I'm Not The Only One - Radio Edit", PlaylistTrackAlbum("5GWoXPsTQylMuaZ84PC563", "single", "I'm Not The Only One"), List(PlaylistTrackArtist("2wY79sveU1sp5g7SokKOiI", "Sam Smith")),45.0))),105)
+        PlaylistTracks(Vector(PlaylistItem(PlaylistTrack("4i9sYtSIlR80bxje5B3rUb", "I'm Not The Only One - Radio Edit", PlaylistTrackAlbum("5GWoXPsTQylMuaZ84PC563", "single", "I'm Not The Only One", Some("2012-10-10"), Some("day")), List(PlaylistTrackArtist("2wY79sveU1sp5g7SokKOiI", "Sam Smith")),45.0, "uri", PlaylistTrackUrls("url")))),105)
       )))
     }
 
-    "return playlists response when success" in {
+    "return user playlists response when success" in {
       implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
           case r if isAuthorized(r, "api.spotify.com/users", List("user-1", "playlists")) =>
@@ -123,11 +122,58 @@ class SpotifyApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
 
       response.assertThrows[ParsingFailure]
     }
+
+    "create playlist for a user when success" in {
+      implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
+        .whenRequestMatchesPartial {
+          case r if isAuthorized(r, "api.spotify.com/users", List("user-1", "playlists")) && hasBody(r, """{"name":"my-playlist","description":"new-playlist-to-be-created","public":true,"collaborative":false}""") =>
+            Response.ok(json("spotify/api/playlist-response.json"))
+          case _ => throw new RuntimeException()
+        }
+
+      val response = SpotifyApi.createPlaylist[IO]("token", "user-1", "my-playlist", Some("new-playlist-to-be-created"))
+
+      response.asserting(_ must be (SpotifyPlaylistResponse(
+        "59ZbFPES4DQwEjBpWHzrtC",
+        "Dinner with Friends",
+        Some("Having friends over for dinner? Here´s the perfect playlist."),
+        PlaylistTracks(Vector(PlaylistItem(PlaylistTrack("4i9sYtSIlR80bxje5B3rUb", "I'm Not The Only One - Radio Edit", PlaylistTrackAlbum("5GWoXPsTQylMuaZ84PC563", "single", "I'm Not The Only One", Some("2012-10-10"), Some("day")), List(PlaylistTrackArtist("2wY79sveU1sp5g7SokKOiI", "Sam Smith")),45.0, "uri", PlaylistTrackUrls("")))),105)
+      )))
+    }
+
+    "add tracks to a playlist" in {
+      implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
+        .whenRequestMatchesPartial {
+          case r if isAuthorized(r, "api.spotify.com/playlists", List("playlist-1", "tracks")) && hasBody(r, """{"uris":["uri-1","uri-2","uri-3"],"position":null}""") =>
+            Response(json("spotify/api/operation-success-response.json"), StatusCode.Created)
+          case _ => throw new RuntimeException()
+        }
+
+      val response = SpotifyApi.addTracksToPlaylist[IO]("token", "playlist-1", List("uri-1", "uri-2", "uri-3"))
+
+      response.asserting(_ must be (SpotifyOperationSuccessResponse("JbtmHBDBAYu3/bt8BOXKjzKx3i0b6LCa/wVjyl6qQ2Yf6nFXkbmzuEa+ZI/U1yF+")))
+    }
+
+    "replace tracks in a playlist" in {
+      implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
+        .whenRequestMatchesPartial {
+          case r if isAuthorized(r, "api.spotify.com/playlists", List("playlist-1", "tracks")) && hasBody(r, """{"uris":["uri-1","uri-2","uri-3"]}""", Method.PUT) =>
+            Response(json("spotify/api/operation-success-response.json"), StatusCode.Created)
+          case _ => throw new RuntimeException()
+        }
+
+      val response = SpotifyApi.replaceTracksInPlaylist[IO]("token", "playlist-1", List("uri-1", "uri-2", "uri-3"))
+
+      response.asserting(_ must be (()))
+    }
   }
 
   def isAuthorized(req: client.Request[_, _], host: String, paths: Seq[String] = Nil, token: String = "token"): Boolean =
     req.uri.host == host && (paths.isEmpty || req.uri.path == paths) &&
       req.headers.contains(new Header("Authorization", s"Bearer $token"))
+
+  def hasBody(req: client.Request[_, _], jsonBody: String, method: Method = Method.POST): Boolean =
+    req.method == method && req.body.toString.contains(jsonBody)
 
   def json(path: String): String = Source.fromResource(path).getLines.toList.mkString
 }

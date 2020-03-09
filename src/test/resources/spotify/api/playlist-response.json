@@ -45,6 +45,8 @@
         "track": {
           "album": {
             "album_type": "single",
+            "release_date": "2012-10-10",
+            "release_date_precision": "day",
             "available_markets": [
               "AD",
               "AR",

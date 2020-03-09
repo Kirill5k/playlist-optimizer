@@ -1,13 +1,13 @@
-package io.kirill.playlistoptimizer.optimizer
+package io.kirill.playlistoptimizer.optimizer.operators
 
-import io.kirill.playlistoptimizer.domain.Key.{AMajor, BMajor, DMajor, EMajor, GMajor}
+import io.kirill.playlistoptimizer.domain.Key._
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
 class EvaluatorSpec extends AnyWordSpec with Matchers {
   import io.kirill.playlistoptimizer.domain.TrackBuilder._
 
-  "A basicTracksEvaluator" should {
+  "A keyDistanceBasedTracksEvaluator" should {
 
     "evaluate a sequence of tracks" in {
       val tracks = Vector(
@@ -23,7 +23,18 @@ class EvaluatorSpec extends AnyWordSpec with Matchers {
         track("song 10", GMajor)
       )
 
-      Evaluator.basicTracksEvaluator.evaluate(tracks) must be (4)
+      Evaluator.keyDistanceBasedTracksEvaluator.evaluate(tracks) must be (4)
+    }
+
+    "penalize if tracks are too far apart" in {
+      val tracks = Vector(
+        track("song 1", EMajor),
+        track("song 2", GMinor),
+        track("song 3", BFlatMinor),
+        track("song 4", EMinor)
+      )
+
+      Evaluator.keyDistanceBasedTracksEvaluator.evaluate(tracks) must be (94)
     }
   }
 }
