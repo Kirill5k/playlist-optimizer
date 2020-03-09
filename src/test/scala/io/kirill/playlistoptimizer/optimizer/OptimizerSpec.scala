@@ -49,17 +49,25 @@ class OptimizerSpec extends AnyWordSpec with Matchers {
 
     "optimize a playlist" in {
       implicit val c: Crossover[Track] = Crossover.keySequenceBasedTracksCrossover
-      implicit val m: Mutator[Track] = Mutator.neighbourSwapMutator[Track]
+      implicit val m: Mutator[Track] = Mutator.randomSwapMutator[Track]
 
       val songs = PlaylistBuilder.playlist.tracks
       val optimizedSongs = Optimizer.geneticAlgorithmOptimizer(200, 250, 0.3).optimize(songs)
 
       optimizedSongs must contain theSameElementsAs songs
       optimizedSongs must not contain theSameElementsInOrderAs (songs)
-      Evaluator.keyDistanceBasedTracksEvaluator.evaluate(optimizedSongs) must be < Evaluator.keyDistanceBasedTracksEvaluator.evaluate(songs) / 4
+      Evaluator.keyDistanceBasedTracksEvaluator.evaluate(optimizedSongs) must be < Evaluator.keyDistanceBasedTracksEvaluator.evaluate(songs) / 15
 
       println(s"original score: ${Evaluator.keyDistanceBasedTracksEvaluator.evaluate(songs)}, optimized score: ${Evaluator.keyDistanceBasedTracksEvaluator.evaluate(optimizedSongs)}")
       println(optimizedSongs)
+      println(keyStreak(optimizedSongs))
     }
+  }
+
+  def keyStreak(tracks: Seq[Track]): String = {
+    tracks
+      .map(_.audio.key)
+      .map(k => (k.name, s"${k.number}${if (k.mode.number == 0) "A" else "B"}"))
+      .mkString(" -> ")
   }
 }
