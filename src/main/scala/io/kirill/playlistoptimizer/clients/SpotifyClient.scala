@@ -12,7 +12,7 @@ private[clients] class SpotifyClient(implicit val c: SpotifyConfig, val b: SttpB
 
   override def findPlaylistByName(playlistName: String): IO[Playlist] = {
     for {
-      token <- SpotifyApi.authenticate.map(_.access_token)
+      token <- SpotifyApi.authenticateClient.map(_.access_token)
       playlistId <- getPlaylistId(token, playlistName)
       playlist <- SpotifyApi.getPlaylist(token, playlistId)
       playListTracks = playlist.tracks.items.map(_.track)

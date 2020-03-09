@@ -34,7 +34,7 @@ class SpotifyApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
           case _ => throw new RuntimeException()
         }
 
-      val authResponse = SpotifyApi.authenticate[IO]
+      val authResponse = SpotifyApi.authenticateClient[IO]
 
       authResponse.asserting(_ must be (SpotifyAuthResponse("BQC3wD_w-ODtKQsbz7woOZPvffQX5iX7rychivVGQxO3qzgejLCgXwAE5acsqk8LQcih2qpDkaCjrJRRhuY", "Bearer", 3600, "")))
     }
@@ -47,7 +47,7 @@ class SpotifyApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
           case _ => throw new RuntimeException()
         }
 
-      val authResponse = SpotifyApi.authenticate[IO]
+      val authResponse = SpotifyApi.authenticateClient[IO]
 
       authResponse.assertThrows[SpotifyAuthError]
     }

@@ -15,16 +15,19 @@ import sttp.model.MediaType
 
 object SpotifyApi {
 
-  private val authRequestBody = Map(
-    "grant_type" -> "client_credentials",
+  private val userAuthRequestBody = Map(
     "scope" -> "playlist-read-private playlist-modify-public playlist-modify-private"
   )
 
-  def authenticate[F[_]](
+  private val clientAuthRequestBody = Map(
+    "grant_type" -> "client_credentials"
+  )
+
+  def authenticateClient[F[_]](
     implicit c: SpotifyConfig, b: SttpBackend[F, Nothing, NothingT], m: MonadError[F, Throwable]
   ): F[SpotifyAuthResponse] =
     basicRequest
-      .body(authRequestBody)
+      .body(clientAuthRequestBody)
       .auth.basic(c.auth.clientId, c.auth.clientSecret)
       .contentType(MediaType.ApplicationXWwwFormUrlencoded)
       .post(uri"${c.auth.baseUrl}${c.auth.tokenPath}")
