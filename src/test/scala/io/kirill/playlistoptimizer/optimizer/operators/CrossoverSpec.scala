@@ -10,9 +10,13 @@ import scala.util.Random
 
 class CrossoverSpec extends AnyWordSpec with Matchers {
 
+
+
   "A keySequenceBasedTracksCrossover" should {
 
     "transfer best sequence of a parent 1 to a child" in {
+      implicit val random = new Random(1)
+
       val p1 = Vector(
         track("s1", BMajor),
         track("s2", CMajor),
@@ -38,12 +42,42 @@ class CrossoverSpec extends AnyWordSpec with Matchers {
       c must not contain theSameElementsInOrderAs (p1)
       c must not contain theSameElementsInOrderAs (p2)
     }
+
+    "slice best sequence of a parent 1 if it is too long" in {
+      implicit val random = new Random(2)
+
+      val p1 = Vector(
+        track("s1", AMajor),
+        track("s2", EMajor),
+        track("s3", BMajor),
+        track("s4", FSharpMajor),
+        track("s5", DFlatMajor),
+        track("s6", AFlatMajor),
+        track("s7", EFlatMajor),
+        track("s8", BFlatMajor),
+        track("s9", FMajor),
+        track("s10", CMajor),
+        track("s11", GMajor),
+        track("s12", DMajor)
+      )
+
+      val p2 = Random.shuffle(p1)
+
+      val c = Crossover.keySequenceBasedTracksCrossover.cross(p1, p2)
+
+      c must contain inOrder (track("s2", EMajor),track("s3", BMajor), track("s4", FSharpMajor), track("s5", DFlatMajor), track("s6", AFlatMajor), track("s7", EFlatMajor))
+      c must contain theSameElementsAs p1
+      c must contain theSameElementsAs p2
+      c must not contain theSameElementsInOrderAs (p1)
+      c must not contain theSameElementsInOrderAs (p2)
+    }
   }
 
   "A threeWaySplitCrossover" should {
-    implicit val random = new Random(1)
 
     "cross 2 parents into a child" in {
+      implicit val random = new Random(1)
+
       val p1 = Vector(
         track("s1", BMajor),
         track("s2", EMajor),

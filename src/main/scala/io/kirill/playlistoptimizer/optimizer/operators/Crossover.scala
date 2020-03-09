@@ -11,28 +11,36 @@ sealed trait Crossover[A] {
 }
 
 object Crossover {
-  implicit val keySequenceBasedTracksCrossover: Crossover[Track] = new Crossover[Track] {
+  implicit def keySequenceBasedTracksCrossover(implicit R: Random): Crossover[Track] = new Crossover[Track] {
     override def cross(p1: Seq[Track], p2: Seq[Track]): Seq[Track] = {
-      val (bestSeq, i) = p1.tails.take(p1.size).zipWithIndex.foldLeft[(Seq[Track], Int)]((Nil, -1)) {
+      val (bestSeq, seqIndex) = p1.tails.take(p1.size).zipWithIndex.foldLeft[(Seq[Track], Int)]((Nil, -1)) {
         case ((currentBest, bestIndex), (tail, index)) =>
           val newBest = combo(tail)
           if (newBest.size > currentBest.size) (newBest, index) else (currentBest, bestIndex)
       }
 
-      val (left, right) = p2.splitAt(i)
-      left.filterNot(bestSeq.contains) :++ bestSeq :++ right.filterNot(bestSeq.contains)
+      val sliceSize = p1.size / 2
+      val slicedBestSeq = if (bestSeq.size <= sliceSize) bestSeq else cut(bestSeq, sliceSize)
+
+      val (left, right) = p2.splitAt(seqIndex + slicedBestSeq.size/2)
+      left.filterNot(slicedBestSeq.contains) :++ slicedBestSeq :++ right.filterNot(slicedBestSeq.contains)
     }
 
     private def combo(ts: Seq[Track]): Seq[Track] = {
       def go(combo: Seq[Track], remaining: Seq[Track], previous: Track): Seq[Track] = {
-        if (remaining.isEmpty) combo
+        val newCombo = combo :+ previous
+        if (remaining.isEmpty) newCombo
         else {
-          val newCombo = combo :+ previous
           val distance = Key.distance(previous.audio.key, remaining.head.audio.key)
           if (distance <= 1) go(newCombo, remaining.tail, remaining.head) else newCombo
         }
       }
       go(Nil, ts.tail, ts.head)
+    }
+
+    private def cut(ts: Seq[Track], sliceSize: Int)(implicit R: Random): Seq[Track] = {
+      val slicePoint = R.nextInt(sliceSize / 2)
+      ts.slice(slicePoint, slicePoint+sliceSize)
     }
   }
 
