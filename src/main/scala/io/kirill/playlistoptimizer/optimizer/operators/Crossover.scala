@@ -11,7 +11,7 @@ sealed trait Crossover[A] {
 }
 
 object Crossover {
-  implicit def keySequenceBasedTracksCrossover(implicit R: Random): Crossover[Track] = new Crossover[Track] {
+  implicit def bestKeySequenceTrackCrossover(implicit R: Random): Crossover[Track] = new Crossover[Track] {
     override def cross(p1: Seq[Track], p2: Seq[Track]): Seq[Track] = {
       val (bestSeq, seqIndex) = p1.tails.take(p1.size).zipWithIndex.foldLeft[(Seq[Track], Int)]((Nil, -1)) {
         case ((currentBest, bestIndex), (tail, index)) =>

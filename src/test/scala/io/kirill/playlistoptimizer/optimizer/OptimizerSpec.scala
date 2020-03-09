@@ -47,7 +47,7 @@ class OptimizerSpec extends AnyWordSpec with Matchers {
   "A GeneticAlgorithmOptimizer" should {
 
     "optimize a playlist" in {
-      implicit val c: Crossover[Track] = Crossover.keySequenceBasedTracksCrossover
+      implicit val c: Crossover[Track] = Crossover.bestKeySequenceTrackCrossover
       implicit val m: Mutator[Track] = Mutator.randomSwapMutator[Track]
 
       val songs = PlaylistBuilder.playlist.tracks
@@ -55,7 +55,7 @@ class OptimizerSpec extends AnyWordSpec with Matchers {
 
       optimizedSongs must contain theSameElementsAs songs
       optimizedSongs must not contain theSameElementsInOrderAs (songs)
-      Evaluator.keyDistanceBasedTracksEvaluator.evaluate(optimizedSongs) must be < Evaluator.keyDistanceBasedTracksEvaluator.evaluate(songs) / 15
+      Evaluator.keyDistanceBasedTracksEvaluator.evaluate(optimizedSongs) must be < Evaluator.keyDistanceBasedTracksEvaluator.evaluate(songs) / 20
 
       println(s"original score: ${Evaluator.keyDistanceBasedTracksEvaluator.evaluate(songs)}, optimized score: ${Evaluator.keyDistanceBasedTracksEvaluator.evaluate(optimizedSongs)}")
       println(optimizedSongs)
