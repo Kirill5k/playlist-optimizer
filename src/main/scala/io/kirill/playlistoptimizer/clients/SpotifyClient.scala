@@ -2,7 +2,7 @@ package io.kirill.playlistoptimizer.clients
 
 import cats.effect.IO
 import fs2.Stream
-import io.kirill.playlistoptimizer.clients.spotify.{SpotifyApi, SpotifyMapper}
+import io.kirill.playlistoptimizer.clients.spotify.{SpotifyAuthApi, SpotifyMapper, SpotifyRestApi}
 import io.kirill.playlistoptimizer.clients.spotify.SpotifyResponse.{AudioAnalysisTrack, PlaylistTrack, SpotifyAudioFeaturesResponse}
 import io.kirill.playlistoptimizer.configs.SpotifyConfig
 import io.kirill.playlistoptimizer.domain.{Playlist, PlaylistSource}
@@ -12,9 +12,9 @@ private[clients] class SpotifyClient(implicit val c: SpotifyConfig, val b: SttpB
 
   override def findPlaylistByName(playlistName: String): IO[Playlist] = {
     for {
-      token <- SpotifyApi.authenticateClient.map(_.access_token)
+      token <- SpotifyAuthApi.authenticateClient.map(_.access_token)
       playlistId <- getPlaylistId(token, playlistName)
-      playlist <- SpotifyApi.getPlaylist(token, playlistId)
+      playlist <- SpotifyRestApi.getPlaylist(token, playlistId)
       playListTracks = playlist.tracks.items.map(_.track)
       tracksDetails <- getTrackDetails(token, playListTracks)
       tracks = tracksDetails.map(details => SpotifyMapper.toDomain(details._1, details._2)).toVector
@@ -22,7 +22,7 @@ private[clients] class SpotifyClient(implicit val c: SpotifyConfig, val b: SttpB
   }
 
   private def getPlaylistId(token: String, name: String): IO[String] =
-    SpotifyApi.getUserPlaylists(token, c.auth.userId)
+    SpotifyRestApi.getUserPlaylists(token, c.auth.userId)
       .map(_.items.find(_.name.equalsIgnoreCase(name)))
       .map(_.toRight(new IllegalArgumentException(s"couldn't find playlist $name in Spotify for user ${c.auth.userId}")))
       .flatMap(_.fold(IO.raiseError, IO.pure))
@@ -30,7 +30,7 @@ private[clients] class SpotifyClient(implicit val c: SpotifyConfig, val b: SttpB
 
   private def getTrackDetails(token: String, tracks: Seq[PlaylistTrack]): IO[Seq[(PlaylistTrack, SpotifyAudioFeaturesResponse)]] =
     Stream.emits(tracks)
-      .evalMap(track => SpotifyApi.getAudioFeatures(token, track.id).map(audio => (track, audio)))
+      .evalMap(track => SpotifyRestApi.getAudioFeatures(token, track.id).map(audio => (track, audio)))
       .compile
       .toList
 
