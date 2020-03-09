@@ -40,7 +40,7 @@ class CrossoverSpec extends AnyWordSpec with Matchers {
     }
   }
 
-  "A threeWayCrossover" should {
+  "A threeWaySplitCrossover" should {
     implicit val random = new Random(1)
 
     "cross 2 parents into a child" in {
@@ -58,7 +58,7 @@ class CrossoverSpec extends AnyWordSpec with Matchers {
       )
 
       val p2 = Random.shuffle(p1)
-      val child = Crossover.threeWayCrossover[Track].cross(p1, p2)
+      val child = Crossover.threeWaySplitCrossover[Track].cross(p1, p2)
 
       child must contain theSameElementsAs p1
       child must contain theSameElementsAs p2
