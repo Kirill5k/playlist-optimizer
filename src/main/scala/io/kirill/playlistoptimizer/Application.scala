@@ -17,16 +17,23 @@ object Application extends IOApp with Http4sDsl[IO] {
     for {
       blocker <- Blocker[IO]
       server <- BlazeServerBuilder[IO].bindHttp(8080).withHttpApp(Router(
-          "" -> staticResourcesRoute(blocker)
+          "" -> staticContentController(blocker),
+          "api" -> restApiController
         ).orNotFound).resource
     } yield server
 
 
-  def staticResourcesRoute(blocker: Blocker): HttpRoutes[IO] =
+  def staticContentController(blocker: Blocker): HttpRoutes[IO] =
     HttpRoutes.of[IO] {
       case req @ GET -> Root =>
         StaticFile.fromResource("static/index.html", blocker, Some(req)).getOrElseF(NotFound())
       case req @ GET -> "static" /: path =>
         StaticFile.fromResource(path.toString, blocker, Some(req)).getOrElseF(NotFound())
+    }
+
+  def restApiController: HttpRoutes[IO] =
+    HttpRoutes.of[IO] {
+      case GET -> Root / "ping" =>
+        Ok("pong")
     }
 }
