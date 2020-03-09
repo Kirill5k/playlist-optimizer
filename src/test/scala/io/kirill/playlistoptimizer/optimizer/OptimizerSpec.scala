@@ -14,25 +14,24 @@ class OptimizerSpec extends AnyWordSpec with Matchers {
 
   implicit val random = new Random(1)
 
-  val s1 = Vector(
-    track("song 1", BMajor),
-    track("song 2", EMajor),
-    track("song 3", EMajor),
-    track("song 4", AMajor),
-    track("song 5", DMajor),
-    track("song 6", GMajor),
-    track("song 7", GMajor),
-    track("song 8", GMajor),
-    track("song 9", GMajor),
-    track("song 10", GMajor)
-  )
-
   "An Optimizer" should {
+    val s1 = Vector(
+      track("s1", BMajor),
+      track("s2", EMajor),
+      track("s3", EMajor),
+      track("s4", AMajor),
+      track("s5", DMajor),
+      track("s6", GMajor),
+      track("s7", GMajor),
+      track("s8", GMajor),
+      track("s9", GMajor),
+      track("s10", GMajor)
+    )
 
     "create initial population" in {
       val population = Optimizer.initPopulation(s1, 10)
 
-      population must have size (10)
+      population must have size 10
     }
 
     "distribute population in pairs" in {
