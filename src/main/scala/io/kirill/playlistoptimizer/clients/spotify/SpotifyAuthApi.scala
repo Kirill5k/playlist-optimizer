@@ -13,10 +13,6 @@ import sttp.model.MediaType
 
 object SpotifyAuthApi {
 
-  private val authUserRequest = Map(
-    "scope" -> "playlist-read-private playlist-modify-public playlist-modify-private"
-  )
-
   private val authClientRequesy = Map(
     "grant_type" -> "client_credentials"
   )
