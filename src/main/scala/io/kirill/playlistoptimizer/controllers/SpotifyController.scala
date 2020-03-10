@@ -1,4 +1,4 @@
-package io.kirill.playlistoptimizer.spotify
+package io.kirill.playlistoptimizer.controllers
 
 import cats.effect._
 import cats.implicits._
