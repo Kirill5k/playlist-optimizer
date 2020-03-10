@@ -6,7 +6,7 @@ import io.kirill.playlistoptimizer.domain.Playlist
 import sttp.client.{NothingT, SttpBackend}
 
 trait ApiClient[F[_]] {
-  def findPlaylistByName(playlistName: String): F[Playlist]
+  def findPlaylistByName(userId: String, playlistName: String): F[Playlist]
   def savePlaylist(playlist: Playlist): F[Unit]
 }
 

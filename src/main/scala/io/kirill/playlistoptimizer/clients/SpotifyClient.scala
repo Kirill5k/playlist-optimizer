@@ -10,10 +10,10 @@ import sttp.client.{NothingT, SttpBackend}
 
 private[clients] class SpotifyClient(implicit val c: SpotifyConfig, val b: SttpBackend[IO, Nothing, NothingT]) extends ApiClient[IO] {
 
-  override def findPlaylistByName(playlistName: String): IO[Playlist] = {
+  override def findPlaylistByName(userId: String, playlistName: String): IO[Playlist] = {
     for {
       token <- SpotifyAuthApi.authenticateClient.map(_.access_token)
-      playlistId <- getPlaylistId(token, playlistName)
+      playlistId <- getPlaylistId(token, userId, playlistName)
       playlist <- SpotifyRestApi.getPlaylist(token, playlistId)
       playListTracks = playlist.tracks.items.map(_.track)
       tracksDetails <- getTrackDetails(token, playListTracks)
@@ -21,10 +21,10 @@ private[clients] class SpotifyClient(implicit val c: SpotifyConfig, val b: SttpB
     } yield Playlist(playlist.name, playlist.description, PlaylistSource.Spotify, tracks)
   }
 
-  private def getPlaylistId(token: String, name: String): IO[String] =
-    SpotifyRestApi.getUserPlaylists(token, c.auth.userId)
+  private def getPlaylistId(token: String, userId: String, name: String): IO[String] =
+    SpotifyRestApi.getUserPlaylists(token, userId)
       .map(_.items.find(_.name.equalsIgnoreCase(name)))
-      .map(_.toRight(new IllegalArgumentException(s"couldn't find playlist $name in Spotify for user ${c.auth.userId}")))
+      .map(_.toRight(new IllegalArgumentException(s"couldn't find playlist $name in Spotify for user ${userId}")))
       .flatMap(_.fold(IO.raiseError, IO.pure))
       .map(_.id)
 
