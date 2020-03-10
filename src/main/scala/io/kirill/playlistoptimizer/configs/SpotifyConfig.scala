@@ -5,7 +5,8 @@ final case class SpotifyAuthConfig(
                                     authorizationPath: String,
                                     tokenPath: String,
                                     clientId: String,
-                                    clientSecret: String
+                                    clientSecret: String,
+                                    redirectUri: String
                                   )
 
 final case class SpotifyApiConfig(
