@@ -13,15 +13,11 @@ import sttp.model.MediaType
 
 object SpotifyAuthApi {
 
-  private val authClientRequesy = Map(
-    "grant_type" -> "client_credentials"
-  )
-
-  def authenticateClient[F[_]](
+  def authorize[F[_]](code: String)(
     implicit C: SpotifyConfig, B: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]
   ): F[SpotifyAuthResponse] =
     basicRequest
-      .body(authClientRequesy)
+      .body(Map("grant_type" -> "authorization_code", "code" -> code, "redirect_uri" -> C.auth.redirectUri))
       .auth.basic(C.auth.clientId, C.auth.clientSecret)
       .contentType(MediaType.ApplicationXWwwFormUrlencoded)
       .post(uri"${C.auth.baseUrl}${C.auth.tokenPath}")

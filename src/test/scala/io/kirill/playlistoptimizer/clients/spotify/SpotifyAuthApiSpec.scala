@@ -34,9 +34,9 @@ class SpotifyAuthApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
           case _ => throw new RuntimeException()
         }
 
-      val authResponse = SpotifyAuthApi.authenticateClient[IO]
+      val authResponse = SpotifyAuthApi.authorize[IO]("code")
 
-      authResponse.asserting(_ must be(SpotifyAuthResponse("BQC3wD_w-ODtKQsbz7woOZPvffQX5iX7rychivVGQxO3qzgejLCgXwAE5acsqk8LQcih2qpDkaCjrJRRhuY", "Bearer", 3600, "")))
+      authResponse.asserting(_ must be(SpotifyAuthResponse("BQC3wD_w-ODtKQsbz7woOZPvffQX5iX7rychivVGQxO3qzgejLCgXwAE5acsqk8LQcih2qpDkaCjrJRRhuY", "Bearer", 3600, "", "cnczbmrInWjs4So1F4Gm")))
     }
 
     "return auth error when failure" in {
@@ -47,7 +47,7 @@ class SpotifyAuthApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
           case _ => throw new RuntimeException()
         }
 
-      val authResponse = SpotifyAuthApi.authenticateClient[IO]
+      val authResponse = SpotifyAuthApi.authorize[IO]("code")
 
       authResponse.assertThrows[SpotifyAuthError]
     }

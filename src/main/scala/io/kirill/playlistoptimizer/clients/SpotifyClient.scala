@@ -10,9 +10,9 @@ import sttp.client.{NothingT, SttpBackend}
 
 private[clients] class SpotifyClient(implicit val c: SpotifyConfig, val b: SttpBackend[IO, Nothing, NothingT]) extends ApiClient[IO] {
 
-  override def findPlaylistByName(userId: String, playlistName: String): IO[Playlist] = {
+  override def findPlaylistByName(accessCode: String, userId: String, playlistName: String): IO[Playlist] = {
     for {
-      token <- SpotifyAuthApi.authenticateClient.map(_.access_token)
+      token <- SpotifyAuthApi.authorize(accessCode).map(_.access_token)
       playlistId <- getPlaylistId(token, userId, playlistName)
       playlist <- SpotifyRestApi.getPlaylist(token, playlistId)
       playListTracks = playlist.tracks.items.map(_.track)
