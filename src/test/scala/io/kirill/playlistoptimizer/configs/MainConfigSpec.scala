@@ -1,17 +1,20 @@
 package io.kirill.playlistoptimizer.configs
 
+import cats.effect.testing.scalatest.AsyncIOSpec
+import cats.effect.{Blocker, ContextShift, IO}
+import org.scalatest.freespec.AsyncFreeSpec
 import org.scalatest.matchers.must.Matchers
-import pureconfig._
-import pureconfig.generic.auto._
-import org.scalatest.wordspec.AnyWordSpec
 
-class MainConfigSpec extends AnyWordSpec with Matchers {
+import scala.concurrent.ExecutionContext
 
-  "A MainConfig" should {
+class MainConfigSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
+  implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContext.Implicits.global)
+
+  "A MainConfig" - {
     "be parsed from application.conf" in {
-      val config = ConfigSource.default.loadOrThrow[MainConfig]
+      val config = Blocker[IO].use(b => MainConfig.load(b))
 
-      config mustBe a [MainConfig]
+      config.asserting(_ mustBe a [MainConfig])
     }
   }
 }

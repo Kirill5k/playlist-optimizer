@@ -4,13 +4,15 @@ version := "1.0"
 
 scalaVersion := "2.13.1"
 
+lazy val pureConfigVersion = "0.12.3"
 lazy val circeVersion = "0.12.3"
 lazy val mockitoVersion = "1.10.3"
 lazy val sttpVersion = "2.0.0-RC13"
 lazy val http4sVersion = "0.21.1"
 
 libraryDependencies ++= Seq(
-  "com.github.pureconfig" %% "pureconfig" % "0.12.2",
+  "com.github.pureconfig" %% "pureconfig" % pureConfigVersion,
+  "com.github.pureconfig" %% "pureconfig-cats-effect" % pureConfigVersion,
 
   "org.typelevel" %% "cats-core" % "2.1.0",
   "org.typelevel" %% "cats-effect" % "2.1.1",
