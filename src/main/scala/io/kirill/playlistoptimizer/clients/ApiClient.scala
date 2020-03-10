@@ -12,5 +12,5 @@ trait ApiClient[F[_]] {
 
 object ApiClient {
 
-  def spotifyClient(implicit c: SpotifyConfig, b: SttpBackend[IO, Nothing, NothingT]): ApiClient[IO] = new SpotifyClient()
+  def spotifyClient(implicit C: SpotifyConfig, B: SttpBackend[IO, Nothing, NothingT]): ApiClient[IO] = new SpotifyClient()
 }

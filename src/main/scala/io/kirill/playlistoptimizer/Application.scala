@@ -3,7 +3,7 @@ package io.kirill.playlistoptimizer
 import cats.effect._
 import cats.implicits._
 import io.kirill.playlistoptimizer.configs.AppConfig
-import io.kirill.playlistoptimizer.controllers.{HomeController, SpotifyController}
+import io.kirill.playlistoptimizer.controllers.{AppController, HomeController, SpotifyController}
 import org.http4s.dsl.Http4sDsl
 import org.http4s.headers.Location
 import org.http4s.{HttpRoutes, StaticFile, Uri}
@@ -21,8 +21,8 @@ object Application extends IOApp with Http4sDsl[IO] {
       blocker <- Blocker[IO]
       config <- Resource.liftF(AppConfig.load(blocker))
       server <- BlazeServerBuilder[IO].bindHttp(config.server.port, config.server.hostname).withHttpApp(Router(
-          "" -> HomeController[IO](blocker).routes,
-          "spotify" -> SpotifyController[IO].routes
+          "" -> AppController.homeController(blocker).routes,
+          "spotify" -> AppController.spotifyController(config).routes
         ).orNotFound).resource
     } yield server
 }
