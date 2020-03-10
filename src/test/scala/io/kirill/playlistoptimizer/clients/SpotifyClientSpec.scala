@@ -23,7 +23,7 @@ import scala.language.postfixOps
 class SpotifyClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
   implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContext.Implicits.global)
 
-  val authConfig = SpotifyAuthConfig("http://account.spotify.com", "/auth", "client-id", "client-secret")
+  val authConfig = SpotifyAuthConfig("http://account.spotify.com", "/authorize", "/token", "client-id", "client-secret")
   val apiConfig = SpotifyApiConfig("http://api.spotify.com", "/users", "/playlists", "/audio-analysis", "/audio-features")
   implicit val spotifyConfig = SpotifyConfig(authConfig, apiConfig)
 
@@ -32,7 +32,7 @@ class SpotifyClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     "find playlist by name" in {
       implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if r.uri.host == "account.spotify.com/auth" => Response.ok(json("spotify/flow/find/1-auth.json"))
+          case r if r.uri.host == "account.spotify.com/token" => Response.ok(json("spotify/flow/find/1-auth.json"))
           case r if isAuthorized(r, "api.spotify.com/users", List("user-1", "playlists")) => Response.ok(json("spotify/flow/find/2-users-playlists.json"))
           case r if isAuthorized(r, "api.spotify.com/playlists", List("7npAZEYwEwV2JV7XX2n3wq")) => Response.ok(json("spotify/flow/find/3-playlist.json"))
           case r if isAuthorized(r, "api.spotify.com/audio-features") => Response.ok(json(s"spotify/flow/find/4-audio-features-${r.uri.path.head}.json"))

@@ -20,7 +20,7 @@ import scala.io.Source
 class SpotifyRestApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
   implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContext.Implicits.global)
 
-  val authConfig = SpotifyAuthConfig("http://account.spotify.com", "/auth", "client-id", "client-secret")
+  val authConfig = SpotifyAuthConfig("http://account.spotify.com", "/auth", "/token", "client-id", "client-secret")
   val apiConfig = SpotifyApiConfig("http://api.spotify.com", "/users", "/playlists", "/audio-analysis", "/audio-features")
   implicit val spotifyConfig = SpotifyConfig(authConfig, apiConfig)
 
@@ -66,7 +66,7 @@ class SpotifyRestApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
         "59ZbFPES4DQwEjBpWHzrtC",
         "Dinner with Friends",
         Some("Having friends over for dinner? Here´s the perfect playlist."),
-        PlaylistTracks(Vector(PlaylistItem(PlaylistTrack("4i9sYtSIlR80bxje5B3rUb", "I'm Not The Only One - Radio Edit", PlaylistTrackAlbum("5GWoXPsTQylMuaZ84PC563", "single", "I'm Not The Only One", Some("2012-10-10"), Some("day")), List(PlaylistTrackArtist("2wY79sveU1sp5g7SokKOiI", "Sam Smith")),45.0, "uri", PlaylistTrackUrls("url")))),105)
+        PlaylistTracks(Vector(PlaylistItem(PlaylistTrack("4i9sYtSIlR80bxje5B3rUb", "I'm Not The Only One - Radio Edit", PlaylistTrackAlbum("5GWoXPsTQylMuaZ84PC563", "single", "I'm Not The Only One", Some("2012-10-10"), Some("day")), List(PlaylistTrackArtist("2wY79sveU1sp5g7SokKOiI", "Sam Smith")),45.0, "spotify:track:4i9sYtSIlR80bxje5B3rUb", PlaylistTrackUrls("https://open.spotify.com/track/4i9sYtSIlR80bxje5B3rUb")))),105)
       )))
     }
 
@@ -111,7 +111,7 @@ class SpotifyRestApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
         "59ZbFPES4DQwEjBpWHzrtC",
         "Dinner with Friends",
         Some("Having friends over for dinner? Here´s the perfect playlist."),
-        PlaylistTracks(Vector(PlaylistItem(PlaylistTrack("4i9sYtSIlR80bxje5B3rUb", "I'm Not The Only One - Radio Edit", PlaylistTrackAlbum("5GWoXPsTQylMuaZ84PC563", "single", "I'm Not The Only One", Some("2012-10-10"), Some("day")), List(PlaylistTrackArtist("2wY79sveU1sp5g7SokKOiI", "Sam Smith")),45.0, "uri", PlaylistTrackUrls("")))),105)
+        PlaylistTracks(Vector(PlaylistItem(PlaylistTrack("4i9sYtSIlR80bxje5B3rUb", "I'm Not The Only One - Radio Edit", PlaylistTrackAlbum("5GWoXPsTQylMuaZ84PC563", "single", "I'm Not The Only One", Some("2012-10-10"), Some("day")), List(PlaylistTrackArtist("2wY79sveU1sp5g7SokKOiI", "Sam Smith")),45.0, "spotify:track:4i9sYtSIlR80bxje5B3rUb", PlaylistTrackUrls("https://open.spotify.com/track/4i9sYtSIlR80bxje5B3rUb")))),105)
       )))
     }
 

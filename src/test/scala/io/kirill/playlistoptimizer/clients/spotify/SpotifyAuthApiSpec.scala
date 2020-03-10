@@ -20,7 +20,7 @@ import scala.io.Source
 class SpotifyAuthApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
   implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContext.Implicits.global)
 
-  val authConfig = SpotifyAuthConfig("http://account.spotify.com", "/auth", "client-id", "client-secret")
+  val authConfig = SpotifyAuthConfig("http://account.spotify.com", "/authorize", "/token", "client-id", "client-secret")
   val apiConfig = SpotifyApiConfig("http://api.spotify.com", "/users", "/playlists", "/audio-analysis", "/audio-features")
   implicit val spotifyConfig = SpotifyConfig(authConfig, apiConfig)
 
@@ -29,7 +29,7 @@ class SpotifyAuthApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     "return auth response when success" in {
       implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if r.uri.host == "account.spotify.com/auth" && r.method == Method.POST =>
+          case r if r.uri.host == "account.spotify.com/token" && r.method == Method.POST =>
             Response.ok(json("spotify/api/auth-response.json"))
           case _ => throw new RuntimeException()
         }
@@ -42,7 +42,7 @@ class SpotifyAuthApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     "return auth error when failure" in {
       implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if r.uri.host == "account.spotify.com/auth" && r.method == Method.POST =>
+          case r if r.uri.host == "account.spotify.com/token" && r.method == Method.POST =>
             Response(json("spotify/api/auth-error.json"), StatusCode.InternalServerError)
           case _ => throw new RuntimeException()
         }
