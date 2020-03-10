@@ -8,6 +8,8 @@ import org.http4s.headers.Location
 
 class SpotifyController[F[_]: Sync](implicit cs: ContextShift[F], sc: SpotifyConfig) extends AppController[F] {
 
+  object CodeQueryParamMatcher extends QueryParamDecoderMatcher[String]("code")
+
   private val authorizationParams = Map(
     "response_type" -> "code",
     "client_id" -> sc.auth.clientId,
@@ -22,6 +24,6 @@ class SpotifyController[F[_]: Sync](implicit cs: ContextShift[F], sc: SpotifyCon
     HttpRoutes.of[F] {
       case GET -> Root / "ping" => Ok("spotify-pong")
       case GET -> Root / "login" => TemporaryRedirect(authorizationLocation)
-      case req @ GET -> Root / "authenticate" => Ok(req.params.toString())
+      case GET -> Root / "authenticate" :? CodeQueryParamMatcher(code) => Ok(code)
     }
 }
