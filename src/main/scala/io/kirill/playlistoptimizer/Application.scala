@@ -3,7 +3,8 @@ package io.kirill.playlistoptimizer
 import cats.effect._
 import cats.implicits._
 import org.http4s.dsl.Http4sDsl
-import org.http4s.{HttpRoutes, StaticFile}
+import org.http4s.headers.Location
+import org.http4s.{HttpRoutes, StaticFile, Uri}
 import org.http4s.server.blaze.BlazeServerBuilder
 import org.http4s.server.{Router, Server}
 import org.http4s.syntax.kleisli._
@@ -18,7 +19,7 @@ object Application extends IOApp with Http4sDsl[IO] {
       blocker <- Blocker[IO]
       server <- BlazeServerBuilder[IO].bindHttp(8080).withHttpApp(Router(
           "" -> staticContentController(blocker),
-          "api" -> restApiController
+          "spotify" -> spotifyController
         ).orNotFound).resource
     } yield server
 
@@ -31,9 +32,9 @@ object Application extends IOApp with Http4sDsl[IO] {
         StaticFile.fromResource(path.toString, blocker, Some(req)).getOrElseF(NotFound())
     }
 
-  def restApiController: HttpRoutes[IO] =
+  def spotifyController: HttpRoutes[IO] =
     HttpRoutes.of[IO] {
-      case GET -> Root / "ping" =>
-        Ok("pong")
+      case GET -> Root / "ping" => Ok("spotify-pong")
+      case GET -> Root / "login" => TemporaryRedirect(Location(Uri.uri("http://google.com")))
     }
 }
