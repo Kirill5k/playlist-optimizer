@@ -1,7 +1,7 @@
 package io.kirill.playlistoptimizer.optimizer
 
-import io.kirill.playlistoptimizer.domain.TrackBuilder.track
-import io.kirill.playlistoptimizer.domain._
+import io.kirill.playlistoptimizer.playlist.TrackBuilder.track
+import io.kirill.playlistoptimizer.playlist._
 import io.kirill.playlistoptimizer.optimizer.operators.{Crossover, Mutator, Evaluator}
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec

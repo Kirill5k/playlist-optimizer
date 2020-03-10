@@ -1,8 +1,8 @@
-package io.kirill.playlistoptimizer.domain
+package io.kirill.playlistoptimizer.playlist
 
 import java.time.LocalDate
 
-import io.kirill.playlistoptimizer.domain.PlaylistSource.PlaylistSource
+import io.kirill.playlistoptimizer.playlist.PlaylistSource.PlaylistSource
 
 import scala.concurrent.duration.Duration
 

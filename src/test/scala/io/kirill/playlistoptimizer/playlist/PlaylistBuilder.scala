@@ -1,6 +1,6 @@
-package io.kirill.playlistoptimizer.domain
+package io.kirill.playlistoptimizer.playlist
 
-import io.kirill.playlistoptimizer.domain.Key._
+import io.kirill.playlistoptimizer.playlist.Key._
 
 import scala.concurrent.duration._
 import scala.language.postfixOps

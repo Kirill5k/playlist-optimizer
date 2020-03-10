@@ -2,13 +2,14 @@ package io.kirill.playlistoptimizer.clients
 
 import cats.effect.IO
 import fs2.Stream
-import io.kirill.playlistoptimizer.clients.spotify.{SpotifyAuthApi, SpotifyMapper, SpotifyRestApi}
+import io.kirill.playlistoptimizer.clients.spotify.{SpotifyMapper, SpotifyRestApi}
 import io.kirill.playlistoptimizer.clients.spotify.SpotifyResponse.{AudioAnalysisTrack, PlaylistTrack, SpotifyAudioFeaturesResponse}
 import io.kirill.playlistoptimizer.configs.SpotifyConfig
-import io.kirill.playlistoptimizer.domain.{Playlist, PlaylistSource}
+import io.kirill.playlistoptimizer.playlist.{Playlist, PlaylistSource}
+import io.kirill.playlistoptimizer.spotify.clients.api.{SpotifyAuthApi, SpotifyMapper, SpotifyRestApi}
 import sttp.client.{NothingT, SttpBackend}
 
-private[clients] class SpotifyClient(implicit val c: SpotifyConfig, val b: SttpBackend[IO, Nothing, NothingT]) extends ApiClient[IO] {
+private[clients] class SpotifyClient(implicit val c: SpotifyConfig, val b: SttpBackend[IO, Nothing, NothingT]) {
 
   override def findPlaylistByName(accessCode: String, userId: String, playlistName: String): IO[Playlist] = {
     for {

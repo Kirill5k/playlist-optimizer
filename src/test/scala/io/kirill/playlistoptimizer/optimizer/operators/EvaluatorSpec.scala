@@ -1,11 +1,11 @@
 package io.kirill.playlistoptimizer.optimizer.operators
 
-import io.kirill.playlistoptimizer.domain.Key._
+import io.kirill.playlistoptimizer.playlist.Key._
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
 class EvaluatorSpec extends AnyWordSpec with Matchers {
-  import io.kirill.playlistoptimizer.domain.TrackBuilder._
+  import io.kirill.playlistoptimizer.playlist.TrackBuilder._
 
   "A keyDistanceBasedTracksEvaluator" should {
 

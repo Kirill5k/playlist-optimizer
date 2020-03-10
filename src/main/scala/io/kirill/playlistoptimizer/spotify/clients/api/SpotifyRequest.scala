@@ -1,4 +1,4 @@
-package io.kirill.playlistoptimizer.clients.spotify
+package io.kirill.playlistoptimizer.spotify.clients.api
 
 sealed trait SpotifyRequest
 

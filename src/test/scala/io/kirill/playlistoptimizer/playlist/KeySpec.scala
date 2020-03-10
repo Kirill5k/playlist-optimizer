@@ -1,4 +1,4 @@
-package io.kirill.playlistoptimizer.domain
+package io.kirill.playlistoptimizer.playlist
 
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec

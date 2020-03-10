@@ -1,9 +1,9 @@
-package io.kirill.playlistoptimizer.clients.spotify
+package io.kirill.playlistoptimizer.spotify.clients.api
 
 import java.time.LocalDate
 import java.util.concurrent.TimeUnit
 
-import io.kirill.playlistoptimizer.domain.{AudioDetails, Key, Mode, SongDetails, SourceDetails, Track}
+import io.kirill.playlistoptimizer.playlist._
 
 import scala.concurrent.duration.Duration
 

@@ -1,11 +1,11 @@
-package io.kirill.playlistoptimizer.clients.spotify
+package io.kirill.playlistoptimizer.spotify.clients.api
 
 import java.time.LocalDate
 import java.util.concurrent.TimeUnit
 
-import io.kirill.playlistoptimizer.clients.spotify.SpotifyResponse.{AudioAnalysisTrack, PlaylistTrack, PlaylistTrackAlbum, PlaylistTrackArtist, PlaylistTrackUrls, SpotifyAudioFeaturesResponse}
-import io.kirill.playlistoptimizer.domain.Key.GMinor
-import io.kirill.playlistoptimizer.domain.{AudioDetails, SongDetails, SourceDetails, Track}
+import io.kirill.playlistoptimizer.playlist.Key.GMinor
+import io.kirill.playlistoptimizer.playlist.{AudioDetails, SongDetails, SourceDetails, Track}
+import io.kirill.playlistoptimizer.spotify.clients.api.SpotifyResponse._
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 

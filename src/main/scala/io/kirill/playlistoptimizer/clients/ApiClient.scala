@@ -2,7 +2,7 @@ package io.kirill.playlistoptimizer.clients
 
 import cats.effect.IO
 import io.kirill.playlistoptimizer.configs.SpotifyConfig
-import io.kirill.playlistoptimizer.domain.Playlist
+import io.kirill.playlistoptimizer.playlist.Playlist
 import sttp.client.{NothingT, SttpBackend}
 
 trait ApiClient[F[_]] {

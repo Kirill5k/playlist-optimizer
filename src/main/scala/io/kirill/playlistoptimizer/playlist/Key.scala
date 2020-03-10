@@ -1,4 +1,4 @@
-package io.kirill.playlistoptimizer.domain
+package io.kirill.playlistoptimizer.playlist
 
 import io.kirill.playlistoptimizer.utils.CommonUtils._
 

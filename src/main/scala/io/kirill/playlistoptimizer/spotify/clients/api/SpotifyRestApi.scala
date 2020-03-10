@@ -1,13 +1,13 @@
-package io.kirill.playlistoptimizer.clients.spotify
+package io.kirill.playlistoptimizer.spotify.clients.api
 
 import cats.implicits._
 import cats.MonadError
 import io.circe.generic.auto._
 import io.circe.parser._
-import io.kirill.playlistoptimizer.clients.spotify.SpotifyError._
-import io.kirill.playlistoptimizer.clients.spotify.SpotifyRequest._
-import io.kirill.playlistoptimizer.clients.spotify.SpotifyResponse._
 import io.kirill.playlistoptimizer.configs.SpotifyConfig
+import io.kirill.playlistoptimizer.spotify.clients.api.SpotifyResponse._
+import io.kirill.playlistoptimizer.spotify.clients.api.SpotifyRequest._
+import io.kirill.playlistoptimizer.spotify.clients.api.SpotifyError._
 import sttp.client._
 import sttp.client.circe._
 import sttp.model.MediaType

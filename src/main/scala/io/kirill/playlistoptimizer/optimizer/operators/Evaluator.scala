@@ -1,6 +1,6 @@
 package io.kirill.playlistoptimizer.optimizer.operators
 
-import io.kirill.playlistoptimizer.domain.{Key, Track}
+import io.kirill.playlistoptimizer.playlist.{Key, Track}
 
 sealed trait Evaluator[A] {
   def evaluate(items: Seq[A]): Double
