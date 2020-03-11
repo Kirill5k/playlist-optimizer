@@ -3,10 +3,8 @@ package io.kirill.playlistoptimizer
 import cats.effect._
 import cats.implicits._
 import io.kirill.playlistoptimizer.configs.AppConfig
-import io.kirill.playlistoptimizer.controllers.{AppController, HomeController}
+import io.kirill.playlistoptimizer.controllers.AppController
 import org.http4s.dsl.Http4sDsl
-import org.http4s.headers.Location
-import org.http4s.{HttpRoutes, StaticFile, Uri}
 import org.http4s.server.blaze.BlazeServerBuilder
 import org.http4s.server.{Router, Server}
 import org.http4s.syntax.kleisli._
