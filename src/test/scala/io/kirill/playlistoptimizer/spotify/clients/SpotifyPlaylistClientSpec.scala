@@ -24,19 +24,20 @@ class SpotifyPlaylistClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matc
   implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContext.Implicits.global)
   implicit val sc = SpotifyConfigBuilder.testConfig
 
+  val token = "token-5lcpIsBqfb0Slx9fzZuCu_rM3aBDg"
+
   "A SpotifyClient" - {
 
     "find playlist by name" in {
       implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if r.uri.host == "account.spotify.com/token" => Response.ok(json("spotify/flow/find/1-auth.json"))
-          case r if isAuthorized(r, "api.spotify.com/users", List("user-1", "playlists")) => Response.ok(json("spotify/flow/find/2-users-playlists.json"))
+          case r if isAuthorized(r, "api.spotify.com/me", List("playlists")) => Response.ok(json("spotify/flow/find/2-users-playlists.json"))
           case r if isAuthorized(r, "api.spotify.com/playlists", List("7npAZEYwEwV2JV7XX2n3wq")) => Response.ok(json("spotify/flow/find/3-playlist.json"))
           case r if isAuthorized(r, "api.spotify.com/audio-features") => Response.ok(json(s"spotify/flow/find/4-audio-features-${r.uri.path.head}.json"))
           case r => throw new RuntimeException(s"no mocks for ${r.uri.host}/${r.uri.path.mkString("/")}")
         }
 
-      val response = new SpotifyPlaylistClient().findPlaylistByName("code", "user-1", "mel")
+      val response = new SpotifyPlaylistClient().findPlaylistByName(token, "mel")
 
       response.asserting(_ must be(Playlist("Mel", Some("Melodic deep house and techno songs"), PlaylistSource.Spotify, Vector(
         Track(SongDetails("Glue", List("Bicep"), Some("Bicep"), Some(LocalDate.of(2017, 9, 1)), Some("album")), AudioDetails(129.983, 269150 milliseconds, CMinor),SourceDetails("spotify:track:2aJDlirz6v2a4HREki98cP", Some("https://open.spotify.com/track/2aJDlirz6v2a4HREki98cP"))),
@@ -91,7 +92,7 @@ class SpotifyPlaylistClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matc
 
   def isAuthorized(req: client.Request[_, _], host: String, paths: Seq[String] = Nil): Boolean =
     req.uri.host == host && (paths.isEmpty || req.uri.path == paths) &&
-      req.headers.contains(new Header("Authorization", "Bearer BQCK-13bJ_7Qp6sa8DPvNBtvviUDasacL___qpx88zl6M2GDFjnL7qzG9WB9j7DtXmGrLML2Dy1DGPutRPabx316KIskN0amIZmdBZd7EKs3kFA1eXyu5HsjmwdHRD5lcpIsBqfb0Slx9fzZuCu_rM3aBDg"))
+      req.headers.contains(new Header("Authorization", "Bearer token-5lcpIsBqfb0Slx9fzZuCu_rM3aBDg"))
 
   def json(path: String): String = Source.fromResource(path).getLines.toList.mkString
 
