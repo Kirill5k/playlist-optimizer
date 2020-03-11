@@ -2,7 +2,7 @@ package io.kirill.playlistoptimizer.spotify.clients.api
 
 import cats.effect.testing.scalatest.AsyncIOSpec
 import cats.effect.{ContextShift, IO}
-import io.kirill.playlistoptimizer.configs.{SpotifyApiConfig, SpotifyAuthConfig, SpotifyConfig}
+import io.kirill.playlistoptimizer.configs.{SpotifyApiConfig, SpotifyAuthConfig, SpotifyConfig, SpotifyConfigBuilder}
 import io.kirill.playlistoptimizer.spotify.clients.api.SpotifyError.SpotifyAuthError
 import io.kirill.playlistoptimizer.spotify.clients.api.SpotifyResponse.{SpotifyAuthRefreshResponse, SpotifyAuthResponse}
 import org.scalatest.freespec.AsyncFreeSpec
@@ -17,10 +17,7 @@ import scala.io.Source
 
 class SpotifyAuthApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
   implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContext.Implicits.global)
-
-  val authConfig = SpotifyAuthConfig("http://account.spotify.com", "/authorize", "/token", "client-id", "client-secret", "/redirect")
-  val apiConfig = SpotifyApiConfig("http://api.spotify.com", "/me", "/users", "/playlists", "/audio-analysis", "/audio-features")
-  implicit val spotifyConfig = SpotifyConfig(authConfig, apiConfig)
+  implicit val sc = SpotifyConfigBuilder.testConfig
 
   "A SpotifyAuthApi" - {
 

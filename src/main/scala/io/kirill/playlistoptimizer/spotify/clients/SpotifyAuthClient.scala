@@ -23,5 +23,14 @@ private[spotify] class SpotifyAuthClient(authCode: String)(implicit val sc: Spot
     userResponse <- SpotifyRestApi.getCurrentUser(authResponse.access_token)
   } yield SpotifyAccessToken(authResponse.access_token, authResponse.refresh_token, userResponse.id, authResponse.expires_in)
 
-  def token: IO[String] = ???
+  def token: IO[String] = {
+    spotifyAccessToken = for {
+      token <- spotifyAccessToken
+      validToken <- if (token.isValid) IO.pure(token)
+                    else SpotifyAuthApi.refresh(token.refreshToken).map(refreshedToken => token.copy(accessToken = refreshedToken.access_token))
+    } yield validToken
+    spotifyAccessToken.map(_.accessToken)
+  }
+
+  def userId: IO[String] = spotifyAccessToken.map(_.userId)
 }
