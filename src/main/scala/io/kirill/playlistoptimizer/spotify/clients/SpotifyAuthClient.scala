@@ -8,7 +8,7 @@ import io.kirill.playlistoptimizer.spotify.clients.api.{SpotifyAuthApi, SpotifyR
 import sttp.client.{NothingT, SttpBackend}
 
 private[clients] case class SpotifyAccessToken(accessToken: String, refreshToken: String, userId: String, expiresAt: Instant) {
-  def isValid: Boolean = expiresAt.isBefore(Instant.now())
+  def isValid: Boolean = expiresAt.isAfter(Instant.now())
 }
 
 private[clients] object SpotifyAccessToken {
