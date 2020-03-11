@@ -58,13 +58,13 @@ object SpotifyRestApi {
       .send()
       .flatMap(r => mapResponseBody[F, SpotifyPlaylistResponse](r.body))
 
-  def getUserPlaylists[F[_]](authToken: String, userId: String)(
+  def getUserPlaylists[F[_]](authToken: String)(
     implicit C: SpotifyConfig, B: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]
   ): F[SpotifyPlaylistsResponse] =
     basicRequest
       .auth.bearer(authToken)
       .contentType(MediaType.ApplicationJson)
-      .get(uri"${C.api.baseUrl}${C.api.usersPath}/$userId/playlists")
+      .get(uri"${C.api.baseUrl}${C.api.currentUserPath}/playlists")
       .response(asJson[SpotifyPlaylistsResponse])
       .send()
       .flatMap(r => mapResponseBody[F, SpotifyPlaylistsResponse](r.body))

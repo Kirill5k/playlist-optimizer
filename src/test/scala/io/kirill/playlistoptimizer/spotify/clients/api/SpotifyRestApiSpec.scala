@@ -18,7 +18,7 @@ import scala.io.Source
 
 class SpotifyRestApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
   implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContext.Implicits.global)
-  implicit val sc = SpotifyConfigBuilder.testConfig
+  implicit val sc: SpotifyConfig = SpotifyConfigBuilder.testConfig
 
   "A SpotifyRestApi" - {
 
@@ -79,15 +79,15 @@ class SpotifyRestApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
       )))
     }
 
-    "return user playlists response when success" in {
+    "return current user playlists response when success" in {
       implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if isAuthorized(r, "api.spotify.com/users", List("user-1", "playlists")) =>
+          case r if isAuthorized(r, "api.spotify.com/me", List("playlists")) =>
             Response.ok(json("spotify/api/playlists-response.json"))
           case _ => throw new RuntimeException()
         }
 
-      val response = SpotifyRestApi.getUserPlaylists[IO]("token", "user-1")
+      val response = SpotifyRestApi.getUserPlaylists[IO]("token")
 
       response.asserting(_ must be (SpotifyPlaylistsResponse(List(
         PlaylistsItem("53Y8wT46QIMz5H4WQ8O22c", "Wizzlers Big Playlist"),
@@ -97,11 +97,11 @@ class SpotifyRestApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     "return error when corrupted json" in {
       implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if isAuthorized(r, "api.spotify.com/users")  => Response.ok("""{"foo"}""")
+          case r if isAuthorized(r, "api.spotify.com/me")  => Response.ok("""{"foo"}""")
           case _ => throw new RuntimeException()
         }
 
-      val response = SpotifyRestApi.getUserPlaylists[IO]("token", "user-1")
+      val response = SpotifyRestApi.getUserPlaylists[IO]("token")
 
       response.assertThrows[ParsingFailure]
     }
