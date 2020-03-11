@@ -10,13 +10,19 @@ import sttp.client.{NothingT, SttpBackend}
 
 private[spotify] class SpotifyPlaylistClient(implicit val sc: SpotifyConfig, val b: SttpBackend[IO, Nothing, NothingT]) {
 
-  def findPlaylistByName(token: String, playlistName: String): IO[Playlist] = {
+  def findPlaylistByName(token: String, name: String): IO[Playlist] = {
     for {
-      playlistId <- getPlaylistId(token, playlistName)
-      playlist <- SpotifyRestApi.getPlaylist(token, playlistId)
+      id <- getPlaylistId(token, name)
+      playlist <- findById(token, id)
+    } yield playlist
+  }
+
+  def findById(token: String, id: String): IO[Playlist] = {
+    for {
+      playlist <- SpotifyRestApi.getPlaylist(token, id)
       playListTracks = playlist.tracks.items.map(_.track)
       tracksDetails <- getTrackDetails(token, playListTracks)
-      tracks = tracksDetails.map(details => SpotifyMapper.toDomain(details._1, details._2)).toVector
+      tracks = tracksDetails.map(details => SpotifyMapper.toDomain(details._1, details._2))
     } yield Playlist(playlist.name, playlist.description, PlaylistSource.Spotify, tracks)
   }
 
