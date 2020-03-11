@@ -5,7 +5,7 @@ sealed trait SpotifyResponse
 object SpotifyResponse {
   final case class SpotifyAuthResponse(access_token: String, token_type: String, expires_in: Int, scope: String, refresh_token: String) extends SpotifyResponse
 
-  final case class SpotifyRefreshResponse(access_token: String, token_type: String, expires_in: Int, scope: String) extends SpotifyResponse
+  final case class SpotifyAuthRefreshResponse(access_token: String, token_type: String, expires_in: Int, scope: String) extends SpotifyResponse
 
   final case class PlaylistsItem(id: String, name: String)
   final case class SpotifyPlaylistsResponse(items: Seq[PlaylistsItem], total: Int) extends SpotifyResponse

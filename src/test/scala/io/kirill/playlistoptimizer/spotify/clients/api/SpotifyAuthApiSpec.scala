@@ -4,7 +4,7 @@ import cats.effect.testing.scalatest.AsyncIOSpec
 import cats.effect.{ContextShift, IO}
 import io.kirill.playlistoptimizer.configs.{SpotifyApiConfig, SpotifyAuthConfig, SpotifyConfig}
 import io.kirill.playlistoptimizer.spotify.clients.api.SpotifyError.SpotifyAuthError
-import io.kirill.playlistoptimizer.spotify.clients.api.SpotifyResponse.SpotifyAuthResponse
+import io.kirill.playlistoptimizer.spotify.clients.api.SpotifyResponse.{SpotifyAuthRefreshResponse, SpotifyAuthResponse}
 import org.scalatest.freespec.AsyncFreeSpec
 import org.scalatest.matchers.must.Matchers
 import sttp.client.Response
@@ -27,7 +27,7 @@ class SpotifyAuthApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     "return auth response when success" in {
       implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if r.uri.host == "account.spotify.com/token" && r.method == Method.POST =>
+          case r if r.uri.host == "account.spotify.com/token" && r.method == Method.POST && r.body.toString.contains("grant_type=authorization_code&code=code&redirect_uri=%2Fredirect") =>
             Response.ok(json("spotify/api/auth-response.json"))
           case _ => throw new RuntimeException()
         }
@@ -35,6 +35,19 @@ class SpotifyAuthApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
       val authResponse = SpotifyAuthApi.authorize[IO]("code")
 
       authResponse.asserting(_ must be(SpotifyAuthResponse("BQC3wD_w-ODtKQsbz7woOZPvffQX5iX7rychivVGQxO3qzgejLCgXwAE5acsqk8LQcih2qpDkaCjrJRRhuY", "Bearer", 3600, "", "cnczbmrInWjs4So1F4Gm")))
+    }
+
+    "return auth refresh response when success" in {
+      implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
+        .whenRequestMatchesPartial {
+          case r if r.uri.host == "account.spotify.com/token" && r.method == Method.POST && r.body.toString.contains("refresh_token=token") =>
+            Response.ok(json("spotify/api/auth-refresh-response.json"))
+          case _ => throw new RuntimeException()
+        }
+
+      val authResponse = SpotifyAuthApi.refresh[IO]("token")
+
+      authResponse.asserting(_ must be(SpotifyAuthRefreshResponse("NgA6ZcYI...ixn8bUQ", "Bearer", 3600, "user-read-private user-read-email")))
     }
 
     "return auth error when failure" in {
