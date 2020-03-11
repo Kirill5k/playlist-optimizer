@@ -5,6 +5,7 @@ import io.kirill.playlistoptimizer.configs.SpotifyConfig
 import io.kirill.playlistoptimizer.optimizer.Optimizer
 import io.kirill.playlistoptimizer.optimizer.operators.{Crossover, Mutator}
 import io.kirill.playlistoptimizer.playlist.{Playlist, PlaylistService, Track}
+import io.kirill.playlistoptimizer.spotify.clients.api.SpotifyRestApi
 import io.kirill.playlistoptimizer.spotify.clients.{SpotifyApiClient, SpotifyAuthClient}
 import sttp.client.{NothingT, SttpBackend}
 
@@ -33,5 +34,12 @@ class SpotifyPlaylistService(accessCode: String)(implicit val C: SpotifyConfig, 
       playlist <- apiClient.findPlaylistByName(token, name)
     } yield playlist
 
-  override def save(playlist: Playlist): IO[Unit] = ???
+  override def save(playlist: Playlist): IO[Unit] =
+    for {
+      userId <- authClient.userId
+      token <- authClient.token
+      newPlaylist <- SpotifyRestApi.createPlaylist(userId, token, playlist.name, playlist.description)
+      trackUris = playlist.tracks.map(_.source.uri)
+      _ <- SpotifyRestApi.addTracksToPlaylist(token, newPlaylist.id, trackUris)
+    } yield ()
 }
