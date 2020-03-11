@@ -1,5 +1,7 @@
 package io.kirill.playlistoptimizer.playlist
 
-trait PlaylistController {
+import io.kirill.playlistoptimizer.controllers.AppController
+
+trait PlaylistController[F[_]] extends AppController[F] {
 
 }

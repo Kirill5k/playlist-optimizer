@@ -12,7 +12,7 @@ import org.http4s.server.{Router, Server}
 import org.http4s.syntax.kleisli._
 
 
-object Application extends IOApp with Http4sDsl[IO] {
+object Server extends IOApp with Http4sDsl[IO] {
   override def run(args: List[String]): IO[ExitCode] =
     app.use(_ => IO.never).as(ExitCode.Success)
 
