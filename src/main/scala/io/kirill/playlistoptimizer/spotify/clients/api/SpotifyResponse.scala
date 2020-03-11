@@ -22,4 +22,6 @@ object SpotifyResponse {
   final case class SpotifyAudioFeaturesResponse(key: Int, mode: Int, duration_ms: Double, tempo: Double) extends SpotifyResponse
 
   final case class SpotifyOperationSuccessResponse(snapshot_id: String) extends SpotifyResponse
+
+  final case class SpotifyUserResponse(id: String, display_name: String, email: String) extends SpotifyResponse
 }

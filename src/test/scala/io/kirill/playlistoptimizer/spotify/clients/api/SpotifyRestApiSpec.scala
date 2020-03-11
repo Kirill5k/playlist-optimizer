@@ -20,10 +20,23 @@ class SpotifyRestApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
   implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContext.Implicits.global)
 
   val authConfig = SpotifyAuthConfig("http://account.spotify.com", "/auth", "/token", "client-id", "client-secret", "/redirect")
-  val apiConfig = SpotifyApiConfig("http://api.spotify.com", "/users", "/playlists", "/audio-analysis", "/audio-features")
+  val apiConfig = SpotifyApiConfig("http://api.spotify.com", "/me", "/users", "/playlists", "/audio-analysis", "/audio-features")
   implicit val spotifyConfig = SpotifyConfig(authConfig, apiConfig)
 
   "A SpotifyRestApi" - {
+
+    "return current user when success" in {
+      implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
+        .whenRequestMatchesPartial {
+          case r if isAuthorized(r, "api.spotify.com/me") =>
+            Response.ok(json("spotify/api/user-response.json"))
+          case _ => throw new RuntimeException()
+        }
+
+      val response = SpotifyRestApi.getCurrentUser[IO]("token")
+
+      response.asserting(_ must be (SpotifyUserResponse("wizzler", "JM Wizzler", "email@example.com")))
+    }
 
     "return audio analysis response when success" in {
       implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]

@@ -20,11 +20,11 @@ import scala.concurrent.duration._
 import scala.io.Source
 import scala.language.postfixOps
 
-class SpotifyClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
+class SpotifyPlaylistClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
   implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContext.Implicits.global)
 
   val authConfig = SpotifyAuthConfig("http://account.spotify.com", "/authorize", "/token", "client-id", "client-secret", "/redirect")
-  val apiConfig = SpotifyApiConfig("http://api.spotify.com", "/users", "/playlists", "/audio-analysis", "/audio-features")
+  val apiConfig = SpotifyApiConfig("http://api.spotify.com", "/me", "/users", "/playlists", "/audio-analysis", "/audio-features")
   implicit val spotifyConfig = SpotifyConfig(authConfig, apiConfig)
 
   "A SpotifyClient" - {
@@ -39,7 +39,7 @@ class SpotifyClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
           case r => throw new RuntimeException(s"no mocks for ${r.uri.host}/${r.uri.path.mkString("/")}")
         }
 
-      val response = new SpotifyClient().findPlaylistByName("code", "user-1", "mel")
+      val response = new SpotifyPlaylistClient().findPlaylistByName("code", "user-1", "mel")
 
       response.asserting(_ must be(Playlist("Mel", Some("Melodic deep house and techno songs"), PlaylistSource.Spotify, Vector(
         Track(SongDetails("Glue", List("Bicep"), Some("Bicep"), Some(LocalDate.of(2017, 9, 1)), Some("album")), AudioDetails(129.983, 269150 milliseconds, CMinor),SourceDetails("spotify:track:2aJDlirz6v2a4HREki98cP", Some("https://open.spotify.com/track/2aJDlirz6v2a4HREki98cP"))),

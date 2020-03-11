@@ -11,6 +11,7 @@ final case class SpotifyAuthConfig(
 
 final case class SpotifyApiConfig(
                                    baseUrl: String,
+                                   currentUserPath: String,
                                    usersPath: String,
                                    playlistsPath: String,
                                    audioAnalysisPath: String,

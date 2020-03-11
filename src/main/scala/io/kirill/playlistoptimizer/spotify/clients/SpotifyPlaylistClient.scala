@@ -8,7 +8,7 @@ import io.kirill.playlistoptimizer.spotify.clients.api.SpotifyResponse.{Playlist
 import io.kirill.playlistoptimizer.spotify.clients.api.{SpotifyAuthApi, SpotifyMapper, SpotifyRestApi}
 import sttp.client.{NothingT, SttpBackend}
 
-private[clients] class SpotifyClient(implicit val c: SpotifyConfig, val b: SttpBackend[IO, Nothing, NothingT]) {
+private[spotify] class SpotifyPlaylistClient(implicit val sc: SpotifyConfig, val b: SttpBackend[IO, Nothing, NothingT]) {
 
   def findPlaylistByName(accessCode: String, userId: String, playlistName: String): IO[Playlist] = {
     for {

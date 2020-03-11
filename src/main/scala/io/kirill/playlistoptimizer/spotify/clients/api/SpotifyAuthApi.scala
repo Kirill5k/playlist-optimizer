@@ -13,9 +13,7 @@ import sttp.model.MediaType
 
 object SpotifyAuthApi {
 
-  def authorize[F[_]](code: String)(
-    implicit C: SpotifyConfig, B: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]
-  ): F[SpotifyAuthResponse] =
+  def authorize[F[_]](code: String)(implicit C: SpotifyConfig, B: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]): F[SpotifyAuthResponse] =
     basicRequest
       .body(Map("grant_type" -> "authorization_code", "code" -> code, "redirect_uri" -> C.auth.redirectUri))
       .auth.basic(C.auth.clientId, C.auth.clientSecret)

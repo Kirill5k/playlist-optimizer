@@ -14,6 +14,17 @@ import sttp.model.MediaType
 
 object SpotifyRestApi {
 
+  def getCurrentUser[F[_]](authToken: String)(
+    implicit C: SpotifyConfig, B: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]
+  ): F[SpotifyUserResponse] =
+    basicRequest
+      .auth.bearer(authToken)
+      .contentType(MediaType.ApplicationJson)
+      .get(uri"${C.api.baseUrl}${C.api.currentUserPath}")
+      .response(asJson[SpotifyUserResponse])
+      .send()
+      .flatMap(r => mapResponseBody[F, SpotifyUserResponse](r.body))
+
   def getAudioAnalysis[F[_]](authToken: String, trackId: String)(
     implicit C: SpotifyConfig, B: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]
   ): F[SpotifyAudioAnalysisResponse] =
