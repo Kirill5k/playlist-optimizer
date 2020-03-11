@@ -11,7 +11,7 @@ trait PlaylistService[F[_]] {
 
   def getAll: F[Seq[Playlist]]
   def findByName(name: String): F[Playlist]
-  def save(playlist: Playlist): F[Playlist]
+  def save(playlist: Playlist): F[Unit]
 
   def optimize(playlist: Playlist): Playlist = {
     val optimizedTracks = optimizer.optimize(playlist.tracks)

@@ -16,10 +16,10 @@ private[clients] object SpotifyAccessToken {
     new SpotifyAccessToken(accessToken, refreshToken, userId, Instant.now().plusSeconds(expiresIn))
 }
 
-private[spotify] class SpotifyAuthClient(authCode: String)(implicit val sc: SpotifyConfig, val b: SttpBackend[IO, Nothing, NothingT]) {
+private[spotify] class SpotifyAuthClient(accessCode: String)(implicit val sc: SpotifyConfig, val b: SttpBackend[IO, Nothing, NothingT]) {
   
   private var spotifyAccessToken: IO[SpotifyAccessToken] = for {
-    authResponse <- SpotifyAuthApi.authorize(authCode)
+    authResponse <- SpotifyAuthApi.authorize(accessCode)
     userResponse <- SpotifyRestApi.getCurrentUser(authResponse.access_token)
   } yield SpotifyAccessToken(authResponse.access_token, authResponse.refresh_token, userResponse.id, authResponse.expires_in)
 

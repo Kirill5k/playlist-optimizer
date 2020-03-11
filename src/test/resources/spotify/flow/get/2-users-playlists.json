@@ -1,0 +1,102 @@
+{
+  "href": "https://api.spotify.com/v1/users/e1hyivjak3qiptaiksmlig3c4/playlists?offset=0&limit=20",
+  "items": [
+    {
+      "collaborative": false,
+      "description": "Melodic deep house and techno songs 1",
+      "external_urls": {
+        "spotify": "https://open.spotify.com/playlist/7npAZEYwEwV2JV7XX2n3wq"
+      },
+      "href": "https://api.spotify.com/v1/playlists/7npAZEYwEwV2JV7XX2n3wq",
+      "id": "p1pAZEYwEwV2JV7XX2n3wq",
+      "images": [
+        {
+          "height": 640,
+          "url": "https://mosaic.scdn.co/640/ab67616d0000b2733be33e1c2f07c56cb9d325ebab67616d0000b2735714081ec5688535e44f0547ab67616d0000b2736dd45e0e9a739a4e2ddb56c1ab67616d0000b273d4322a9004288009f6da2975",
+          "width": 640
+        },
+        {
+          "height": 300,
+          "url": "https://mosaic.scdn.co/300/ab67616d0000b2733be33e1c2f07c56cb9d325ebab67616d0000b2735714081ec5688535e44f0547ab67616d0000b2736dd45e0e9a739a4e2ddb56c1ab67616d0000b273d4322a9004288009f6da2975",
+          "width": 300
+        },
+        {
+          "height": 60,
+          "url": "https://mosaic.scdn.co/60/ab67616d0000b2733be33e1c2f07c56cb9d325ebab67616d0000b2735714081ec5688535e44f0547ab67616d0000b2736dd45e0e9a739a4e2ddb56c1ab67616d0000b273d4322a9004288009f6da2975",
+          "width": 60
+        }
+      ],
+      "name": "Mel 1",
+      "owner": {
+        "display_name": "Kirill",
+        "external_urls": {
+          "spotify": "https://open.spotify.com/user/e1hyivjak3qiptaiksmlig3c4"
+        },
+        "href": "https://api.spotify.com/v1/users/e1hyivjak3qiptaiksmlig3c4",
+        "id": "e1hyivjak3qiptaiksmlig3c4",
+        "type": "user",
+        "uri": "spotify:user:e1hyivjak3qiptaiksmlig3c4"
+      },
+      "primary_color": null,
+      "public": true,
+      "snapshot_id": "NTAsZTFjYWY5YjJmNDYxMGVlMTg2Y2ViM2U1MzQ3MWMyMjY5YjJkYmQ5Yg==",
+      "tracks": {
+        "href": "https://api.spotify.com/v1/playlists/7npAZEYwEwV2JV7XX2n3wq/tracks",
+        "total": 23
+      },
+      "type": "playlist",
+      "uri": "spotify:playlist:7npAZEYwEwV2JV7XX2n3wq"
+    },
+    {
+      "collaborative": false,
+      "description": "Melodic deep house and techno songs 2",
+      "external_urls": {
+        "spotify": "https://open.spotify.com/playlist/7npAZEYwEwV2JV7XX2n3wq"
+      },
+      "href": "https://api.spotify.com/v1/playlists/7npAZEYwEwV2JV7XX2n3wq",
+      "id": "p2pAZEYwEwV2JV7XX2n3wq",
+      "images": [
+        {
+          "height": 640,
+          "url": "https://mosaic.scdn.co/640/ab67616d0000b2733be33e1c2f07c56cb9d325ebab67616d0000b2735714081ec5688535e44f0547ab67616d0000b2736dd45e0e9a739a4e2ddb56c1ab67616d0000b273d4322a9004288009f6da2975",
+          "width": 640
+        },
+        {
+          "height": 300,
+          "url": "https://mosaic.scdn.co/300/ab67616d0000b2733be33e1c2f07c56cb9d325ebab67616d0000b2735714081ec5688535e44f0547ab67616d0000b2736dd45e0e9a739a4e2ddb56c1ab67616d0000b273d4322a9004288009f6da2975",
+          "width": 300
+        },
+        {
+          "height": 60,
+          "url": "https://mosaic.scdn.co/60/ab67616d0000b2733be33e1c2f07c56cb9d325ebab67616d0000b2735714081ec5688535e44f0547ab67616d0000b2736dd45e0e9a739a4e2ddb56c1ab67616d0000b273d4322a9004288009f6da2975",
+          "width": 60
+        }
+      ],
+      "name": "Mel 2",
+      "owner": {
+        "display_name": "Kirill",
+        "external_urls": {
+          "spotify": "https://open.spotify.com/user/e1hyivjak3qiptaiksmlig3c4"
+        },
+        "href": "https://api.spotify.com/v1/users/e1hyivjak3qiptaiksmlig3c4",
+        "id": "e1hyivjak3qiptaiksmlig3c4",
+        "type": "user",
+        "uri": "spotify:user:e1hyivjak3qiptaiksmlig3c4"
+      },
+      "primary_color": null,
+      "public": true,
+      "snapshot_id": "NTAsZTFjYWY5YjJmNDYxMGVlMTg2Y2ViM2U1MzQ3MWMyMjY5YjJkYmQ5Yg==",
+      "tracks": {
+        "href": "https://api.spotify.com/v1/playlists/7npAZEYwEwV2JV7XX2n3wq/tracks",
+        "total": 23
+      },
+      "type": "playlist",
+      "uri": "spotify:playlist:7npAZEYwEwV2JV7XX2n3wq"
+    }
+  ],
+  "limit": 20,
+  "next": null,
+  "offset": 0,
+  "previous": null,
+  "total": 1
+}

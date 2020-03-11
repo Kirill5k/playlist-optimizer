@@ -8,7 +8,14 @@ import io.kirill.playlistoptimizer.spotify.clients.api.SpotifyResponse.{Playlist
 import io.kirill.playlistoptimizer.spotify.clients.api.{SpotifyMapper, SpotifyRestApi}
 import sttp.client.{NothingT, SttpBackend}
 
-private[spotify] class SpotifyPlaylistClient(implicit val sc: SpotifyConfig, val b: SttpBackend[IO, Nothing, NothingT]) {
+private[spotify] class SpotifyApiClient(implicit val sc: SpotifyConfig, val b: SttpBackend[IO, Nothing, NothingT]) {
+
+  def getAllPlaylists(token: String): IO[Seq[Playlist]] =
+    for {
+      userPlaylists <- SpotifyRestApi.getUserPlaylists(token)
+      playlists <- Stream.emits(userPlaylists.items).evalMap(p => findById(token, p.id)).compile.toList
+    } yield playlists
+
 
   def findPlaylistByName(token: String, name: String): IO[Playlist] = {
     for {

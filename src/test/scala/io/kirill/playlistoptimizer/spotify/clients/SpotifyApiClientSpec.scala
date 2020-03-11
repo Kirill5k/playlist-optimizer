@@ -20,7 +20,7 @@ import scala.concurrent.duration._
 import scala.io.Source
 import scala.language.postfixOps
 
-class SpotifyPlaylistClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
+class SpotifyApiClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
   implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContext.Implicits.global)
   implicit val sc = SpotifyConfigBuilder.testConfig
 
@@ -37,7 +37,7 @@ class SpotifyPlaylistClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matc
           case r => throw new RuntimeException(s"no mocks for ${r.uri.host}/${r.uri.path.mkString("/")}")
         }
 
-      val response = new SpotifyPlaylistClient().findPlaylistByName(token, "mel")
+      val response = new SpotifyApiClient().findPlaylistByName(token, "mel")
 
       response.asserting(_ must be(Playlist("Mel", Some("Melodic deep house and techno songs"), PlaylistSource.Spotify, Vector(
         Track(SongDetails("Glue", List("Bicep"), Some("Bicep"), Some(LocalDate.of(2017, 9, 1)), Some("album")), AudioDetails(129.983, 269150 milliseconds, CMinor),SourceDetails("spotify:track:2aJDlirz6v2a4HREki98cP", Some("https://open.spotify.com/track/2aJDlirz6v2a4HREki98cP"))),
@@ -87,6 +87,20 @@ class SpotifyPlaylistClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matc
         Track(SongDetails("Pathos", List("Mashk"), Some("Pathos"), Some(LocalDate.of(2017, 8, 11)), Some("single")), AudioDetails(120.0, 523192 milliseconds, EFlatMinor),SourceDetails("spotify:track:7avI5luJYVkNUk6GObVTLd", Some("https://open.spotify.com/track/7avI5luJYVkNUk6GObVTLd"))),
         Track(SongDetails("Chrysalis", List("Clawz SG", "Mashk"), Some("Chrysalis"), Some(LocalDate.of(2018, 8, 20)), Some("single")), AudioDetails(123.008, 456081 milliseconds, CMajor),SourceDetails("spotify:track:14F7gfsIpA74Hb6n4eOhI6", Some("https://open.spotify.com/track/14F7gfsIpA74Hb6n4eOhI6"))))
       )))
+    }
+
+    "return all playlists that belong to a user" in {
+      implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
+        .whenRequestMatchesPartial {
+          case r if isAuthorized(r, "api.spotify.com/me", List("playlists")) => Response.ok(json("spotify/flow/get/2-users-playlists.json"))
+          case r if isAuthorized(r, "api.spotify.com/playlists") => Response.ok(json(s"spotify/flow/get/3-playlist-${r.uri.path.head}.json"))
+          case r if isAuthorized(r, "api.spotify.com/audio-features") => Response.ok(json(s"spotify/flow/find/4-audio-features-${r.uri.path.head}.json"))
+          case r => throw new RuntimeException(s"no mocks for ${r.uri.host}/${r.uri.path.mkString("/")}")
+        }
+
+      val response = new SpotifyApiClient().getAllPlaylists(token)
+
+      response.asserting(_.map(_.name) must be (List("Mel 1", "Mel 2")))
     }
   }
 
