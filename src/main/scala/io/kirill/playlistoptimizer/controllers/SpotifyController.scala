@@ -1,10 +1,9 @@
 package io.kirill.playlistoptimizer.controllers
 
 import cats.effect._
-import cats.implicits._
 import io.kirill.playlistoptimizer.configs.SpotifyConfig
-import org.http4s.{HttpRoutes, Uri}
 import org.http4s.headers.Location
+import org.http4s.{HttpRoutes, Uri}
 
 class SpotifyController[F[_]: Sync](implicit cs: ContextShift[F], sc: SpotifyConfig) extends AppController[F] {
 

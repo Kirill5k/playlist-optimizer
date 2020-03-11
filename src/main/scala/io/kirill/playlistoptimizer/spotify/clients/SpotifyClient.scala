@@ -1,17 +1,16 @@
-package io.kirill.playlistoptimizer.clients
+package io.kirill.playlistoptimizer.spotify.clients
 
 import cats.effect.IO
 import fs2.Stream
-import io.kirill.playlistoptimizer.clients.spotify.{SpotifyMapper, SpotifyRestApi}
-import io.kirill.playlistoptimizer.clients.spotify.SpotifyResponse.{AudioAnalysisTrack, PlaylistTrack, SpotifyAudioFeaturesResponse}
 import io.kirill.playlistoptimizer.configs.SpotifyConfig
 import io.kirill.playlistoptimizer.playlist.{Playlist, PlaylistSource}
+import io.kirill.playlistoptimizer.spotify.clients.api.SpotifyResponse.{PlaylistTrack, SpotifyAudioFeaturesResponse}
 import io.kirill.playlistoptimizer.spotify.clients.api.{SpotifyAuthApi, SpotifyMapper, SpotifyRestApi}
 import sttp.client.{NothingT, SttpBackend}
 
 private[clients] class SpotifyClient(implicit val c: SpotifyConfig, val b: SttpBackend[IO, Nothing, NothingT]) {
 
-  override def findPlaylistByName(accessCode: String, userId: String, playlistName: String): IO[Playlist] = {
+  def findPlaylistByName(accessCode: String, userId: String, playlistName: String): IO[Playlist] = {
     for {
       token <- SpotifyAuthApi.authorize(accessCode).map(_.access_token)
       playlistId <- getPlaylistId(token, userId, playlistName)
@@ -34,6 +33,4 @@ private[clients] class SpotifyClient(implicit val c: SpotifyConfig, val b: SttpB
       .evalMap(track => SpotifyRestApi.getAudioFeatures(token, track.id).map(audio => (track, audio)))
       .compile
       .toList
-
-  override def savePlaylist(playlist: Playlist): IO[Unit] = ???
 }
