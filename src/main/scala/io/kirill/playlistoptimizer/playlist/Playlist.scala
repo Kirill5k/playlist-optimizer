@@ -6,7 +6,7 @@ import scala.concurrent.duration.Duration
 
 sealed trait PlaylistSource
 object PlaylistSource {
-  case object Spotify extends PlaylistSource
+  final case object Spotify extends PlaylistSource
 }
 
 
@@ -19,5 +19,3 @@ final case class SourceDetails(uri: String, url: Option[String])
 final case class Track(song: SongDetails, audio: AudioDetails, source: SourceDetails)
 
 final case class Playlist(name: String, description: Option[String], source: PlaylistSource, tracks: Seq[Track])
-
-final case class SimplePlaylist(name: String, description: Option[String], source: PlaylistSource)
