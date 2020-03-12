@@ -1,10 +1,12 @@
 package io.kirill.playlistoptimizer.utils
 
 import CollectionOps._
+import io.kirill.playlistoptimizer.optimizer.Optimizer
+import org.scalatest.Inspectors
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-class CollectionOpsSpec extends AnyWordSpec with Matchers {
+class CollectionOpsSpec extends AnyWordSpec with Matchers with Inspectors {
 
   "SeqOps" should {
     "split index seq in 3" in {
@@ -33,9 +35,9 @@ class CollectionOpsSpec extends AnyWordSpec with Matchers {
       } must have message "points cannot be greater than size"
     }
 
-    "removes every nth element" in {
-      val result = List(1, 2, 3, 4, 5, 6, 7, 8).removeNth(2)
-      result must contain theSameElementsInOrderAs (List(1, 3, 5, 7))
+    "distributes list elements in pairs" in {
+      val result = List(1, 2, 3, 4, 5, 6, 7, 8).pairs
+      result must be (List((1, 2), (3, 4), (5, 6), (7, 8)))
     }
 
     "swap elements in indexed seq" in {
@@ -52,6 +54,17 @@ class CollectionOpsSpec extends AnyWordSpec with Matchers {
       the [IllegalArgumentException] thrownBy {
         Vector(1, 2, 3, 4, 5, 6, 7).swap(2, 10)
       } must have message "pos cannot be greater than size"
+    }
+
+    "create initial population" in {
+      val nums = (1 to 100).toList
+      val shuffledCopies = nums.shuffledCopies(10)
+
+      shuffledCopies must have size 10
+      forAll (shuffledCopies) { copy =>
+        copy must contain theSameElementsAs nums
+        copy must not contain theSameElementsInOrderAs (nums)
+      }
     }
   }
 }

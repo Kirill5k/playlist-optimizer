@@ -16,7 +16,7 @@ class SpotifyPlaylistService(accessCode: String)(implicit val C: SpotifyConfig, 
   implicit val c: Crossover[Track] = Crossover.bestKeySequenceTrackCrossover
   implicit val m: Mutator[Track] = Mutator.randomSwapMutator[Track]
 
-  override protected def optimizer: Optimizer[Track] = Optimizer.geneticAlgorithmOptimizer(250, 500, 0.3)
+  override protected def optimizer: Optimizer[IO, Track] = Optimizer.geneticAlgorithmOptimizer(250, 500, 0.3)
 
   private val authClient = new SpotifyAuthClient(accessCode)
   private val apiClient = new SpotifyApiClient()
