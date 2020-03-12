@@ -24,15 +24,15 @@ trait PlaylistController[F[_]] extends AppController[F] {
         } yield resp
       case req @ POST -> Root / "playlists" =>
         for {
-          pl <- req.as[Playlist]
-          _ <- playlistService.save(pl)
+          playlist <- req.as[Playlist]
+          _ <- playlistService.save(playlist)
           resp <- Created()
         } yield resp
       case req @ POST -> Root / "playlists" / "optimize" =>
         for {
-          pl <- req.as[Playlist]
-          optPl <- C.shift *> playlistService.optimize(pl)
-          resp <- Ok(optPl.asJson)
+          playlist <- req.as[Playlist]
+          optimizedPlaylit <- C.shift *> playlistService.optimize(playlist)
+          resp <- Ok(optimizedPlaylit.asJson)
         } yield resp
     }
 }
