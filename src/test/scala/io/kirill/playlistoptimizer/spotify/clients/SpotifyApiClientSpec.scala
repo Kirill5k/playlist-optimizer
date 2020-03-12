@@ -13,7 +13,7 @@ import sttp.client
 import sttp.client.Response
 import sttp.client.asynchttpclient.cats.AsyncHttpClientCatsBackend
 import sttp.client.testing.SttpBackendStub
-import sttp.model.Header
+import sttp.model.{Header, Method}
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
@@ -27,6 +27,21 @@ class SpotifyApiClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers 
   val token = "token-5lcpIsBqfb0Slx9fzZuCu_rM3aBDg"
 
   "A SpotifyClient" - {
+
+    "create new playlist" in {
+      implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
+        .whenRequestMatchesPartial {
+          case r if isAuthorized(r, "api.spotify.com/users", List("user-1", "playlists")) && r.method == Method.POST && r.body.toString.contains("""{"name":"Mel","description":"Melodic deep house and techno songs","public":true,"collaborative":false}""") =>
+            Response.ok(json("spotify/flow/create/1-new-playlist.json"))
+          case r if isAuthorized(r, "api.spotify.com/playlists", List("7d2D2S200NyUE5KYs80PwO", "tracks")) && r.method == Method.POST =>
+            Response.ok(json("spotify/flow/create/2-add-tracks.json"))
+          case r => throw new RuntimeException(s"no mocks for ${r.uri.host}/${r.uri.path.mkString("/")}")
+        }
+
+      val response = new SpotifyApiClient().createPlaylist(token, "user-1", PlaylistBuilder.playlist)
+
+      response.asserting(_ must be (()))
+    }
 
     "find playlist by name" in {
       implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
