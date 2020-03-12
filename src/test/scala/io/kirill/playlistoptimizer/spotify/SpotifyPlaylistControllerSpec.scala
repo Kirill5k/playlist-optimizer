@@ -1,4 +1,4 @@
-package io.kirill.playlistoptimizer.controllers
+package io.kirill.playlistoptimizer.spotify
 
 import cats.effect.testing.scalatest.AsyncIOSpec
 import cats.effect.{ContextShift, IO}
@@ -8,7 +8,7 @@ import org.scalatest.matchers.must.Matchers
 
 import scala.concurrent.ExecutionContext
 
-class SpotifyControllerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
+class SpotifyPlaylistControllerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
   implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContext.Implicits.global)
 
   val authConfig = SpotifyAuthConfig("http://account.spotify.com", "/authorize", "/token", "client-id", "client-secret", "/redirect")

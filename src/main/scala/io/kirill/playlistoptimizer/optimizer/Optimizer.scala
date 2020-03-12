@@ -11,11 +11,12 @@ trait Optimizer[F[_], A] {
 }
 
 object Optimizer {
-  implicit def geneticAlgorithmOptimizer[F[_]: Sync, A: Crossover : Mutator](populationSize: Int, iterations: Int, mutationFactor: Double): Optimizer[F, A] = new Optimizer[F, A] {
-    override def optimize(items: Seq[A])(implicit E: Evaluator[A], R: Random): F[Seq[A]] = Sync[F].delay {
-      (0 until iterations)
-        .foldLeft(items.shuffledCopies(populationSize))((currentPopulation, _) => singleIteration(currentPopulation))
-        .head
+  implicit def geneticAlgorithmOptimizer[F[_]: Sync, A: Crossover : Mutator](populationSize: Int, iterations: Int, mutationFactor: Double): Optimizer[F, A] =
+    new Optimizer[F, A] {
+      override def optimize(items: Seq[A])(implicit E: Evaluator[A], R: Random): F[Seq[A]] = Sync[F].delay {
+        (0 until iterations)
+          .foldLeft(items.shuffledCopies(populationSize))((currentPopulation, _) => singleIteration(currentPopulation))
+          .head
     }
 
     private def singleIteration(population: Seq[Seq[A]])(implicit E: Evaluator[A], C: Crossover[A], M: Mutator[A], R: Random): Seq[Seq[A]] = {

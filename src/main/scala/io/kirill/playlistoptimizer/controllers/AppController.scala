@@ -2,11 +2,12 @@ package io.kirill.playlistoptimizer.controllers
 
 import cats.effect._
 import io.kirill.playlistoptimizer.configs.{AppConfig, SpotifyConfig}
+import io.kirill.playlistoptimizer.spotify.SpotifyPlaylistController
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
 
 trait AppController[F[_]] extends Http4sDsl[F] {
-  def routes: HttpRoutes[F]
+  def routes(implicit C: ContextShift[F], S: Sync[F]): HttpRoutes[F]
 }
 
 object AppController {
@@ -16,6 +17,6 @@ object AppController {
 
   def spotifyController(config: AppConfig)(implicit cs: ContextShift[IO]): AppController[IO] = {
     implicit val sc: SpotifyConfig = config.spotify
-    new SpotifyController[IO]
+    new SpotifyPlaylistController
   }
 }
