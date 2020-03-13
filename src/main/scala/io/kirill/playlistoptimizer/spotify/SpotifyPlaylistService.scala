@@ -10,7 +10,7 @@ import sttp.client.{NothingT, SttpBackend}
 
 import scala.util.Random
 
-class SpotifyPlaylistService(accessCode: String)(implicit val C: SpotifyConfig, val B: SttpBackend[IO, Nothing, NothingT]) extends PlaylistService[IO] {
+class SpotifyPlaylistService(accessCode: String)(implicit C: SpotifyConfig, B: SttpBackend[IO, Nothing, NothingT]) extends PlaylistService[IO] {
   override protected implicit val r: Random = new Random()
 
   implicit val c: Crossover[Track] = Crossover.bestKeySequenceTrackCrossover
