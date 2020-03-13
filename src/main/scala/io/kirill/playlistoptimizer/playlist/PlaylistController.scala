@@ -79,10 +79,4 @@ trait PlaylistController[F[_]] extends AppController[F] {
       }
     }
   }
-
-  private def withErrorHandling(work: => F[Response[F]])(implicit S: Sync[F]): F[Response[F]] = {
-    work.handleError(errorHandler)
-  }
-
-  private def errorHandler(error: Throwable): Response[F] = ???
 }
