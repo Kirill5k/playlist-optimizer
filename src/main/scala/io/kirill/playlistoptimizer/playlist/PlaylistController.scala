@@ -15,7 +15,7 @@ import org.http4s.{EntityDecoder, HttpRoutes}
 import scala.concurrent.duration._
 import scala.language.postfixOps
 
-private final case class TrackView(
+private[playlist] final case class TrackView(
                             name: String,
                             artists: Seq[String],
                             releaseName: Option[String],
@@ -32,18 +32,18 @@ private final case class TrackView(
     Track(SongDetails(name, artists, releaseName, releaseDate, releaseType), AudioDetails(tempo, duration seconds, Key(key, Mode(mode))), SourceDetails(uri, url))
 }
 
-private object TrackView {
+private[playlist] object TrackView {
   def from(track: Track): TrackView = track match {
     case Track(SongDetails(name, artists, releaseName, releaseDate, releaseType), AudioDetails(tempo, duration, key), SourceDetails(uri, url)) =>
       TrackView(name, artists, releaseName, releaseDate, releaseType, tempo, duration.toUnit(TimeUnit.SECONDS), key.number, key.mode.number, uri, url)
   }
 }
 
-private final case class PlaylistView(name: String, description: Option[String], source: String, tracks: Seq[TrackView]) {
+private[playlist] final case class PlaylistView(name: String, description: Option[String], source: String, tracks: Seq[TrackView]) {
   def toDomain: Playlist = Playlist(name, description, PlaylistSource(source), tracks.map(_.toDomain))
 }
 
-private object PlaylistView {
+private[playlist] object PlaylistView {
   def from(playlist: Playlist): PlaylistView =
     PlaylistView(playlist.name, playlist.description, playlist.source.toString, playlist.tracks.map(TrackView.from))
 }
