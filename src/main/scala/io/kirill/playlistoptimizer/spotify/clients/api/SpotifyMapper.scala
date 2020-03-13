@@ -35,7 +35,7 @@ object SpotifyMapper {
       AudioDetails(
         track.tempo,
         Duration(track.duration, TimeUnit.SECONDS),
-        Key(track.key+1, Mode(track.mode))
+        Key(track.key+1, track.mode)
       )
   }
 
@@ -44,7 +44,7 @@ object SpotifyMapper {
       AudioDetails(
         features.tempo,
         Duration(features.duration_ms, TimeUnit.MILLISECONDS),
-        Key(features.key+1, Mode(features.mode))
+        Key(features.key+1, features.mode)
       )
   }
 }

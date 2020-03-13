@@ -29,7 +29,7 @@ private[playlist] final case class TrackView(
                             url: Option[String]
                           ) {
   def toDomain: Track =
-    Track(SongDetails(name, artists, releaseName, releaseDate, releaseType), AudioDetails(tempo, duration seconds, Key(key, Mode(mode))), SourceDetails(uri, url))
+    Track(SongDetails(name, artists, releaseName, releaseDate, releaseType), AudioDetails(tempo, duration seconds, Key(key, mode)), SourceDetails(uri, url))
 }
 
 private[playlist] object TrackView {

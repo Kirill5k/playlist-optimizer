@@ -18,11 +18,6 @@ sealed abstract class Key(val number: Int, val name: String, val mode: Mode, val
 object Key {
   import Mode._
 
-  val values: Seq[Key] = List(
-    AFlatMinor, EFlatMinor, BFlatMinor, FMinor, CMinor, GMinor, DMinor, AMinor, EMinor, BMinor, FSharpMinor, DFlatMinor,
-    BMajor, FSharpMajor, DFlatMajor, AFlatMajor, EFlatMajor, BFlatMajor, FMajor, CMajor, GMajor, DMajor, AMajor, EMajor
-  )
-
   final case object AFlatMinor extends Key(1, "A-Flat Minor", Minor, "Abm", "G#m")
   final case object BMajor extends Key(1, "B Major", Major, "B")
   final case object EFlatMinor extends Key(2, "E-Flat Minor", Minor, "Ebm", "D#m")
@@ -48,6 +43,11 @@ object Key {
   final case object DFlatMinor extends Key(12, "D-Flat Minor", Minor, "Dbm", "C#m")
   final case object EMajor extends Key(12, "E Major", Major, "E")
 
+  lazy val values: Seq[Key] = List(
+    AFlatMinor, EFlatMinor, BFlatMinor, FMinor, CMinor, GMinor, DMinor, AMinor, EMinor, BMinor, FSharpMinor, DFlatMinor,
+    BMajor, FSharpMajor, DFlatMajor, AFlatMajor, EFlatMajor, BFlatMajor, FMajor, CMajor, GMajor, DMajor, AMajor, EMajor
+  )
+
   def distance(key1: Key, key2: Key): Int = (key1, key2) match {
     case (k1, k2) if k1 == k2 => 0
     case (k1, k2) => (k1.number, k2.number, k1.mode, k2.mode) match {
@@ -57,8 +57,11 @@ object Key {
     }
   }
 
-  def apply(number: Int, mode: Mode): Key =
+  def apply(keyNumber: Int, modeNumber: Int): Key =
+    apply(keyNumber, Mode(modeNumber))
+
+  def apply(keyNumber: Int, mode: Mode): Key =
     values
-      .find(key => key.number == number && key.mode == mode)
-      .getOrElse(throw new IllegalArgumentException(s"couldn't find key with number $number and mode $mode"))
+      .find(key => key.number == keyNumber && key.mode == mode)
+      .getOrElse(throw new IllegalArgumentException(s"couldn't find key with number $keyNumber and mode $mode"))
 }
