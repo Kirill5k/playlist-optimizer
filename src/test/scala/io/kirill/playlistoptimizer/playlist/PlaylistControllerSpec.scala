@@ -16,6 +16,8 @@ import org.scalatest.wordspec.AnyWordSpec
 import scala.concurrent.ExecutionContext
 
 class PlaylistControllerSpec extends AnyWordSpec with MockitoSugar with ArgumentMatchersSugar with Matchers {
+  import PlaylistController._
+
   implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContext.Implicits.global)
   implicit val dec1: EntityDecoder[IO, PlaylistView] = jsonOf[IO, PlaylistView]
   implicit val dec2: EntityDecoder[IO, Seq[PlaylistView]] = jsonOf[IO, Seq[PlaylistView]]

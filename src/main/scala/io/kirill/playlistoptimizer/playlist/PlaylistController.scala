@@ -15,40 +15,8 @@ import org.http4s.{EntityDecoder, HttpRoutes, Response}
 import scala.concurrent.duration._
 import scala.language.postfixOps
 
-private[playlist] final case class TrackView(
-                            name: String,
-                            artists: Seq[String],
-                            releaseName: Option[String],
-                            releaseDate: Option[LocalDate],
-                            releaseType: Option[String],
-                            tempo: Double,
-                            duration: Double,
-                            key: Int,
-                            mode: Int,
-                            uri: String,
-                            url: Option[String]
-                          ) {
-  def toDomain: Track =
-    Track(SongDetails(name, artists, releaseName, releaseDate, releaseType), AudioDetails(tempo, duration seconds, Key(key, mode)), SourceDetails(uri, url))
-}
-
-private[playlist] object TrackView {
-  def from(track: Track): TrackView = track match {
-    case Track(SongDetails(name, artists, releaseName, releaseDate, releaseType), AudioDetails(tempo, duration, key), SourceDetails(uri, url)) =>
-      TrackView(name, artists, releaseName, releaseDate, releaseType, tempo, duration.toUnit(TimeUnit.SECONDS), key.number, key.mode.number, uri, url)
-  }
-}
-
-private[playlist] final case class PlaylistView(name: String, description: Option[String], source: String, tracks: Seq[TrackView]) {
-  def toDomain: Playlist = Playlist(name, description, PlaylistSource(source), tracks.map(_.toDomain))
-}
-
-private[playlist] object PlaylistView {
-  def from(playlist: Playlist): PlaylistView =
-    PlaylistView(playlist.name, playlist.description, playlist.source.toString, playlist.tracks.map(TrackView.from))
-}
-
 trait PlaylistController[F[_]] extends AppController[F] {
+  import PlaylistController._
 
   protected def playlistService: PlaylistService[F]
 
@@ -78,5 +46,40 @@ trait PlaylistController[F[_]] extends AppController[F] {
         } yield resp
       }
     }
+  }
+}
+
+object PlaylistController {
+  final case class TrackView(
+                              name: String,
+                              artists: Seq[String],
+                              releaseName: Option[String],
+                              releaseDate: Option[LocalDate],
+                              releaseType: Option[String],
+                              tempo: Double,
+                              duration: Double,
+                              key: Int,
+                              mode: Int,
+                              uri: String,
+                              url: Option[String]
+                            ) {
+    def toDomain: Track =
+      Track(SongDetails(name, artists, releaseName, releaseDate, releaseType), AudioDetails(tempo, duration seconds, Key(key, mode)), SourceDetails(uri, url))
+  }
+
+  object TrackView {
+    def from(track: Track): TrackView = track match {
+      case Track(SongDetails(name, artists, releaseName, releaseDate, releaseType), AudioDetails(tempo, duration, key), SourceDetails(uri, url)) =>
+        TrackView(name, artists, releaseName, releaseDate, releaseType, tempo, duration.toUnit(TimeUnit.SECONDS), key.number, key.mode.number, uri, url)
+    }
+  }
+
+  final case class PlaylistView(name: String, description: Option[String], source: String, tracks: Seq[TrackView]) {
+    def toDomain: Playlist = Playlist(name, description, PlaylistSource(source), tracks.map(_.toDomain))
+  }
+
+  object PlaylistView {
+    def from(playlist: Playlist): PlaylistView =
+      PlaylistView(playlist.name, playlist.description, playlist.source.toString, playlist.tracks.map(TrackView.from))
   }
 }

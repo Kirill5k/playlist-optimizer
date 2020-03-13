@@ -12,9 +12,10 @@ import org.http4s.dsl.Http4sDsl
 import org.http4s.circe._
 import sttp.client.{NothingT, SttpBackend}
 
-final case class ErrorResponse(message: String)
 
 trait AppController[F[_]] extends Http4sDsl[F] {
+  import AppController._
+
   def routes(implicit C: ContextShift[F], S: Sync[F]): HttpRoutes[F]
 
   protected def withErrorHandling(work: => F[Response[F]])(implicit S: Sync[F]): F[Response[F]] =
@@ -24,6 +25,7 @@ trait AppController[F[_]] extends Http4sDsl[F] {
 }
 
 object AppController {
+  final case class ErrorResponse(message: String)
 
   def homeController(blocker: Blocker)(implicit cs: ContextShift[IO]): AppController[IO] =
     new HomeController[IO](blocker)
