@@ -7,7 +7,7 @@ scalaVersion := "2.13.1"
 lazy val pureConfigVersion = "0.12.3"
 lazy val circeVersion = "0.12.3"
 lazy val mockitoVersion = "1.10.3"
-lazy val sttpVersion = "2.0.0-RC13"
+lazy val sttpVersion = "2.0.5"
 lazy val http4sVersion = "0.21.1"
 
 libraryDependencies ++= Seq(

@@ -30,8 +30,9 @@ object AppController {
   def homeController(blocker: Blocker)(implicit cs: ContextShift[IO]): AppController[IO] =
     new HomeController[IO](blocker)
 
-  def spotifyController(config: AppConfig)(implicit cs: ContextShift[IO], B: SttpBackend[IO, Nothing, NothingT]): AppController[IO] = {
+  def spotifyController(config: AppConfig, backend: SttpBackend[IO, Nothing, NothingT]): AppController[IO] = {
     implicit val sc: SpotifyConfig = config.spotify
+    implicit val b = backend
     new SpotifyPlaylistController
   }
 }
