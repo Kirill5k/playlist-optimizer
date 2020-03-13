@@ -10,7 +10,7 @@ import io.circe.generic.auto._
 import io.circe.syntax._
 import io.kirill.playlistoptimizer.controllers.AppController
 import org.http4s.circe._
-import org.http4s.{EntityDecoder, HttpRoutes}
+import org.http4s.{EntityDecoder, HttpRoutes, Response}
 
 import scala.concurrent.duration._
 import scala.language.postfixOps
@@ -55,25 +55,34 @@ trait PlaylistController[F[_]] extends AppController[F] {
   override def routes(implicit C: ContextShift[F], S: Sync[F]): HttpRoutes[F] = {
     implicit val decoder: EntityDecoder[F, PlaylistView] = jsonOf[F, PlaylistView]
     HttpRoutes.of[F] {
-      case GET -> Root / "playlists" =>
+      case GET -> Root / "playlists" => withErrorHandling {
         for {
           playlists <- playlistService.getAll
           views = playlists.map(PlaylistView.from)
           resp <- Ok(views.asJson)
         } yield resp
-      case req @ POST -> Root / "playlists" =>
+      }
+      case req @ POST -> Root / "playlists" => withErrorHandling {
         for {
           view <- req.as[PlaylistView]
           _ <- playlistService.save(view.toDomain)
           resp <- Created()
         } yield resp
-      case req @ POST -> Root / "playlists" / "optimize" =>
+      }
+      case req @ POST -> Root / "playlists" / "optimize" => withErrorHandling {
         for {
           view <- req.as[PlaylistView]
           optimizedPlaylist <- C.shift *> playlistService.optimize(view.toDomain)
           view = PlaylistView.from(optimizedPlaylist)
           resp <- Ok(view.asJson)
         } yield resp
+      }
     }
   }
+
+  private def withErrorHandling(work: => F[Response[F]])(implicit S: Sync[F]): F[Response[F]] = {
+    work.handleError(errorHandler)
+  }
+
+  private def errorHandler(error: Throwable): Response[F] = ???
 }

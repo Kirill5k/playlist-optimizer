@@ -18,9 +18,11 @@ object Application extends IOApp with Http4sDsl[IO] {
     for {
       blocker <- Blocker[IO]
       config <- Resource.liftF(AppConfig.load(blocker))
-      server <- BlazeServerBuilder[IO].bindHttp(config.server.port, config.server.hostname).withHttpApp(Router(
-          "" -> AppController.homeController(blocker).routes,
-          "spotify" -> AppController.spotifyController(config).routes
-        ).orNotFound).resource
+      server <- BlazeServerBuilder[IO]
+                  .bindHttp(config.server.port, config.server.hostname)
+                  .withHttpApp(Router(
+                      "" -> AppController.homeController(blocker).routes
+          //          "spotify" -> AppController.spotifyController(config).routes
+                    ).orNotFound).resource
     } yield server
 }

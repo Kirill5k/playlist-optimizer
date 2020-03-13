@@ -26,14 +26,12 @@ class SpotifyPlaylistController(implicit val sc: SpotifyConfig, B: SttpBackend[I
   private val authorizationLocation =
     Location(Uri.unsafeFromString(s"${sc.auth.baseUrl}${sc.auth.authorizationPath}").withQueryParams(authorizationParams))
 
-  override protected var playlistService: PlaylistService[IO] = ???
+  override protected def playlistService: PlaylistService[IO] = ???
 
   override def routes(implicit C: ContextShift[IO], S: Sync[IO]): HttpRoutes[IO] =
     HttpRoutes.of[IO] {
       case GET -> Root / "ping" => Ok("spotify-pong")
       case GET -> Root / "login" => TemporaryRedirect(authorizationLocation)
-      case GET -> Root / "authenticate" :? CodeQueryParamMatcher(code) =>
-        playlistService = new SpotifyPlaylistService(code)
-        TemporaryRedirect("/")
+      case GET -> Root / "authenticate" :? CodeQueryParamMatcher(code) => TemporaryRedirect("/")
     } <+> super.routes
 }
