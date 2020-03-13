@@ -7,6 +7,11 @@ import scala.concurrent.duration.Duration
 sealed trait PlaylistSource
 object PlaylistSource {
   final case object Spotify extends PlaylistSource
+
+  def apply(source: String): PlaylistSource = source match {
+    case "Spotify" => Spotify
+    case _ => throw new IllegalArgumentException(s"unrecognized playlist source $source")
+  }
 }
 
 

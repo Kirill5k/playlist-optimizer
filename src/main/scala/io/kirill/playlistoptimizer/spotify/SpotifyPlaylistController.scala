@@ -25,8 +25,6 @@ class SpotifyPlaylistController(implicit sc: SpotifyConfig) extends PlaylistCont
   private val authorizationLocation =
     Location(Uri.unsafeFromString(s"${sc.auth.baseUrl}${sc.auth.authorizationPath}").withQueryParams(authorizationParams))
 
-  override protected implicit val decoder: EntityDecoder[IO, Playlist] = jsonOf[IO, Playlist]
-
   override protected def playlistService: PlaylistService[IO] = ???
 
   override def routes(implicit C: ContextShift[IO], S: Sync[IO]): HttpRoutes[IO] =
