@@ -11,7 +11,7 @@ sealed trait Crossover[A] {
 }
 
 object Crossover {
-  implicit def bestKeySequenceTrackCrossover(implicit R: Random): Crossover[Track] = new Crossover[Track] {
+  implicit def bestKeySequenceTrackCrossover(implicit r: Random): Crossover[Track] = new Crossover[Track] {
     override def cross(p1: Seq[Track], p2: Seq[Track]): Seq[Track] = {
       val (bestSeq, seqIndex) = p1.tails.take(p1.size).zipWithIndex.foldLeft[(Seq[Track], Int)]((Nil, -1)) {
         case ((currentBest, bestIndex), (tail, index)) =>
@@ -44,13 +44,13 @@ object Crossover {
     }
   }
 
-  implicit def threeWaySplitCrossover[A](implicit R: Random): Crossover[A] = new Crossover[A] {
+  implicit def threeWaySplitCrossover[A](implicit r: Random): Crossover[A] = new Crossover[A] {
     override def cross(p1: Seq[A], p2: Seq[A]): Seq[A] = {
       val middle = p1.size / 2
-      val point1: Int = R.nextInt(middle)
-      val point2: Int = R.nextInt(middle) + middle
-      val (l, m, r) = p1.splitInThree(point1, point2)
-      l ++ p2.filter(m.contains) ++ r
+      val point1: Int = r.nextInt(middle)
+      val point2: Int = r.nextInt(middle) + middle
+      val (left, mid, right) = p1.splitInThree(point1, point2)
+      left ++ p2.filter(mid.contains) ++ right
     }
   }
 }

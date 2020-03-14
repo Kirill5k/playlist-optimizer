@@ -7,7 +7,7 @@ import io.circe.generic.auto._
 import io.circe.syntax._
 import io.kirill.playlistoptimizer.configs.{AppConfig, SpotifyConfig}
 import io.kirill.playlistoptimizer.spotify.SpotifyPlaylistController
-import org.http4s.{EntityDecoder, HttpRoutes, MessageFailure, Response}
+import org.http4s.{HttpRoutes, MessageFailure, Response}
 import org.http4s.dsl.Http4sDsl
 import org.http4s.circe._
 import sttp.client.{NothingT, SttpBackend}
@@ -16,10 +16,10 @@ import sttp.client.{NothingT, SttpBackend}
 trait AppController[F[_]] extends Http4sDsl[F] {
   import AppController._
 
-  def routes(implicit C: ContextShift[F], S: Sync[F]): HttpRoutes[F]
+  def routes(implicit cs: ContextShift[F], s: Sync[F]): HttpRoutes[F]
 
-  protected def withErrorHandling(work: => F[Response[F]])(implicit S: Sync[F]): F[Response[F]] =
-    work.handleErrorWith {
+  protected def withErrorHandling(response: => F[Response[F]])(implicit s: Sync[F]): F[Response[F]] =
+    response.handleErrorWith {
       case error: MessageFailure => BadRequest(ErrorResponse(error.getMessage()).asJson)
       case error => InternalServerError(ErrorResponse(error.getMessage()).asJson)
     }

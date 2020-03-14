@@ -9,14 +9,14 @@ sealed trait Mutator[A] {
 }
 
 object Mutator {
-  implicit def randomSwapMutator[A](implicit R: Random): Mutator[A] = new Mutator[A] {
+  implicit def randomSwapMutator[A](implicit r: Random): Mutator[A] = new Mutator[A] {
     override def mutate(s: Seq[A]): Seq[A] =
-      s.swap(R.nextInt(s.size), R.nextInt(s.size))
+      s.swap(r.nextInt(s.size), r.nextInt(s.size))
   }
 
-  implicit def neighbourSwapMutator[A](implicit R: Random): Mutator[A] = new Mutator[A] {
+  implicit def neighbourSwapMutator[A](implicit r: Random): Mutator[A] = new Mutator[A] {
     override def mutate(s: Seq[A]): Seq[A] = {
-      val p1 = R.nextInt(s.size)
+      val p1 = r.nextInt(s.size)
       val p2 = if (p1 > s.size/2) p1 - 1 else p1 + 1
       s.swap(p1, p2)
     }

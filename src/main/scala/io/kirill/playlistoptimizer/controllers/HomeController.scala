@@ -5,7 +5,7 @@ import org.http4s.{HttpRoutes, StaticFile}
 
 class HomeController[F[_]](blocker: Blocker) extends AppController[F] {
 
-  override def routes(implicit C: ContextShift[F], S: Sync[F]): HttpRoutes[F] =
+  override def routes(implicit cs: ContextShift[F], s: Sync[F]): HttpRoutes[F] =
     HttpRoutes.of[F] {
       case req @ GET -> Root =>
         StaticFile.fromResource("static/index.html", blocker, Some(req)).getOrElseF(NotFound())

@@ -20,7 +20,7 @@ trait PlaylistController[F[_]] extends AppController[F] {
 
   protected def playlistService: PlaylistService[F]
 
-  override def routes(implicit C: ContextShift[F], S: Sync[F]): HttpRoutes[F] = {
+  override def routes(implicit cs: ContextShift[F], s: Sync[F]): HttpRoutes[F] = {
     implicit val decoder: EntityDecoder[F, PlaylistView] = jsonOf[F, PlaylistView]
     HttpRoutes.of[F] {
       case GET -> Root / "playlists" => withErrorHandling {

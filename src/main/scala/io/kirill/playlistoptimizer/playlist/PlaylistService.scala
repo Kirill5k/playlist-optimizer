@@ -15,7 +15,7 @@ trait PlaylistService[F[_]] {
   def findByName(name: String): F[Playlist]
   def save(playlist: Playlist): F[Unit]
 
-  def optimize(playlist: Playlist)(implicit M: MonadError[F, Throwable]): F[Playlist] =
+  def optimize(playlist: Playlist)(implicit m: MonadError[F, Throwable]): F[Playlist] =
     optimizer.optimize(playlist.tracks)
       .map(optimizedTracks => playlist.copy(name = s"${playlist.name} optimized", tracks = optimizedTracks))
 }
