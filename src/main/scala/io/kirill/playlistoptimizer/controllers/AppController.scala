@@ -7,7 +7,7 @@ import io.circe.generic.auto._
 import io.circe.syntax._
 import io.kirill.playlistoptimizer.configs.{AppConfig, SpotifyConfig}
 import io.kirill.playlistoptimizer.spotify.SpotifyPlaylistController
-import org.http4s.{EntityDecoder, HttpRoutes, Response}
+import org.http4s.{EntityDecoder, HttpRoutes, MessageFailure, Response}
 import org.http4s.dsl.Http4sDsl
 import org.http4s.circe._
 import sttp.client.{NothingT, SttpBackend}
@@ -19,8 +19,9 @@ trait AppController[F[_]] extends Http4sDsl[F] {
   def routes(implicit C: ContextShift[F], S: Sync[F]): HttpRoutes[F]
 
   protected def withErrorHandling(work: => F[Response[F]])(implicit S: Sync[F]): F[Response[F]] =
-    work.handleErrorWith { error =>
-      InternalServerError(ErrorResponse(error.getMessage()).asJson)
+    work.handleErrorWith {
+      case error: MessageFailure => BadRequest(ErrorResponse(error.getMessage()).asJson)
+      case error => InternalServerError(ErrorResponse(error.getMessage()).asJson)
     }
 }
 
@@ -32,7 +33,7 @@ object AppController {
 
   def spotifyController(config: AppConfig, backend: SttpBackend[IO, Nothing, NothingT]): AppController[IO] = {
     implicit val sc: SpotifyConfig = config.spotify
-    implicit val b = backend
+    implicit val b: SttpBackend[IO, Nothing, NothingT] = backend
     new SpotifyPlaylistController
   }
 }

@@ -12,7 +12,7 @@ import org.http4s.headers.Location
 import org.http4s.{HttpRoutes, Uri}
 import sttp.client.{NothingT, SttpBackend}
 
-class SpotifyPlaylistController(implicit val sc: SpotifyConfig, B: SttpBackend[IO, Nothing, NothingT]) extends PlaylistController[IO] {
+class SpotifyPlaylistController(implicit val sc: SpotifyConfig, b: SttpBackend[IO, Nothing, NothingT]) extends PlaylistController[IO] {
 
   private object CodeQueryParamMatcher extends QueryParamDecoderMatcher[String]("code")
 

@@ -17,10 +17,12 @@ import scala.concurrent.ExecutionContext
 
 class PlaylistControllerSpec extends AnyWordSpec with MockitoSugar with ArgumentMatchersSugar with Matchers {
   import PlaylistController._
+  import io.kirill.playlistoptimizer.controllers.AppController._
 
   implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContext.Implicits.global)
-  implicit val dec1: EntityDecoder[IO, PlaylistView] = jsonOf[IO, PlaylistView]
-  implicit val dec2: EntityDecoder[IO, Seq[PlaylistView]] = jsonOf[IO, Seq[PlaylistView]]
+  implicit val plDec1: EntityDecoder[IO, PlaylistView] = jsonOf[IO, PlaylistView]
+  implicit val plDec2: EntityDecoder[IO, Seq[PlaylistView]] = jsonOf[IO, Seq[PlaylistView]]
+  implicit val errorDec: EntityDecoder[IO, ErrorResponse] = jsonOf[IO, ErrorResponse]
 
   val playlist = PlaylistBuilder.playlist
   val shortenedPlaylist = playlist.copy(tracks = List(playlist.tracks.head))
@@ -91,6 +93,22 @@ class PlaylistControllerSpec extends AnyWordSpec with MockitoSugar with Argument
         TrackView("Glue", List("Bicep"), Some("Bicep"), Some(LocalDate.of(2017, 9, 1)), Some("album"), 129.983, 269.15, 5, 0, "spotify:track:2aJDlirz6v2a4HREki98cP", Some("https://open.spotify.com/track/2aJDlirz6v2a4HREki98cP"))
       ))))
       playlistCaptor.getValue must be (shortenedPlaylist)
+    }
+
+    "return internal server error if uncategorized error" in {
+      when(playlistServiceMock.getAll).thenReturn(IO.raiseError(new NullPointerException("error-message")))
+
+      val request = Request[IO](uri = uri"/playlists")
+      val response: IO[Response[IO]] = playlistController.routes.orNotFound.run(request)
+
+      verifyResponse[ErrorResponse](response, Status.InternalServerError, Some(ErrorResponse("error-message")))
+    }
+
+    "return bad request error if invalid json" in {
+      val request = Request[IO](uri = uri"/playlists/optimize", method = Method.POST).withEntity("{foo-bar}")
+      val response: IO[Response[IO]] = playlistController.routes.orNotFound.run(request)
+
+      verifyResponse[ErrorResponse](response, Status.BadRequest, Some(ErrorResponse("Malformed message body: Invalid JSON")))
     }
   }
 
