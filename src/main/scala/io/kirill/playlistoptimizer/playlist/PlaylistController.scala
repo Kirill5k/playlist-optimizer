@@ -40,7 +40,7 @@ trait PlaylistController[F[_]] extends AppController[F] {
       case req @ POST -> Root / "playlists" / "optimize" => withErrorHandling {
         for {
           view <- req.as[PlaylistView]
-          optimizedPlaylist <- C.shift *> playlistService.optimize(view.toDomain)
+          optimizedPlaylist <- cs.shift *> playlistService.optimize(view.toDomain)
           view = PlaylistView.from(optimizedPlaylist)
           resp <- Ok(view.asJson)
         } yield resp
