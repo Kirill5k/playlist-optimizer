@@ -5,7 +5,7 @@ import java.time.Instant
 import cats.effect.IO
 import cats.implicits._
 import io.kirill.playlistoptimizer.common.configs.SpotifyConfig
-import io.kirill.playlistoptimizer.common.errors.ApplicationError.UnauthorizedError
+import io.kirill.playlistoptimizer.common.errors.ApplicationError.AuthenticationRequiredError
 import io.kirill.playlistoptimizer.spotify.clients.api.{SpotifyAuthApi, SpotifyRestApi}
 import sttp.client.{NothingT, SttpBackend}
 
@@ -13,7 +13,7 @@ private[spotify] class SpotifyAuthClient(implicit val sc: SpotifyConfig, val b: 
   import SpotifyAuthClient._
 
   private var spotifyAccessToken: IO[SpotifyAccessToken] =
-    IO.raiseError(UnauthorizedError("authorization with Spotify is required"))
+    IO.raiseError(AuthenticationRequiredError("authorization with Spotify is required"))
 
   def authorize(accessCode: String): IO[Unit] = {
     spotifyAccessToken = for {

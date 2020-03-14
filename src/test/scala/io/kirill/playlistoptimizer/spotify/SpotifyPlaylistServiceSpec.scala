@@ -3,7 +3,7 @@ package io.kirill.playlistoptimizer.spotify
 import cats.effect.testing.scalatest.AsyncIOSpec
 import cats.effect.{ContextShift, IO}
 import io.kirill.playlistoptimizer.common.configs.{SpotifyApiConfig, SpotifyAuthConfig, SpotifyConfig}
-import io.kirill.playlistoptimizer.common.errors.ApplicationError.UnauthorizedError
+import io.kirill.playlistoptimizer.common.errors.ApplicationError.AuthenticationRequiredError
 import org.scalatest.freespec.AsyncFreeSpec
 import org.scalatest.matchers.must.Matchers
 import sttp.client.asynchttpclient.cats.AsyncHttpClientCatsBackend
@@ -28,7 +28,7 @@ class SpotifyPlaylistServiceSpec extends AsyncFreeSpec with AsyncIOSpec with Mat
 
       val service = new SpotifyPlaylistService()
 
-      service.findByName("foo").assertThrows[UnauthorizedError]
+      service.findByName("foo").assertThrows[AuthenticationRequiredError]
     }
   }
 }

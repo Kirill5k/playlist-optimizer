@@ -29,7 +29,7 @@ class SpotifyAuthClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
 
       val client = new SpotifyAuthClient()
 
-      client.token.assertThrows[UnauthorizedError]
+      client.token.assertThrows[AuthenticationRequiredError]
     }
 
     "send authorization and get current requests on initialization" in {

@@ -6,7 +6,7 @@ import io.circe._
 import io.circe.generic.auto._
 import io.circe.syntax._
 import io.kirill.playlistoptimizer.common.configs.{AppConfig, SpotifyConfig}
-import io.kirill.playlistoptimizer.common.errors.ApplicationError.UnauthorizedError
+import io.kirill.playlistoptimizer.common.errors.ApplicationError.AuthenticationRequiredError
 import io.kirill.playlistoptimizer.spotify.SpotifyPlaylistController
 import org.http4s.{HttpRoutes, MessageFailure, Response, Status}
 import org.http4s.dsl.Http4sDsl
@@ -21,7 +21,7 @@ trait AppController[F[_]] extends Http4sDsl[F] {
 
   protected def withErrorHandling(response: => F[Response[F]])(implicit s: Sync[F]): F[Response[F]] =
     response.handleErrorWith {
-      case error: UnauthorizedError => Forbidden(ErrorResponse(error.getMessage()).asJson)
+      case error: AuthenticationRequiredError => Forbidden(ErrorResponse(error.getMessage()).asJson)
       case error: MessageFailure => BadRequest(ErrorResponse(error.getMessage()).asJson)
       case error => InternalServerError(ErrorResponse(error.getMessage()).asJson)
     }

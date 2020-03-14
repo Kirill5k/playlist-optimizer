@@ -5,5 +5,5 @@ sealed trait ApplicationError extends Throwable {
 }
 
 object ApplicationError {
-  final case class UnauthorizedError(message: String) extends ApplicationError
+  final case class AuthenticationRequiredError(message: String) extends ApplicationError
 }
