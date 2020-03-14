@@ -15,23 +15,23 @@ import sttp.model.MediaType
 object SpotifyAuthApi {
 
   def authorize[F[_]](code: String)(
-    implicit C: SpotifyConfig, B: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]
+    implicit sc: SpotifyConfig, b: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]
   ): F[SpotifyAuthResponse] =
-    getToken[F, SpotifyAuthResponse](Map("grant_type" -> "authorization_code", "code" -> code, "redirect_uri" -> C.auth.redirectUri))
+    getToken[F, SpotifyAuthResponse](Map("grant_type" -> "authorization_code", "code" -> code, "redirect_uri" -> sc.auth.redirectUri))
 
   def refresh[F[_]](refreshToken: String)(
-    implicit C: SpotifyConfig, B: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]
+    implicit sc: SpotifyConfig, b: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]
   ): F[SpotifyAuthRefreshResponse] =
     getToken[F, SpotifyAuthRefreshResponse](Map("refresh_token" -> refreshToken))
 
   private def getToken[F[_], R <: SpotifyResponse: Decoder](requestBody: Map[String, String])(
-    implicit C: SpotifyConfig, B: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]
+    implicit sc: SpotifyConfig, b: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]
   ): F[R] =
     basicRequest
       .body(requestBody)
-      .auth.basic(C.auth.clientId, C.auth.clientSecret)
+      .auth.basic(sc.auth.clientId, sc.auth.clientSecret)
       .contentType(MediaType.ApplicationXWwwFormUrlencoded)
-      .post(uri"${C.auth.baseUrl}${C.auth.tokenPath}")
+      .post(uri"${sc.auth.baseUrl}${sc.auth.tokenPath}")
       .response(asJson[R])
       .send()
       .flatMap(r => mapResponseBody[F, R](r.body))

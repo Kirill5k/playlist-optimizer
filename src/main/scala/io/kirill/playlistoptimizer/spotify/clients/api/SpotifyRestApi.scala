@@ -15,92 +15,92 @@ import sttp.model.MediaType
 object SpotifyRestApi {
 
   def getCurrentUser[F[_]](authToken: String)(
-    implicit C: SpotifyConfig, B: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]
+    implicit sc: SpotifyConfig, b: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]
   ): F[SpotifyUserResponse] =
     basicRequest
       .auth.bearer(authToken)
       .contentType(MediaType.ApplicationJson)
-      .get(uri"${C.api.baseUrl}${C.api.currentUserPath}")
+      .get(uri"${sc.api.baseUrl}${sc.api.currentUserPath}")
       .response(asJson[SpotifyUserResponse])
       .send()
       .flatMap(r => mapResponseBody[F, SpotifyUserResponse](r.body))
 
   def getAudioAnalysis[F[_]](authToken: String, trackId: String)(
-    implicit C: SpotifyConfig, B: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]
+    implicit sc: SpotifyConfig, b: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]
   ): F[SpotifyAudioAnalysisResponse] =
     basicRequest
       .auth.bearer(authToken)
       .contentType(MediaType.ApplicationJson)
-      .get(uri"${C.api.baseUrl}${C.api.audioAnalysisPath}/$trackId")
+      .get(uri"${sc.api.baseUrl}${sc.api.audioAnalysisPath}/$trackId")
       .response(asJson[SpotifyAudioAnalysisResponse])
       .send()
       .flatMap(r => mapResponseBody[F, SpotifyAudioAnalysisResponse](r.body))
 
   def getAudioFeatures[F[_]](authToken: String, trackId: String)(
-    implicit C: SpotifyConfig, B: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]
+    implicit sc: SpotifyConfig, b: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]
   ): F[SpotifyAudioFeaturesResponse] =
     basicRequest
       .auth.bearer(authToken)
       .contentType(MediaType.ApplicationJson)
-      .get(uri"${C.api.baseUrl}${C.api.audioFeaturesPath}/$trackId")
+      .get(uri"${sc.api.baseUrl}${sc.api.audioFeaturesPath}/$trackId")
       .response(asJson[SpotifyAudioFeaturesResponse])
       .send()
       .flatMap(r => mapResponseBody[F, SpotifyAudioFeaturesResponse](r.body))
 
   def getPlaylist[F[_]](authToken: String, playlistId: String)(
-    implicit C: SpotifyConfig, B: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]
+    implicit sc: SpotifyConfig, b: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]
   ): F[SpotifyPlaylistResponse] =
     basicRequest
       .auth.bearer(authToken)
       .contentType(MediaType.ApplicationJson)
-      .get(uri"${C.api.baseUrl}${C.api.playlistsPath}/$playlistId")
+      .get(uri"${sc.api.baseUrl}${sc.api.playlistsPath}/$playlistId")
       .response(asJson[SpotifyPlaylistResponse])
       .send()
       .flatMap(r => mapResponseBody[F, SpotifyPlaylistResponse](r.body))
 
   def getUserPlaylists[F[_]](authToken: String)(
-    implicit C: SpotifyConfig, B: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]
+    implicit sc: SpotifyConfig, b: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]
   ): F[SpotifyPlaylistsResponse] =
     basicRequest
       .auth.bearer(authToken)
       .contentType(MediaType.ApplicationJson)
-      .get(uri"${C.api.baseUrl}${C.api.currentUserPath}/playlists")
+      .get(uri"${sc.api.baseUrl}${sc.api.currentUserPath}/playlists")
       .response(asJson[SpotifyPlaylistsResponse])
       .send()
       .flatMap(r => mapResponseBody[F, SpotifyPlaylistsResponse](r.body))
 
   def createPlaylist[F[_]](authToken: String, userId: String, playlistName: String, playlistDescription: Option[String])(
-    implicit C: SpotifyConfig, B: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]
+    implicit sc: SpotifyConfig, b: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]
   ): F[SpotifyPlaylistResponse] =
     basicRequest
       .body(CreatePlaylistRequest(playlistName, playlistDescription))
       .auth.bearer(authToken)
       .contentType(MediaType.ApplicationJson)
-      .post(uri"${C.api.baseUrl}${C.api.usersPath}/$userId/playlists")
+      .post(uri"${sc.api.baseUrl}${sc.api.usersPath}/$userId/playlists")
       .response(asJson[SpotifyPlaylistResponse])
       .send()
       .flatMap(r => mapResponseBody[F, SpotifyPlaylistResponse](r.body))
 
   def addTracksToPlaylist[F[_]](authToken: String, playlistId: String, uris: Seq[String], position: Option[Int] = None)(
-    implicit C: SpotifyConfig, B: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]
+    implicit sc: SpotifyConfig, b: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]
   ): F[SpotifyOperationSuccessResponse] =
     basicRequest
       .body(AddTracksToPlaylistRequest(uris, position))
       .auth.bearer(authToken)
       .contentType(MediaType.ApplicationJson)
-      .post(uri"${C.api.baseUrl}${C.api.playlistsPath}/$playlistId/tracks")
+      .post(uri"${sc.api.baseUrl}${sc.api.playlistsPath}/$playlistId/tracks")
       .response(asJson[SpotifyOperationSuccessResponse])
       .send()
       .flatMap(r => mapResponseBody[F, SpotifyOperationSuccessResponse](r.body))
 
   def replaceTracksInPlaylist[F[_]](authToken: String, playlistId: String, uris: Seq[String])(
-    implicit C: SpotifyConfig, B: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]
+    implicit sc: SpotifyConfig, b: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]
   ): F[Unit] =
     basicRequest
       .body(ReplaceTracksInPlaylistRequest(uris))
       .auth.bearer(authToken)
       .contentType(MediaType.ApplicationJson)
-      .put(uri"${C.api.baseUrl}${C.api.playlistsPath}/$playlistId/tracks")
+      .put(uri"${sc.api.baseUrl}${sc.api.playlistsPath}/$playlistId/tracks")
       .send()
       .flatMap { r =>
         r.body match {

@@ -7,17 +7,9 @@ import io.kirill.playlistoptimizer.configs.SpotifyConfig
 import io.kirill.playlistoptimizer.spotify.clients.api.{SpotifyAuthApi, SpotifyRestApi}
 import sttp.client.{NothingT, SttpBackend}
 
-private[clients] case class SpotifyAccessToken(accessToken: String, refreshToken: String, userId: String, validUntil: Instant) {
-  def isValid: Boolean = validUntil.isAfter(Instant.now())
-}
-
-private[clients] object SpotifyAccessToken {
-  def apply(accessToken: String, refreshToken: String, userId: String, expiresIn: Int): SpotifyAccessToken =
-    new SpotifyAccessToken(accessToken, refreshToken, userId, Instant.now().plusSeconds(expiresIn))
-}
-
 private[spotify] class SpotifyAuthClient(accessCode: String)(implicit val sc: SpotifyConfig, val b: SttpBackend[IO, Nothing, NothingT]) {
-  
+  import SpotifyAuthClient._
+
   private var spotifyAccessToken: IO[SpotifyAccessToken] = for {
     authResponse <- SpotifyAuthApi.authorize(accessCode)
     userResponse <- SpotifyRestApi.getCurrentUser(authResponse.access_token)
@@ -33,4 +25,15 @@ private[spotify] class SpotifyAuthClient(accessCode: String)(implicit val sc: Sp
   }
 
   def userId: IO[String] = spotifyAccessToken.map(_.userId)
+}
+
+private[spotify] object SpotifyAuthClient {
+  final case class SpotifyAccessToken(accessToken: String, refreshToken: String, userId: String, validUntil: Instant) {
+    def isValid: Boolean = validUntil.isAfter(Instant.now())
+  }
+
+  final object SpotifyAccessToken {
+    def apply(accessToken: String, refreshToken: String, userId: String, expiresIn: Int): SpotifyAccessToken =
+      new SpotifyAccessToken(accessToken, refreshToken, userId, Instant.now().plusSeconds(expiresIn))
+  }
 }

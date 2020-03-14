@@ -4,6 +4,8 @@ import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
 class SpotifyAccessTokenSpec extends AnyWordSpec with Matchers {
+  import SpotifyAuthClient._
+
   "A SpotifyAccessToken" should {
 
     "return valid if it has not expired" in {
