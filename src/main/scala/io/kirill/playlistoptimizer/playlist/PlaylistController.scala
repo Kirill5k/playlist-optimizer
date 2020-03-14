@@ -8,7 +8,7 @@ import cats.effect.{ContextShift, Sync}
 import io.circe._
 import io.circe.generic.auto._
 import io.circe.syntax._
-import io.kirill.playlistoptimizer.controllers.AppController
+import io.kirill.playlistoptimizer.common.controllers.AppController
 import org.http4s.circe._
 import org.http4s.{EntityDecoder, HttpRoutes, Response}
 

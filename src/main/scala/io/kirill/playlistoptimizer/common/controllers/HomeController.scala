@@ -1,4 +1,4 @@
-package io.kirill.playlistoptimizer.controllers
+package io.kirill.playlistoptimizer.common.controllers
 
 import cats.effect._
 import org.http4s.{HttpRoutes, StaticFile}

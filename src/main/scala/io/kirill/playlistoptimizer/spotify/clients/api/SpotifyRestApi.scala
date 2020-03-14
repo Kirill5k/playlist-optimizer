@@ -4,7 +4,7 @@ import cats.implicits._
 import cats.MonadError
 import io.circe.generic.auto._
 import io.circe.parser._
-import io.kirill.playlistoptimizer.configs.SpotifyConfig
+import io.kirill.playlistoptimizer.common.configs.SpotifyConfig
 import io.kirill.playlistoptimizer.spotify.clients.api.SpotifyResponse._
 import io.kirill.playlistoptimizer.spotify.clients.api.SpotifyRequest._
 import io.kirill.playlistoptimizer.spotify.clients.api.SpotifyError._

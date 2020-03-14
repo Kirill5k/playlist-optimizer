@@ -4,7 +4,7 @@ import java.time.LocalDate
 
 import cats.effect.testing.scalatest.AsyncIOSpec
 import cats.effect.{ContextShift, IO}
-import io.kirill.playlistoptimizer.configs.{SpotifyApiConfig, SpotifyAuthConfig, SpotifyConfig, SpotifyConfigBuilder}
+import io.kirill.playlistoptimizer.common.configs.{SpotifyApiConfig, SpotifyAuthConfig, SpotifyConfig, SpotifyConfigBuilder}
 import io.kirill.playlistoptimizer.playlist.Key._
 import io.kirill.playlistoptimizer.playlist._
 import org.scalatest.freespec.AsyncFreeSpec

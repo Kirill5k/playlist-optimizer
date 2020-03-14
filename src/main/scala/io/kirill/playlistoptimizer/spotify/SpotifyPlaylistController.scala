@@ -5,7 +5,7 @@ import cats.implicits._
 import io.circe._
 import io.circe.generic.auto._
 import io.circe.syntax._
-import io.kirill.playlistoptimizer.configs.SpotifyConfig
+import io.kirill.playlistoptimizer.common.configs.SpotifyConfig
 import io.kirill.playlistoptimizer.playlist._
 import org.http4s.circe._
 import org.http4s.headers.Location
@@ -26,12 +26,12 @@ class SpotifyPlaylistController(implicit val sc: SpotifyConfig, b: SttpBackend[I
   private val authorizationLocation =
     Location(Uri.unsafeFromString(s"${sc.auth.baseUrl}${sc.auth.authorizationPath}").withQueryParams(authorizationParams))
 
-  override protected def playlistService: PlaylistService[IO] = ???
+  override protected def playlistService: SpotifyPlaylistService = new SpotifyPlaylistService()
 
   override def routes(implicit C: ContextShift[IO], S: Sync[IO]): HttpRoutes[IO] =
     HttpRoutes.of[IO] {
       case GET -> Root / "ping" => Ok("spotify-pong")
       case GET -> Root / "login" => TemporaryRedirect(authorizationLocation)
-      case GET -> Root / "authenticate" :? CodeQueryParamMatcher(code) => TemporaryRedirect("/")
+      case GET -> Root / "authenticate" :? CodeQueryParamMatcher(code) => playlistService.authenticate(code) *> TemporaryRedirect("/")
     } <+> super.routes
 }

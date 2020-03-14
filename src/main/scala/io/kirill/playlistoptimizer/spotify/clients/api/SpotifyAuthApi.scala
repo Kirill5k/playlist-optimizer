@@ -7,7 +7,7 @@ import io.circe.generic.auto._
 import io.circe.parser._
 import io.kirill.playlistoptimizer.spotify.clients.api.SpotifyError.SpotifyAuthError
 import io.kirill.playlistoptimizer.spotify.clients.api.SpotifyResponse.{SpotifyAuthResponse, SpotifyAuthRefreshResponse}
-import io.kirill.playlistoptimizer.configs.SpotifyConfig
+import io.kirill.playlistoptimizer.common.configs.SpotifyConfig
 import sttp.client._
 import sttp.client.circe._
 import sttp.model.MediaType

@@ -1,4 +1,4 @@
-package io.kirill.playlistoptimizer.configs
+package io.kirill.playlistoptimizer.common.configs
 
 import cats.effect.testing.scalatest.AsyncIOSpec
 import cats.effect.{Blocker, ContextShift, IO}

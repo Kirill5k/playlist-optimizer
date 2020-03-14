@@ -3,17 +3,25 @@ package io.kirill.playlistoptimizer.spotify.clients
 import java.time.Instant
 
 import cats.effect.IO
-import io.kirill.playlistoptimizer.configs.SpotifyConfig
+import cats.implicits._
+import io.kirill.playlistoptimizer.common.configs.SpotifyConfig
+import io.kirill.playlistoptimizer.common.errors.ApplicationError.UnauthorizedError
 import io.kirill.playlistoptimizer.spotify.clients.api.{SpotifyAuthApi, SpotifyRestApi}
 import sttp.client.{NothingT, SttpBackend}
 
-private[spotify] class SpotifyAuthClient(accessCode: String)(implicit val sc: SpotifyConfig, val b: SttpBackend[IO, Nothing, NothingT]) {
+private[spotify] class SpotifyAuthClient(implicit val sc: SpotifyConfig, val b: SttpBackend[IO, Nothing, NothingT]) {
   import SpotifyAuthClient._
 
-  private var spotifyAccessToken: IO[SpotifyAccessToken] = for {
-    authResponse <- SpotifyAuthApi.authorize(accessCode)
-    userResponse <- SpotifyRestApi.getCurrentUser(authResponse.access_token)
-  } yield SpotifyAccessToken(authResponse.access_token, authResponse.refresh_token, userResponse.id, authResponse.expires_in)
+  private var spotifyAccessToken: IO[SpotifyAccessToken] =
+    IO.raiseError(UnauthorizedError("authorization with Spotify is required"))
+
+  def authorize(accessCode: String): IO[Unit] = {
+    spotifyAccessToken = for {
+      authResponse <- SpotifyAuthApi.authorize(accessCode)
+      userResponse <- SpotifyRestApi.getCurrentUser(authResponse.access_token)
+    } yield SpotifyAccessToken(authResponse.access_token, authResponse.refresh_token, userResponse.id, authResponse.expires_in)
+    spotifyAccessToken *> IO.pure(())
+  }
 
   def token: IO[String] = {
     spotifyAccessToken = for {

@@ -1,3 +1,3 @@
-package io.kirill.playlistoptimizer.configs
+package io.kirill.playlistoptimizer.common.configs
 
 case class ServerConfig(hostname: String, port: Int)

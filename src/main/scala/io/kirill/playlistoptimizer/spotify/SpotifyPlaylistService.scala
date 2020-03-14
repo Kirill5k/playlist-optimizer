@@ -1,7 +1,7 @@
 package io.kirill.playlistoptimizer.spotify
 
 import cats.effect._
-import io.kirill.playlistoptimizer.configs.SpotifyConfig
+import io.kirill.playlistoptimizer.common.configs.SpotifyConfig
 import io.kirill.playlistoptimizer.optimizer.Optimizer
 import io.kirill.playlistoptimizer.optimizer.operators.{Crossover, Mutator}
 import io.kirill.playlistoptimizer.playlist.{Playlist, PlaylistService, Track}
@@ -10,7 +10,7 @@ import sttp.client.{NothingT, SttpBackend}
 
 import scala.util.Random
 
-class SpotifyPlaylistService(accessCode: String)(implicit C: SpotifyConfig, B: SttpBackend[IO, Nothing, NothingT]) extends PlaylistService[IO] {
+class SpotifyPlaylistService(implicit C: SpotifyConfig, B: SttpBackend[IO, Nothing, NothingT]) extends PlaylistService[IO] {
   override protected implicit val r: Random = new Random()
 
   implicit val c: Crossover[Track] = Crossover.bestKeySequenceTrackCrossover
@@ -18,8 +18,11 @@ class SpotifyPlaylistService(accessCode: String)(implicit C: SpotifyConfig, B: S
 
   override protected def optimizer: Optimizer[IO, Track] = Optimizer.geneticAlgorithmOptimizer(250, 500, 0.3)
 
-  private val authClient = new SpotifyAuthClient(accessCode)
-  private val apiClient = new SpotifyApiClient()
+  private val authClient: SpotifyAuthClient = new SpotifyAuthClient()
+  private val apiClient: SpotifyApiClient = new SpotifyApiClient()
+
+  def authenticate(accessCode: String): IO[Unit] =
+    authClient.authorize(accessCode)
 
   override def getAll: IO[Seq[Playlist]] =
     for {

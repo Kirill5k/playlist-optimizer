@@ -2,7 +2,8 @@ package io.kirill.playlistoptimizer.spotify.clients
 
 import cats.effect.{ContextShift, IO}
 import cats.effect.testing.scalatest.AsyncIOSpec
-import io.kirill.playlistoptimizer.configs.{SpotifyConfig, SpotifyConfigBuilder}
+import io.kirill.playlistoptimizer.common.configs.{SpotifyConfig, SpotifyConfigBuilder}
+import io.kirill.playlistoptimizer.common.errors.ApplicationError._
 import org.scalatest.freespec.AsyncFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -20,6 +21,17 @@ class SpotifyAuthClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
 
   "A SpotifyAuthClient" - {
 
+    "return error when not authorized" in {
+      implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
+        .whenRequestMatchesPartial {
+          case _ => throw new RuntimeException()
+        }
+
+      val client = new SpotifyAuthClient()
+
+      client.token.assertThrows[UnauthorizedError]
+    }
+
     "send authorization and get current requests on initialization" in {
       implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
@@ -30,7 +42,8 @@ class SpotifyAuthClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
           case _ => throw new RuntimeException()
         }
 
-      val client = new SpotifyAuthClient("code")
+      val client = new SpotifyAuthClient()
+      client.authorize("code")
 
       client.token.asserting(_ must be ("access-O3qzgejLCgXwAE5acsqk8LQcih2qpDkaCjrJRRhuY"))
       client.userId.asserting(_ must be ("wizzler"))
@@ -48,7 +61,8 @@ class SpotifyAuthClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
           case _ => throw new RuntimeException()
         }
 
-      val client = new SpotifyAuthClient("code")
+      val client = new SpotifyAuthClient
+      client.authorize("code")
 
       client.token.asserting(_ must be ("refresh-O3qzgejLCgXwAE5acsqk8LQcih2qpDkaCjrJRRhuY"))
       client.userId.asserting(_ must be ("wizzler"))

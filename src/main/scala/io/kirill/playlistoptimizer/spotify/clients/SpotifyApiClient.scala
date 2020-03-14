@@ -2,7 +2,7 @@ package io.kirill.playlistoptimizer.spotify.clients
 
 import cats.effect.IO
 import fs2.Stream
-import io.kirill.playlistoptimizer.configs.SpotifyConfig
+import io.kirill.playlistoptimizer.common.configs.SpotifyConfig
 import io.kirill.playlistoptimizer.playlist.{Playlist, PlaylistSource}
 import io.kirill.playlistoptimizer.spotify.clients.api.SpotifyResponse.{PlaylistTrack, SpotifyAudioFeaturesResponse}
 import io.kirill.playlistoptimizer.spotify.clients.api.{SpotifyMapper, SpotifyRestApi}
