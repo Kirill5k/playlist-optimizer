@@ -4,7 +4,7 @@ import scala.util.Random
 
 object CollectionOps {
 
-  implicit class SeqOps[A](val seq: Seq[A]) extends AnyVal {
+  implicit class SeqOps[A](private val seq: Seq[A]) extends AnyVal {
 
     def splitInThree(p1: Int, p2: Int): (Seq[A], Seq[A], Seq[A]) = {
       if (p1 >= p2) throw new IllegalArgumentException("point 1 must be less than point 2")

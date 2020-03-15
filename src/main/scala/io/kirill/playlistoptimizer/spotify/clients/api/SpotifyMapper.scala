@@ -16,7 +16,7 @@ object SpotifyMapper {
     Track(song.toSongDetails, audio.toDomain, song.toSourceDetails)
 
 
-  implicit class PlaylistTrackSyntax(val track: SpotifyResponse.PlaylistTrack) extends AnyVal {
+  implicit class PlaylistTrackSyntax(private val track: SpotifyResponse.PlaylistTrack) extends AnyVal {
     def toSongDetails: SongDetails =
       SongDetails(
         track.name,
@@ -30,7 +30,7 @@ object SpotifyMapper {
       SourceDetails(track.uri, Some(track.external_urls.spotify))
   }
 
-  implicit class AudioAnalysisTrackSyntax(val track: SpotifyResponse.AudioAnalysisTrack) extends AnyVal {
+  implicit class AudioAnalysisTrackSyntax(private val track: SpotifyResponse.AudioAnalysisTrack) extends AnyVal {
     def toAudioDetails: AudioDetails =
       AudioDetails(
         track.tempo,
@@ -39,7 +39,7 @@ object SpotifyMapper {
       )
   }
 
-  implicit class AudioFeaturesSyntax(val features: SpotifyResponse.SpotifyAudioFeaturesResponse) extends AnyVal {
+  implicit class AudioFeaturesSyntax(private val features: SpotifyResponse.SpotifyAudioFeaturesResponse) extends AnyVal {
     def toDomain: AudioDetails =
       AudioDetails(
         features.tempo,
