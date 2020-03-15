@@ -4,7 +4,7 @@ import java.time.LocalDate
 
 import cats.effect.testing.scalatest.AsyncIOSpec
 import cats.effect.{ContextShift, IO}
-import io.kirill.playlistoptimizer.common.configs.{SpotifyApiConfig, SpotifyAuthConfig, SpotifyConfig, SpotifyConfigBuilder}
+import io.kirill.playlistoptimizer.common.configs.{SpotifyConfig, SpotifyConfigBuilder}
 import io.kirill.playlistoptimizer.playlist.Key._
 import io.kirill.playlistoptimizer.playlist._
 import org.scalatest.freespec.AsyncFreeSpec
@@ -22,7 +22,7 @@ import scala.language.postfixOps
 
 class SpotifyApiClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
   implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContext.Implicits.global)
-  implicit val sc = SpotifyConfigBuilder.testConfig
+  implicit val sc: SpotifyConfig = SpotifyConfigBuilder.testConfig
 
   val token = "token-5lcpIsBqfb0Slx9fzZuCu_rM3aBDg"
 
@@ -31,9 +31,9 @@ class SpotifyApiClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers 
     "create new playlist" in {
       implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if isAuthorized(r, "api.spotify.com/users", List("user-1", "playlists")) && r.method == Method.POST && r.body.toString.contains("""{"name":"Mel","description":"Melodic deep house and techno songs","public":true,"collaborative":false}""") =>
+          case r if isAuthorized(r, "api.spotify.com", List("v1", "users", "user-1", "playlists")) && r.method == Method.POST && r.body.toString.contains("""{"name":"Mel","description":"Melodic deep house and techno songs","public":true,"collaborative":false}""") =>
             Response.ok(json("spotify/flow/create/1-new-playlist.json"))
-          case r if isAuthorized(r, "api.spotify.com/playlists", List("7d2D2S200NyUE5KYs80PwO", "tracks")) && r.method == Method.POST =>
+          case r if isAuthorized(r, "api.spotify.com", List("v1", "playlists", "7d2D2S200NyUE5KYs80PwO", "tracks")) && r.method == Method.POST =>
             Response.ok(json("spotify/flow/create/2-add-tracks.json"))
           case r => throw new RuntimeException(s"no mocks for ${r.uri.host}/${r.uri.path.mkString("/")}")
         }
@@ -46,9 +46,9 @@ class SpotifyApiClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers 
     "find playlist by name" in {
       implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if isAuthorized(r, "api.spotify.com/me", List("playlists")) => Response.ok(json("spotify/flow/find/2-users-playlists.json"))
-          case r if isAuthorized(r, "api.spotify.com/playlists", List("7npAZEYwEwV2JV7XX2n3wq")) => Response.ok(json("spotify/flow/find/3-playlist.json"))
-          case r if isAuthorized(r, "api.spotify.com/audio-features") => Response.ok(json(s"spotify/flow/find/4-audio-features-${r.uri.path.head}.json"))
+          case r if isAuthorized(r, "api.spotify.com", List("v1", "me", "playlists")) => Response.ok(json("spotify/flow/find/2-users-playlists.json"))
+          case r if isAuthorized(r, "api.spotify.com", List("v1", "playlists", "7npAZEYwEwV2JV7XX2n3wq")) => Response.ok(json("spotify/flow/find/3-playlist.json"))
+          case r if isAuthorized(r, "api.spotify.com", List("v1", "audio-features")) => Response.ok(json(s"spotify/flow/find/4-audio-features-${r.uri.path.last}.json"))
           case r => throw new RuntimeException(s"no mocks for ${r.uri.host}/${r.uri.path.mkString("/")}")
         }
 
@@ -107,9 +107,9 @@ class SpotifyApiClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers 
     "return all playlists that belong to a user" in {
       implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if isAuthorized(r, "api.spotify.com/me", List("playlists")) => Response.ok(json("spotify/flow/get/2-users-playlists.json"))
-          case r if isAuthorized(r, "api.spotify.com/playlists") => Response.ok(json(s"spotify/flow/get/3-playlist-${r.uri.path.head}.json"))
-          case r if isAuthorized(r, "api.spotify.com/audio-features") => Response.ok(json(s"spotify/flow/find/4-audio-features-${r.uri.path.head}.json"))
+          case r if isAuthorized(r, "api.spotify.com", List("v1", "me", "playlists")) => Response.ok(json("spotify/flow/get/2-users-playlists.json"))
+          case r if isAuthorized(r, "api.spotify.com", List("v1", "playlists")) => Response.ok(json(s"spotify/flow/get/3-playlist-${r.uri.path.last}.json"))
+          case r if isAuthorized(r, "api.spotify.com", List("v1", "audio-features")) => Response.ok(json(s"spotify/flow/find/4-audio-features-${r.uri.path.last}.json"))
           case r => throw new RuntimeException(s"no mocks for ${r.uri.host}/${r.uri.path.mkString("/")}")
         }
 
@@ -120,7 +120,7 @@ class SpotifyApiClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers 
   }
 
   def isAuthorized(req: client.Request[_, _], host: String, paths: Seq[String] = Nil): Boolean =
-    req.uri.host == host && (paths.isEmpty || req.uri.path == paths) &&
+    req.uri.host == host && (paths.isEmpty || req.uri.path.startsWith(paths)) &&
       req.headers.contains(new Header("Authorization", "Bearer token-5lcpIsBqfb0Slx9fzZuCu_rM3aBDg"))
 
   def json(path: String): String = Source.fromResource(path).getLines.toList.mkString

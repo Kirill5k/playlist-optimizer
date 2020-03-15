@@ -3,7 +3,7 @@ package io.kirill.playlistoptimizer.spotify.clients.api
 sealed trait SpotifyResponse
 
 object SpotifyResponse {
-  final case class SpotifyAuthResponse(access_token: String, token_type: String, expires_in: Int, scope: String, refresh_token: String) extends SpotifyResponse
+  final case class SpotifyAuthResponse(access_token: String, token_type: String, expires_in: Int, scope: String) extends SpotifyResponse
 
   final case class SpotifyAuthRefreshResponse(access_token: String, token_type: String, expires_in: Int, scope: String) extends SpotifyResponse
 
@@ -25,5 +25,5 @@ object SpotifyResponse {
 
   final case class SpotifyOperationSuccessResponse(snapshot_id: String) extends SpotifyResponse
 
-  final case class SpotifyUserResponse(id: String, display_name: String, email: String) extends SpotifyResponse
+  final case class SpotifyUserResponse(id: String, display_name: String) extends SpotifyResponse
 }

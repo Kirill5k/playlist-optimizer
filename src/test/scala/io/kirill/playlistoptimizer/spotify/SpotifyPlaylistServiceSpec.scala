@@ -2,7 +2,7 @@ package io.kirill.playlistoptimizer.spotify
 
 import cats.effect.testing.scalatest.AsyncIOSpec
 import cats.effect.{ContextShift, IO}
-import io.kirill.playlistoptimizer.common.configs.{SpotifyApiConfig, SpotifyAuthConfig, SpotifyConfig, SpotifyConfigBuilder}
+import io.kirill.playlistoptimizer.common.configs.{SpotifyConfig, SpotifyConfigBuilder}
 import io.kirill.playlistoptimizer.common.errors.ApplicationError.AuthenticationRequiredError
 import org.scalatest.freespec.AsyncFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -13,7 +13,7 @@ import scala.concurrent.ExecutionContext
 
 class SpotifyPlaylistServiceSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
   implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContext.Implicits.global)
-  implicit val sc = SpotifyConfigBuilder.testConfig
+  implicit val sc: SpotifyConfig = SpotifyConfigBuilder.testConfig
 
   "A SpotifyPlaylistService" - {
 

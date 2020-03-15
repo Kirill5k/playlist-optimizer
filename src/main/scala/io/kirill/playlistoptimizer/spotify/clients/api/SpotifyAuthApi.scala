@@ -17,7 +17,7 @@ object SpotifyAuthApi {
   def authorize[F[_]](code: String)(
     implicit sc: SpotifyConfig, b: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]
   ): F[SpotifyAuthResponse] =
-    getToken[F, SpotifyAuthResponse](Map("grant_type" -> "authorization_code", "code" -> code, "redirect_uri" -> sc.auth.redirectUri))
+    getToken[F, SpotifyAuthResponse](Map("grant_type" -> "authorization_code", "code" -> code, "redirect_uri" -> sc.redirectUri))
 
   def refresh[F[_]](refreshToken: String)(
     implicit sc: SpotifyConfig, b: SttpBackend[F, Nothing, NothingT], M: MonadError[F, Throwable]
@@ -29,13 +29,12 @@ object SpotifyAuthApi {
   ): F[R] =
     basicRequest
       .body(requestBody)
-      .auth.basic(sc.auth.clientId, sc.auth.clientSecret)
+      .auth.basic(sc.clientId, sc.clientSecret)
       .contentType(MediaType.ApplicationXWwwFormUrlencoded)
-      .post(uri"${sc.auth.baseUrl}${sc.auth.tokenPath}")
+      .post(uri"${sc.authUrl}/api/token")
       .response(asJson[R])
       .send()
       .flatMap(r => mapResponseBody[F, R](r.body))
-
 
   private def mapResponseBody[F[_], R <: SpotifyResponse](responseBody: Either[ResponseError[io.circe.Error], R])(
     implicit m: MonadError[F, Throwable]

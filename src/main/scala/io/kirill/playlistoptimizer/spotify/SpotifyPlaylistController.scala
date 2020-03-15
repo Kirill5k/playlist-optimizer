@@ -18,13 +18,13 @@ class SpotifyPlaylistController(implicit val sc: SpotifyConfig, b: SttpBackend[I
 
   private val authorizationParams = Map(
     "response_type" -> "code",
-    "client_id" -> sc.auth.clientId,
+    "client_id" -> sc.clientId,
     "scope" -> "playlist-read-private playlist-modify-public playlist-modify-private",
-    "redirect_uri" -> sc.auth.redirectUri
+    "redirect_uri" -> sc.redirectUri
   )
 
   private val authorizationLocation =
-    Location(Uri.unsafeFromString(s"${sc.auth.baseUrl}${sc.auth.authorizationPath}").withQueryParams(authorizationParams))
+    Location(Uri.unsafeFromString(s"${sc.authUrl}${sc.authorizationPath}").withQueryParams(authorizationParams))
 
   override protected def playlistService: SpotifyPlaylistService = new SpotifyPlaylistService()
 

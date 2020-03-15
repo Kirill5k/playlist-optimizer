@@ -19,7 +19,7 @@ private[spotify] class SpotifyAuthClient(implicit val sc: SpotifyConfig, val b: 
     spotifyAccessToken = for {
       authResponse <- SpotifyAuthApi.authorize(accessCode)
       userResponse <- SpotifyRestApi.getCurrentUser(authResponse.access_token)
-    } yield SpotifyAccessToken(authResponse.access_token, authResponse.refresh_token, userResponse.id, authResponse.expires_in)
+    } yield SpotifyAccessToken(authResponse.access_token, accessCode, userResponse.id, authResponse.expires_in)
     spotifyAccessToken *> IO.pure(())
   }
 

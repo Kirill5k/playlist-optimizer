@@ -6,7 +6,6 @@ import io.kirill.playlistoptimizer.common.configs.{SpotifyConfig, SpotifyConfigB
 import io.kirill.playlistoptimizer.common.errors.ApplicationError._
 import org.scalatest.freespec.AsyncFreeSpec
 import org.scalatest.matchers.must.Matchers
-import org.scalatest.wordspec.AnyWordSpec
 import sttp.client.Response
 import sttp.client.asynchttpclient.cats.AsyncHttpClientCatsBackend
 import sttp.client.testing.SttpBackendStub
@@ -35,11 +34,12 @@ class SpotifyAuthClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
     "send authorization and get current requests on initialization" in {
       implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if r.uri.host == "account.spotify.com/token" && r.method == Method.POST && r.body.toString.contains("grant_type=authorization_code&code=code&redirect_uri=%2Fredirect") =>
+          case r if r.uri.host == "account.spotify.com" && r.uri.path == List("api", "token") && r.method == Method.POST && r.body.toString.contains("grant_type=authorization_code&code=code&redirect_uri=%2Fredirect") =>
             Response.ok(json("spotify/flow/auth/1-auth.json"))
-          case r if r.uri.host == "api.spotify.com/me" && r.method == Method.GET =>
+          case r if r.uri.host == "api.spotify.com" && r.uri.path == List("v1", "me") && r.method == Method.GET =>
             Response.ok(json("spotify/flow/auth/2-current-user.json"))
-          case _ => throw new RuntimeException()
+          case r =>
+            throw new RuntimeException(s"no mocks for ${r.uri.host}/${r.uri.path.mkString("/")}")
         }
 
       val client = new SpotifyAuthClient()
@@ -52,13 +52,13 @@ class SpotifyAuthClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
     "obtain new refreshed token when original token has expired" in {
       implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if r.uri.host == "account.spotify.com/token" && r.method == Method.POST && r.body.toString.contains("grant_type=authorization_code&code=code&redirect_uri=%2Fredirect") =>
+          case r if r.uri.host == "account.spotify.com" && r.uri.path == List("api", "token") && r.method == Method.POST && r.body.toString.contains("grant_type=authorization_code&code=code&redirect_uri=%2Fredirect") =>
             Response.ok(json("spotify/flow/auth/3-auth-expired.json"))
-          case r if r.uri.host == "api.spotify.com/me" && r.method == Method.GET =>
+          case r if r.uri.host == "api.spotify.com" && r.uri.path == List("v1", "me") && r.method == Method.GET =>
             Response.ok(json("spotify/flow/auth/2-current-user.json"))
-          case r if r.uri.host == "account.spotify.com/token" && r.method == Method.POST && r.body.toString.contains("refresh_token=cnczbmrInWjs4So1F4Gm") =>
+          case r if r.uri.host == "account.spotify.com" && r.uri.path == List("api", "token") && r.method == Method.POST && r.body.toString.contains("refresh_token=cnczbmrInWjs4So1F4Gm") =>
             Response.ok(json("spotify/flow/auth/4-refreshed.json"))
-          case _ => throw new RuntimeException()
+          case r => throw new RuntimeException(s"no mocks for ${r.uri.host}/${r.uri.path.mkString("/")}")
         }
 
       val client = new SpotifyAuthClient

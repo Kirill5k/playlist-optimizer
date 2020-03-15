@@ -3,7 +3,7 @@ package io.kirill.playlistoptimizer.spotify.clients.api
 import cats.effect.testing.scalatest.AsyncIOSpec
 import cats.effect.{ContextShift, IO}
 import io.circe.ParsingFailure
-import io.kirill.playlistoptimizer.common.configs.{SpotifyApiConfig, SpotifyAuthConfig, SpotifyConfig, SpotifyConfigBuilder}
+import io.kirill.playlistoptimizer.common.configs.{SpotifyConfig, SpotifyConfigBuilder}
 import io.kirill.playlistoptimizer.spotify.clients.api.SpotifyResponse._
 import org.scalatest.freespec.AsyncFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -25,20 +25,20 @@ class SpotifyRestApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     "return current user when success" in {
       implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if isAuthorized(r, "api.spotify.com/me") =>
+          case r if isAuthorized(r, "api.spotify.com", List("v1", "me")) =>
             Response.ok(json("spotify/api/user-response.json"))
           case _ => throw new RuntimeException()
         }
 
       val response = SpotifyRestApi.getCurrentUser[IO]("token")
 
-      response.asserting(_ must be (SpotifyUserResponse("wizzler", "JM Wizzler", "email@example.com")))
+      response.asserting(_ must be (SpotifyUserResponse("wizzler", "JM Wizzler")))
     }
 
     "return audio analysis response when success" in {
       implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if isAuthorized(r, "api.spotify.com/audio-analysis", List("track-1")) =>
+          case r if isAuthorized(r, "api.spotify.com", List("v1", "audio-analysis", "track-1")) =>
             Response.ok(json("spotify/api/audio-analysis-response.json"))
           case _ => throw new RuntimeException()
         }
@@ -51,7 +51,7 @@ class SpotifyRestApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     "return audio features response when success" in {
       implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if isAuthorized(r, "api.spotify.com/audio-features", List("track-1")) =>
+          case r if isAuthorized(r, "api.spotify.com", List("v1", "audio-features", "track-1")) =>
             Response.ok(json("spotify/api/audio-features-response.json"))
           case _ => throw new RuntimeException()
         }
@@ -64,7 +64,7 @@ class SpotifyRestApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     "return playlist response when success" in {
       implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if isAuthorized(r, "api.spotify.com/playlists", List("playlist-1")) =>
+          case r if isAuthorized(r, "api.spotify.com", List("v1", "playlists", "playlist-1")) =>
             Response.ok(json("spotify/api/playlist-response.json"))
           case _ => throw new RuntimeException()
         }
@@ -82,7 +82,7 @@ class SpotifyRestApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     "return current user playlists response when success" in {
       implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if isAuthorized(r, "api.spotify.com/me", List("playlists")) =>
+          case r if isAuthorized(r, "api.spotify.com", List("v1", "me", "playlists")) =>
             Response.ok(json("spotify/api/playlists-response.json"))
           case _ => throw new RuntimeException()
         }
@@ -97,8 +97,8 @@ class SpotifyRestApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     "return error when corrupted json" in {
       implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if isAuthorized(r, "api.spotify.com/me")  => Response.ok("""{"foo"}""")
-          case _ => throw new RuntimeException()
+          case r if isAuthorized(r, "api.spotify.com", List("v1", "me", "playlists"))  => Response.ok("""{"foo"}""")
+          case r => throw new RuntimeException(s"no mocks for ${r.uri.host}/${r.uri.path.mkString("/")}")
         }
 
       val response = SpotifyRestApi.getUserPlaylists[IO]("token")
@@ -109,7 +109,7 @@ class SpotifyRestApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     "create playlist for a user when success" in {
       implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if isAuthorized(r, "api.spotify.com/users", List("user-1", "playlists")) && hasBody(r, """{"name":"my-playlist","description":"new-playlist-to-be-created","public":true,"collaborative":false}""") =>
+          case r if isAuthorized(r, "api.spotify.com", List("v1", "users", "user-1", "playlists")) && hasBody(r, """{"name":"my-playlist","description":"new-playlist-to-be-created","public":true,"collaborative":false}""") =>
             Response.ok(json("spotify/api/playlist-response.json"))
           case _ => throw new RuntimeException()
         }
@@ -127,7 +127,7 @@ class SpotifyRestApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     "add tracks to a playlist" in {
       implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if isAuthorized(r, "api.spotify.com/playlists", List("playlist-1", "tracks")) && hasBody(r, """{"uris":["uri-1","uri-2","uri-3"],"position":null}""") =>
+          case r if isAuthorized(r, "api.spotify.com", List("v1", "playlists", "playlist-1", "tracks")) && hasBody(r, """{"uris":["uri-1","uri-2","uri-3"],"position":null}""") =>
             Response(json("spotify/api/operation-success-response.json"), StatusCode.Created)
           case _ => throw new RuntimeException()
         }
@@ -140,7 +140,7 @@ class SpotifyRestApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     "replace tracks in a playlist" in {
       implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if isAuthorized(r, "api.spotify.com/playlists", List("playlist-1", "tracks")) && hasBody(r, """{"uris":["uri-1","uri-2","uri-3"]}""", Method.PUT) =>
+          case r if isAuthorized(r, "api.spotify.com", List("v1", "playlists", "playlist-1", "tracks")) && hasBody(r, """{"uris":["uri-1","uri-2","uri-3"]}""", Method.PUT) =>
             Response(json("spotify/api/operation-success-response.json"), StatusCode.Created)
           case _ => throw new RuntimeException()
         }

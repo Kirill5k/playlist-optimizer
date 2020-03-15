@@ -20,7 +20,7 @@ object SpotifyRestApi {
     basicRequest
       .auth.bearer(authToken)
       .contentType(MediaType.ApplicationJson)
-      .get(uri"${sc.api.baseUrl}${sc.api.currentUserPath}")
+      .get(uri"${sc.restUrl}/v1/me")
       .response(asJson[SpotifyUserResponse])
       .send()
       .flatMap(r => mapResponseBody[F, SpotifyUserResponse](r.body))
@@ -31,7 +31,7 @@ object SpotifyRestApi {
     basicRequest
       .auth.bearer(authToken)
       .contentType(MediaType.ApplicationJson)
-      .get(uri"${sc.api.baseUrl}${sc.api.audioAnalysisPath}/$trackId")
+      .get(uri"${sc.restUrl}/v1/audio-analysis/$trackId")
       .response(asJson[SpotifyAudioAnalysisResponse])
       .send()
       .flatMap(r => mapResponseBody[F, SpotifyAudioAnalysisResponse](r.body))
@@ -42,7 +42,7 @@ object SpotifyRestApi {
     basicRequest
       .auth.bearer(authToken)
       .contentType(MediaType.ApplicationJson)
-      .get(uri"${sc.api.baseUrl}${sc.api.audioFeaturesPath}/$trackId")
+      .get(uri"${sc.restUrl}/v1/audio-features/$trackId")
       .response(asJson[SpotifyAudioFeaturesResponse])
       .send()
       .flatMap(r => mapResponseBody[F, SpotifyAudioFeaturesResponse](r.body))
@@ -53,7 +53,7 @@ object SpotifyRestApi {
     basicRequest
       .auth.bearer(authToken)
       .contentType(MediaType.ApplicationJson)
-      .get(uri"${sc.api.baseUrl}${sc.api.playlistsPath}/$playlistId")
+      .get(uri"${sc.restUrl}/v1/playlists/$playlistId")
       .response(asJson[SpotifyPlaylistResponse])
       .send()
       .flatMap(r => mapResponseBody[F, SpotifyPlaylistResponse](r.body))
@@ -64,7 +64,7 @@ object SpotifyRestApi {
     basicRequest
       .auth.bearer(authToken)
       .contentType(MediaType.ApplicationJson)
-      .get(uri"${sc.api.baseUrl}${sc.api.currentUserPath}/playlists")
+      .get(uri"${sc.restUrl}/v1/me/playlists")
       .response(asJson[SpotifyPlaylistsResponse])
       .send()
       .flatMap(r => mapResponseBody[F, SpotifyPlaylistsResponse](r.body))
@@ -76,7 +76,7 @@ object SpotifyRestApi {
       .body(CreatePlaylistRequest(playlistName, playlistDescription))
       .auth.bearer(authToken)
       .contentType(MediaType.ApplicationJson)
-      .post(uri"${sc.api.baseUrl}${sc.api.usersPath}/$userId/playlists")
+      .post(uri"${sc.restUrl}/v1/users/$userId/playlists")
       .response(asJson[SpotifyPlaylistResponse])
       .send()
       .flatMap(r => mapResponseBody[F, SpotifyPlaylistResponse](r.body))
@@ -88,7 +88,7 @@ object SpotifyRestApi {
       .body(AddTracksToPlaylistRequest(uris, position))
       .auth.bearer(authToken)
       .contentType(MediaType.ApplicationJson)
-      .post(uri"${sc.api.baseUrl}${sc.api.playlistsPath}/$playlistId/tracks")
+      .post(uri"${sc.restUrl}/v1/playlists/$playlistId/tracks")
       .response(asJson[SpotifyOperationSuccessResponse])
       .send()
       .flatMap(r => mapResponseBody[F, SpotifyOperationSuccessResponse](r.body))
@@ -100,7 +100,7 @@ object SpotifyRestApi {
       .body(ReplaceTracksInPlaylistRequest(uris))
       .auth.bearer(authToken)
       .contentType(MediaType.ApplicationJson)
-      .put(uri"${sc.api.baseUrl}${sc.api.playlistsPath}/$playlistId/tracks")
+      .put(uri"${sc.restUrl}/v1/playlists/$playlistId/tracks")
       .send()
       .flatMap { r =>
         r.body match {
