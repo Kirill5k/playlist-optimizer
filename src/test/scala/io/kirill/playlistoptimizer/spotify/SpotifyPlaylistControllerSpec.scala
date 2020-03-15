@@ -36,7 +36,7 @@ class SpotifyPlaylistControllerSpec extends AnyWordSpec with MockitoSugar with A
 
       val playlistServiceMock = mock[SpotifyPlaylistService]
       val controller = new SpotifyPlaylistController() {
-        override def playlistService: SpotifyPlaylistService = playlistServiceMock
+        override val playlistService: SpotifyPlaylistService = playlistServiceMock
       }
 
       when(playlistServiceMock.getAll).thenReturn(IO.raiseError(AuthenticationRequiredError("authorization with Spotify is required")));
