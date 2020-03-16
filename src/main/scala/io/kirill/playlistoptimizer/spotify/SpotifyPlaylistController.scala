@@ -22,7 +22,7 @@ class SpotifyPlaylistController(implicit val sc: SpotifyConfig, b: SttpBackend[I
   private val authorizationParams = Map(
     "response_type" -> "code",
     "client_id" -> sc.clientId,
-    "scope" -> "playlist-read-private playlist-modify-public playlist-modify-private",
+    "scope" -> "playlist-read-private playlist-modify-public playlist-modify-private user-read-private user-read-email",
     "redirect_uri" -> sc.redirectUri
   )
 

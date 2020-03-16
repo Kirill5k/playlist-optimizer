@@ -31,7 +31,7 @@ class SpotifyAuthClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
       client.token.assertThrows[AuthenticationRequiredError]
     }
 
-    "send authorization and get current requests on initialization" in {
+    "obtain authorization code" in {
       implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
           case r if r.uri.host == "account.spotify.com" && r.uri.path == List("api", "token") && r.method == Method.POST && r.body.toString.contains("grant_type=authorization_code&code=code&redirect_uri=%2Fredirect") =>
@@ -43,10 +43,8 @@ class SpotifyAuthClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
         }
 
       val client = new SpotifyAuthClient()
-      client.authorize("code")
 
-      client.token.asserting(_ must be ("access-O3qzgejLCgXwAE5acsqk8LQcih2qpDkaCjrJRRhuY"))
-      client.userId.asserting(_ must be ("wizzler"))
+      client.authorize("code").flatMap(_ => client.token.asserting(_ must be ("access-O3qzgejLCgXwAE5acsqk8LQcih2qpDkaCjrJRRhuY")))
     }
 
     "obtain new refreshed token when original token has expired" in {
@@ -56,16 +54,15 @@ class SpotifyAuthClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
             Response.ok(json("spotify/flow/auth/3-auth-expired.json"))
           case r if r.uri.host == "api.spotify.com" && r.uri.path == List("v1", "me") && r.method == Method.GET =>
             Response.ok(json("spotify/flow/auth/2-current-user.json"))
-          case r if r.uri.host == "account.spotify.com" && r.uri.path == List("api", "token") && r.method == Method.POST && r.body.toString.contains("refresh_token=cnczbmrInWjs4So1F4Gm") =>
+          case r if r.uri.host == "account.spotify.com" && r.uri.path == List("api", "token") && r.method == Method.POST && r.body.toString.contains("refresh_token=code") =>
             Response.ok(json("spotify/flow/auth/4-refreshed.json"))
           case r => throw new RuntimeException(s"no mocks for ${r.uri.host}/${r.uri.path.mkString("/")}")
         }
 
       val client = new SpotifyAuthClient
-      client.authorize("code")
 
-      client.token.asserting(_ must be ("refresh-O3qzgejLCgXwAE5acsqk8LQcih2qpDkaCjrJRRhuY"))
-      client.userId.asserting(_ must be ("wizzler"))
+
+      client.authorize("code").flatMap(_ => client.token.asserting(_ must be ("refresh-O3qzgejLCgXwAE5acsqk8LQcih2qpDkaCjrJRRhuY")))
     }
   }
 
