@@ -25,6 +25,7 @@ trait PlaylistController[F[_]] extends AppController[F] {
     HttpRoutes.of[F] {
       case GET -> Root / "playlists" => withErrorHandling {
         for {
+          _ <- s.delay(logger.info("get all playlists"))
           playlists <- playlistService.getAll
           views = playlists.map(PlaylistView.from)
           resp <- Ok(views.asJson)
@@ -33,6 +34,7 @@ trait PlaylistController[F[_]] extends AppController[F] {
       case req @ POST -> Root / "playlists" => withErrorHandling {
         for {
           view <- req.as[PlaylistView]
+          _ <- s.delay(logger.info(s"save playlist ${view.name}"))
           _ <- playlistService.save(view.toDomain)
           resp <- Created()
         } yield resp
@@ -40,6 +42,7 @@ trait PlaylistController[F[_]] extends AppController[F] {
       case req @ POST -> Root / "playlists" / "optimize" => withErrorHandling {
         for {
           view <- req.as[PlaylistView]
+          _ <- s.delay(logger.info(s"optimize playlist ${view.name}"))
           optimizedPlaylist <- cs.shift *> playlistService.optimize(view.toDomain)
           view = PlaylistView.from(optimizedPlaylist)
           resp <- Ok(view.asJson)

@@ -33,8 +33,11 @@ class SpotifyPlaylistController(implicit val sc: SpotifyConfig, b: SttpBackend[I
 
   override def routes(implicit C: ContextShift[IO], S: Sync[IO]): HttpRoutes[IO] =
     HttpRoutes.of[IO] {
-      case GET -> Root / "ping" => IO(logger.info("spotify ping")) *> Ok("spotify-pong")
-      case GET -> Root / "login" => TemporaryRedirect(authorizationLocation)
-      case GET -> Root / "authenticate" :? CodeQueryParamMatcher(code) => playlistService.authenticate(code) *> TemporaryRedirect("/")
+      case GET -> Root / "ping" =>
+        IO(logger.info("spotify ping")) *> Ok("spotify-pong")
+      case GET -> Root / "login" =>
+        IO(logger.info("redirecting to spotify for authentication")) *> TemporaryRedirect(authorizationLocation)
+      case GET -> Root / "authenticate" :? CodeQueryParamMatcher(code) =>
+        IO(logger.info(s"received redirect from spotify: $code")) *> playlistService.authenticate(code) *> TemporaryRedirect("/")
     } <+> super.routes
 }

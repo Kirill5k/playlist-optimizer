@@ -3,6 +3,7 @@ package io.kirill.playlistoptimizer.playlist
 import java.time.LocalDate
 
 import cats.effect._
+import com.typesafe.scalalogging.Logger
 import io.circe._
 import io.circe.generic.auto._
 import io.circe.syntax._
@@ -57,6 +58,7 @@ class PlaylistControllerSpec extends AnyWordSpec with MockitoSugar with Argument
     val playlistServiceMock = mock[PlaylistService[IO]]
     val playlistController = new PlaylistController[IO] {
       override protected val playlistService: PlaylistService[IO] = playlistServiceMock
+      override protected val logger: Logger = Logger("PlaylistController")
     }
 
     "get all playlists" in {
