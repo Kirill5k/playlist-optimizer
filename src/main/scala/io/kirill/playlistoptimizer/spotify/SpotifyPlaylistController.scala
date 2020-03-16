@@ -2,6 +2,7 @@ package io.kirill.playlistoptimizer.spotify
 
 import cats.effect._
 import cats.implicits._
+import com.typesafe.scalalogging.Logger
 import io.circe._
 import io.circe.generic.auto._
 import io.circe.syntax._
@@ -13,6 +14,8 @@ import org.http4s.{HttpRoutes, Uri}
 import sttp.client.{NothingT, SttpBackend}
 
 class SpotifyPlaylistController(implicit val sc: SpotifyConfig, b: SttpBackend[IO, Nothing, NothingT]) extends PlaylistController[IO] {
+
+  protected val logger = Logger[SpotifyPlaylistController]
 
   private object CodeQueryParamMatcher extends QueryParamDecoderMatcher[String]("code")
 
@@ -30,7 +33,7 @@ class SpotifyPlaylistController(implicit val sc: SpotifyConfig, b: SttpBackend[I
 
   override def routes(implicit C: ContextShift[IO], S: Sync[IO]): HttpRoutes[IO] =
     HttpRoutes.of[IO] {
-      case GET -> Root / "ping" => Ok("spotify-pong")
+      case GET -> Root / "ping" => IO(logger.info("spotify ping")) *> Ok("spotify-pong")
       case GET -> Root / "login" => TemporaryRedirect(authorizationLocation)
       case GET -> Root / "authenticate" :? CodeQueryParamMatcher(code) => playlistService.authenticate(code) *> TemporaryRedirect("/")
     } <+> super.routes

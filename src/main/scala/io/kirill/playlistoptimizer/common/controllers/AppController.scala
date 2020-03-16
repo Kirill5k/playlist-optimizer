@@ -2,6 +2,7 @@ package io.kirill.playlistoptimizer.common.controllers
 
 import cats.effect._
 import cats.implicits._
+import com.typesafe.scalalogging.Logger
 import io.circe._
 import io.circe.generic.auto._
 import io.circe.syntax._
@@ -17,13 +18,21 @@ import sttp.client.{NothingT, SttpBackend}
 trait AppController[F[_]] extends Http4sDsl[F] {
   import AppController._
 
+  protected val logger: Logger
+
   def routes(implicit cs: ContextShift[F], s: Sync[F]): HttpRoutes[F]
 
   protected def withErrorHandling(response: => F[Response[F]])(implicit s: Sync[F]): F[Response[F]] =
     response.handleErrorWith {
-      case AuthenticationRequiredError(message) => Forbidden(ErrorResponse(message).asJson)
-      case error: MessageFailure => BadRequest(ErrorResponse(error.getMessage()).asJson)
-      case error => InternalServerError(ErrorResponse(error.getMessage()).asJson)
+      case AuthenticationRequiredError(message) =>
+        logger.error(s"authentication error: ${message}")
+        Forbidden(ErrorResponse(message).asJson)
+      case error: MessageFailure =>
+        logger.error(s"error parsing json: ${error.getMessage()}", error)
+        BadRequest(ErrorResponse(error.getMessage()).asJson)
+      case error =>
+        logger.error(s"unexpected error: ${error.getMessage}", error)
+        InternalServerError(ErrorResponse(error.getMessage()).asJson)
     }
 }
 

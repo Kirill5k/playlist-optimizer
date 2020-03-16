@@ -14,6 +14,9 @@ libraryDependencies ++= Seq(
   "com.github.pureconfig" %% "pureconfig" % pureConfigVersion,
   "com.github.pureconfig" %% "pureconfig-cats-effect" % pureConfigVersion,
 
+  "ch.qos.logback" % "logback-classic" % "1.2.3",
+  "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2",
+
   "org.typelevel" %% "cats-core" % "2.1.0",
   "org.typelevel" %% "cats-effect" % "2.1.1",
   "co.fs2" %% "fs2-core" % "2.2.2",
