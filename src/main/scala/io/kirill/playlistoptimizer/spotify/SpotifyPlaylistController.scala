@@ -29,6 +29,9 @@ class SpotifyPlaylistController(implicit val sc: SpotifyConfig, b: SttpBackend[I
   private val authorizationLocation =
     Location(Uri.unsafeFromString(s"${sc.authUrl}${sc.authorizationPath}").withQueryParams(authorizationParams))
 
+  private val homePageLocation =
+    Location(Uri.unsafeFromString("/"))
+
   override protected val playlistService: SpotifyPlaylistService = new SpotifyPlaylistService()
 
   override def routes(implicit C: ContextShift[IO], S: Sync[IO]): HttpRoutes[IO] =
@@ -38,6 +41,6 @@ class SpotifyPlaylistController(implicit val sc: SpotifyConfig, b: SttpBackend[I
       case GET -> Root / "login" =>
         IO(logger.info("redirecting to spotify for authentication")) *> TemporaryRedirect(authorizationLocation)
       case GET -> Root / "authenticate" :? CodeQueryParamMatcher(code) =>
-        IO(logger.info(s"received redirect from spotify: $code")) *> playlistService.authenticate(code) *> TemporaryRedirect("/")
+        IO(logger.info(s"received redirect from spotify: $code")) *> playlistService.authenticate(code) *> TemporaryRedirect(homePageLocation)
     } <+> super.routes
 }
