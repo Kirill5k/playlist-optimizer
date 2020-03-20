@@ -10,6 +10,9 @@ import org.http4s.syntax.kleisli._
 import sttp.client.{NothingT, SttpBackend}
 import sttp.client.asynchttpclient.cats.AsyncHttpClientCatsBackend
 
+import scala.concurrent.duration._
+import scala.language.postfixOps
+
 object Application extends IOApp {
   override def run(args: List[String]): IO[ExitCode] =
     app.use(_ => IO.never).as(ExitCode.Success)
@@ -23,6 +26,7 @@ object Application extends IOApp {
       backend <- client
       config <- Resource.liftF(AppConfig.load(blocker))
       server <- BlazeServerBuilder[IO]
+                  .withIdleTimeout(2 minutes)
                   .bindHttp(config.server.port, config.server.hostname)
                   .withHttpApp(Router(
                     "" -> AppController.homeController(blocker).routes,
