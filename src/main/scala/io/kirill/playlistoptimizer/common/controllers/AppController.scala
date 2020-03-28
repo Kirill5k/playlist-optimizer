@@ -8,7 +8,7 @@ import io.circe.generic.auto._
 import io.circe.syntax._
 import io.kirill.playlistoptimizer.common.configs.{AppConfig, SpotifyConfig}
 import io.kirill.playlistoptimizer.common.errors.ApplicationError.AuthenticationRequiredError
-import io.kirill.playlistoptimizer.spotify.SpotifyPlaylistController
+import io.kirill.playlistoptimizer.spotify.{SpotifyPlaylistController, SpotifyPlaylistService}
 import org.http4s.{HttpRoutes, MessageFailure, Response, Status}
 import org.http4s.dsl.Http4sDsl
 import org.http4s.circe._
@@ -42,9 +42,8 @@ object AppController {
   def homeController(blocker: Blocker)(implicit cs: ContextShift[IO]): AppController[IO] =
     new HomeController[IO](blocker)
 
-  def spotifyController(config: AppConfig, backend: SttpBackend[IO, Nothing, NothingT]): AppController[IO] = {
+  def spotifyController(spotifyService: SpotifyPlaylistService)(implicit config: AppConfig): AppController[IO] = {
     implicit val sc: SpotifyConfig = config.spotify
-    implicit val b: SttpBackend[IO, Nothing, NothingT] = backend
-    new SpotifyPlaylistController
+    new SpotifyPlaylistController(spotifyService)
   }
 }

@@ -13,7 +13,7 @@ import org.http4s.headers.Location
 import org.http4s.{HttpRoutes, Uri}
 import sttp.client.{NothingT, SttpBackend}
 
-class SpotifyPlaylistController(implicit val sc: SpotifyConfig, b: SttpBackend[IO, Nothing, NothingT]) extends PlaylistController[IO] {
+class SpotifyPlaylistController(override val playlistService: SpotifyPlaylistService)(implicit val sc: SpotifyConfig) extends PlaylistController[IO] {
 
   protected val logger = Logger[SpotifyPlaylistController]
 
@@ -31,8 +31,6 @@ class SpotifyPlaylistController(implicit val sc: SpotifyConfig, b: SttpBackend[I
 
   private val homePageLocation =
     Location(Uri.unsafeFromString("/"))
-
-  override protected val playlistService: SpotifyPlaylistService = new SpotifyPlaylistService()
 
   override def routes(implicit C: ContextShift[IO], S: Sync[IO]): HttpRoutes[IO] =
     HttpRoutes.of[IO] {

@@ -4,6 +4,9 @@ import cats.effect.testing.scalatest.AsyncIOSpec
 import cats.effect.{ContextShift, IO}
 import io.kirill.playlistoptimizer.common.configs.{SpotifyConfig, SpotifyConfigBuilder}
 import io.kirill.playlistoptimizer.common.errors.ApplicationError.AuthenticationRequiredError
+import io.kirill.playlistoptimizer.optimizer.Optimizer
+import io.kirill.playlistoptimizer.playlist.Track
+import org.mockito.{ArgumentMatchersSugar, MockitoSugar}
 import org.scalatest.freespec.AsyncFreeSpec
 import org.scalatest.matchers.must.Matchers
 import sttp.client.asynchttpclient.cats.AsyncHttpClientCatsBackend
@@ -11,7 +14,7 @@ import sttp.client.testing.SttpBackendStub
 
 import scala.concurrent.ExecutionContext
 
-class SpotifyPlaylistServiceSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
+class SpotifyPlaylistServiceSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers with MockitoSugar with ArgumentMatchersSugar {
   implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContext.Implicits.global)
   implicit val sc: SpotifyConfig = SpotifyConfigBuilder.testConfig
 
@@ -23,7 +26,8 @@ class SpotifyPlaylistServiceSpec extends AsyncFreeSpec with AsyncIOSpec with Mat
           case _ => throw new RuntimeException()
         }
 
-      val service = new SpotifyPlaylistService()
+      val optimizerMock = mock[Optimizer[IO, Track]]
+      val service = new SpotifyPlaylistService(optimizerMock)
 
       service.findByName("foo").assertThrows[AuthenticationRequiredError]
     }

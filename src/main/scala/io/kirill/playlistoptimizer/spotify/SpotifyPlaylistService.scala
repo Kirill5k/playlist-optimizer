@@ -10,13 +10,8 @@ import sttp.client.{NothingT, SttpBackend}
 
 import scala.util.Random
 
-class SpotifyPlaylistService(implicit C: SpotifyConfig, B: SttpBackend[IO, Nothing, NothingT]) extends PlaylistService[IO] {
+class SpotifyPlaylistService(override val optimizer: Optimizer[IO, Track])(implicit sc: SpotifyConfig, b: SttpBackend[IO, Nothing, NothingT]) extends PlaylistService[IO] {
   override protected implicit val r: Random = new Random()
-
-  implicit val c: Crossover[Track] = Crossover.bestKeySequenceTrackCrossover
-  implicit val m: Mutator[Track] = Mutator.randomSwapMutator[Track]
-
-  override protected def optimizer: Optimizer[IO, Track] = Optimizer.geneticAlgorithmOptimizer(200, 400, 0.3)
 
   private val authClient: SpotifyAuthClient = new SpotifyAuthClient()
   private val apiClient: SpotifyApiClient = new SpotifyApiClient()

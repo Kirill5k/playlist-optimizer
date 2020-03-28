@@ -1,5 +1,7 @@
 package io.kirill.playlistoptimizer.optimizer
 
+import java.time.Instant
+
 import cats.effect._
 import cats.effect.testing.scalatest.AsyncIOSpec
 import io.kirill.playlistoptimizer.playlist._
@@ -19,13 +21,19 @@ class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
       implicit val c: Crossover[Track] = Crossover.bestKeySequenceTrackCrossover
       implicit val m: Mutator[Track] = Mutator.randomSwapMutator[Track]
 
+      val start = Instant.now
+
       val songs = PlaylistBuilder.playlist.tracks
       val optimizedSongsResult = Optimizer.geneticAlgorithmOptimizer[IO, Track](200, 250, 0.3).optimize(songs)
 
       optimizedSongsResult.asserting { tracks =>
+        val end = Instant.now()
+
+        println(s"total time taken: ${end.getEpochSecond - start.getEpochSecond}s")
         println(s"original score: ${Evaluator.keyDistanceBasedTracksEvaluator.evaluate(songs)}, optimized score: ${Evaluator.keyDistanceBasedTracksEvaluator.evaluate(tracks)}")
         println(tracks)
         println(keyStreak(tracks))
+
 
         tracks must contain theSameElementsAs songs
         tracks must not contain theSameElementsInOrderAs (songs)
