@@ -21,8 +21,7 @@ object Optimizer {
       val its = config.iterations
 
       override def optimize(items: Seq[A])(implicit e: Evaluator[A], r: Random): F[Seq[A]] =
-        Stream.emits(0 until its)
-          .evalMap(i => Sync[F].pure(i))
+        Stream.range[F](0, its)
           .evalScan(items.shuffledCopies(popSize))((currPop, _) => singleIteration(currPop))
           .compile
           .lastOrError
@@ -30,9 +29,9 @@ object Optimizer {
 
     private def singleIteration(population: Seq[Seq[A]])(implicit e: Evaluator[A], c: Crossover[A], m: Mutator[A], r: Random): F[Seq[Seq[A]]] = {
       val newPopulation = Stream.evalSeq(Concurrent[F].delay(population.pairs))
-        .parEvalMap(20) { case (p1, p2) => Concurrent[F].delay(List(c.cross(p1, p2), c.cross(p2, p1))) }
+        .parEvalMap(8) { case (p1, p2) => Concurrent[F].delay(List(c.cross(p1, p2), c.cross(p2, p1))) }
         .flatMap(pairs => Stream.evalSeq(Concurrent[F].pure(pairs)))
-        .parEvalMap(20)(ind => if (r.nextDouble < mutFactor) Concurrent[F].delay(m.mutate(ind)) else Concurrent[F].pure(ind))
+        .parEvalMap(8)(ind => if (r.nextDouble < mutFactor) Concurrent[F].delay(m.mutate(ind)) else Concurrent[F].pure(ind))
 
       val oldPopulation = Stream.evalSeq(Concurrent[F].pure(population))
 
