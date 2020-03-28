@@ -16,27 +16,27 @@ trait Optimizer[F[_], A] {
 object Optimizer {
   implicit def geneticAlgorithmOptimizer[F[_]: Concurrent, A: Crossover : Mutator](config: GeneticAlgorithmConfig): Optimizer[F, A] =
     new Optimizer[F, A] {
+      val popSize = config.populationSize
+      val mutFactor = config.mutationFactor
+      val its = config.iterations
+
       override def optimize(items: Seq[A])(implicit e: Evaluator[A], r: Random): F[Seq[A]] =
-        Stream.emits(0 until config.iterations)
+        Stream.emits(0 until its)
           .evalMap(i => Sync[F].pure(i))
-          .fold(items.shuffledCopies(config.populationSize))((currentPopulation, _) => singleIteration(currentPopulation))
+          .evalScan(items.shuffledCopies(popSize))((currPop, _) => singleIteration(currPop))
           .compile
           .lastOrError
           .map(_.head)
 
-    private def singleIteration(population: Seq[Seq[A]])(implicit e: Evaluator[A], c: Crossover[A], m: Mutator[A], r: Random): Seq[Seq[A]] = {
-      /*
-      val newPopulation = population.pairs
-        .flatMap { case (p1, p2) => List(c.cross(p1, p2), c.cross(p2, p1)) }
-        .map(i => if (r.nextDouble < mutationFactor) m.mutate(i) else i)
-      */
-      val newPopulation = Stream.emits(population.pairs)
-        .map { case (p1, p2) => Stream(c.cross(p1, p2), c.cross(p2, p1)) }
-        .flatten
-        .map(i => if (r.nextDouble < config.mutationFactor) m.mutate(i) else i)
-        .toList
+    private def singleIteration(population: Seq[Seq[A]])(implicit e: Evaluator[A], c: Crossover[A], m: Mutator[A], r: Random): F[Seq[Seq[A]]] = {
+      val newPopulation = Stream.evalSeq(Concurrent[F].delay(population.pairs))
+        .parEvalMap(20) { case (p1, p2) => Concurrent[F].delay(List(c.cross(p1, p2), c.cross(p2, p1))) }
+        .flatMap(pairs => Stream.evalSeq(Concurrent[F].pure(pairs)))
+        .parEvalMap(20)(ind => if (r.nextDouble < mutFactor) Concurrent[F].delay(m.mutate(ind)) else Concurrent[F].pure(ind))
 
-      (newPopulation ++ population).sortBy(e.evaluate).take(config.populationSize)
+      val oldPopulation = Stream.evalSeq(Concurrent[F].pure(population))
+
+      (newPopulation ++ oldPopulation).compile.toList.map(_.sortBy(e.evaluate).take(popSize))
     }
   }
 }
