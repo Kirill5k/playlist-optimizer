@@ -9,10 +9,9 @@ import io.circe.syntax._
 import io.kirill.playlistoptimizer.common.configs.{AppConfig, SpotifyConfig}
 import io.kirill.playlistoptimizer.common.errors.ApplicationError.AuthenticationRequiredError
 import io.kirill.playlistoptimizer.spotify.{SpotifyPlaylistController, SpotifyPlaylistService}
-import org.http4s.{HttpRoutes, MessageFailure, Response, Status}
+import org.http4s.{HttpRoutes, MessageFailure, Response}
 import org.http4s.dsl.Http4sDsl
 import org.http4s.circe._
-import sttp.client.{NothingT, SttpBackend}
 
 
 trait AppController[F[_]] extends Http4sDsl[F] {

@@ -7,7 +7,6 @@ import io.kirill.playlistoptimizer.common.controllers.AppController
 import io.kirill.playlistoptimizer.optimizer.Optimizer
 import io.kirill.playlistoptimizer.optimizer.operators.{Crossover, Mutator}
 import io.kirill.playlistoptimizer.playlist.{PlaylistService, Track}
-import io.kirill.playlistoptimizer.spotify.SpotifyPlaylistService
 import org.http4s.server.blaze.BlazeServerBuilder
 import org.http4s.server.{Router, Server}
 import org.http4s.syntax.kleisli._

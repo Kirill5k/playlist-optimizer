@@ -3,7 +3,6 @@ package io.kirill.playlistoptimizer.spotify
 import cats.effect._
 import io.kirill.playlistoptimizer.common.configs.SpotifyConfig
 import io.kirill.playlistoptimizer.optimizer.Optimizer
-import io.kirill.playlistoptimizer.optimizer.operators.{Crossover, Mutator}
 import io.kirill.playlistoptimizer.playlist.{Playlist, PlaylistService, Track}
 import io.kirill.playlistoptimizer.spotify.clients.{SpotifyApiClient, SpotifyAuthClient}
 import sttp.client.{NothingT, SttpBackend}
