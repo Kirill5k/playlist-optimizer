@@ -34,7 +34,7 @@ object Application extends IOApp {
       blocker <- Blocker[IO]
       backend <- client
       config <- Resource.liftF(AppConfig.load(blocker))
-      optimizer = Optimizer.geneticAlgorithmOptimizer[IO, Track](200, 400, 0.3)
+      optimizer = Optimizer.geneticAlgorithmOptimizer[IO, Track](config.algorithms.ga)
       spotifyPlaylistService = PlaylistService.spotifyPlaylistService(optimizer)(config, backend)
       server <- BlazeServerBuilder[IO]
                   .withIdleTimeout(2 minutes)

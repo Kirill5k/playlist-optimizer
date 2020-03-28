@@ -4,6 +4,7 @@ import java.time.Instant
 
 import cats.effect._
 import cats.effect.testing.scalatest.AsyncIOSpec
+import io.kirill.playlistoptimizer.common.configs.GeneticAlgorithmConfig
 import io.kirill.playlistoptimizer.playlist._
 import io.kirill.playlistoptimizer.optimizer.operators.{Crossover, Evaluator, Mutator}
 import org.scalatest.freespec.AsyncFreeSpec
@@ -23,8 +24,9 @@ class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
 
       val start = Instant.now
 
+      val config = GeneticAlgorithmConfig(200, 250, 0.3)
       val songs = PlaylistBuilder.playlist.tracks
-      val optimizedSongsResult = Optimizer.geneticAlgorithmOptimizer[IO, Track](200, 250, 0.3).optimize(songs)
+      val optimizedSongsResult = Optimizer.geneticAlgorithmOptimizer[IO, Track](config).optimize(songs)
 
       optimizedSongsResult.asserting { tracks =>
         val end = Instant.now()

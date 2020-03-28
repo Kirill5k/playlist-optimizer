@@ -11,7 +11,7 @@ class AppConfigSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
   implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContext.Implicits.global)
 
   "A MainConfig" - {
-    "be parsed from application.conf" in {
+    "should be parsed from application.conf" in {
       val config = Blocker[IO].use(b => AppConfig.load(b))
 
       config.asserting(_ mustBe a [AppConfig])
