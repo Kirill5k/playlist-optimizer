@@ -43,7 +43,7 @@ trait PlaylistController[F[_]] extends AppController[F] {
         for {
           view <- req.as[PlaylistView]
           _ <- s.delay(logger.info(s"optimize playlist ${view.name}"))
-          optimizedPlaylist <- cs.shift *> playlistService.optimize(view.toDomain)
+          optimizedPlaylist <- playlistService.optimize(view.toDomain)
           view = PlaylistView.from(optimizedPlaylist)
           resp <- Ok(view.asJson)
         } yield resp
