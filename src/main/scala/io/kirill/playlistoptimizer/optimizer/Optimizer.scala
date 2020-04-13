@@ -27,15 +27,19 @@ object Optimizer {
           .lastOrError
           .map(_.head)
 
-    private def singleIteration(population: Seq[Seq[A]])(implicit e: Evaluator[A], c: Crossover[A], m: Mutator[A], r: Random): F[Seq[Seq[A]]] = {
-      val newPopulation = Stream.evalSeq(Concurrent[F].delay(population.pairs))
-        .parEvalMap(8) { case (p1, p2) => Concurrent[F].delay(List(c.cross(p1, p2), c.cross(p2, p1))) }
-        .flatMap(pairs => Stream.evalSeq(Concurrent[F].pure(pairs)))
-        .parEvalMap(8)(ind => if (r.nextDouble < mutFactor) Concurrent[F].delay(m.mutate(ind)) else Concurrent[F].pure(ind))
+      private def singleIteration(population: Seq[Seq[A]])(implicit e: Evaluator[A], r: Random): F[Seq[Seq[A]]] = {
+        val newPopulation = Stream.evalSeq(Concurrent[F].delay(population.pairs))
+          .map { case (p1, p2) => Stream.evalSeq(Concurrent[F].delay(List(breed(p1, p2), breed(p2, p1)))) }
+          .parJoinUnbounded
 
-      val oldPopulation = Stream.evalSeq(Concurrent[F].pure(population))
+        val oldPopulation = Stream.evalSeq(Concurrent[F].pure(population))
 
-      (newPopulation ++ oldPopulation).compile.toList.map(_.sortBy(e.evaluate).take(popSize))
-    }
+        (newPopulation ++ oldPopulation).compile.toList.map(_.sortBy(e.evaluate).take(popSize))
+      }
+
+      private def breed(p1: Seq[A], p2: Seq[A])(implicit c: Crossover[A], m: Mutator[A], r: Random): Seq[A] = {
+        val child = c.cross(p1, p2)
+        if (r.nextDouble < mutFactor) m.mutate(child) else child
+      }
   }
 }
