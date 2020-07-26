@@ -39,7 +39,7 @@ private[spotify] class SpotifyApiClient(implicit val sc: SpotifyConfig, val b: S
       playListTracks = playlist.tracks.items.map(_.track)
       tracksDetails <- getTrackDetails(token, playListTracks)
       tracks = tracksDetails.map(details => SpotifyMapper.toDomain(details._1, details._2))
-    } yield Playlist(playlist.name, playlist.description, PlaylistSource.Spotify, tracks)
+    } yield Playlist(playlist.name, playlist.description, tracks, PlaylistSource.Spotify)
   }
 
   private def getPlaylistId(token: String, name: String): IO[String] =

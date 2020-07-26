@@ -67,9 +67,14 @@ class PlaylistControllerSpec extends AnyWordSpec with MockitoSugar with Argument
       val request = Request[IO](uri = uri"/playlists")
       val response: IO[Response[IO]] = playlistController.routes.orNotFound.run(request)
 
-      verifyResponse[Seq[PlaylistView]](response, Status.Ok, Some(List(PlaylistView("Mel", Some("Melodic deep house and techno songs"), "Spotify", List(
-        TrackView("Glue", List("Bicep"), Some("Bicep"), Some(LocalDate.of(2017, 9, 1)), Some("album"), 129.983, 269.15, 5, 0, "spotify:track:2aJDlirz6v2a4HREki98cP", Some("https://open.spotify.com/track/2aJDlirz6v2a4HREki98cP"))
-      )))))
+      val expected = List(PlaylistView(
+        "Mel",
+        Some("Melodic deep house and techno songs"),
+        List(TrackView("Glue", List("Bicep"), Some("Bicep"), Some(LocalDate.of(2017, 9, 1)), Some("album"), 129.983, 269.15, 5, 0, "spotify:track:2aJDlirz6v2a4HREki98cP", Some("https://open.spotify.com/track/2aJDlirz6v2a4HREki98cP"))),
+        "Spotify"
+      ))
+
+      verifyResponse[Seq[PlaylistView]](response, Status.Ok, Some(expected))
       verify(playlistServiceMock).getAll
     }
 
@@ -91,9 +96,14 @@ class PlaylistControllerSpec extends AnyWordSpec with MockitoSugar with Argument
       val request = Request[IO](uri = uri"/playlists/optimize", method = Method.POST).withEntity(shortenedPlaylistJson)
       val response: IO[Response[IO]] = playlistController.routes.orNotFound.run(request)
 
-      verifyResponse[PlaylistView](response, Status.Ok, Some(PlaylistView("Mel Optimized", Some("Melodic deep house and techno songs"), "Spotify", List(
-        TrackView("Glue", List("Bicep"), Some("Bicep"), Some(LocalDate.of(2017, 9, 1)), Some("album"), 129.983, 269.15, 5, 0, "spotify:track:2aJDlirz6v2a4HREki98cP", Some("https://open.spotify.com/track/2aJDlirz6v2a4HREki98cP"))
-      ))))
+      val expected = PlaylistView(
+        "Mel Optimized",
+        Some("Melodic deep house and techno songs"),
+        List(TrackView("Glue", List("Bicep"), Some("Bicep"), Some(LocalDate.of(2017, 9, 1)), Some("album"), 129.983, 269.15, 5, 0, "spotify:track:2aJDlirz6v2a4HREki98cP", Some("https://open.spotify.com/track/2aJDlirz6v2a4HREki98cP"))),
+        "Spotify"
+      )
+
+      verifyResponse[PlaylistView](response, Status.Ok, Some(expected))
       playlistCaptor.getValue must be (shortenedPlaylist)
     }
 

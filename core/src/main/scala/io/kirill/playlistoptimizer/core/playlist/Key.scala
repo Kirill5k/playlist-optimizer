@@ -1,5 +1,6 @@
 package io.kirill.playlistoptimizer.core.playlist
 
+import io.kirill.playlistoptimizer.core.common.errors.{InvalidKey, InvalidMode}
 import io.kirill.playlistoptimizer.core.utils.CommonUtils._
 
 sealed abstract class Mode(val number: Int)
@@ -10,7 +11,7 @@ object Mode {
   def apply(number: Int): Mode = number match {
     case 0 => Minor
     case 1 => Major
-    case _ => throw new IllegalArgumentException(s"couldn't find mode with number $number")
+    case _ => throw InvalidMode(number)
   }
 }
 
@@ -63,5 +64,5 @@ object Key {
   def apply(keyNumber: Int, mode: Mode): Key =
     values
       .find(key => key.number == keyNumber && key.mode == mode)
-      .getOrElse(throw new IllegalArgumentException(s"couldn't find key with number $keyNumber and mode $mode"))
+      .getOrElse(throw InvalidKey(keyNumber, mode.number))
 }

@@ -3,7 +3,7 @@ package io.kirill.playlistoptimizer.core.spotify.clients
 import cats.effect.{ContextShift, IO}
 import cats.effect.testing.scalatest.AsyncIOSpec
 import io.kirill.playlistoptimizer.core.common.SpotifyConfigBuilder
-import io.kirill.playlistoptimizer.core.common.errors.ApplicationError._
+import io.kirill.playlistoptimizer.core.common.errors._
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
 import org.scalatest.freespec.AsyncFreeSpec
 import org.scalatest.matchers.must.Matchers

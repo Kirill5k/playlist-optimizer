@@ -7,7 +7,7 @@ import io.circe._
 import io.circe.generic.auto._
 import io.circe.syntax._
 import io.kirill.playlistoptimizer.core.common.config.{AppConfig, SpotifyConfig}
-import io.kirill.playlistoptimizer.core.common.errors.ApplicationError.AuthenticationRequiredError
+import io.kirill.playlistoptimizer.core.common.errors.AuthenticationRequiredError
 import io.kirill.playlistoptimizer.core.spotify.{SpotifyPlaylistController, SpotifyPlaylistService}
 import io.kirill.playlistoptimizer.core.spotify.SpotifyPlaylistService
 import org.http4s.{HttpRoutes, MessageFailure, Response}

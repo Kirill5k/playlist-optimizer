@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit
 import io.kirill.playlistoptimizer.core.playlist.{AudioDetails, Key, SongDetails, SourceDetails, Track}
 import io.kirill.playlistoptimizer.core.playlist._
 
-import scala.concurrent.duration.Duration
+import scala.concurrent.duration.{Duration, FiniteDuration}
 
 object SpotifyMapper {
 
@@ -35,7 +35,7 @@ object SpotifyMapper {
     def toAudioDetails: AudioDetails =
       AudioDetails(
         track.tempo,
-        Duration(track.duration, TimeUnit.SECONDS),
+        FiniteDuration(track.duration.longValue, TimeUnit.SECONDS),
         Key(track.key+1, track.mode)
       )
   }
@@ -44,7 +44,7 @@ object SpotifyMapper {
     def toDomain: AudioDetails =
       AudioDetails(
         features.tempo,
-        Duration(features.duration_ms, TimeUnit.MILLISECONDS),
+        FiniteDuration(features.duration_ms.longValue, TimeUnit.MILLISECONDS),
         Key(features.key+1, features.mode)
       )
   }

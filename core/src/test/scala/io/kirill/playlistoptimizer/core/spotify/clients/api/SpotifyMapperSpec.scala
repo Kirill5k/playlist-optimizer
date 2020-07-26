@@ -3,14 +3,14 @@ package io.kirill.playlistoptimizer.core.spotify.clients.api
 import java.time.LocalDate
 import java.util.concurrent.TimeUnit
 
+import io.kirill.playlistoptimizer.core.common.errors.{InvalidKey, InvalidMode}
 import io.kirill.playlistoptimizer.core.playlist.Key.GMinor
-import io.kirill.playlistoptimizer.core.playlist.Track
-import SpotifyResponse._
 import io.kirill.playlistoptimizer.core.playlist.{AudioDetails, SongDetails, SourceDetails, Track}
+import io.kirill.playlistoptimizer.core.spotify.clients.api.SpotifyResponse._
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-import scala.concurrent.duration.Duration
+import scala.concurrent.duration.FiniteDuration
 
 class SpotifyMapperSpec extends AnyWordSpec with Matchers {
 
@@ -33,7 +33,7 @@ class SpotifyMapperSpec extends AnyWordSpec with Matchers {
 
       track must be (Track(
         SongDetails("I'm Not The Only One - Radio Edit", List("Sam Smith", "Bruno Mars"), Some("I'm Not The Only One"), Some(LocalDate.of(2012, 10 ,10)), Some("Single")),
-        AudioDetails(98.002, Duration(255.34898, TimeUnit.SECONDS), GMinor),
+        AudioDetails(98.002, FiniteDuration(255, TimeUnit.SECONDS), GMinor),
         SourceDetails("spotify:track:track-id", Some("http://spotify.com/tracks/track-id"))
       ))
     }
@@ -43,22 +43,22 @@ class SpotifyMapperSpec extends AnyWordSpec with Matchers {
 
       track must be (Track(
         SongDetails("I'm Not The Only One - Radio Edit", List("Sam Smith", "Bruno Mars"), Some("I'm Not The Only One"), Some(LocalDate.of(2012, 10 ,10)), Some("Single")),
-        AudioDetails(98.002, Duration(255.34898, TimeUnit.SECONDS), GMinor),
+        AudioDetails(98.002, FiniteDuration(255348, TimeUnit.MILLISECONDS), GMinor),
         SourceDetails("spotify:track:track-id", Some("http://spotify.com/tracks/track-id"))
       ))
     }
 
 
     "throw exception when invalid key" in {
-      the [IllegalArgumentException] thrownBy {
+      the [InvalidKey] thrownBy {
         SpotifyMapper.toDomain(song, audioAnalysis.copy(key = 15))
-      } must have message "couldn't find key with number 16 and mode Minor"
+      }
     }
 
     "throw exception when invalid mode" in {
-      the [IllegalArgumentException] thrownBy {
+      the [InvalidMode] thrownBy {
         SpotifyMapper.toDomain(song, audioAnalysis.copy(mode = 2))
-      } must have message "couldn't find mode with number 2"
+      }
     }
   }
 }

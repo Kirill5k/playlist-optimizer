@@ -3,11 +3,9 @@ package io.kirill.playlistoptimizer.core.spotify.clients
 import java.time.Instant
 
 import cats.effect.IO
-import cats.implicits._
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
-import io.kirill.playlistoptimizer.core.common.errors.ApplicationError.AuthenticationRequiredError
+import io.kirill.playlistoptimizer.core.common.errors.AuthenticationRequiredError
 import io.kirill.playlistoptimizer.core.spotify.clients.api.{SpotifyAuthApi, SpotifyRestApi}
-import io.kirill.playlistoptimizer.core.spotify.clients.api.SpotifyAuthApi
 import sttp.client.{NothingT, SttpBackend}
 
 private[spotify] class SpotifyAuthClient(implicit val sc: SpotifyConfig, val b: SttpBackend[IO, Nothing, NothingT]) {

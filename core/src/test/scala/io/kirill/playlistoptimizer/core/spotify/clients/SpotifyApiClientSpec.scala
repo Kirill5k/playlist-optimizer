@@ -56,7 +56,7 @@ class SpotifyApiClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers 
 
       val response = new SpotifyApiClient().findPlaylistByName(token, "mel")
 
-      response.asserting(_ must be(Playlist("Mel", Some("Melodic deep house and techno songs"), PlaylistSource.Spotify, Vector(
+      response.asserting(_ must be(Playlist("Mel", Some("Melodic deep house and techno songs"), Vector(
         Track(SongDetails("Glue", List("Bicep"), Some("Bicep"), Some(LocalDate.of(2017, 9, 1)), Some("album")), AudioDetails(129.983, 269150 milliseconds, CMinor),SourceDetails("spotify:track:2aJDlirz6v2a4HREki98cP", Some("https://open.spotify.com/track/2aJDlirz6v2a4HREki98cP"))),
         Track(SongDetails("In Heaven", List("Dustin Nantais", "Paul Hazendonk"), Some("Novel Creations, Vol. 1"), Some(LocalDate.of(2017, 3, 17)), Some("compilation")), AudioDetails(123.018, 411773 milliseconds, FSharpMajor),SourceDetails("spotify:track:6AjUFYqP7oVTUX47cVJins", Some("https://open.spotify.com/track/6AjUFYqP7oVTUX47cVJins"))),
         Track(SongDetails("New Sky - Edu Imbernon Remix", List("RÜFÜS DU SOL", "Edu Imbernon"), Some("SOLACE REMIXED"), Some(LocalDate.of(2019, 9, 6)), Some("album")), AudioDetails(123.996, 535975 milliseconds, AMinor),SourceDetails("spotify:track:1wtxI9YhL1t4yDIwGAFljP", Some("https://open.spotify.com/track/1wtxI9YhL1t4yDIwGAFljP"))),
@@ -102,7 +102,8 @@ class SpotifyApiClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers 
         Track(SongDetails("Rapture", List("Lunar Plane"), Some("Rapture / Chimera"), Some(LocalDate.of(2018, 5, 21)), Some("single")), AudioDetails(120.002, 452380 milliseconds, GMinor),SourceDetails("spotify:track:2iLz47TwcEN22gTpbTYiU2", Some("https://open.spotify.com/track/2iLz47TwcEN22gTpbTYiU2"))),
         Track(SongDetails("Lazy Dog", List("Several Definitions", "Marc DePulse"), Some("2019 Day Collection"), Some(LocalDate.of(2019, 12, 23)), Some("compilation")), AudioDetails(107.991, 375166 milliseconds, FSharpMajor),SourceDetails("spotify:track:6fzl8LVinIXYtWGORlDWUA", Some("https://open.spotify.com/track/6fzl8LVinIXYtWGORlDWUA"))),
         Track(SongDetails("Pathos", List("Mashk"), Some("Pathos"), Some(LocalDate.of(2017, 8, 11)), Some("single")), AudioDetails(120.0, 523192 milliseconds, EFlatMinor),SourceDetails("spotify:track:7avI5luJYVkNUk6GObVTLd", Some("https://open.spotify.com/track/7avI5luJYVkNUk6GObVTLd"))),
-        Track(SongDetails("Chrysalis", List("Clawz SG", "Mashk"), Some("Chrysalis"), Some(LocalDate.of(2018, 8, 20)), Some("single")), AudioDetails(123.008, 456081 milliseconds, CMajor),SourceDetails("spotify:track:14F7gfsIpA74Hb6n4eOhI6", Some("https://open.spotify.com/track/14F7gfsIpA74Hb6n4eOhI6"))))
+        Track(SongDetails("Chrysalis", List("Clawz SG", "Mashk"), Some("Chrysalis"), Some(LocalDate.of(2018, 8, 20)), Some("single")), AudioDetails(123.008, 456081 milliseconds, CMajor),SourceDetails("spotify:track:14F7gfsIpA74Hb6n4eOhI6", Some("https://open.spotify.com/track/14F7gfsIpA74Hb6n4eOhI6")))),
+        PlaylistSource.Spotify
       )))
     }
 
