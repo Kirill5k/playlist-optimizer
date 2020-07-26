@@ -9,7 +9,7 @@ import SpotifyAuthApi.logger
 import SpotifyResponse._
 import SpotifyRequest._
 import SpotifyError._
-import io.kirill.playlistoptimizer.core.common.configs.SpotifyConfig
+import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
 import sttp.client._
 import sttp.client.circe._
 import sttp.model.MediaType

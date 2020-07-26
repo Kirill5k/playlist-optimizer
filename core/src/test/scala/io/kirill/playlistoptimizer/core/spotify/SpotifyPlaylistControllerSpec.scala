@@ -2,12 +2,13 @@ package io.kirill.playlistoptimizer.core.spotify
 
 import cats.effect.testing.scalatest.AsyncIOSpec
 import cats.effect.{ContextShift, IO}
-import io.kirill.playlistoptimizer.common.configs.SpotifyConfig
+import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
 import io.kirill.playlistoptimizer.core.common.errors.ApplicationError.AuthenticationRequiredError
 import io.circe._
 import io.circe.generic.auto._
 import io.circe.syntax._
-import io.kirill.playlistoptimizer.core.common.configs.{SpotifyConfig, SpotifyConfigBuilder}
+import io.kirill.playlistoptimizer.core.common.SpotifyConfigBuilder
+import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
 import io.kirill.playlistoptimizer.core.common.controllers.AppController.ErrorResponse
 import org.http4s._
 import org.http4s.circe._

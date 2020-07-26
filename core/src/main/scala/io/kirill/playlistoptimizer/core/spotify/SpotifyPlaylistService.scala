@@ -1,12 +1,12 @@
 package io.kirill.playlistoptimizer.core.spotify
 
 import cats.effect._
-import io.kirill.playlistoptimizer.core.common.configs.SpotifyConfig
+import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
 import io.kirill.playlistoptimizer.core.optimizer.Optimizer
 import io.kirill.playlistoptimizer.core.playlist.{Playlist, PlaylistService, Track}
 import io.kirill.playlistoptimizer.core.spotify.clients.{SpotifyApiClient, SpotifyAuthClient}
-import io.kirill.playlistoptimizer.playlist.Playlist
-import io.kirill.playlistoptimizer.spotify.clients.SpotifyApiClient
+import io.kirill.playlistoptimizer.core.playlist.Playlist
+import io.kirill.playlistoptimizer.core.spotify.clients.SpotifyApiClient
 import sttp.client.{NothingT, SttpBackend}
 
 import scala.util.Random

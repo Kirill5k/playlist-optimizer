@@ -4,7 +4,7 @@ import java.time.LocalDate
 import java.util.concurrent.TimeUnit
 
 import io.kirill.playlistoptimizer.core.playlist.Key.GMinor
-import io.kirill.playlistoptimizer.playlist.Track
+import io.kirill.playlistoptimizer.core.playlist.Track
 import SpotifyResponse._
 import io.kirill.playlistoptimizer.core.playlist.{AudioDetails, SongDetails, SourceDetails, Track}
 import org.scalatest.matchers.must.Matchers

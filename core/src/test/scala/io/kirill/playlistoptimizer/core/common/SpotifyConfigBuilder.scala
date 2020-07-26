@@ -1,4 +1,6 @@
-package io.kirill.playlistoptimizer.core.common.configs
+package io.kirill.playlistoptimizer.core.common
+
+import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
 
 object SpotifyConfigBuilder {
 

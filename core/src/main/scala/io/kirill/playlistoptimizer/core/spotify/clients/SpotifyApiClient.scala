@@ -2,12 +2,12 @@ package io.kirill.playlistoptimizer.core.spotify.clients
 
 import cats.effect.IO
 import fs2.Stream
-import io.kirill.playlistoptimizer.core.common.configs.SpotifyConfig
+import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
 import io.kirill.playlistoptimizer.core.playlist.{Playlist, PlaylistSource}
 import io.kirill.playlistoptimizer.core.spotify.clients.api.{SpotifyMapper, SpotifyRestApi}
-import io.kirill.playlistoptimizer.playlist.Playlist
+import io.kirill.playlistoptimizer.core.playlist.Playlist
 import io.kirill.playlistoptimizer.core.spotify.clients.api.SpotifyResponse.{PlaylistTrack, SpotifyAudioFeaturesResponse}
-import io.kirill.playlistoptimizer.spotify.clients.api.SpotifyMapper
+import io.kirill.playlistoptimizer.core.spotify.clients.api.SpotifyMapper
 import sttp.client.{NothingT, SttpBackend}
 
 private[spotify] class SpotifyApiClient(implicit val sc: SpotifyConfig, val b: SttpBackend[IO, Nothing, NothingT]) {

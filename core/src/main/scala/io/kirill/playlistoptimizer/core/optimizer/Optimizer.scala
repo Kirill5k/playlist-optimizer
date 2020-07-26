@@ -3,9 +3,9 @@ package io.kirill.playlistoptimizer.core.optimizer
 import cats.effect._
 import cats.implicits._
 import fs2.Stream
-import io.kirill.playlistoptimizer.core.common.configs.GeneticAlgorithmConfig
+import io.kirill.playlistoptimizer.core.common.config.GeneticAlgorithmConfig
 import io.kirill.playlistoptimizer.core.optimizer.operators.{Crossover, Evaluator, Mutator}
-import io.kirill.playlistoptimizer.optimizer.operators.Crossover
+import io.kirill.playlistoptimizer.core.optimizer.operators.Crossover
 import io.kirill.playlistoptimizer.core.utils.CollectionOps._
 
 import scala.util.Random

@@ -2,10 +2,9 @@ package io.kirill.playlistoptimizer.core.spotify.clients.api
 
 import cats.effect.testing.scalatest.AsyncIOSpec
 import cats.effect.{ContextShift, IO}
-import io.kirill.playlistoptimizer.common.configs.SpotifyConfig
-import io.kirill.playlistoptimizer.core.common.configs.SpotifyConfigBuilder
 import SpotifyError.SpotifyAuthError
 import SpotifyResponse.{SpotifyAuthRefreshResponse, SpotifyAuthResponse}
+import io.kirill.playlistoptimizer.core.common.SpotifyConfigBuilder
 import org.scalatest.freespec.AsyncFreeSpec
 import org.scalatest.matchers.must.Matchers
 import sttp.client.Response

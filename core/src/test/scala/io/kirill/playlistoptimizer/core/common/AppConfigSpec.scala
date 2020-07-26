@@ -1,7 +1,8 @@
-package io.kirill.playlistoptimizer.core.common.configs
+package io.kirill.playlistoptimizer.core.common
 
 import cats.effect.testing.scalatest.AsyncIOSpec
 import cats.effect.{Blocker, ContextShift, IO}
+import io.kirill.playlistoptimizer.core.common.config.AppConfig
 import org.scalatest.freespec.AsyncFreeSpec
 import org.scalatest.matchers.must.Matchers
 

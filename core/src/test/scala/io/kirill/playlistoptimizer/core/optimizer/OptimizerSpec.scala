@@ -4,11 +4,11 @@ import java.time.Instant
 
 import cats.effect._
 import cats.effect.testing.scalatest.AsyncIOSpec
-import io.kirill.playlistoptimizer.core.common.configs.GeneticAlgorithmConfig
+import io.kirill.playlistoptimizer.core.common.config.GeneticAlgorithmConfig
 import io.kirill.playlistoptimizer.core.optimizer.operators.{Crossover, Evaluator, Mutator}
 import io.kirill.playlistoptimizer.core.playlist.{PlaylistBuilder, Track}
-import io.kirill.playlistoptimizer.playlist._
-import io.kirill.playlistoptimizer.optimizer.operators.Crossover
+import io.kirill.playlistoptimizer.core.playlist._
+import io.kirill.playlistoptimizer.core.optimizer.operators.Crossover
 import org.scalatest.freespec.AsyncFreeSpec
 import org.scalatest.matchers.must.Matchers
 

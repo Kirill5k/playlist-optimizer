@@ -3,8 +3,7 @@ package io.kirill.playlistoptimizer.core.playlist
 import cats.MonadError
 import cats.effect.IO
 import cats.implicits._
-import io.kirill.playlistoptimizer.common.configs.SpotifyConfig
-import io.kirill.playlistoptimizer.core.common.configs.{AppConfig, SpotifyConfig}
+import io.kirill.playlistoptimizer.core.common.config.{AppConfig, SpotifyConfig}
 import io.kirill.playlistoptimizer.core.optimizer.Optimizer
 import io.kirill.playlistoptimizer.core.spotify.SpotifyPlaylistService
 import sttp.client.{NothingT, SttpBackend}

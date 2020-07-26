@@ -6,11 +6,10 @@ import com.typesafe.scalalogging.Logger
 import io.circe._
 import io.circe.generic.auto._
 import io.circe.syntax._
-import io.kirill.playlistoptimizer.common.configs.SpotifyConfig
-import io.kirill.playlistoptimizer.core.common.configs.{AppConfig, SpotifyConfig}
+import io.kirill.playlistoptimizer.core.common.config.{AppConfig, SpotifyConfig}
 import io.kirill.playlistoptimizer.core.common.errors.ApplicationError.AuthenticationRequiredError
 import io.kirill.playlistoptimizer.core.spotify.{SpotifyPlaylistController, SpotifyPlaylistService}
-import io.kirill.playlistoptimizer.spotify.SpotifyPlaylistService
+import io.kirill.playlistoptimizer.core.spotify.SpotifyPlaylistService
 import org.http4s.{HttpRoutes, MessageFailure, Response}
 import org.http4s.dsl.Http4sDsl
 import org.http4s.circe._

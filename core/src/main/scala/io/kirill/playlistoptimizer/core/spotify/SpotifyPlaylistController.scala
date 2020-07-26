@@ -6,9 +6,9 @@ import com.typesafe.scalalogging.Logger
 import io.circe._
 import io.circe.generic.auto._
 import io.circe.syntax._
-import io.kirill.playlistoptimizer.core.common.configs.SpotifyConfig
+import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
 import io.kirill.playlistoptimizer.core.playlist.PlaylistController
-import io.kirill.playlistoptimizer.playlist._
+import io.kirill.playlistoptimizer.core.playlist._
 import org.http4s.circe._
 import org.http4s.headers.Location
 import org.http4s.{HttpRoutes, Uri}

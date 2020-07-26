@@ -4,7 +4,7 @@ import java.time.LocalDate
 import java.util.concurrent.TimeUnit
 
 import io.kirill.playlistoptimizer.core.playlist.{AudioDetails, Key, SongDetails, SourceDetails, Track}
-import io.kirill.playlistoptimizer.playlist._
+import io.kirill.playlistoptimizer.core.playlist._
 
 import scala.concurrent.duration.Duration
 
