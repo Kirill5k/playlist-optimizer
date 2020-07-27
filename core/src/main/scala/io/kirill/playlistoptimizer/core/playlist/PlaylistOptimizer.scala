@@ -36,7 +36,7 @@ private class RefBasedPlaylistOptimizer[F[_]: Concurrent: ContextShift](
   override def optimize(playlist: Playlist): F[OptimizationId] =
     for {
       id <- Sync[F].delay(OptimizationId(UUID.randomUUID()))
-      _  <- state.update(s => s + (id -> Optimization(id, playlist, Instant.now())))
+      _  <- state.update(s => s + (id -> Optimization(id, "in progress", playlist, Instant.now())))
       _  <- Concurrent[F].start(alg.optimizeSeq(playlist.tracks).flatMap(res => updateState(id, res))).void
     } yield id
 
@@ -45,7 +45,7 @@ private class RefBasedPlaylistOptimizer[F[_]: Concurrent: ContextShift](
       opt <- get(id)
       optimizedPlaylist = opt.original.copy(name = s"${opt.original.name} optimized", tracks = result)
       duration          = FiniteDuration(Instant.now().toEpochMilli - opt.dateInitiated.toEpochMilli, TimeUnit.MILLISECONDS)
-      completedOpt      = opt.copy(duration = Some(duration), result = Some(optimizedPlaylist))
+      completedOpt      = opt.copy(status = "completed",duration = Some(duration), result = Some(optimizedPlaylist))
       _ <- state.update(s => s + (id -> completedOpt))
     } yield ()
 }
@@ -55,6 +55,7 @@ object PlaylistOptimizer {
 
   final case class Optimization(
       id: OptimizationId,
+      status: String,
       original: Playlist,
       dateInitiated: Instant,
       duration: Option[FiniteDuration] = None,
