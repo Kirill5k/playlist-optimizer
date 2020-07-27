@@ -2,6 +2,7 @@ package io.kirill.playlistoptimizer.core
 
 import cats.effect.{Resource, Sync}
 import cats.implicits._
+import io.chrisdavenport.log4cats.Logger
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
 import io.kirill.playlistoptimizer.core.optimizer.Optimizer
 import io.kirill.playlistoptimizer.core.playlist.{PlaylistController, PlaylistService, Track}
@@ -14,7 +15,7 @@ package object spotify {
   )
 
   object Spotify {
-    def make[F[_]: Sync](
+    def make[F[_]: Sync: Logger](
         optimizer: Optimizer[F, Track],
         backend: SttpBackend[F, Nothing, NothingT],
         spotifyConfig: SpotifyConfig

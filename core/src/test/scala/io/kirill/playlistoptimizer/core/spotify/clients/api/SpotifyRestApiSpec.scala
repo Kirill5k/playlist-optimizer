@@ -4,6 +4,8 @@ import cats.effect.testing.scalatest.AsyncIOSpec
 import cats.effect.{ContextShift, IO}
 import io.circe.ParsingFailure
 import SpotifyResponse._
+import io.chrisdavenport.log4cats.Logger
+import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import io.kirill.playlistoptimizer.core.common.SpotifyConfigBuilder
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
 import org.scalatest.freespec.AsyncFreeSpec
@@ -18,6 +20,7 @@ import scala.concurrent.ExecutionContext
 import scala.io.Source
 
 class SpotifyRestApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
+  implicit val logger: Logger[IO] = Slf4jLogger.getLogger[IO]
   implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContext.Implicits.global)
   implicit val sc: SpotifyConfig = SpotifyConfigBuilder.testConfig
 

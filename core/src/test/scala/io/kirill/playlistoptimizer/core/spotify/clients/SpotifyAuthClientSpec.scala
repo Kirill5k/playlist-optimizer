@@ -2,6 +2,8 @@ package io.kirill.playlistoptimizer.core.spotify.clients
 
 import cats.effect.{ContextShift, IO}
 import cats.effect.testing.scalatest.AsyncIOSpec
+import io.chrisdavenport.log4cats.Logger
+import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import io.kirill.playlistoptimizer.core.common.SpotifyConfigBuilder
 import io.kirill.playlistoptimizer.core.common.errors._
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
@@ -16,6 +18,7 @@ import scala.concurrent.ExecutionContext
 import scala.io.Source
 
 class SpotifyAuthClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
+  implicit val logger: Logger[IO] = Slf4jLogger.getLogger[IO]
   implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContext.Implicits.global)
   implicit val sc: SpotifyConfig = SpotifyConfigBuilder.testConfig
 
@@ -27,7 +30,7 @@ class SpotifyAuthClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
           case _ => throw new RuntimeException()
         }
 
-      val client = new SpotifyAuthClient()
+      val client = new SpotifyAuthClient[IO]()
 
       client.token.assertThrows[AuthenticationRequiredError]
     }
@@ -43,7 +46,7 @@ class SpotifyAuthClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
             throw new RuntimeException(s"no mocks for ${r.uri.host}/${r.uri.path.mkString("/")}")
         }
 
-      val client = new SpotifyAuthClient()
+      val client = new SpotifyAuthClient[IO]()
 
       client.authorize("code").flatMap(_ => client.token.asserting(_ must be ("access-O3qzgejLCgXwAE5acsqk8LQcih2qpDkaCjrJRRhuY")))
     }
@@ -60,7 +63,7 @@ class SpotifyAuthClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
           case r => throw new RuntimeException(s"no mocks for ${r.uri.host}/${r.uri.path.mkString("/")}")
         }
 
-      val client = new SpotifyAuthClient
+      val client = new SpotifyAuthClient[IO]()
 
 
       client.authorize("code").flatMap(_ => client.token.asserting(_ must be ("refresh-O3qzgejLCgXwAE5acsqk8LQcih2qpDkaCjrJRRhuY")))

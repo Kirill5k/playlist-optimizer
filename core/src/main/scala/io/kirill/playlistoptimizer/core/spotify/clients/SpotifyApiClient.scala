@@ -3,6 +3,7 @@ package io.kirill.playlistoptimizer.core.spotify.clients
 import cats.effect.Sync
 import cats.implicits._
 import fs2.Stream
+import io.chrisdavenport.log4cats.Logger
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
 import io.kirill.playlistoptimizer.core.common.errors.SpotifyPlaylistNotFound
 import io.kirill.playlistoptimizer.core.playlist.{Playlist, PlaylistSource}
@@ -10,7 +11,7 @@ import io.kirill.playlistoptimizer.core.spotify.clients.api.SpotifyResponse.{Pla
 import io.kirill.playlistoptimizer.core.spotify.clients.api.{SpotifyMapper, SpotifyRestApi}
 import sttp.client.{NothingT, SttpBackend}
 
-private[spotify] class SpotifyApiClient[F[_]: Sync](
+private[spotify] class SpotifyApiClient[F[_]: Sync: Logger](
     implicit val sc: SpotifyConfig,
     val b: SttpBackend[F, Nothing, NothingT]
 ) {

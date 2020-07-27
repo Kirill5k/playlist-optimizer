@@ -4,12 +4,13 @@ import java.time.Instant
 
 import cats.effect.{IO, Sync}
 import cats.implicits._
+import io.chrisdavenport.log4cats.Logger
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
 import io.kirill.playlistoptimizer.core.common.errors.AuthenticationRequiredError
 import io.kirill.playlistoptimizer.core.spotify.clients.api.{SpotifyAuthApi, SpotifyRestApi}
 import sttp.client.{NothingT, SttpBackend}
 
-private[spotify] class SpotifyAuthClient[F[_]: Sync](
+private[spotify] class SpotifyAuthClient[F[_]: Sync: Logger](
     implicit val sc: SpotifyConfig,
     val b: SttpBackend[F, Nothing, NothingT]
 ) {

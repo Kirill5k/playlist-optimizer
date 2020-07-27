@@ -12,9 +12,11 @@ class GeneticAlgorithm[F[_]: Concurrent, A: Crossover: Mutator: Evaluator](
     val populationSize: Int,
     val mutationFactor: Double,
     val iterations: Int
+)(
+    implicit val rand: Random
 ) extends OptimizationAlgorithm[F, A] {
 
-  override def optimizeSeq(items: Seq[A])(implicit r: Random): F[Seq[A]] =
+  override def optimizeSeq(items: Seq[A]): F[Seq[A]] =
     Stream
       .range[F](0, iterations)
       .evalScan(items.shuffledCopies(populationSize))((currPop, _) => singleIteration(currPop))
@@ -22,7 +24,7 @@ class GeneticAlgorithm[F[_]: Concurrent, A: Crossover: Mutator: Evaluator](
       .lastOrError
       .map(_.head)
 
-  private def singleIteration(population: Seq[Seq[A]])(implicit e: Evaluator[A], r: Random): F[Seq[Seq[A]]] = {
+  private def singleIteration(population: Seq[Seq[A]])(implicit e: Evaluator[A]): F[Seq[Seq[A]]] = {
     val newPopulation = Stream
       .evalSeq(Concurrent[F].delay(population.pairs))
       .map { case (p1, p2) => Stream.evalSeq(Concurrent[F].delay(List(breed(p1, p2), breed(p2, p1)))) }

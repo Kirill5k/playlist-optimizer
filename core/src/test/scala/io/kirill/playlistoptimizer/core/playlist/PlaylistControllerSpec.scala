@@ -1,12 +1,15 @@
 package io.kirill.playlistoptimizer.core.playlist
 
 import java.time.LocalDate
+import java.util.UUID
 
 import cats.effect._
-import com.typesafe.scalalogging.Logger
+import io.chrisdavenport.log4cats.Logger
+import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import io.circe._
 import io.circe.generic.auto._
 import io.circe.syntax._
+import io.kirill.playlistoptimizer.core.optimizer.Optimizer.OptimizationId
 import org.http4s._
 import org.http4s.circe._
 import org.http4s.implicits._
@@ -20,6 +23,7 @@ class PlaylistControllerSpec extends AnyWordSpec with MockitoSugar with Argument
   import PlaylistController._
   import io.kirill.playlistoptimizer.core.common.controllers.AppController._
 
+  implicit val logger: Logger[IO] = Slf4jLogger.getLogger[IO]
   implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContext.Implicits.global)
   implicit val plDec1: EntityDecoder[IO, PlaylistView] = jsonOf[IO, PlaylistView]
   implicit val plDec2: EntityDecoder[IO, Seq[PlaylistView]] = jsonOf[IO, Seq[PlaylistView]]
@@ -58,7 +62,6 @@ class PlaylistControllerSpec extends AnyWordSpec with MockitoSugar with Argument
     val playlistServiceMock = mock[PlaylistService[IO]]
     val playlistController = new PlaylistController[IO] {
       override protected val playlistService: PlaylistService[IO] = playlistServiceMock
-      override protected val logger: Logger = Logger("PlaylistController")
     }
 
     "get all playlists" in {
@@ -91,7 +94,7 @@ class PlaylistControllerSpec extends AnyWordSpec with MockitoSugar with Argument
 
     "optimize playlist" in {
       val playlistCaptor: ArgumentCaptor[Playlist] = ArgumentCaptor.forClass(classOf[Playlist])
-      when(playlistServiceMock.optimize(playlistCaptor.capture())(any)).thenReturn(IO.pure(shortenedPlaylist.copy(name = s"Mel Optimized")))
+      when(playlistServiceMock.optimize(playlistCaptor.capture())(any)).thenReturn(IO.pure(OptimizationId(UUID.randomUUID())))
 
       val request = Request[IO](uri = uri"/playlists/optimize", method = Method.POST).withEntity(shortenedPlaylistJson)
       val response: IO[Response[IO]] = playlistController.routes.orNotFound.run(request)

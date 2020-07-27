@@ -4,6 +4,8 @@ import java.time.LocalDate
 
 import cats.effect.testing.scalatest.AsyncIOSpec
 import cats.effect.{ContextShift, IO}
+import io.chrisdavenport.log4cats.Logger
+import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import io.kirill.playlistoptimizer.core.common.SpotifyConfigBuilder
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
 import io.kirill.playlistoptimizer.core.playlist.Key._
@@ -23,6 +25,7 @@ import scala.io.Source
 import scala.language.postfixOps
 
 class SpotifyApiClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
+  implicit val logger: Logger[IO] = Slf4jLogger.getLogger[IO]
   implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContext.Implicits.global)
   implicit val sc: SpotifyConfig = SpotifyConfigBuilder.testConfig
 
@@ -40,7 +43,7 @@ class SpotifyApiClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers 
           case r => throw new RuntimeException(s"no mocks for ${r.uri.host}/${r.uri.path.mkString("/")}")
         }
 
-      val response = new SpotifyApiClient().createPlaylist(token, "user-1", PlaylistBuilder.playlist)
+      val response = new SpotifyApiClient[IO]().createPlaylist(token, "user-1", PlaylistBuilder.playlist)
 
       response.asserting(_ must be (()))
     }
@@ -54,7 +57,7 @@ class SpotifyApiClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers 
           case r => throw new RuntimeException(s"no mocks for ${r.uri.host}/${r.uri.path.mkString("/")}")
         }
 
-      val response = new SpotifyApiClient().findPlaylistByName(token, "mel")
+      val response = new SpotifyApiClient[IO]().findPlaylistByName(token, "mel")
 
       response.asserting(_ must be(Playlist("Mel", Some("Melodic deep house and techno songs"), Vector(
         Track(SongDetails("Glue", List("Bicep"), Some("Bicep"), Some(LocalDate.of(2017, 9, 1)), Some("album")), AudioDetails(129.983, 269150 milliseconds, CMinor),SourceDetails("spotify:track:2aJDlirz6v2a4HREki98cP", Some("https://open.spotify.com/track/2aJDlirz6v2a4HREki98cP"))),
@@ -116,7 +119,7 @@ class SpotifyApiClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers 
           case r => throw new RuntimeException(s"no mocks for ${r.uri.host}/${r.uri.path.mkString("/")}")
         }
 
-      val response = new SpotifyApiClient().getAllPlaylists(token)
+      val response = new SpotifyApiClient[IO]().getAllPlaylists(token)
 
       response.asserting(_.map(_.name) must be (List("Mel 1", "Mel 2")))
     }

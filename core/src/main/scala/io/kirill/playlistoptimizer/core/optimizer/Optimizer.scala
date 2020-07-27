@@ -4,19 +4,17 @@ import java.time.Instant
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 
-import cats.effect.{Async, Blocker, ContextShift, Sync}
 import cats.effect.concurrent.Ref
+import cats.effect.{Async, Blocker, ContextShift, Sync}
 import cats.implicits._
 import io.kirill.playlistoptimizer.core.common.errors.OptimizationNotFound
 import io.kirill.playlistoptimizer.core.optimizer.Optimizer.{OptimizationId, OptimizationResult}
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.OptimizationAlgorithm
-import io.kirill.playlistoptimizer.core.optimizer.operators.Evaluator
 
 import scala.concurrent.duration.FiniteDuration
-import scala.util.Random
 
 trait Optimizer[F[_], A] {
-  def optimize(items: Seq[A])(r: Random): F[OptimizationId]
+  def optimize(items: Seq[A]): F[OptimizationId]
 
   def get(id: OptimizationId): F[OptimizationResult[A]]
 }
@@ -35,7 +33,7 @@ private class RefBasedOptimizer[F[_]: Async: ContextShift, A](
         case Some(opt) => Sync[F].pure(opt)
       }
 
-  override def optimize(items: Seq[A])(implicit r: Random): F[Optimizer.OptimizationId] =
+  override def optimize(items: Seq[A]): F[Optimizer.OptimizationId] =
     Blocker[F].use { blocker =>
       for {
         id <- Sync[F].delay(OptimizationId(UUID.randomUUID()))
@@ -60,7 +58,7 @@ object Optimizer {
       id: OptimizationId,
       dateInitiated: Instant,
       duration: Option[FiniteDuration] = None,
-      result: Option[A] = None
+      result: Option[Seq[A]] = None
   )
 
   def refBasedOptimizer[F[_]: Async: ContextShift, A](
