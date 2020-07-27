@@ -1,11 +1,11 @@
 package io.kirill.playlistoptimizer.core
 
-import cats.effect.{Resource, Sync}
+import cats.effect.{Concurrent, ContextShift, Resource, Sync}
 import cats.implicits._
 import io.chrisdavenport.log4cats.Logger
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
-import io.kirill.playlistoptimizer.core.optimizer.Optimizer
-import io.kirill.playlistoptimizer.core.playlist.{PlaylistController, PlaylistService, Track}
+import io.kirill.playlistoptimizer.core.optimizer.algorithms.OptimizationAlgorithm
+import io.kirill.playlistoptimizer.core.playlist.{PlaylistController, PlaylistOptimizer, PlaylistService, Track}
 import sttp.client.{NothingT, SttpBackend}
 
 package object spotify {
@@ -15,12 +15,14 @@ package object spotify {
   )
 
   object Spotify {
-    def make[F[_]: Sync: Logger](
-        optimizer: Optimizer[F, Track],
+    def make[F[_]: Concurrent: Logger: ContextShift](
         backend: SttpBackend[F, Nothing, NothingT],
         spotifyConfig: SpotifyConfig
+    )(
+        implicit alg: OptimizationAlgorithm[F, Track]
     ): F[Spotify[F]] =
       for {
+        optimizer  <- PlaylistOptimizer.refBasedPlaylistOptimizer[F]
         service    <- PlaylistService.spotify(optimizer, backend, spotifyConfig)
         controller <- PlaylistController.spotify(service, spotifyConfig)
       } yield new Spotify(controller)

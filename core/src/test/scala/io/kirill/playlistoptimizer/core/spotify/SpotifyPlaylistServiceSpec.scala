@@ -7,8 +7,7 @@ import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import io.kirill.playlistoptimizer.core.common.SpotifyConfigBuilder
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
 import io.kirill.playlistoptimizer.core.common.errors.AuthenticationRequiredError
-import io.kirill.playlistoptimizer.core.optimizer.Optimizer
-import io.kirill.playlistoptimizer.core.playlist.Track
+import io.kirill.playlistoptimizer.core.playlist.{PlaylistOptimizer, Track}
 import org.mockito.{ArgumentMatchersSugar, MockitoSugar}
 import org.scalatest.freespec.AsyncFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -30,7 +29,7 @@ class SpotifyPlaylistServiceSpec extends AsyncFreeSpec with AsyncIOSpec with Mat
           case _ => throw new RuntimeException()
         }
 
-      val optimizerMock = mock[Optimizer[IO, Track]]
+      val optimizerMock = mock[PlaylistOptimizer[IO]]
       val service = new SpotifyPlaylistService(optimizerMock)
 
       service.findByName("foo").assertThrows[AuthenticationRequiredError]

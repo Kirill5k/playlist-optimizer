@@ -4,17 +4,12 @@ import cats.effect.Sync
 import cats.implicits._
 import io.chrisdavenport.log4cats.Logger
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
-import io.kirill.playlistoptimizer.core.optimizer.Optimizer
-import io.kirill.playlistoptimizer.core.playlist.{Playlist, PlaylistService, Track}
+import io.kirill.playlistoptimizer.core.playlist.{Playlist, PlaylistOptimizer, PlaylistService}
 import io.kirill.playlistoptimizer.core.spotify.clients.{SpotifyApiClient, SpotifyAuthClient}
-import io.kirill.playlistoptimizer.core.playlist.Playlist
-import io.kirill.playlistoptimizer.core.spotify.clients.SpotifyApiClient
 import sttp.client.{NothingT, SttpBackend}
 
-import scala.util.Random
-
 class SpotifyPlaylistService[F[_]: Sync: Logger](
-    override val optimizer: Optimizer[F, Track]
+    override val optimizer: PlaylistOptimizer[F]
 )(
     implicit sc: SpotifyConfig,
     b: SttpBackend[F, Nothing, NothingT]

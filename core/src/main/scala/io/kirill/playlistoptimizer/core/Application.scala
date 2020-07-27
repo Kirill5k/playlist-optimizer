@@ -5,10 +5,9 @@ import io.chrisdavenport.log4cats.Logger
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import io.kirill.playlistoptimizer.core.common.config.AppConfig
 import io.kirill.playlistoptimizer.core.common.controllers.AppController
-import io.kirill.playlistoptimizer.core.optimizer.Optimizer
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.OptimizationAlgorithm
 import io.kirill.playlistoptimizer.core.optimizer.operators.{Crossover, Mutator}
-import io.kirill.playlistoptimizer.core.playlist.Track
+import io.kirill.playlistoptimizer.core.playlist.{Track}
 import io.kirill.playlistoptimizer.core.spotify.Spotify
 import org.http4s.server.Router
 import org.http4s.server.blaze.BlazeServerBuilder
@@ -30,9 +29,8 @@ object Application extends IOApp {
   override def run(args: List[String]): IO[ExitCode] =
     Resources.make[IO].use { res =>
       for {
-        _         <- logger.info("starting playlist-optimizer app...")
-        optimizer <- Optimizer.refBasedOptimizer[IO, Track]
-        spotify   <- Spotify.make(optimizer, res.backend, config.spotify)
+        _       <- logger.info("starting playlist-optimizer app...")
+        spotify <- Spotify.make(res.backend, config.spotify)
         _ <- BlazeServerBuilder[IO]
           .bindHttp(config.server.port, config.server.host)
           .withHttpApp(

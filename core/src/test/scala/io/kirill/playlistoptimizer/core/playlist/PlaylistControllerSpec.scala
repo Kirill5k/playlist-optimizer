@@ -9,7 +9,7 @@ import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import io.circe._
 import io.circe.generic.auto._
 import io.circe.syntax._
-import io.kirill.playlistoptimizer.core.optimizer.Optimizer.OptimizationId
+import io.kirill.playlistoptimizer.core.playlist.PlaylistOptimizer.OptimizationId
 import org.http4s._
 import org.http4s.circe._
 import org.http4s.implicits._
