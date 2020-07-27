@@ -1,9 +1,15 @@
 package io.kirill.playlistoptimizer.core.common
 
+import io.kirill.playlistoptimizer.core.optimizer.Optimizer.OptimizationId
+
 object errors {
 
   sealed trait ApplicationError extends Throwable {
     def message: String
+  }
+
+  final case class OptimizationNotFound(id: OptimizationId) extends ApplicationError {
+    val message = s"optimization with id ${id.value} does not exist"
   }
 
   final case class AuthenticationRequiredError(message: String) extends ApplicationError

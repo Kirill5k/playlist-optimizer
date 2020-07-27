@@ -12,9 +12,9 @@ trait OptimizationAlgorithm[F[_], A] {
 object OptimizationAlgorithm {
 
   def geneticAlgorithm[F[_]: Concurrent, A: Crossover: Mutator](
-      popSize: Int,
-      mutFactor: Double,
-      its: Int
+      populationSize: Int,
+      mutationFactor: Double,
+      iterations: Int
   ): OptimizationAlgorithm[F, A] =
-    new GeneticAlgorithm[F, A](popSize, mutFactor, its)
+    new GeneticAlgorithm[F, A](populationSize, mutationFactor, iterations)
 }
