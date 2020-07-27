@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit
 
 import cats.implicits._
 import cats.effect.{ContextShift, Sync}
+import io.chrisdavenport.log4cats.Logger
 import io.circe._
 import io.circe.generic.auto._
 import io.circe.syntax._
@@ -22,13 +23,13 @@ trait PlaylistController[F[_]] extends AppController[F] {
 
   protected def playlistService: PlaylistService[F]
 
-  override def routes(implicit cs: ContextShift[F], s: Sync[F]): HttpRoutes[F] = {
+  override def routes(implicit cs: ContextShift[F], s: Sync[F], l: Logger[F]): HttpRoutes[F] = {
     implicit val decoder: EntityDecoder[F, PlaylistView] = jsonOf[F, PlaylistView]
     HttpRoutes.of[F] {
       case GET -> Root / "playlists" =>
         withErrorHandling {
           for {
-            _         <- s.delay(logger.info("get all playlists"))
+            _         <- l.info("get all playlists")
             playlists <- playlistService.getAll
             views = playlists.map(PlaylistView.from)
             resp <- Ok(views.asJson)
@@ -38,7 +39,7 @@ trait PlaylistController[F[_]] extends AppController[F] {
         withErrorHandling {
           for {
             view <- req.as[PlaylistView]
-            _    <- s.delay(logger.info(s"save playlist ${view.name}"))
+            _    <- l.info(s"save playlist ${view.name}")
             _    <- playlistService.save(view.toDomain)
             resp <- Created()
           } yield resp
@@ -47,7 +48,7 @@ trait PlaylistController[F[_]] extends AppController[F] {
         withErrorHandling {
           for {
             view              <- req.as[PlaylistView]
-            _                 <- s.delay(logger.info(s"optimize playlist ${view.name}"))
+            _                 <- l.info(s"optimize playlist ${view.name}")
             optimizedPlaylist <- playlistService.optimize(view.toDomain)
             view = PlaylistView.from(optimizedPlaylist)
             resp <- Ok(view.asJson)

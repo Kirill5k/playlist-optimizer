@@ -2,7 +2,7 @@ package io.kirill.playlistoptimizer.core.spotify
 
 import cats.effect._
 import cats.implicits._
-import com.typesafe.scalalogging.Logger
+import io.chrisdavenport.log4cats.Logger
 import io.circe._
 import io.circe.generic.auto._
 import io.circe.syntax._
@@ -18,8 +18,6 @@ class SpotifyPlaylistController[F[_]](
     override val playlistService: SpotifyPlaylistService[F],
     val spotifyConfig: SpotifyConfig
 ) extends PlaylistController[F] {
-
-  protected val logger = Logger[SpotifyPlaylistController[F[_]]]
 
   private object CodeQueryParamMatcher extends QueryParamDecoderMatcher[String]("code")
 
@@ -38,16 +36,16 @@ class SpotifyPlaylistController[F[_]](
   private val homePagePath =
     Location(Uri.unsafeFromString("/"))
 
-  override def routes(implicit cs: ContextShift[F], s: Sync[F]): HttpRoutes[F] =
+  override def routes(implicit cs: ContextShift[F], s: Sync[F], l: Logger[F]): HttpRoutes[F] =
     HttpRoutes.of[F] {
       case GET -> Root / "ping" =>
-        s.delay(logger.info("spotify ping")) *>
+        l.info("spotify ping") *>
           Ok("spotify-pong")
       case GET -> Root / "login" =>
-        s.delay(logger.info("redirecting to spotify for authentication")) *>
+        l.info("redirecting to spotify for authentication") *>
           TemporaryRedirect(authorizationPath)
       case GET -> Root / "authenticate" :? CodeQueryParamMatcher(code) =>
-        s.delay(logger.info(s"received redirect from spotify: $code")) *>
+        l.info(s"received redirect from spotify: $code") *>
           playlistService.authenticate(code) *>
           TemporaryRedirect(homePagePath)
     } <+> super.routes
