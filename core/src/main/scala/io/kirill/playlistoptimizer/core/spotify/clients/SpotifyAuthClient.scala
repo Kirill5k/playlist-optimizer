@@ -2,18 +2,24 @@ package io.kirill.playlistoptimizer.core.spotify.clients
 
 import java.time.Instant
 
-import cats.effect.IO
+import cats.effect.{IO, Sync}
+import cats.implicits._
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
 import io.kirill.playlistoptimizer.core.common.errors.AuthenticationRequiredError
 import io.kirill.playlistoptimizer.core.spotify.clients.api.{SpotifyAuthApi, SpotifyRestApi}
 import sttp.client.{NothingT, SttpBackend}
 
-private[spotify] class SpotifyAuthClient(implicit val sc: SpotifyConfig, val b: SttpBackend[IO, Nothing, NothingT]) {
+private[spotify] class SpotifyAuthClient[F[_]: Sync](
+    implicit val sc: SpotifyConfig,
+    val b: SttpBackend[F, Nothing, NothingT]
+) {
   import SpotifyAuthClient._
 
-  private var spotifyAccessToken: Either[Throwable, SpotifyAccessToken] = Left(AuthenticationRequiredError("authorization with Spotify is required"))
+  private var spotifyAccessToken: Either[Throwable, SpotifyAccessToken] = Left(
+    AuthenticationRequiredError("authorization with Spotify is required")
+  )
 
-  def authorize(accessCode: String): IO[Unit] =
+  def authorize(accessCode: String): F[Unit] =
     for {
       authResponse <- SpotifyAuthApi.authorize(accessCode)
       userResponse <- SpotifyRestApi.getCurrentUser(authResponse.access_token)
@@ -22,24 +28,25 @@ private[spotify] class SpotifyAuthClient(implicit val sc: SpotifyConfig, val b: 
       ()
     }
 
-  def token: IO[String] = {
+  def token: F[String] =
     for {
-      token <- IO.fromEither(spotifyAccessToken)
-      validToken <- if (token.isValid) IO.pure(token) else refreshToken()
+      token      <- Sync[F].fromEither(spotifyAccessToken)
+      validToken <- if (token.isValid) Sync[F].pure(token) else refreshToken()
     } yield validToken.accessToken
-  }
 
-  private def refreshToken(): IO[SpotifyAccessToken] = {
+  private def refreshToken(): F[SpotifyAccessToken] =
     for {
-      token <- IO.fromEither(spotifyAccessToken)
-      refreshedToken <- SpotifyAuthApi.refresh(token.refreshToken).map(response => token.copy(accessToken = response.access_token))
-    } yield  {
+      token          <- Sync[F].fromEither(spotifyAccessToken)
+      refreshedToken <- SpotifyAuthApi
+        .refresh(token.refreshToken)
+        .map(response => token.copy(accessToken = response.access_token))
+    } yield {
       spotifyAccessToken = Right(refreshedToken)
       refreshedToken
     }
-  }
 
-  def userId: IO[String] = IO.fromEither(spotifyAccessToken).map(_.userId)
+  def userId: F[String] =
+    Sync[F].fromEither(spotifyAccessToken).map(_.userId)
 }
 
 private[spotify] object SpotifyAuthClient {

@@ -16,37 +16,38 @@ import scala.concurrent.duration.FiniteDuration
 import scala.util.Random
 
 trait Optimizer[F[_], A] {
-  def optimize(items: Seq[A])(implicit alg: OptimizationAlgorithm[F, A], r: Random): F[OptimizationId]
+  def optimize(items: Seq[A])(r: Random): F[OptimizationId]
 
   def get(id: OptimizationId): F[OptimizationResult[A]]
 }
 
-private class RefBasedOptimizer[F[_]: Async: ContextShift, A: Evaluator](
+private class RefBasedOptimizer[F[_]: Async: ContextShift, A](
     private val state: Ref[F, Map[OptimizationId, OptimizationResult[A]]]
+)(
+    implicit val alg: OptimizationAlgorithm[F, A]
 ) extends Optimizer[F, A] {
 
   override def get(id: OptimizationId): F[Optimizer.OptimizationResult[A]] =
     state.get
       .map(_.get(id))
       .flatMap {
-        case None => Sync[F].raiseError(OptimizationNotFound(id))
+        case None      => Sync[F].raiseError(OptimizationNotFound(id))
         case Some(opt) => Sync[F].pure(opt)
       }
 
-  override def optimize(items: Seq[A])(implicit alg: OptimizationAlgorithm[F, A], r: Random): F[Optimizer.OptimizationId] = {
+  override def optimize(items: Seq[A])(implicit r: Random): F[Optimizer.OptimizationId] =
     Blocker[F].use { blocker =>
       for {
         id <- Sync[F].delay(OptimizationId(UUID.randomUUID()))
-        _ <- state.update(s => s + (id -> OptimizationResult(id, Instant.now())))
-        _ <- blocker.blockOn(alg.optimizeSeq(items).flatMap(res => updateState(id, res)))
+        _  <- state.update(s => s + (id -> OptimizationResult(id, Instant.now())))
+        _  <- blocker.blockOn(alg.optimizeSeq(items).flatMap(res => updateState(id, res)))
       } yield id
     }
-  }
 
   private def updateState(id: OptimizationId, result: Seq[A]): F[Unit] =
     for {
       opt <- get(id)
-      duration = FiniteDuration(Instant.now().toEpochMilli - opt.dateInitiated.toEpochMilli, TimeUnit.MILLISECONDS)
+      duration     = FiniteDuration(Instant.now().toEpochMilli - opt.dateInitiated.toEpochMilli, TimeUnit.MILLISECONDS)
       completedOpt = opt.copy(duration = Some(duration), result = Some(result))
       _ <- state.update(s => s + (id -> completedOpt))
     } yield ()
@@ -62,8 +63,10 @@ object Optimizer {
       result: Option[A] = None
   )
 
-  def refBasedOptimizer[F[_]: Async: ContextShift, A: Evaluator]: F[Optimizer[F, A]] = {
-    Ref.of[F, Map[OptimizationId, OptimizationResult[A]]](Map())
+  def refBasedOptimizer[F[_]: Async: ContextShift, A](
+      implicit alg: OptimizationAlgorithm[F, A]
+  ): F[Optimizer[F, A]] =
+    Ref
+      .of[F, Map[OptimizationId, OptimizationResult[A]]](Map())
       .map(s => new RefBasedOptimizer(s))
-  }
 }

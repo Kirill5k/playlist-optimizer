@@ -4,8 +4,6 @@ import java.time.Instant
 
 import cats.effect.IO
 import cats.effect.testing.scalatest.AsyncIOSpec
-import io.kirill.playlistoptimizer.core.common.config.GeneticAlgorithmConfig
-import io.kirill.playlistoptimizer.core.optimizer.Optimizer
 import io.kirill.playlistoptimizer.core.optimizer.operators.{Crossover, Evaluator, Mutator}
 import io.kirill.playlistoptimizer.core.playlist.{PlaylistBuilder, Track}
 import org.scalatest.freespec.AsyncFreeSpec

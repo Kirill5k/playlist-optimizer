@@ -8,13 +8,13 @@ import io.kirill.playlistoptimizer.core.utils.CollectionOps._
 
 import scala.util.Random
 
-class GeneticAlgorithm[F[_]: Concurrent, A: Crossover: Mutator](
+class GeneticAlgorithm[F[_]: Concurrent, A: Crossover: Mutator: Evaluator](
     val populationSize: Int,
     val mutationFactor: Double,
     val iterations: Int
 ) extends OptimizationAlgorithm[F, A] {
 
-  override def optimizeSeq(items: Seq[A])(implicit e: Evaluator[A], r: Random): F[Seq[A]] =
+  override def optimizeSeq(items: Seq[A])(implicit r: Random): F[Seq[A]] =
     Stream
       .range[F](0, iterations)
       .evalScan(items.shuffledCopies(populationSize))((currPop, _) => singleIteration(currPop))

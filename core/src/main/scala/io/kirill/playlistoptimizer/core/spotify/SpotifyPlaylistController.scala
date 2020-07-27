@@ -14,17 +14,21 @@ import org.http4s.headers.Location
 import org.http4s.{HttpRoutes, Uri}
 import sttp.client.{NothingT, SttpBackend}
 
-class SpotifyPlaylistController(override val playlistService: SpotifyPlaylistService)(implicit val sc: SpotifyConfig) extends PlaylistController[IO] {
+class SpotifyPlaylistController[F[_]](
+    override val playlistService: SpotifyPlaylistService[F]
+)(
+    implicit val sc: SpotifyConfig
+) extends PlaylistController[F] {
 
-  protected val logger = Logger[SpotifyPlaylistController]
+  protected val logger = Logger[SpotifyPlaylistController[F[_]]]
 
   private object CodeQueryParamMatcher extends QueryParamDecoderMatcher[String]("code")
 
   private val authorizationParams = Map(
     "response_type" -> "code",
-    "client_id" -> sc.clientId,
-    "scope" -> "playlist-read-private playlist-modify-public playlist-modify-private user-read-private user-read-email",
-    "redirect_uri" -> sc.redirectUri
+    "client_id"     -> sc.clientId,
+    "scope"         -> "playlist-read-private playlist-modify-public playlist-modify-private user-read-private user-read-email",
+    "redirect_uri"  -> sc.redirectUri
   )
 
   private val authorizationLocation =
@@ -33,13 +37,17 @@ class SpotifyPlaylistController(override val playlistService: SpotifyPlaylistSer
   private val homePageLocation =
     Location(Uri.unsafeFromString("/"))
 
-  override def routes(implicit C: ContextShift[IO], S: Sync[IO]): HttpRoutes[IO] =
-    HttpRoutes.of[IO] {
+  override def routes(implicit C: ContextShift[F], S: Sync[F]): HttpRoutes[F] =
+    HttpRoutes.of[F] {
       case GET -> Root / "ping" =>
-        IO(logger.info("spotify ping")) *> Ok("spotify-pong")
+        S.delay(logger.info("spotify ping")) *>
+          Ok("spotify-pong")
       case GET -> Root / "login" =>
-        IO(logger.info("redirecting to spotify for authentication")) *> TemporaryRedirect(authorizationLocation)
+        S.delay(logger.info("redirecting to spotify for authentication")) *>
+          TemporaryRedirect(authorizationLocation)
       case GET -> Root / "authenticate" :? CodeQueryParamMatcher(code) =>
-        IO(logger.info(s"received redirect from spotify: $code")) *> playlistService.authenticate(code) *> TemporaryRedirect(homePageLocation)
+        S.delay(logger.info(s"received redirect from spotify: $code")) *>
+          playlistService.authenticate(code) *>
+          TemporaryRedirect(homePageLocation)
     } <+> super.routes
 }

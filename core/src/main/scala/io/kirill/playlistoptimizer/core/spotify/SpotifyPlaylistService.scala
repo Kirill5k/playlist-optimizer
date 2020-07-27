@@ -1,6 +1,7 @@
 package io.kirill.playlistoptimizer.core.spotify
 
-import cats.effect._
+import cats.effect.Sync
+import cats.implicits._
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
 import io.kirill.playlistoptimizer.core.optimizer.Optimizer
 import io.kirill.playlistoptimizer.core.playlist.{Playlist, PlaylistService, Track}
@@ -11,31 +12,36 @@ import sttp.client.{NothingT, SttpBackend}
 
 import scala.util.Random
 
-class SpotifyPlaylistService(override val optimizer: Optimizer[IO, Track])(implicit sc: SpotifyConfig, b: SttpBackend[IO, Nothing, NothingT]) extends PlaylistService[IO] {
-  override protected implicit val r: Random = new Random()
+class SpotifyPlaylistService[F[_]: Sync](
+    override val optimizer: Optimizer[F, Track]
+)(
+    implicit sc: SpotifyConfig,
+    b: SttpBackend[F, Nothing, NothingT]
+) extends PlaylistService[F] {
+  implicit override protected val r: Random = new Random()
 
-  private val authClient: SpotifyAuthClient = new SpotifyAuthClient()
-  private val apiClient: SpotifyApiClient = new SpotifyApiClient()
+  private val authClient = new SpotifyAuthClient[F]()
+  private val apiClient  = new SpotifyApiClient[F]()
 
-  def authenticate(accessCode: String): IO[Unit] =
+  def authenticate(accessCode: String): F[Unit] =
     authClient.authorize(accessCode)
 
-  override def getAll: IO[Seq[Playlist]] =
+  override def getAll: F[Seq[Playlist]] =
     for {
-      token <- authClient.token
+      token     <- authClient.token
       playlists <- apiClient.getAllPlaylists(token)
     } yield playlists
 
-  override def findByName(name: String): IO[Playlist] =
+  override def findByName(name: String): F[Playlist] =
     for {
-      token <- authClient.token
+      token    <- authClient.token
       playlist <- apiClient.findPlaylistByName(token, name)
     } yield playlist
 
-  override def save(playlist: Playlist): IO[Unit] =
+  override def save(playlist: Playlist): F[Unit] =
     for {
       userId <- authClient.userId
-      token <- authClient.token
-      _ <- apiClient.createPlaylist(token, userId, playlist)
+      token  <- authClient.token
+      _      <- apiClient.createPlaylist(token, userId, playlist)
     } yield ()
 }

@@ -13,7 +13,7 @@ class AppConfigSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
 
   "A MainConfig" - {
     "should be parsed from application.conf" in {
-      val config = Blocker[IO].use(b => AppConfig.load(b))
+      val config = Blocker[IO].use(b => AppConfig.loadF(b))
 
       config.asserting(_ mustBe a [AppConfig])
     }

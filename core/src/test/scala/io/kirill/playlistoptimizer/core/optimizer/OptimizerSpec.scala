@@ -1,55 +1,36 @@
 package io.kirill.playlistoptimizer.core.optimizer
 
-import java.time.Instant
-
-import cats.effect._
+import cats.effect.IO
+import cats.implicits._
 import cats.effect.testing.scalatest.AsyncIOSpec
-import io.kirill.playlistoptimizer.core.common.config.GeneticAlgorithmConfig
-import io.kirill.playlistoptimizer.core.optimizer.operators.{Crossover, Evaluator, Mutator}
+import io.kirill.playlistoptimizer.core.optimizer.Optimizer.OptimizationId
+import io.kirill.playlistoptimizer.core.optimizer.algorithms.OptimizationAlgorithm
+import io.kirill.playlistoptimizer.core.optimizer.operators.Evaluator
 import io.kirill.playlistoptimizer.core.playlist.{PlaylistBuilder, Track}
-import io.kirill.playlistoptimizer.core.playlist._
-import io.kirill.playlistoptimizer.core.optimizer.operators.Crossover
+import org.mockito.scalatest.AsyncMockitoSugar
 import org.scalatest.freespec.AsyncFreeSpec
 import org.scalatest.matchers.must.Matchers
 
 import scala.util.Random
+import scala.concurrent.duration._
 
-
-class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
+class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers with AsyncMockitoSugar {
   implicit val random = new Random(1)
 
-  "A GeneticAlgorithmOptimizer" - {
+  val tracks = PlaylistBuilder.playlist.tracks
+  val optimizedTracks = random.shuffle(tracks)
 
-    "optimize a playlist" in {
-      implicit val c: Crossover[Track] = Crossover.bestKeySequenceTrackCrossover
-      implicit val m: Mutator[Track] = Mutator.randomSwapMutator[Track]
+  "A RefBasedOptimizer" - {
 
-      val start = Instant.now
+    "initiate optimization of a tracks seq" in {
+      implicit val alg = mock[OptimizationAlgorithm[IO, Track]]
+      val result = for {
+        optimizer <- Optimizer.refBasedOptimizer[IO, Track]
+        _ = when(alg.optimizeSeq(tracks)).thenReturn(IO.sleep(10.seconds) *> IO.pure(optimizedTracks))
+        id <- optimizer.optimize(tracks)
+      } yield id
 
-      val config = GeneticAlgorithmConfig(200, 250, 0.3)
-      val songs = PlaylistBuilder.playlist.tracks
-      val optimizedSongsResult = Optimizer.geneticAlgorithmOptimizer[IO, Track](config).optimize(songs)
-
-      optimizedSongsResult.asserting { tracks =>
-        val end = Instant.now()
-
-        println(s"total time taken: ${end.getEpochSecond - start.getEpochSecond}s")
-        println(s"original score: ${Evaluator.keyDistanceBasedTracksEvaluator.evaluate(songs)}, optimized score: ${Evaluator.keyDistanceBasedTracksEvaluator.evaluate(tracks)}")
-        println(tracks)
-        println(keyStreak(tracks))
-
-
-        tracks must contain theSameElementsAs songs
-        tracks must not contain theSameElementsInOrderAs (songs)
-        Evaluator.keyDistanceBasedTracksEvaluator.evaluate(tracks) must be < Evaluator.keyDistanceBasedTracksEvaluator.evaluate(songs) / 20
-      }
+      result.asserting(_ mustBe an [OptimizationId])
     }
-  }
-
-  def keyStreak(tracks: Seq[Track]): String = {
-    tracks
-      .map(_.audio.key)
-      .map(k => (k.name, s"${k.number}${if (k.mode.number == 0) "A" else "B"}"))
-      .mkString(" -> ")
   }
 }

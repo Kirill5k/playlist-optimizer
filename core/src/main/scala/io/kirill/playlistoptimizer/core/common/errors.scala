@@ -8,6 +8,10 @@ object errors {
     def message: String
   }
 
+  final case class SpotifyPlaylistNotFound(name: String) extends ApplicationError {
+    val message = s"""couldn't find playlist "$name" in Spotify for current user"""
+  }
+
   final case class OptimizationNotFound(id: OptimizationId) extends ApplicationError {
     val message = s"optimization with id ${id.value} does not exist"
   }
