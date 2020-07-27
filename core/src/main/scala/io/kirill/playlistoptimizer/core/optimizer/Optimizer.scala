@@ -5,7 +5,7 @@ import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 import cats.effect.concurrent.Ref
-import cats.effect.{Async, Blocker, ContextShift, Sync}
+import cats.effect.{Async, Blocker, Concurrent, ContextShift, Sync}
 import cats.implicits._
 import io.kirill.playlistoptimizer.core.common.errors.OptimizationNotFound
 import io.kirill.playlistoptimizer.core.optimizer.Optimizer.{OptimizationId, OptimizationResult}
@@ -19,7 +19,7 @@ trait Optimizer[F[_], A] {
   def get(id: OptimizationId): F[OptimizationResult[A]]
 }
 
-private class RefBasedOptimizer[F[_]: Async: ContextShift, A](
+private class RefBasedOptimizer[F[_]: Concurrent: ContextShift, A](
     private val state: Ref[F, Map[OptimizationId, OptimizationResult[A]]]
 )(
     implicit val alg: OptimizationAlgorithm[F, A]
@@ -34,13 +34,11 @@ private class RefBasedOptimizer[F[_]: Async: ContextShift, A](
       }
 
   override def optimize(items: Seq[A]): F[Optimizer.OptimizationId] =
-    Blocker[F].use { blocker =>
-      for {
-        id <- Sync[F].delay(OptimizationId(UUID.randomUUID()))
-        _  <- state.update(s => s + (id -> OptimizationResult(id, Instant.now())))
-        _  <- blocker.blockOn(alg.optimizeSeq(items).flatMap(res => updateState(id, res)))
-      } yield id
-    }
+    for {
+      id <- Sync[F].delay(OptimizationId(UUID.randomUUID()))
+      _  <- state.update(s => s + (id -> OptimizationResult(id, Instant.now())))
+      _  <- Concurrent[F].start(alg.optimizeSeq(items).flatMap(res => updateState(id, res))).void
+    } yield id
 
   private def updateState(id: OptimizationId, result: Seq[A]): F[Unit] =
     for {
@@ -61,7 +59,7 @@ object Optimizer {
       result: Option[Seq[A]] = None
   )
 
-  def refBasedOptimizer[F[_]: Async: ContextShift, A](
+  def refBasedOptimizer[F[_]: Concurrent: ContextShift, A](
       implicit alg: OptimizationAlgorithm[F, A]
   ): F[Optimizer[F, A]] =
     Ref
