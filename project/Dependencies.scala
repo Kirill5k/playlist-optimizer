@@ -17,7 +17,7 @@ object Dependencies {
     lazy val pureconfigCats = "com.github.pureconfig" %% "pureconfig-cats-effect" % Versions.pureConfig
 
     lazy val logback = "ch.qos.logback" % "logback-classic" % "1.2.3"
-    lazy val scalaLoggigng = "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2"
+    lazy val log4cats = "io.chrisdavenport" %% "log4cats-slf4j" % "1.0.1"
 
     lazy val catsCore = "org.typelevel" %% "cats-core" % "2.1.0"
     lazy val catsEffect = "org.typelevel" %% "cats-effect" % "2.1.1"
@@ -47,7 +47,7 @@ object Dependencies {
     Libraries.pureconfigCats,
     Libraries.pureconfigCore,
     Libraries.logback,
-    Libraries.scalaLoggigng,
+    Libraries.log4cats,
     Libraries.catsCore,
     Libraries.catsEffect,
     Libraries.fs2,

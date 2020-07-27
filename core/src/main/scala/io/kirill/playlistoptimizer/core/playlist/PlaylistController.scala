@@ -8,7 +8,9 @@ import cats.effect.{ContextShift, Sync}
 import io.circe._
 import io.circe.generic.auto._
 import io.circe.syntax._
+import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
 import io.kirill.playlistoptimizer.core.common.controllers.AppController
+import io.kirill.playlistoptimizer.core.spotify.{SpotifyPlaylistController, SpotifyPlaylistService}
 import org.http4s.circe._
 import org.http4s.{EntityDecoder, HttpRoutes, Response}
 
@@ -118,4 +120,10 @@ object PlaylistController {
         playlist.source.toString
       )
   }
+
+  def spotify[F[_]: Sync](
+      spotifyService: SpotifyPlaylistService[F],
+      spotifyConfig: SpotifyConfig
+  ): F[PlaylistController[F]] =
+    Sync[F].delay(new SpotifyPlaylistController[F](spotifyService, spotifyConfig))
 }

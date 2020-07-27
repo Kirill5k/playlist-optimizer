@@ -39,11 +39,6 @@ trait AppController[F[_]] extends Http4sDsl[F] {
 object AppController {
   final case class ErrorResponse(message: String)
 
-  def homeController(blocker: Blocker)(implicit cs: ContextShift[IO]): AppController[IO] =
-    new HomeController[IO](blocker)
-
-  def spotifyController(spotifyService: SpotifyPlaylistService)(implicit config: AppConfig): AppController[IO] = {
-    implicit val sc: SpotifyConfig = config.spotify
-    new SpotifyPlaylistController(spotifyService)
-  }
+  def homeController[F[_]: ContextShift](blocker: Blocker): AppController[F] =
+    new HomeController[F](blocker)
 }

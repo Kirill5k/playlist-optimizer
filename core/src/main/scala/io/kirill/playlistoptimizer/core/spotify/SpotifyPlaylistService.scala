@@ -18,7 +18,6 @@ class SpotifyPlaylistService[F[_]: Sync](
     implicit sc: SpotifyConfig,
     b: SttpBackend[F, Nothing, NothingT]
 ) extends PlaylistService[F] {
-  implicit override protected val r: Random = new Random()
 
   private val authClient = new SpotifyAuthClient[F]()
   private val apiClient  = new SpotifyApiClient[F]()

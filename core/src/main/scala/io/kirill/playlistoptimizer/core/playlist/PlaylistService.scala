@@ -11,7 +11,6 @@ import sttp.client.{NothingT, SttpBackend}
 import scala.util.Random
 
 trait PlaylistService[F[_]] {
-  implicit protected val r: Random
 
   protected def optimizer: Optimizer[F, Track]
 
@@ -26,13 +25,13 @@ trait PlaylistService[F[_]] {
 }
 
 object PlaylistService {
-  def spotifyPlaylistService[F[_]: Sync](
+  def spotify[F[_]: Sync](
       optimizer: Optimizer[F, Track],
+      backend: SttpBackend[F, Nothing, NothingT],
       spotifyConfig: SpotifyConfig
-  )(
-      implicit b: SttpBackend[F, Nothing, NothingT]
-  ): SpotifyPlaylistService[F] = {
+  ): F[SpotifyPlaylistService[F]] = {
     implicit val sc = spotifyConfig
-    new SpotifyPlaylistService(optimizer)
+    implicit val b = backend
+    Sync[F].delay(new SpotifyPlaylistService(optimizer))
   }
 }

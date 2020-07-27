@@ -18,7 +18,7 @@ object config {
   )
 
   final case class ServerConfig(
-      hostname: String,
+      host: String,
       port: Int
   )
 
