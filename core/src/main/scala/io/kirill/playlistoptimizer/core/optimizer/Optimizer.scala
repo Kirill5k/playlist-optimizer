@@ -2,35 +2,54 @@ package io.kirill.playlistoptimizer.core.optimizer
 
 import java.time.Instant
 import java.util.UUID
+import java.util.concurrent.TimeUnit
 
-import cats.effect.Async
+import cats.effect.{Async, Blocker, ContextShift, Sync}
 import cats.effect.concurrent.Ref
 import cats.implicits._
 import io.kirill.playlistoptimizer.core.common.errors.OptimizationNotFound
 import io.kirill.playlistoptimizer.core.optimizer.Optimizer.{OptimizationId, OptimizationResult}
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.OptimizationAlgorithm
+import io.kirill.playlistoptimizer.core.optimizer.operators.Evaluator
 
 import scala.concurrent.duration.FiniteDuration
+import scala.util.Random
 
 trait Optimizer[F[_], A] {
-  def optimize(item: A)(implicit alg: OptimizationAlgorithm[F, A]): F[OptimizationId]
+  def optimize(items: Seq[A])(implicit alg: OptimizationAlgorithm[F, A], r: Random): F[OptimizationId]
 
   def get(id: OptimizationId): F[OptimizationResult[A]]
 }
 
-private class RefBasedOptimizer[F[_]: Async, A](
+private class RefBasedOptimizer[F[_]: Async: ContextShift, A: Evaluator](
     private val state: Ref[F, Map[OptimizationId, OptimizationResult[A]]]
 ) extends Optimizer[F, A] {
-
-  override def optimize(item: A)(implicit alg: OptimizationAlgorithm[F, A]): F[Optimizer.OptimizationId] = ???
 
   override def get(id: OptimizationId): F[Optimizer.OptimizationResult[A]] =
     state.get
       .map(_.get(id))
       .flatMap {
-        case None => Async[F].raiseError(OptimizationNotFound(id))
-        case Some(opt) => Async[F].pure(opt)
+        case None => Sync[F].raiseError(OptimizationNotFound(id))
+        case Some(opt) => Sync[F].pure(opt)
       }
+
+  override def optimize(items: Seq[A])(implicit alg: OptimizationAlgorithm[F, A], r: Random): F[Optimizer.OptimizationId] = {
+    Blocker[F].use { blocker =>
+      for {
+        id <- Sync[F].delay(OptimizationId(UUID.randomUUID()))
+        _ <- state.update(s => s + (id -> OptimizationResult(id, Instant.now())))
+        _ <- blocker.blockOn(alg.optimizeSeq(items).flatMap(res => updateState(id, res)))
+      } yield id
+    }
+  }
+
+  private def updateState(id: OptimizationId, result: Seq[A]): F[Unit] =
+    for {
+      opt <- get(id)
+      duration = FiniteDuration(Instant.now().toEpochMilli - opt.dateInitiated.toEpochMilli, TimeUnit.MILLISECONDS)
+      completedOpt = opt.copy(duration = Some(duration), result = Some(result))
+      _ <- state.update(s => s + (id -> completedOpt))
+    } yield ()
 }
 
 object Optimizer {
@@ -42,4 +61,9 @@ object Optimizer {
       duration: Option[FiniteDuration] = None,
       result: Option[A] = None
   )
+
+  def refBasedOptimizer[F[_]: Async: ContextShift, A: Evaluator]: F[Optimizer[F, A]] = {
+    Ref.of[F, Map[OptimizationId, OptimizationResult[A]]](Map())
+      .map(s => new RefBasedOptimizer(s))
+  }
 }
