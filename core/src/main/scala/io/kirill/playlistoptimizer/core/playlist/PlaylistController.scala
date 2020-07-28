@@ -9,11 +9,11 @@ import io.chrisdavenport.log4cats.Logger
 import io.circe._
 import io.circe.generic.auto._
 import io.circe.syntax._
-import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
 import io.kirill.playlistoptimizer.core.common.controllers.AppController
-import io.kirill.playlistoptimizer.core.spotify.{SpotifyPlaylistController, SpotifyPlaylistService}
+import io.kirill.playlistoptimizer.core.common.json._
+import io.kirill.playlistoptimizer.core.playlist.PlaylistOptimizer.OptimizationId
 import org.http4s.circe._
-import org.http4s.{EntityDecoder, HttpRoutes, Response}
+import org.http4s.{EntityDecoder, HttpRoutes}
 
 import scala.concurrent.duration._
 import scala.language.postfixOps
@@ -44,13 +44,13 @@ trait PlaylistController[F[_]] extends AppController[F] {
             resp <- Created()
           } yield resp
         }
-      case req @ POST -> Root / "playlists" / "optimize" =>
+      case req @ POST -> Root / "optimizations" =>
         withErrorHandling {
           for {
             view              <- req.as[PlaylistView]
             _                 <- l.info(s"optimize playlist ${view.name}")
             optimizationId <- playlistService.optimize(view.toDomain)
-            resp <- Ok(optimizationId.asJson)
+            resp <- Created(InitiateOptimizationResponse(optimizationId).asJson)
           } yield resp
         }
     }
@@ -58,6 +58,9 @@ trait PlaylistController[F[_]] extends AppController[F] {
 }
 
 object PlaylistController {
+  final case class InitiateOptimizationResponse(id: OptimizationId)
+
+
   final case class TrackView(
       name: String,
       artists: Seq[String],
@@ -120,10 +123,4 @@ object PlaylistController {
         playlist.source.toString
       )
   }
-
-  def spotify[F[_]: Sync](
-      spotifyService: SpotifyPlaylistService[F],
-      spotifyConfig: SpotifyConfig
-  ): F[PlaylistController[F]] =
-    Sync[F].delay(new SpotifyPlaylistController[F](spotifyService, spotifyConfig))
 }

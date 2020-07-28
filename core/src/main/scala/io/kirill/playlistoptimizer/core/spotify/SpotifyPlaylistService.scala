@@ -40,3 +40,15 @@ class SpotifyPlaylistService[F[_]: Sync: Logger](
       _      <- apiClient.createPlaylist(token, userId, playlist)
     } yield ()
 }
+
+object SpotifyPlaylistService {
+  def make[F[_]: Sync: Logger](
+      optimizer: PlaylistOptimizer[F],
+      backend: SttpBackend[F, Nothing, NothingT],
+      spotifyConfig: SpotifyConfig
+  ): F[SpotifyPlaylistService[F]] = {
+    implicit val sc: SpotifyConfig                    = spotifyConfig
+    implicit val b: SttpBackend[F, Nothing, NothingT] = backend
+    Sync[F].delay(new SpotifyPlaylistService(optimizer))
+  }
+}

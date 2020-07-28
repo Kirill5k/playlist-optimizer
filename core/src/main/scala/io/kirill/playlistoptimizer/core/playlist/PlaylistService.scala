@@ -19,15 +19,3 @@ trait PlaylistService[F[_]] {
   def optimize(playlist: Playlist)(implicit m: MonadError[F, Throwable]): F[OptimizationId] =
     optimizer.optimize(playlist)
 }
-
-object PlaylistService {
-  def spotify[F[_]: Sync: Logger](
-      optimizer: PlaylistOptimizer[F],
-      backend: SttpBackend[F, Nothing, NothingT],
-      spotifyConfig: SpotifyConfig
-  ): F[SpotifyPlaylistService[F]] = {
-    implicit val sc: SpotifyConfig = spotifyConfig
-    implicit val b: SttpBackend[F, Nothing, NothingT] = backend
-    Sync[F].delay(new SpotifyPlaylistService(optimizer))
-  }
-}

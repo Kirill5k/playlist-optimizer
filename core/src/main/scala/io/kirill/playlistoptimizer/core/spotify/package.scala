@@ -23,8 +23,8 @@ package object spotify {
     ): F[Spotify[F]] =
       for {
         optimizer  <- PlaylistOptimizer.refBasedPlaylistOptimizer[F]
-        service    <- PlaylistService.spotify(optimizer, backend, spotifyConfig)
-        controller <- PlaylistController.spotify(service, spotifyConfig)
+        service    <- SpotifyPlaylistService.make(optimizer, backend, spotifyConfig)
+        controller <- SpotifyPlaylistController.make(service, spotifyConfig)
       } yield new Spotify(controller)
   }
 }

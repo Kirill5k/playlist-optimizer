@@ -50,3 +50,11 @@ class SpotifyPlaylistController[F[_]](
           TemporaryRedirect(homePagePath)
     } <+> super.routes
 }
+
+object SpotifyPlaylistController {
+  def make[F[_]: Sync](
+      spotifyService: SpotifyPlaylistService[F],
+      spotifyConfig: SpotifyConfig
+  ): F[PlaylistController[F]] =
+    Sync[F].delay(new SpotifyPlaylistController[F](spotifyService, spotifyConfig))
+}
