@@ -6,7 +6,7 @@ import io.chrisdavenport.log4cats.Logger
 import io.circe._
 import io.circe.generic.auto._
 import io.circe.syntax._
-import io.kirill.playlistoptimizer.core.common.errors.AuthenticationRequiredError
+import io.kirill.playlistoptimizer.core.common.errors._
 import org.http4s.{HttpRoutes, MessageFailure, Response}
 import org.http4s.dsl.Http4sDsl
 import org.http4s.circe._
@@ -23,8 +23,14 @@ trait AppController[F[_]] extends Http4sDsl[F] {
       l: Logger[F]
   ): F[Response[F]] =
     response.handleErrorWith {
+      case error: NotFoundError =>
+        l.error(s"not found error: ${error.message}") *>
+          NotFound(ErrorResponse(error.message).asJson)
+      case error: BadRequestError =>
+        l.error(s"bad request error: ${error.message}") *>
+          BadRequest(ErrorResponse(error.message).asJson)
       case AuthenticationRequiredError(message) =>
-        l.error(s"authentication error: ${message}") *>
+        l.error(s"authentication error: $message") *>
           Forbidden(ErrorResponse(message).asJson)
       case error: MessageFailure =>
         l.error(error)(s"error parsing json: ${error.getMessage()}") *>
