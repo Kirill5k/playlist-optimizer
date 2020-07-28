@@ -9,9 +9,11 @@ import io.kirill.playlistoptimizer.core.common.errors.AuthenticationRequiredErro
 import io.circe._
 import io.circe.generic.auto._
 import io.circe.syntax._
+import io.kirill.playlistoptimizer.core.ControllerSpec
 import io.kirill.playlistoptimizer.core.common.SpotifyConfigBuilder
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
 import io.kirill.playlistoptimizer.core.common.controllers.AppController.ErrorResponse
+import io.kirill.playlistoptimizer.core.playlist.PlaylistOptimizer
 import org.http4s._
 import org.http4s.circe._
 import org.http4s.implicits._
@@ -24,9 +26,8 @@ import sttp.client.testing.SttpBackendStub
 
 import scala.concurrent.ExecutionContext
 
-class SpotifyPlaylistControllerSpec extends AnyWordSpec with MockitoSugar with ArgumentMatchersSugar with Matchers {
-  implicit val logger: Logger[IO] = Slf4jLogger.getLogger[IO]
-  implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContext.Implicits.global)
+class SpotifyPlaylistControllerSpec extends ControllerSpec {
+
   implicit val sc: SpotifyConfig = SpotifyConfigBuilder.testConfig
 
   implicit val errorDec: EntityDecoder[IO, ErrorResponse] = jsonOf[IO, ErrorResponse]
@@ -40,7 +41,8 @@ class SpotifyPlaylistControllerSpec extends AnyWordSpec with MockitoSugar with A
         }
 
       val playlistServiceMock = mock[SpotifyPlaylistService[IO]]
-      val controller = new SpotifyPlaylistController(playlistServiceMock, sc)
+      val playlistOptimizerMock = mock[PlaylistOptimizer[IO]]
+      val controller = new SpotifyPlaylistController(playlistOptimizerMock, playlistServiceMock, sc)
 
       when(playlistServiceMock.getAll).thenReturn(IO.raiseError(AuthenticationRequiredError("authorization with Spotify is required")));
 

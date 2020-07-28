@@ -29,8 +29,7 @@ class SpotifyPlaylistServiceSpec extends AsyncFreeSpec with AsyncIOSpec with Mat
           case _ => throw new RuntimeException()
         }
 
-      val optimizerMock = mock[PlaylistOptimizer[IO]]
-      val service = new SpotifyPlaylistService(optimizerMock)
+      val service = new SpotifyPlaylistService[IO]()
 
       service.findByName("foo").assertThrows[AuthenticationRequiredError]
     }

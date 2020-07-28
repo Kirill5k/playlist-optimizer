@@ -9,8 +9,6 @@ import io.kirill.playlistoptimizer.core.spotify.clients.{SpotifyApiClient, Spoti
 import sttp.client.{NothingT, SttpBackend}
 
 class SpotifyPlaylistService[F[_]: Sync: Logger](
-    override val optimizer: PlaylistOptimizer[F]
-)(
     implicit sc: SpotifyConfig,
     b: SttpBackend[F, Nothing, NothingT]
 ) extends PlaylistService[F] {
@@ -43,12 +41,11 @@ class SpotifyPlaylistService[F[_]: Sync: Logger](
 
 object SpotifyPlaylistService {
   def make[F[_]: Sync: Logger](
-      optimizer: PlaylistOptimizer[F],
       backend: SttpBackend[F, Nothing, NothingT],
       spotifyConfig: SpotifyConfig
   ): F[SpotifyPlaylistService[F]] = {
     implicit val sc: SpotifyConfig                    = spotifyConfig
     implicit val b: SttpBackend[F, Nothing, NothingT] = backend
-    Sync[F].delay(new SpotifyPlaylistService(optimizer))
+    Sync[F].delay(new SpotifyPlaylistService())
   }
 }

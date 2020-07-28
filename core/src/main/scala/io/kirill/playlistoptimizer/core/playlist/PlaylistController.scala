@@ -1,6 +1,6 @@
 package io.kirill.playlistoptimizer.core.playlist
 
-import java.time.LocalDate
+import java.time.{Instant, LocalDate}
 import java.util.concurrent.TimeUnit
 
 import cats.implicits._
@@ -22,6 +22,7 @@ trait PlaylistController[F[_]] extends AppController[F] {
   import PlaylistController._
 
   protected def playlistService: PlaylistService[F]
+  protected def playlistOptimizer: PlaylistOptimizer[F]
 
   override def routes(implicit cs: ContextShift[F], s: Sync[F], l: Logger[F]): HttpRoutes[F] = {
     implicit val decoder: EntityDecoder[F, PlaylistView] = jsonOf[F, PlaylistView]
@@ -44,13 +45,21 @@ trait PlaylistController[F[_]] extends AppController[F] {
             resp <- Created()
           } yield resp
         }
-      case req @ POST -> Root / "optimizations" =>
+      case req @ POST -> Root / "playlist-optimizations" =>
         withErrorHandling {
           for {
-            view              <- req.as[PlaylistView]
-            _                 <- l.info(s"optimize playlist ${view.name}")
-            optimizationId <- playlistService.optimize(view.toDomain)
-            resp <- Created(InitiateOptimizationResponse(optimizationId).asJson)
+            view           <- req.as[PlaylistView]
+            _              <- l.info(s"optimize playlist ${view.name}")
+            optimizationId <- playlistOptimizer.optimize(view.toDomain)
+            resp           <- Created(InitiateOptimizationResponse(optimizationId).asJson)
+          } yield resp
+        }
+      case GET -> Root / "playlist-optimizations" / UUIDVar(optimizationId) =>
+        withErrorHandling {
+          for {
+            opt <- playlistOptimizer.get(OptimizationId(optimizationId))
+            optView = OptimizationView(opt.status, opt.dateInitiated, PlaylistView.from(opt.original), opt.duration.map(_.toMillis), opt.result.map(PlaylistView.from))
+            resp <- Ok(optView.asJson)
           } yield resp
         }
     }
@@ -60,6 +69,13 @@ trait PlaylistController[F[_]] extends AppController[F] {
 object PlaylistController {
   final case class InitiateOptimizationResponse(id: OptimizationId)
 
+  final case class OptimizationView(
+      status: String,
+      dateInitiated: Instant,
+      original: PlaylistView,
+      durationMs: Option[Long] = None,
+      result: Option[PlaylistView] = None
+  )
 
   final case class TrackView(
       name: String,
