@@ -8,14 +8,13 @@ import cats.implicits._
 import io.kirill.playlistoptimizer.core.common.errors.OptimizationNotFound
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.OptimizationAlgorithm
 import io.kirill.playlistoptimizer.core.playlist.PlaylistOptimizer.OptimizationId
-import org.mockito.scalatest.AsyncMockitoSugar
 import org.scalatest.freespec.AsyncFreeSpec
 import org.scalatest.matchers.must.Matchers
 
 import scala.concurrent.duration._
 import scala.util.Random
 
-class PlaylistOptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers with AsyncMockitoSugar {
+class PlaylistOptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
   implicit val random = new Random(1)
 
   val playlist = PlaylistBuilder.playlist
@@ -26,10 +25,13 @@ class PlaylistOptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
   "A RefBasedPlaylistOptimizer" - {
 
     "initiate optimization of a playlist" in {
-      implicit val alg = mock[OptimizationAlgorithm[IO, Track]]
+      implicit val alg = new OptimizationAlgorithm[IO, Track] {
+        override def optimizeSeq(items: Seq[Track]): IO[Seq[Track]] =
+          IO.sleep(10.seconds) *> IO.pure(optimizedTracks)
+      }
+
       val result = for {
         optimizer <- PlaylistOptimizer.refBasedPlaylistOptimizer[IO]
-        _ = when(alg.optimizeSeq(playlist.tracks)).thenReturn(IO.sleep(10.seconds) *> IO.pure(optimizedTracks))
         id <- optimizer.optimize(playlist)
       } yield id
 
@@ -37,7 +39,9 @@ class PlaylistOptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
     }
 
     "return error when optimization id is not recognized" in {
-      implicit val alg = mock[OptimizationAlgorithm[IO, Track]]
+      implicit val alg = new OptimizationAlgorithm[IO, Track] {
+        override def optimizeSeq(items: Seq[Track]): IO[Seq[Track]] = ???
+      }
       val result = for {
         optimizer <- PlaylistOptimizer.refBasedPlaylistOptimizer[IO]
         res <- optimizer.get(optimizationId)
@@ -47,10 +51,12 @@ class PlaylistOptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
     }
 
     "return incomplete optimization result after if it has not completed" in {
-      implicit val alg = mock[OptimizationAlgorithm[IO, Track]]
+      implicit val alg = new OptimizationAlgorithm[IO, Track] {
+        override def optimizeSeq(items: Seq[Track]): IO[Seq[Track]] =
+          IO.sleep(2.seconds) *> IO.pure(optimizedTracks)
+      }
       val result = for {
         optimizer <- PlaylistOptimizer.refBasedPlaylistOptimizer[IO]
-        _ = when(alg.optimizeSeq(playlist.tracks)).thenReturn(IO.sleep(2.seconds) *> IO.pure(optimizedTracks))
         id <- optimizer.optimize(playlist)
         res <- optimizer.get(id)
       } yield res
@@ -63,10 +69,12 @@ class PlaylistOptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
     }
 
     "return optimization result after it has completed" in {
-      implicit val alg = mock[OptimizationAlgorithm[IO, Track]]
+      implicit val alg = new OptimizationAlgorithm[IO, Track] {
+        override def optimizeSeq(items: Seq[Track]): IO[Seq[Track]] =
+          IO.sleep(2.seconds) *> IO.pure(optimizedTracks)
+      }
       val result = for {
         optimizer <- PlaylistOptimizer.refBasedPlaylistOptimizer[IO]
-        _ = when(alg.optimizeSeq(playlist.tracks)).thenReturn(IO.sleep(2.seconds) *> IO.pure(optimizedTracks))
         id <- optimizer.optimize(playlist)
         _ <- IO.sleep(3.seconds)
         res <- optimizer.get(id)
