@@ -11,7 +11,7 @@ import io.circe.generic.auto._
 import io.circe.syntax._
 import io.kirill.playlistoptimizer.core.common.controllers.AppController
 import io.kirill.playlistoptimizer.core.common.json._
-import io.kirill.playlistoptimizer.core.playlist.PlaylistOptimizer.OptimizationId
+import io.kirill.playlistoptimizer.core.playlist.PlaylistOptimizer.{Optimization, OptimizationId}
 import org.http4s.circe._
 import org.http4s.{EntityDecoder, HttpRoutes}
 
@@ -58,8 +58,7 @@ trait PlaylistController[F[_]] extends AppController[F] {
         withErrorHandling {
           for {
             opt <- playlistOptimizer.get(OptimizationId(optimizationId))
-            optView = OptimizationView(opt.status, opt.dateInitiated, PlaylistView.from(opt.original), opt.duration.map(_.toMillis), opt.result.map(PlaylistView.from))
-            resp <- Ok(optView.asJson)
+            resp <- Ok(OptimizationView.from(opt).asJson)
           } yield resp
         }
     }
@@ -76,6 +75,17 @@ object PlaylistController {
       durationMs: Option[Long] = None,
       result: Option[PlaylistView] = None
   )
+
+  object OptimizationView {
+    def from(opt: Optimization): OptimizationView =
+      OptimizationView(
+        opt.status,
+        opt.dateInitiated,
+        PlaylistView.from(opt.original),
+        opt.duration.map(_.toMillis),
+        opt.result.map(PlaylistView.from)
+      )
+  }
 
   final case class TrackView(
       name: String,

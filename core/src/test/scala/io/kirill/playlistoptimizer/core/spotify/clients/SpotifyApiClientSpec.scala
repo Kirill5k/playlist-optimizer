@@ -26,7 +26,6 @@ import scala.language.postfixOps
 
 class SpotifyApiClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
   implicit val logger: Logger[IO] = Slf4jLogger.getLogger[IO]
-  implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContext.Implicits.global)
   implicit val sc: SpotifyConfig = SpotifyConfigBuilder.testConfig
 
   val token = "token-5lcpIsBqfb0Slx9fzZuCu_rM3aBDg"
