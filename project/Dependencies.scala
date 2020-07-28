@@ -24,6 +24,7 @@ object Dependencies {
     lazy val fs2        = "co.fs2"        %% "fs2-core"    % "2.2.2"
 
     lazy val circeCore          = "io.circe" %% "circe-core"           % Versions.circe
+    lazy val circeLiteral       = "io.circe" %% "circe-literal"        % Versions.circe
     lazy val circeGeneric       = "io.circe" %% "circe-generic"        % Versions.circe
     lazy val circeGenericExtras = "io.circe" %% "circe-generic-extras" % Versions.circe
     lazy val circeParser        = "io.circe" %% "circe-parser"         % Versions.circe
@@ -53,6 +54,7 @@ object Dependencies {
     Libraries.catsEffect,
     Libraries.fs2,
     Libraries.circeCore,
+    Libraries.circeLiteral,
     Libraries.circeGeneric,
     Libraries.circeGenericExtras,
     Libraries.circeParser,

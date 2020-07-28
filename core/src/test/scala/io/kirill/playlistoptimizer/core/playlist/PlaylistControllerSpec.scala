@@ -8,7 +8,10 @@ import io.chrisdavenport.log4cats.Logger
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import io.circe._
 import io.circe.generic.auto._
+import io.circe.literal._
+import io.circe.parser._
 import io.circe.syntax._
+import io.kirill.playlistoptimizer.core.common.json._
 import io.kirill.playlistoptimizer.core.playlist.PlaylistOptimizer.OptimizationId
 import org.http4s._
 import org.http4s.circe._
@@ -25,38 +28,37 @@ class PlaylistControllerSpec extends AnyWordSpec with MockitoSugar with Argument
 
   implicit val logger: Logger[IO] = Slf4jLogger.getLogger[IO]
   implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContext.Implicits.global)
-  implicit val plDec1: EntityDecoder[IO, PlaylistView] = jsonOf[IO, PlaylistView]
-  implicit val plDec2: EntityDecoder[IO, Seq[PlaylistView]] = jsonOf[IO, Seq[PlaylistView]]
-  implicit val errorDec: EntityDecoder[IO, ErrorResponse] = jsonOf[IO, ErrorResponse]
 
   val playlist = PlaylistBuilder.playlist
   val shortenedPlaylist = playlist.copy(tracks = List(playlist.tracks.head))
 
+  val optimizationId = OptimizationId(UUID.randomUUID())
+
   val shortenedPlaylistJson =
-    """
-      |{
-      |    "name" : "Mel",
-      |    "description" : "Melodic deep house and techno songs",
-      |    "source" : "Spotify",
-      |    "tracks" : [
-      |      {
-      |        "name" : "Glue",
-      |        "artists" : [
-      |          "Bicep"
-      |        ],
-      |        "releaseName" : "Bicep",
-      |        "releaseDate" : "2017-09-01",
-      |        "releaseType" : "album",
-      |        "tempo" : 129.983,
-      |        "duration" : 269.15,
-      |        "key" : 5,
-      |        "mode" : 0,
-      |        "uri" : "spotify:track:2aJDlirz6v2a4HREki98cP",
-      |        "url" : "https://open.spotify.com/track/2aJDlirz6v2a4HREki98cP"
-      |      }
-      |    ]
-      |  }
-      |""".stripMargin
+    json"""
+      {
+          "name" : "Mel",
+          "description" : "Melodic deep house and techno songs",
+          "source" : "Spotify",
+          "tracks" : [
+            {
+              "name" : "Glue",
+              "artists" : [
+                "Bicep"
+              ],
+              "releaseName" : "Bicep",
+              "releaseDate" : "2017-09-01",
+              "releaseType" : "album",
+              "tempo" : 129.983,
+              "duration" : 269.15,
+              "key" : 5,
+              "mode" : 0,
+              "uri" : "spotify:track:2aJDlirz6v2a4HREki98cP",
+              "url" : "https://open.spotify.com/track/2aJDlirz6v2a4HREki98cP"
+            }
+          ]
+        }
+      """
 
   "A PlaylistController" should {
     val playlistServiceMock = mock[PlaylistService[IO]]
@@ -92,21 +94,19 @@ class PlaylistControllerSpec extends AnyWordSpec with MockitoSugar with Argument
       playlistCaptor.getValue must be (shortenedPlaylist)
     }
 
-    "optimize playlist" in {
+    "initiate optimization of a playlist" in {
       val playlistCaptor: ArgumentCaptor[Playlist] = ArgumentCaptor.forClass(classOf[Playlist])
-      when(playlistServiceMock.optimize(playlistCaptor.capture())(any)).thenReturn(IO.pure(OptimizationId(UUID.randomUUID())))
+      when(playlistServiceMock.optimize(playlistCaptor.capture())(any)).thenReturn(IO.pure(optimizationId))
 
-      val request = Request[IO](uri = uri"/playlists/optimize", method = Method.POST).withEntity(shortenedPlaylistJson)
+      val request = Request[IO](uri = uri"/optimizations", method = Method.POST).withEntity(shortenedPlaylistJson)
       val response: IO[Response[IO]] = playlistController.routes.orNotFound.run(request)
 
-      val expected = PlaylistView(
-        "Mel Optimized",
-        Some("Melodic deep house and techno songs"),
-        List(TrackView("Glue", List("Bicep"), Some("Bicep"), Some(LocalDate.of(2017, 9, 1)), Some("album"), 129.983, 269.15, 5, 0, "spotify:track:2aJDlirz6v2a4HREki98cP", Some("https://open.spotify.com/track/2aJDlirz6v2a4HREki98cP"))),
-        "Spotify"
-      )
+      val expected =
+        s"""
+          |{"id": "${optimizationId.value}"}
+          |""".stripMargin
 
-      verifyResponse[PlaylistView](response, Status.Ok, Some(expected))
+      verifyJsonResponse(response, Status.Created, Some(expected))
       playlistCaptor.getValue must be (shortenedPlaylist)
     }
 
@@ -120,10 +120,10 @@ class PlaylistControllerSpec extends AnyWordSpec with MockitoSugar with Argument
     }
 
     "return bad request error if invalid json" in {
-      val request = Request[IO](uri = uri"/playlists/optimize", method = Method.POST).withEntity("{foo-bar}")
+      val request = Request[IO](uri = uri"/optimizations", method = Method.POST).withEntity("{foo-bar}")
       val response: IO[Response[IO]] = playlistController.routes.orNotFound.run(request)
 
-      verifyResponse[ErrorResponse](response, Status.BadRequest, Some(ErrorResponse("Malformed message body: Invalid JSON")))
+      verifyResponse[ErrorResponse](response, Status.BadRequest, Some(ErrorResponse("""Invalid message body: Could not decode JSON: "{foo-bar}"""")))
     }
   }
 
@@ -133,6 +133,16 @@ class PlaylistControllerSpec extends AnyWordSpec with MockitoSugar with Argument
     actualResp.status must be (expectedStatus)
     expectedBody match {
       case Some(expected) => actualResp.as[A].unsafeRunSync must be (expected)
+      case None => actualResp.body.compile.toVector.unsafeRunSync mustBe empty
+    }
+  }
+
+  def verifyJsonResponse(actual: IO[Response[IO]], expectedStatus: Status, expectedBody: Option[String] = None): Unit = {
+    val actualResp = actual.unsafeRunSync
+
+    actualResp.status must be (expectedStatus)
+    expectedBody match {
+      case Some(expected) => actualResp.asJson.unsafeRunSync() must be (parse(expected).getOrElse(throw new RuntimeException))
       case None => actualResp.body.compile.toVector.unsafeRunSync mustBe empty
     }
   }
