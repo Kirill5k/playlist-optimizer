@@ -12,6 +12,7 @@ import io.circe.syntax._
 import io.kirill.playlistoptimizer.core.ControllerSpec
 import io.kirill.playlistoptimizer.core.common.json._
 import io.kirill.playlistoptimizer.core.common.controllers.AppController
+import io.kirill.playlistoptimizer.core.common.errors.OptimizationNotFound
 import io.kirill.playlistoptimizer.core.playlist.PlaylistOptimizer.{Optimization, OptimizationId}
 import org.http4s._
 import org.http4s.circe._
@@ -146,6 +147,20 @@ class PlaylistControllerSpec extends ControllerSpec {
            |""".stripMargin
 
       verifyJsonResponse(response, Status.Ok, Some(expected))
+    }
+
+    "return not found when optimization id is not recognized" in {
+      when(playlistOptimizerMock.get(optimizationId)).thenReturn(IO.raiseError(OptimizationNotFound(optimizationId)))
+
+      val request = Request[IO](uri = uri"/playlist-optimizations/607995e0-8e3a-11ea-bc55-0242ac130003", method = Method.GET)
+      val response: IO[Response[IO]] = playlistController.routes.orNotFound.run(request)
+
+      val expected =
+        s"""
+           |{"message": "optimization with id 607995e0-8e3a-11ea-bc55-0242ac130003 does not exist"}
+           |""".stripMargin
+
+      verifyJsonResponse(response, Status.NotFound, Some(expected))
     }
 
     "return internal server error if uncategorized error" in {
