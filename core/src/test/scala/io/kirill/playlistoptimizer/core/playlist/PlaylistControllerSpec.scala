@@ -179,24 +179,4 @@ class PlaylistControllerSpec extends ControllerSpec {
       verifyResponse[ErrorResponse](response, Status.BadRequest, Some(ErrorResponse("""Invalid message body: Could not decode JSON: "{foo-bar}"""")))
     }
   }
-
-  def verifyResponse[A](actual: IO[Response[IO]], expectedStatus: Status, expectedBody: Option[A] = None)(implicit ev: EntityDecoder[IO, A]): Unit = {
-    val actualResp = actual.unsafeRunSync
-
-    actualResp.status must be (expectedStatus)
-    expectedBody match {
-      case Some(expected) => actualResp.as[A].unsafeRunSync must be (expected)
-      case None => actualResp.body.compile.toVector.unsafeRunSync mustBe empty
-    }
-  }
-
-  def verifyJsonResponse(actual: IO[Response[IO]], expectedStatus: Status, expectedBody: Option[String] = None): Unit = {
-    val actualResp = actual.unsafeRunSync
-
-    actualResp.status must be (expectedStatus)
-    expectedBody match {
-      case Some(expected) => actualResp.asJson.unsafeRunSync() must be (parse(expected).getOrElse(throw new RuntimeException))
-      case None => actualResp.body.compile.toVector.unsafeRunSync mustBe empty
-    }
-  }
 }

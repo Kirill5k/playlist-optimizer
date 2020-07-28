@@ -16,9 +16,8 @@ private[spotify] class SpotifyAuthClient[F[_]: Sync: Logger](
 ) {
   import SpotifyAuthClient._
 
-  private var spotifyAccessToken: Either[Throwable, SpotifyAccessToken] = Left(
-    AuthenticationRequiredError("authorization with Spotify is required")
-  )
+  private var spotifyAccessToken: Either[Throwable, SpotifyAccessToken] =
+    Left(AuthenticationRequiredError("authorization with Spotify is required"))
 
   def authorize(accessCode: String): F[Unit] =
     for {

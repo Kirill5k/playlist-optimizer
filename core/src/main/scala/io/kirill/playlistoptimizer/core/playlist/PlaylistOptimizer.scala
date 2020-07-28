@@ -45,8 +45,8 @@ private class RefBasedPlaylistOptimizer[F[_]: Concurrent: ContextShift](
       opt <- get(id)
       optimizedPlaylist = opt.original.copy(name = s"${opt.original.name} optimized", tracks = result)
       duration          = FiniteDuration(Instant.now().toEpochMilli - opt.dateInitiated.toEpochMilli, TimeUnit.MILLISECONDS)
-      completedOpt      = opt.copy(status = "completed",duration = Some(duration), result = Some(optimizedPlaylist))
-      _ <- state.update(s => s + (id -> completedOpt))
+      completedOpt      = opt.copy(status = "completed", duration = Some(duration), result = Some(optimizedPlaylist))
+      _ <- state.update(_ + (id -> completedOpt))
     } yield ()
 }
 
