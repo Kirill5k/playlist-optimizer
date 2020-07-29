@@ -27,7 +27,8 @@ object config {
       restUrl: String,
       clientId: String,
       clientSecret: String,
-      redirectUri: String
+      redirectUrl: String,
+      homepageUrl: String
   )
 
   final case class AppConfig(

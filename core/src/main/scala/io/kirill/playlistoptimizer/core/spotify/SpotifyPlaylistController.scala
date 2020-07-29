@@ -25,7 +25,7 @@ class SpotifyPlaylistController[F[_]](
     "response_type" -> "code",
     "client_id"     -> spotifyConfig.clientId,
     "scope"         -> "playlist-read-private playlist-modify-public playlist-modify-private user-read-private user-read-email",
-    "redirect_uri"  -> spotifyConfig.redirectUri
+    "redirect_uri"  -> spotifyConfig.redirectUrl
   )
 
   private val authUri =
@@ -34,7 +34,7 @@ class SpotifyPlaylistController[F[_]](
     Location(authUri.withQueryParams(authorizationParams))
 
   private val homePagePath =
-    Location(Uri.unsafeFromString("/"))
+    Location(Uri.unsafeFromString(spotifyConfig.homepageUrl))
 
   override def routes(implicit cs: ContextShift[F], s: Sync[F], l: Logger[F]): HttpRoutes[F] =
     HttpRoutes.of[F] {

@@ -24,7 +24,7 @@ object SpotifyAuthApi {
       b: SttpBackend[F, Nothing, NothingT]
   ): F[SpotifyAuthResponse] =
     Logger[F].info("sending authorization request to spotify") *>
-      getToken[F, SpotifyAuthResponse](Map("grant_type" -> "authorization_code", "code" -> code, "redirect_uri" -> sc.redirectUri))
+      getToken[F, SpotifyAuthResponse](Map("grant_type" -> "authorization_code", "code" -> code, "redirect_uri" -> sc.redirectUrl))
 
   def refresh[F[_]: Logger: Sync](refreshToken: String)(
       implicit sc: SpotifyConfig,
