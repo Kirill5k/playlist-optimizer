@@ -12,7 +12,6 @@ import io.kirill.playlistoptimizer.core.playlist._
 import org.http4s.circe._
 import org.http4s.headers.Location
 import org.http4s.{HttpRoutes, Uri}
-import sttp.client.{NothingT, SttpBackend}
 
 class SpotifyPlaylistController[F[_]](
     override val playlistOptimizer: PlaylistOptimizer[F],
@@ -30,7 +29,7 @@ class SpotifyPlaylistController[F[_]](
   )
 
   private val authUri =
-    Uri.unsafeFromString(s"${spotifyConfig.authUrl}${spotifyConfig.authorizationPath}")
+    Uri.unsafeFromString(s"${spotifyConfig.authUrl}/authorize")
   private val authorizationPath =
     Location(authUri.withQueryParams(authorizationParams))
 

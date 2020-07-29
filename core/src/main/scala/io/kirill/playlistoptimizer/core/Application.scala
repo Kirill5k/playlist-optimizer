@@ -36,7 +36,7 @@ object Application extends IOApp {
           .withHttpApp(
             Router(
               ""        -> AppController.homeController(res.blocker).routes,
-              "spotify" -> spotify.playlistController.routes
+              "api/spotify" -> spotify.playlistController.routes
             ).orNotFound
           )
           .serve

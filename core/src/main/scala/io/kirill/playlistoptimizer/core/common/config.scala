@@ -25,7 +25,6 @@ object config {
   final case class SpotifyConfig(
       authUrl: String,
       restUrl: String,
-      authorizationPath: String,
       clientId: String,
       clientSecret: String,
       redirectUri: String
