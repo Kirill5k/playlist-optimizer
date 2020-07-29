@@ -21,7 +21,6 @@ import scala.io.Source
 
 class SpotifyRestApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
   implicit val logger: Logger[IO] = Slf4jLogger.getLogger[IO]
-  implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContext.Implicits.global)
   implicit val sc: SpotifyConfig = SpotifyConfigBuilder.testConfig
 
   "A SpotifyRestApi" - {

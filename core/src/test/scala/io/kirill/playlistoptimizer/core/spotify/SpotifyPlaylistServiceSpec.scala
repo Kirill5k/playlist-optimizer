@@ -14,11 +14,9 @@ import org.scalatest.matchers.must.Matchers
 import sttp.client.asynchttpclient.cats.AsyncHttpClientCatsBackend
 import sttp.client.testing.SttpBackendStub
 
-import scala.concurrent.ExecutionContext
 
 class SpotifyPlaylistServiceSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers with MockitoSugar with ArgumentMatchersSugar {
   implicit val logger: Logger[IO] = Slf4jLogger.getLogger[IO]
-  implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContext.Implicits.global)
   implicit val sc: SpotifyConfig = SpotifyConfigBuilder.testConfig
 
   "A SpotifyPlaylistService" - {

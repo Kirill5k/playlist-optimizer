@@ -14,12 +14,10 @@ import sttp.client.asynchttpclient.cats.AsyncHttpClientCatsBackend
 import sttp.client.testing.SttpBackendStub
 import sttp.model.Method
 
-import scala.concurrent.ExecutionContext
 import scala.io.Source
 
 class SpotifyAuthClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
   implicit val logger: Logger[IO] = Slf4jLogger.getLogger[IO]
-  implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContext.Implicits.global)
   implicit val sc: SpotifyConfig = SpotifyConfigBuilder.testConfig
 
   "A SpotifyAuthClient" - {
