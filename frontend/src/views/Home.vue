@@ -34,3 +34,11 @@ export default {
   }
 }
 </script>
+
+<style scoped lang="scss">
+  .home {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+  }
+</style>
