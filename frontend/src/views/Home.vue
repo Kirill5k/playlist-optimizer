@@ -1,21 +1,21 @@
 <template>
   <div class="home">
     <a v-if="!isAuthenticated" href="/api/spotify/login" aria-label="Left Align">
-      <font-awesome-icon :icon="spotifyIcon" size="7x" />
+      <font-awesome-icon :icon="spotifyIcon" size="7x"/>
     </a>
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <playlists-view :playlists="playlists"/>
   </div>
 </template>
 
 <script>
-import HelloWorld from '@/components/HelloWorld.vue'
+import PlaylistsView from '@/components/PlaylistsView.vue'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faSpotify } from '@fortawesome/free-brands-svg-icons'
 
 export default {
   name: 'Home',
   components: {
-    HelloWorld,
+    PlaylistsView,
     FontAwesomeIcon
   },
   created () {
@@ -27,6 +27,9 @@ export default {
     },
     isAuthenticated () {
       return this.$store.state.isAuthenticated
+    },
+    playlists () {
+      return this.$store.state.playlists
     }
   }
 }
