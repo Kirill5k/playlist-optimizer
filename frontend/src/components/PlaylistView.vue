@@ -25,7 +25,7 @@ export default {
   },
   data () {
     return {
-      fields: ['#', 'artists', 'name', 'key', 'mode']
+      fields: ['#', 'artists', 'name', 'harmonic']
     }
   },
   computed: {
@@ -34,8 +34,7 @@ export default {
         '#': i + 1,
         artists: t.artists.join(', '),
         name: t.name,
-        key: t.key,
-        mode: t.mode
+        harmonic: `${t.key}${t.mode}`
       }))
     }
   }
