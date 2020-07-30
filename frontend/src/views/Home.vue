@@ -1,9 +1,12 @@
 <template>
   <div class="home">
-    <a v-if="!isAuthenticated" href="/api/spotify/login" aria-label="Left Align">
+    <playlists-view
+      v-if="isAuthenticated"
+      :playlists="playlists"
+    />
+    <a v-else href="/api/spotify/login" aria-label="Left Align">
       <font-awesome-icon :icon="spotifyIcon" size="7x"/>
     </a>
-    <playlists-view :playlists="playlists"/>
   </div>
 </template>
 
