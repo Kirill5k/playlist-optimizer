@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <playlists-view
-      v-if="isAuthenticated"
+      v-if="true"
       :playlists="playlists"
     />
     <a v-else href="/api/spotify/login" aria-label="Left Align">
@@ -16,7 +16,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faSpotify } from '@fortawesome/free-brands-svg-icons'
 
 export default {
-  name: 'Home',
+  name: 'Playlists',
   components: {
     PlaylistsView,
     FontAwesomeIcon

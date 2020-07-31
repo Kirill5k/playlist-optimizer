@@ -48,7 +48,7 @@ export default {
       const m = mode === 0 ? 'A' : 'B'
       return `${key}${m}`
     },
-    harmonicClass (value, key, item) {
+    harmonicClass (value) {
       return `camelot-${value.toLowerCase()}`
     }
   }

@@ -1,19 +1,19 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
+import Playlists from '@/views/Playlists'
 
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
-    name: 'Home',
-    component: Home
+    name: 'Playlists',
+    component: Playlists
   },
   {
-    path: '/about',
-    name: 'About',
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+    path: '/optimizations',
+    name: 'Optimizations',
+    component: () => import(/* webpackChunkName: "about" */ '../views/Optimizations.vue')
   }
 ]
 
