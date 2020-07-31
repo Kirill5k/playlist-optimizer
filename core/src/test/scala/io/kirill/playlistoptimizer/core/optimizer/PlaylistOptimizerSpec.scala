@@ -1,4 +1,4 @@
-package io.kirill.playlistoptimizer.core.playlist
+package io.kirill.playlistoptimizer.core.optimizer
 
 import java.util.UUID
 
@@ -6,8 +6,9 @@ import cats.effect.IO
 import cats.effect.testing.scalatest.AsyncIOSpec
 import cats.implicits._
 import io.kirill.playlistoptimizer.core.common.errors.OptimizationNotFound
+import io.kirill.playlistoptimizer.core.optimizer.PlaylistOptimizer.OptimizationId
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.OptimizationAlgorithm
-import io.kirill.playlistoptimizer.core.playlist.PlaylistOptimizer.OptimizationId
+import io.kirill.playlistoptimizer.core.playlist.{PlaylistBuilder, Track}
 import org.scalatest.freespec.AsyncFreeSpec
 import org.scalatest.matchers.must.Matchers
 
@@ -86,6 +87,23 @@ class PlaylistOptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
         optimization.original must be (playlist)
         optimization.result must be (Some(playlist.copy(tracks = optimizedTracks, name = s"Mel optimized")))
         optimization.score must be (Some(25.0))
+      }
+    }
+
+    "return all optimizations" in {
+      implicit val alg = new OptimizationAlgorithm[IO, Track] {
+        override def optimizeSeq(items: Seq[Track]): IO[(Seq[Track], Double)] =
+          IO.sleep(2.seconds) *> IO.pure((optimizedTracks, 25.0))
+      }
+      val result = for {
+        optimizer <- PlaylistOptimizer.refBasedPlaylistOptimizer[IO]
+        _ <- optimizer.optimize(playlist)
+        _ <- optimizer.optimize(playlist)
+        res <- optimizer.getAll()
+      } yield res
+
+      result.asserting { optimizations =>
+        optimizations.size must be (2)
       }
     }
   }

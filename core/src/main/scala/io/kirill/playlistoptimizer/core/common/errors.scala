@@ -1,6 +1,6 @@
 package io.kirill.playlistoptimizer.core.common
 
-import io.kirill.playlistoptimizer.core.playlist.PlaylistOptimizer.OptimizationId
+import io.kirill.playlistoptimizer.core.optimizer.PlaylistOptimizer.OptimizationId
 
 object errors {
 

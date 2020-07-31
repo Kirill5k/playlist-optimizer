@@ -6,11 +6,11 @@ import io.circe._
 import io.circe.generic.auto._
 import io.circe.syntax._
 import io.kirill.playlistoptimizer.core.ControllerSpec
-import io.kirill.playlistoptimizer.core.common.{SpotifyConfigBuilder}
+import io.kirill.playlistoptimizer.core.common.SpotifyConfigBuilder
 import io.kirill.playlistoptimizer.core.common.json._
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
 import io.kirill.playlistoptimizer.core.common.controllers.AppController.ErrorResponse
-import io.kirill.playlistoptimizer.core.playlist.PlaylistOptimizer
+import io.kirill.playlistoptimizer.core.optimizer.PlaylistOptimizer
 import org.http4s._
 import org.http4s.circe._
 import org.http4s.implicits._
@@ -30,8 +30,7 @@ class SpotifyPlaylistControllerSpec extends ControllerSpec {
         }
 
       val playlistServiceMock = mock[SpotifyPlaylistService[IO]]
-      val playlistOptimizerMock = mock[PlaylistOptimizer[IO]]
-      val controller = new SpotifyPlaylistController(playlistOptimizerMock, playlistServiceMock, sc)
+      val controller = new SpotifyPlaylistController(playlistServiceMock, sc)
 
       when(playlistServiceMock.getAll).thenReturn(IO.raiseError(AuthenticationRequiredError("authorization with Spotify is required")));
 

@@ -1,4 +1,4 @@
-package io.kirill.playlistoptimizer.core.playlist
+package io.kirill.playlistoptimizer.core.optimizer
 
 import java.time.Instant
 import java.util.UUID
@@ -8,15 +8,16 @@ import cats.effect.concurrent.Ref
 import cats.effect.{Concurrent, ContextShift, Sync}
 import cats.implicits._
 import io.kirill.playlistoptimizer.core.common.errors.OptimizationNotFound
+import io.kirill.playlistoptimizer.core.optimizer.PlaylistOptimizer.{Optimization, OptimizationId}
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.OptimizationAlgorithm
-import io.kirill.playlistoptimizer.core.playlist.PlaylistOptimizer.{Optimization, OptimizationId}
+import io.kirill.playlistoptimizer.core.playlist.{Playlist, Track}
 
 import scala.concurrent.duration.FiniteDuration
 
 trait PlaylistOptimizer[F[_]] {
   def optimize(playlist: Playlist): F[OptimizationId]
-
   def get(id: OptimizationId): F[Optimization]
+  def getAll(): F[List[Optimization]]
 }
 
 private class RefBasedPlaylistOptimizer[F[_]: Concurrent: ContextShift](
@@ -32,6 +33,9 @@ private class RefBasedPlaylistOptimizer[F[_]: Concurrent: ContextShift](
         case None      => Sync[F].raiseError(OptimizationNotFound(id))
         case Some(opt) => Sync[F].pure(opt)
       }
+
+  override def getAll(): F[List[Optimization]] =
+    state.get.map(_.values.toList)
 
   override def optimize(playlist: Playlist): F[OptimizationId] =
     for {

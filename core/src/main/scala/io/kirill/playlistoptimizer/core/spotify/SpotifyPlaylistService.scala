@@ -4,7 +4,7 @@ import cats.effect.Sync
 import cats.implicits._
 import io.chrisdavenport.log4cats.Logger
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
-import io.kirill.playlistoptimizer.core.playlist.{Playlist, PlaylistOptimizer, PlaylistService}
+import io.kirill.playlistoptimizer.core.playlist.{Playlist, PlaylistService}
 import io.kirill.playlistoptimizer.core.spotify.clients.{SpotifyApiClient, SpotifyAuthClient}
 import sttp.client.{NothingT, SttpBackend}
 

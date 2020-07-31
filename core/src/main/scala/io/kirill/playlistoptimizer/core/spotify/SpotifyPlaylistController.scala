@@ -14,7 +14,6 @@ import org.http4s.headers.Location
 import org.http4s.{HttpRoutes, Uri}
 
 class SpotifyPlaylistController[F[_]](
-    override val playlistOptimizer: PlaylistOptimizer[F],
     override val playlistService: SpotifyPlaylistService[F],
     val spotifyConfig: SpotifyConfig
 ) extends PlaylistController[F] {
@@ -53,9 +52,8 @@ class SpotifyPlaylistController[F[_]](
 
 object SpotifyPlaylistController {
   def make[F[_]: Sync](
-      playlistOptimizer: PlaylistOptimizer[F],
       spotifyService: SpotifyPlaylistService[F],
       spotifyConfig: SpotifyConfig
   ): F[PlaylistController[F]] =
-    Sync[F].delay(new SpotifyPlaylistController[F](playlistOptimizer, spotifyService, spotifyConfig))
+    Sync[F].delay(new SpotifyPlaylistController[F](spotifyService, spotifyConfig))
 }
