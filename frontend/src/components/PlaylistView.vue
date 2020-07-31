@@ -34,8 +34,14 @@ export default {
         '#': i + 1,
         artists: t.artists.join(', '),
         name: t.name,
-        harmonic: `${t.key}${t.mode}`
+        harmonic: this.toHarmonic(t.key, t.mode)
       }))
+    }
+  },
+  methods: {
+    toHarmonic (key, mode) {
+      const m = mode === 0 ? 'A' : 'B'
+      return `${key}${m}`
     }
   }
 }
