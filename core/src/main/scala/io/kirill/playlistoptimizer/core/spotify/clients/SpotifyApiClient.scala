@@ -51,10 +51,14 @@ private[spotify] class SpotifyApiClient[F[_]: Sync: Logger](
       .flatMap(Sync[F].fromEither)
       .map(_.id)
 
-  private def getTrackDetails(token: String, tracks: Seq[PlaylistTrack]): F[List[(PlaylistTrack, SpotifyAudioFeaturesResponse)]] =
-    Stream
-      .emits(tracks)
-      .evalMap(track => SpotifyRestApi.getAudioFeatures(token, track.id).map(audio => (track, audio)))
-      .compile
-      .toList
+  private def getTrackDetails(
+      token: String,
+      tracks: Seq[PlaylistTrack]
+  ): F[List[(PlaylistTrack, SpotifyAudioFeaturesResponse)]] = {
+    val trackIds = tracks.map(_.id).distinct.toList
+    for {
+      featuresByIds <- SpotifyRestApi.getMultipleAudioFeatures(token, trackIds).map(_.audio_features.groupBy(_.id))
+      tracksAndFeatures = tracks.map(t => (t, featuresByIds(t.id).head))
+    } yield tracksAndFeatures.toList
+  }
 }

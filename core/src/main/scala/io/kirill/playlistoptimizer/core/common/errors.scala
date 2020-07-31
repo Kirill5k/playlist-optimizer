@@ -6,7 +6,6 @@ object errors {
 
   sealed trait ApplicationError extends Throwable {
     def message: String
-
     override def getMessage: String = message
   }
 

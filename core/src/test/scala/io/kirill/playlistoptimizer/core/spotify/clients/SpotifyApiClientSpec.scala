@@ -52,7 +52,7 @@ class SpotifyApiClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers 
         .whenRequestMatchesPartial {
           case r if isAuthorized(r, "api.spotify.com", List("v1", "me", "playlists")) => Response.ok(json("spotify/flow/find/2-users-playlists.json"))
           case r if isAuthorized(r, "api.spotify.com", List("v1", "playlists", "7npAZEYwEwV2JV7XX2n3wq")) => Response.ok(json("spotify/flow/find/3-playlist.json"))
-          case r if isAuthorized(r, "api.spotify.com", List("v1", "audio-features")) => Response.ok(json(s"spotify/flow/find/4-audio-features-${r.uri.path.last}.json"))
+          case r if isAuthorized(r, "api.spotify.com", List("v1", "audio-features")) => Response.ok(json(s"spotify/flow/find/4-audio-features.json"))
           case r => throw new RuntimeException(s"no mocks for ${r.uri.host}/${r.uri.path.mkString("/")}")
         }
 
@@ -114,7 +114,7 @@ class SpotifyApiClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers 
         .whenRequestMatchesPartial {
           case r if isAuthorized(r, "api.spotify.com", List("v1", "me", "playlists")) => Response.ok(json("spotify/flow/get/2-users-playlists.json"))
           case r if isAuthorized(r, "api.spotify.com", List("v1", "playlists")) => Response.ok(json(s"spotify/flow/get/3-playlist-${r.uri.path.last}.json"))
-          case r if isAuthorized(r, "api.spotify.com", List("v1", "audio-features")) => Response.ok(json(s"spotify/flow/find/4-audio-features-${r.uri.path.last}.json"))
+          case r if isAuthorized(r, "api.spotify.com", List("v1", "audio-features")) => Response.ok(json(s"spotify/flow/find/4-audio-features.json"))
           case r => throw new RuntimeException(s"no mocks for ${r.uri.host}/${r.uri.path.mkString("/")}")
         }
 
