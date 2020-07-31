@@ -26,7 +26,7 @@ class GeneticAlgorithmSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers 
       val alg = OptimizationAlgorithm.geneticAlgorithm[IO, Track](200, 0.3, 250)
       val optimizedSongsResult = alg.optimizeSeq(songs)
 
-      optimizedSongsResult.asserting { tracks =>
+      optimizedSongsResult.asserting { case (tracks, score) =>
         val end = Instant.now()
 
         println(s"total time taken: ${end.getEpochSecond - start.getEpochSecond}s")
@@ -37,7 +37,7 @@ class GeneticAlgorithmSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers 
 
         tracks must contain theSameElementsAs songs
         tracks must not contain theSameElementsInOrderAs (songs)
-        Evaluator.keyDistanceBasedTracksEvaluator.evaluate(tracks) must be < Evaluator.keyDistanceBasedTracksEvaluator.evaluate(songs) / 20
+        score must be < Evaluator.keyDistanceBasedTracksEvaluator.evaluate(songs) / 20
       }
     }
   }

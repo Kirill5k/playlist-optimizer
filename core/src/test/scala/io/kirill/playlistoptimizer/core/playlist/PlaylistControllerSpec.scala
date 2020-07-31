@@ -142,7 +142,8 @@ class PlaylistControllerSpec extends ControllerSpec {
            |    "source" : "Spotify"
            |  },
            |"durationMs": null,
-           |"result": null
+           |"result": null,
+           |"score": null
            |}
            |""".stripMargin
 
@@ -173,7 +174,7 @@ class PlaylistControllerSpec extends ControllerSpec {
     }
 
     "return bad request error if invalid json" in {
-      val request = Request[IO](uri = uri"/optimizations", method = Method.POST).withEntity("{foo-bar}")
+      val request = Request[IO](uri = uri"/playlist-optimizations", method = Method.POST).withEntity("{foo-bar}")
       val response: IO[Response[IO]] = playlistController.routes.orNotFound.run(request)
 
       verifyResponse[ErrorResponse](response, Status.BadRequest, Some(ErrorResponse("""Invalid message body: Could not decode JSON: "{foo-bar}"""")))

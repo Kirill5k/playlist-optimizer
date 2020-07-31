@@ -73,7 +73,8 @@ object PlaylistController {
       dateInitiated: Instant,
       original: PlaylistView,
       durationMs: Option[Long] = None,
-      result: Option[PlaylistView] = None
+      result: Option[PlaylistView] = None,
+      score: Option[Double] = None
   )
 
   object OptimizationView {
@@ -83,7 +84,8 @@ object PlaylistController {
         opt.dateInitiated,
         PlaylistView.from(opt.original),
         opt.duration.map(_.toMillis),
-        opt.result.map(PlaylistView.from)
+        opt.result.map(PlaylistView.from),
+        opt.score
       )
   }
 

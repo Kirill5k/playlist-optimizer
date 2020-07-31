@@ -26,8 +26,8 @@ class PlaylistOptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
 
     "initiate optimization of a playlist" in {
       implicit val alg = new OptimizationAlgorithm[IO, Track] {
-        override def optimizeSeq(items: Seq[Track]): IO[Seq[Track]] =
-          IO.sleep(10.seconds) *> IO.pure(optimizedTracks)
+        override def optimizeSeq(items: Seq[Track]): IO[(Seq[Track], Double)] =
+          IO.sleep(10.seconds) *> IO.pure((optimizedTracks, 25.0))
       }
 
       val result = for {
@@ -40,7 +40,7 @@ class PlaylistOptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
 
     "return error when optimization id is not recognized" in {
       implicit val alg = new OptimizationAlgorithm[IO, Track] {
-        override def optimizeSeq(items: Seq[Track]): IO[Seq[Track]] = ???
+        override def optimizeSeq(items: Seq[Track]): IO[(Seq[Track], Double)] = ???
       }
       val result = for {
         optimizer <- PlaylistOptimizer.refBasedPlaylistOptimizer[IO]
@@ -52,8 +52,8 @@ class PlaylistOptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
 
     "return incomplete optimization result after if it has not completed" in {
       implicit val alg = new OptimizationAlgorithm[IO, Track] {
-        override def optimizeSeq(items: Seq[Track]): IO[Seq[Track]] =
-          IO.sleep(2.seconds) *> IO.pure(optimizedTracks)
+        override def optimizeSeq(items: Seq[Track]): IO[(Seq[Track], Double)] =
+          IO.sleep(2.seconds) *> IO.pure((optimizedTracks, 25.0))
       }
       val result = for {
         optimizer <- PlaylistOptimizer.refBasedPlaylistOptimizer[IO]
@@ -65,13 +65,14 @@ class PlaylistOptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
         optimization.status must be ("in progress")
         optimization.original must be (playlist)
         optimization.result must be (None)
+        optimization.score must be (None)
       }
     }
 
     "return optimization result after it has completed" in {
       implicit val alg = new OptimizationAlgorithm[IO, Track] {
-        override def optimizeSeq(items: Seq[Track]): IO[Seq[Track]] =
-          IO.sleep(2.seconds) *> IO.pure(optimizedTracks)
+        override def optimizeSeq(items: Seq[Track]): IO[(Seq[Track], Double)] =
+          IO.sleep(2.seconds) *> IO.pure((optimizedTracks, 25.0))
       }
       val result = for {
         optimizer <- PlaylistOptimizer.refBasedPlaylistOptimizer[IO]
@@ -84,6 +85,7 @@ class PlaylistOptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
         optimization.status must be ("completed")
         optimization.original must be (playlist)
         optimization.result must be (Some(playlist.copy(tracks = optimizedTracks, name = s"Mel optimized")))
+        optimization.score must be (Some(25.0))
       }
     }
   }

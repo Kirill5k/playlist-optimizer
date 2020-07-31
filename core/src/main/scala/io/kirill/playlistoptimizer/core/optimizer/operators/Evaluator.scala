@@ -14,4 +14,7 @@ object Evaluator {
         case (acc, t1 +: t2 +: _) => math.pow(Key.distance(t1.audio.key, t2.audio.key), 2) + acc
       }
   }
+
+  @scala.inline
+  def apply[A](implicit instance : Evaluator[A]): Evaluator[A] = instance
 }

@@ -7,7 +7,7 @@ import io.kirill.playlistoptimizer.core.optimizer.operators.{Crossover, Evaluato
 import scala.util.Random
 
 trait OptimizationAlgorithm[F[_], A] {
-  def optimizeSeq(items: Seq[A]): F[Seq[A]]
+  def optimizeSeq(items: Seq[A]): F[(Seq[A], Double)]
 }
 
 object OptimizationAlgorithm {

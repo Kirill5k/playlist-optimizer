@@ -63,9 +63,6 @@ export default {
   flex-direction: column;
   font-size: 12px;
 }
-.camelot {
-  font-weight: bold;
-}
 .camelot-1a {
   background-color: #56f1da;
 }
