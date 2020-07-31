@@ -7,10 +7,10 @@
       :key="index"
     >
       <b-card-header header-tag="header" class="p-1 playlists-view__header" role="tab">
-        <p block v-b-toggle="'playlist'+index.toString()" class="mb-0 p-1">
+        <p block v-b-toggle="'playlist'+index.toString()" class="mb-0 p-1 w-100">
           <strong>{{ playlistSummary(playlist) }}</strong>
         </p>
-        <b-button size="sm" variant="outline-dark" @click="optimize(playlist)">
+        <b-button size="sm" variant="outline-dark" @click="$emit('optimize', playlist)">
           Optimize
         </b-button>
       </b-card-header>
@@ -46,9 +46,6 @@ export default {
       const tracks = playlist.tracks.length
       const duration = playlist.tracks.map(t => t.duration).reduce((s, d) => s + d, 0) / 60
       return `${name} (${tracks} tracks / total duration ${duration.toFixed(2)} min)`
-    },
-    optimize (playlist) {
-      console.log('optimizing', playlist.name)
     }
   }
 }

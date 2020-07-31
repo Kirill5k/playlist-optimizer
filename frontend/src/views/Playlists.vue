@@ -3,6 +3,7 @@
     <playlists-view
       v-if="isAuthenticated"
       :playlists="playlists"
+      @optimize="optimizePlaylist"
     />
     <a v-else href="/api/spotify/login" aria-label="Left Align">
       <font-awesome-icon :icon="spotifyIcon" size="7x"/>
@@ -33,6 +34,11 @@ export default {
     },
     playlists () {
       return this.$store.state.playlists
+    }
+  },
+  methods: {
+    optimizePlaylist (playlist) {
+      this.$store.dispatch('optimizePlaylist', playlist)
     }
   }
 }
