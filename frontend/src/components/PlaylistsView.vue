@@ -54,9 +54,6 @@ export default {
 <style scoped lang="scss">
 .playlists-view {
   width: 800px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   align-self: center;
 
   &__header {

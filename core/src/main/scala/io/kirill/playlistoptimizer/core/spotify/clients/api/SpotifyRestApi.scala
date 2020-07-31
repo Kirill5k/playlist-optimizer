@@ -63,7 +63,7 @@ object SpotifyRestApi {
       basicRequest.auth
         .bearer(authToken)
         .contentType(MediaType.ApplicationJson)
-        .get(uri"${sc.restUrl}/v1/audio-features?ids=$trackIds")
+        .get(uri"${sc.restUrl}/v1/audio-features?ids=${trackIds.mkString(",")}")
         .response(asJson[SpotifyMultipleAudioFeaturesResponse])
         .send()
         .flatMap(r => mapResponseBody[F, SpotifyMultipleAudioFeaturesResponse](r.body))
