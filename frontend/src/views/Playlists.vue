@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <playlists-view
-      v-if="true"
+      v-if="isAuthenticated"
       :playlists="playlists"
     />
     <a v-else href="/api/spotify/login" aria-label="Left Align">
