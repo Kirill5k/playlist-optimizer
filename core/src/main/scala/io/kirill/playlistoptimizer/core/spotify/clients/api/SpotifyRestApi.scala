@@ -9,6 +9,7 @@ import SpotifyError._
 import cats.effect.Sync
 import io.chrisdavenport.log4cats.Logger
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
+import io.kirill.playlistoptimizer.core.common.errors.SpotifyApiError
 import sttp.client._
 import sttp.client.circe._
 import sttp.model.MediaType
@@ -53,6 +54,19 @@ object SpotifyRestApi {
         .response(asJson[SpotifyAudioFeaturesResponse])
         .send()
         .flatMap(r => mapResponseBody[F, SpotifyAudioFeaturesResponse](r.body))
+
+  def getMultipleAudioFeatures[F[_]: Logger: Sync](authToken: String, trackIds: List[String])(
+    implicit sc: SpotifyConfig,
+    b: SttpBackend[F, Nothing, NothingT]
+  ): F[SpotifyMultipleAudioFeaturesResponse] =
+    Logger[F].info(s"sending get audio features from tracks $trackIds request") *>
+      basicRequest.auth
+        .bearer(authToken)
+        .contentType(MediaType.ApplicationJson)
+        .get(uri"${sc.restUrl}/v1/audio-features?ids=$trackIds")
+        .response(asJson[SpotifyMultipleAudioFeaturesResponse])
+        .send()
+        .flatMap(r => mapResponseBody[F, SpotifyMultipleAudioFeaturesResponse](r.body))
 
   def getPlaylist[F[_]: Logger: Sync](authToken: String, playlistId: String)(
       implicit sc: SpotifyConfig,
@@ -147,6 +161,6 @@ object SpotifyRestApi {
         Sync[F].pure(success)
       case Left(error) =>
         Logger[F].error(s"error sending rest request to spotify: ${error.body}") *>
-          Sync[F].fromEither(decode[SpotifyRegularError](error.body).flatMap(Left(_)))
+          Sync[F].fromEither(decode[SpotifyRegularError](error.body).map(e => SpotifyApiError(e.error.message)).flatMap(Left(_)))
     }
 }

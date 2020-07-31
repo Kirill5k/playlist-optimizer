@@ -61,7 +61,24 @@ class SpotifyRestApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
 
       val response = SpotifyRestApi.getAudioFeatures[IO]("token", "track-1")
 
-      response.asserting(_ must be (SpotifyAudioFeaturesResponse(7,0,535975.0,123.996)))
+      response.asserting(_ must be (SpotifyAudioFeaturesResponse("1wtxI9YhL1t4yDIwGAFljP", 7,0,535975.0,123.996)))
+    }
+
+    "return multiple audio features response when success" in {
+      implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
+        .whenRequestMatchesPartial {
+          case r if isAuthorized(r, "api.spotify.com", List("v1", "audio-features")) =>
+            Response.ok(json("spotify/api/multiple-audio-features-response.json"))
+          case _ => throw new RuntimeException()
+        }
+
+      val response = SpotifyRestApi.getMultipleAudioFeatures[IO]("token", List("track-1", "track-2"))
+
+      response.asserting(_ must be (SpotifyMultipleAudioFeaturesResponse(List(
+        SpotifyAudioFeaturesResponse("4JpKVNYnVcJ8tuMKjAj50A", 7,1,535223.0,123.99),
+        SpotifyAudioFeaturesResponse("2NRANZE9UCmPAS5XVbXL40", 1,1,187800.0,96.083),
+        SpotifyAudioFeaturesResponse("24JygzOLM0EmRQeGtFcIcG", 4,1,497493.0,115.7)
+      ))))
     }
 
     "return playlist response when success" in {

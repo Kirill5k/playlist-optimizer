@@ -6,10 +6,14 @@ object errors {
 
   sealed trait ApplicationError extends Throwable {
     def message: String
+
+    override def getMessage: String = message
   }
 
   sealed trait NotFoundError extends ApplicationError
   sealed trait BadRequestError extends ApplicationError
+
+  final case class SpotifyApiError(message: String) extends ApplicationError
 
   final case class SpotifyPlaylistNotFound(name: String) extends NotFoundError {
     val message = s"""couldn't find playlist "$name" in Spotify for current user"""

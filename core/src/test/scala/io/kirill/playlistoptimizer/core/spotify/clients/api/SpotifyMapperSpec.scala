@@ -26,7 +26,7 @@ class SpotifyMapperSpec extends AnyWordSpec with Matchers {
     )
     val audioAnalysis = AudioAnalysisTrack(255.34898, 98.002, 5, 0)
 
-    val audioFeatures = SpotifyAudioFeaturesResponse(5, 0, 255348.98, 98.002)
+    val audioFeatures = SpotifyAudioFeaturesResponse("1wtxI9YhL1t4yDIwGAFljP", 5, 0, 255348.98, 98.002)
 
     "map song and audioAnalysis details to a song" in {
       val track = SpotifyMapper.toDomain(song, audioAnalysis)
