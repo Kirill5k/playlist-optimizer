@@ -32,9 +32,11 @@
             <playlist-view :playlist="optimization.original" class="w-50"/>
             <playlist-view v-if="optimization.result" :playlist="optimization.result" class="w-50"/>
           </div>
-          <b-button v-if="optimization.result" variant="primary">
-            Save optimized playlist
-          </b-button>
+          <div v-if="optimization.result" class="optimizations-view__controls">
+            <b-button variant="primary" size="sm">
+              Save optimized playlist
+            </b-button>
+          </div>
         </b-card-body>
       </b-collapse>
     </b-card>
@@ -93,7 +95,11 @@ export default {
     display: flex;
     justify-content: space-between;
     width: 100%;
-    padding: 20px 0;
+    padding-top: 20px;
+  }
+
+  &__controls {
+    float: left;
   }
 }
 </style>
