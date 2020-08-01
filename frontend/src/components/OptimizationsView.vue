@@ -8,8 +8,8 @@
     >
       <b-card-header header-tag="header" class="p-1 optimizations-view__header" role="tab">
         <p v-b-toggle="'optimization'+index.toString()" class="mb-0 p-1 w-100">
-          <strong>{{ optimization.original.name }}</strong>
-          <b-badge variant="info">{{ optimization.status }}</b-badge>
+          <strong>{{ optimization.original.name }}</strong> playlist optimization
+          <b-badge :variant="optimizationStatusVariant(optimization.status)" class="ml-2">{{ optimization.status }}</b-badge>
         </p>
       </b-card-header>
       <b-collapse
@@ -18,16 +18,22 @@
         accordion="my-accordion"
         role="tabpanel"
       >
-        <b-card-body>
-          <b-card-text>
-            Initiated on {{ optimization.dateInitiated.replace(/T/g, " ") }}
+        <b-card-body class="optimizations-view__body">
+          <b-card-text class="mb-0">
+            Initiated on {{ optimization.dateInitiated.slice(0, 10) }} at {{ optimization.dateInitiated.slice(11, 19) }}
           </b-card-text>
-          <b-card-text v-if="optimization.duration" class="small">
-            Total duration {{ optimization.duration / 1000 }}s
+          <b-card-text v-if="optimization.durationMs" class="small mb-0">
+            Total duration {{ optimization.durationMs / 1000 }}s
           </b-card-text>
-          <playlist-view :playlist="optimization.original"/>
+          <b-card-text v-if="optimization.score" class="small mb-0">
+            Optimization score {{ optimization.score }}
+          </b-card-text>
+          <div class="optimizations-view__results">
+            <playlist-view :playlist="optimization.original" class="w-50"/>
+            <playlist-view v-if="optimization.result" :playlist="optimization.result" class="w-50"/>
+          </div>
           <b-button v-if="optimization.result" variant="primary">
-            Save
+            Save optimized playlist
           </b-button>
         </b-card-body>
       </b-collapse>
@@ -46,13 +52,23 @@ export default {
   },
   props: {
     optimizations: Array
+  },
+  methods: {
+    optimizationStatusVariant (status) {
+      switch (status) {
+        case 'completed':
+          return 'success'
+        default:
+          return 'primary'
+      }
+    }
   }
 }
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 .optimizations-view {
-  width: 800px;
+  width: 1000px;
   align-self: center;
 
   &__header {
@@ -64,6 +80,20 @@ export default {
     *:focus {
       outline: none;
     }
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    align-items: flex-start;
+  }
+
+  &__results {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 20px 0;
   }
 }
 </style>
