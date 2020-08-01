@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <div class="playlists">
     <playlists-view
       v-if="isAuthenticated"
       :playlists="playlists"
@@ -45,9 +45,9 @@ export default {
 </script>
 
 <style scoped lang="scss">
-  .home {
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-  }
+.playlists {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
 </style>

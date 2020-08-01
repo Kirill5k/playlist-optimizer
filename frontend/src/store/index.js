@@ -8,11 +8,15 @@ const reject = err => Promise.reject(new Error(err))
 export default new Vuex.Store({
   state: {
     isAuthenticated: true,
-    playlists: []
+    playlists: [],
+    optimizations: []
   },
   mutations: {
     setPlaylists (state, playlists) {
       state.playlists = playlists
+    },
+    setOptimizations (state, optimizations) {
+      state.optimizations = optimizations
     },
     unAuthenticate (state) {
       state.isAuthenticated = false
@@ -28,8 +32,25 @@ export default new Vuex.Store({
           commit('unAuthenticate')
         })
     },
-    optimizePlaylist ({ commit }, playlist) {
-      console.log('optimize playlist action', playlist)
+    getOptimizations ({ commit }) {
+      return fetch('/api/playlist-optimizations')
+        .then(res => res.status === 200 ? res.json() : reject(res.status))
+        .then(optimizations => commit('setOptimizations', optimizations))
+        .catch(err => console.error(err))
+    },
+    optimizePlaylist ({ commit, dispatch }, playlist) {
+      return fetch('/api/playlist-optimizations', {
+        method: 'POST',
+        mode: 'cors',
+        cache: 'no-cache',
+        credentials: 'same-origin',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(playlist)
+      })
+        .then(res => res.status === 201 ? dispatch('getOptimizations') : reject(res.status))
+        .catch(err => console.error(err))
     }
   },
   modules: {
