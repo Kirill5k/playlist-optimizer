@@ -1,27 +1,34 @@
 <template>
-  <div class="playlists-view">
+  <div class="optimizations-view">
     <b-card
       no-body
       class="mt-1 w-100"
-      v-for="(playlist, index) in playlists"
+      v-for="(optimization, index) in optimizations"
       :key="index"
     >
-      <b-card-header header-tag="header" class="p-1 playlists-view__header" role="tab">
-        <p block v-b-toggle="'playlist'+index.toString()" class="mb-0 p-1 w-100">
-          <strong>{{ playlistSummary(playlist) }}</strong>
+      <b-card-header header-tag="header" class="p-1 optimizations-view__header" role="tab">
+        <p v-b-toggle="'optimization'+index.toString()" class="mb-0 p-1 w-100">
+          <strong>{{ optimization.original.name }}</strong>
+          <b-badge variant="info">{{ optimization.status }}</b-badge>
         </p>
-        <b-button size="sm" variant="outline-dark" @click="$emit('optimize', playlist)">
-          Optimize
-        </b-button>
       </b-card-header>
       <b-collapse
-        :id="'playlist'+index.toString()"
+        :id="'optimization'+index.toString()"
         visible
         accordion="my-accordion"
         role="tabpanel"
       >
         <b-card-body>
-          <playlist-view :playlist="playlist"/>
+          <b-card-text>
+            Initiated on {{ optimization.dateInitiated.replace(/T/g, " ") }}
+          </b-card-text>
+          <b-card-text v-if="optimization.duration" class="small">
+            Total duration {{ optimization.duration / 1000 }}s
+          </b-card-text>
+          <playlist-view :playlist="optimization.original"/>
+          <b-button v-if="optimization.result" variant="primary">
+            Save
+          </b-button>
         </b-card-body>
       </b-collapse>
     </b-card>
@@ -29,30 +36,22 @@
 </template>
 
 <script>
-import { BCard, BCardHeader, BCollapse, BCardBody, BButton } from 'bootstrap-vue'
+import { BCard, BCardHeader, BCollapse, BCardBody, BButton, BBadge, BCardText } from 'bootstrap-vue'
 import PlaylistView from '@/components/PlaylistView.vue'
 
 export default {
-  name: 'PlaylistsView',
+  name: 'OptimizationsView',
   components: {
-    PlaylistView, BCard, BCardHeader, BCollapse, BCardBody, BButton
+    PlaylistView, BCard, BCardHeader, BCollapse, BCardBody, BButton, BBadge, BCardText
   },
   props: {
-    playlists: Array
-  },
-  methods: {
-    playlistSummary (playlist) {
-      const name = playlist.name
-      const tracks = playlist.tracks.length
-      const duration = playlist.tracks.map(t => t.duration).reduce((s, d) => s + d, 0) / 60
-      return `${name} (${tracks} tracks / total duration ${duration.toFixed(2)} min)`
-    }
+    optimizations: Array
   }
 }
 </script>
 
 <style scoped lang="scss">
-.playlists-view {
+.optimizations-view {
   width: 800px;
   align-self: center;
 
