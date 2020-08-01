@@ -46,7 +46,9 @@ class SpotifyAuthClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
 
       val client = new SpotifyAuthClient[IO]()
 
-      client.authorize("code").flatMap(_ => client.token.asserting(_ must be ("access-O3qzgejLCgXwAE5acsqk8LQcih2qpDkaCjrJRRhuY")))
+      client
+        .authorize("code")
+        .flatMap(_ => client.token.asserting(_ must be ("access-O3qzgejLCgXwAE5acsqk8LQcih2qpDkaCjrJRRhuY")))
     }
 
     "obtain new refreshed token when original token has expired" in {
@@ -64,7 +66,9 @@ class SpotifyAuthClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
       val client = new SpotifyAuthClient[IO]()
 
 
-      client.authorize("code").flatMap(_ => client.token.asserting(_ must be ("refresh-O3qzgejLCgXwAE5acsqk8LQcih2qpDkaCjrJRRhuY")))
+      client
+        .authorize("code")
+        .flatMap(_ => client.token.asserting(_ must be ("refresh-O3qzgejLCgXwAE5acsqk8LQcih2qpDkaCjrJRRhuY")))
     }
   }
 

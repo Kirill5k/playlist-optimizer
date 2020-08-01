@@ -19,13 +19,14 @@ private[spotify] class SpotifyAuthClient[F[_]: Sync: Logger](
   private var spotifyAccessToken: Either[Throwable, SpotifyAccessToken] =
     Left(AuthenticationRequiredError("authorization with Spotify is required"))
 
-  def authorize(accessCode: String): F[Unit] =
+  def authorize(accessCode: String): F[SpotifyAccessToken] =
     for {
       authResponse <- SpotifyAuthApi.authorize(accessCode)
       userResponse <- SpotifyRestApi.getCurrentUser(authResponse.access_token)
+      token = SpotifyAccessToken(authResponse.access_token, accessCode, userResponse.id, authResponse.expires_in)
     } yield {
-      spotifyAccessToken = Right(SpotifyAccessToken(authResponse.access_token, accessCode, userResponse.id, authResponse.expires_in))
-      ()
+      spotifyAccessToken = Right(token)
+      token
     }
 
   def token: F[String] =

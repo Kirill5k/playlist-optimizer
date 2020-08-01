@@ -5,6 +5,7 @@ import cats.implicits._
 import io.chrisdavenport.log4cats.Logger
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
 import io.kirill.playlistoptimizer.core.playlist.{Playlist, PlaylistService}
+import io.kirill.playlistoptimizer.core.spotify.clients.SpotifyAuthClient.SpotifyAccessToken
 import io.kirill.playlistoptimizer.core.spotify.clients.{SpotifyApiClient, SpotifyAuthClient}
 import sttp.client.{NothingT, SttpBackend}
 
@@ -16,7 +17,7 @@ class SpotifyPlaylistService[F[_]: Sync: Logger](
   private val authClient = new SpotifyAuthClient[F]()
   private val apiClient  = new SpotifyApiClient[F]()
 
-  def authenticate(accessCode: String): F[Unit] =
+  def authenticate(accessCode: String): F[SpotifyAccessToken] =
     authClient.authorize(accessCode)
 
   override def getAll: F[Seq[Playlist]] =
