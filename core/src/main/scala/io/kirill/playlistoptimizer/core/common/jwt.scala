@@ -17,20 +17,20 @@ object jwt {
     def decode(token: String): F[A]
   }
 
-  class CirceJwtEncoder[F[_]: Sync, A: Encoder: Decoder](
-      private val secretKey: String,
+  private final class CirceJwtEncoder[F[_]: Sync, A: Encoder: Decoder](
+      private val secret: String,
       private val alg: JwtAlgorithm
   ) extends JwtEncoder[F, A] {
 
     private val decodeFunc = alg match {
       case a if JwtAlgorithm.allHmac().contains(a) =>
-        (t: String) => JwtCirce.decodeJson(t, secretKey, List(a.asInstanceOf[JwtHmacAlgorithm]))
+        (t: String) => JwtCirce.decodeJson(t, secret, List(a.asInstanceOf[JwtHmacAlgorithm]))
       case a if JwtAlgorithm.allAsymmetric().contains(a) =>
-        (t: String) => JwtCirce.decodeJson(t, secretKey, List(a.asInstanceOf[JwtAsymmetricAlgorithm]))
+        (t: String) => JwtCirce.decodeJson(t, secret, List(a.asInstanceOf[JwtAsymmetricAlgorithm]))
     }
 
     override def encode(token: A): F[String] =
-      Sync[F].delay(JwtCirce.encode(token.asJson, secretKey, alg))
+      Sync[F].delay(JwtCirce.encode(token.asJson, secret, alg))
 
     override def decode(token: String): F[A] =
       Sync[F].fromEither(decodeFunc(token).toEither.flatMap(_.as[A]).left.map(e => JwtDecodeError(e.getMessage)))
