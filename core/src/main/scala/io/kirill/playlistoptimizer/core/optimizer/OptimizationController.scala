@@ -44,7 +44,7 @@ class OptimizationController[F[_]](
         withErrorHandling {
           for {
             opts <- playlistOptimizer.getAll()
-            resp <- Ok(opts.map(OptimizationView.from).asJson)
+            resp <- Ok(opts.sortBy(_.dateInitiated).reverse.map(OptimizationView.from).asJson)
           } yield resp
         }
     }
