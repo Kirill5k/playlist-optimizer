@@ -1,6 +1,7 @@
 package io.kirill.playlistoptimizer.core.common
 
 import io.kirill.playlistoptimizer.core.optimizer.PlaylistOptimizer.OptimizationId
+import pdi.jwt.JwtAlgorithm
 
 object errors {
 
@@ -9,8 +10,11 @@ object errors {
     override def getMessage: String = message
   }
 
+  sealed trait AuthError extends ApplicationError
   sealed trait NotFoundError extends ApplicationError
   sealed trait BadRequestError extends ApplicationError
+
+  final case class JwtDecodeError(message: String) extends ApplicationError
 
   final case class SpotifyApiError(message: String) extends ApplicationError
 
@@ -34,5 +38,9 @@ object errors {
 
   final case class InvalidKey(keyNumber: Int, mode: Int) extends BadRequestError {
     val message = s"couldn't find key with number $keyNumber and mode number $mode"
+  }
+
+  final case class InvalidJwtEncryptionAlgorithm(alg: JwtAlgorithm) extends ApplicationError {
+    val message = s"unrecognized jwt encryption algorithm $alg"
   }
 }

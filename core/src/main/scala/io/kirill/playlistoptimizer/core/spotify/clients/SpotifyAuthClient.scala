@@ -10,7 +10,7 @@ import io.kirill.playlistoptimizer.core.common.errors.AuthenticationRequiredErro
 import io.kirill.playlistoptimizer.core.spotify.clients.api.{SpotifyAuthApi, SpotifyRestApi}
 import sttp.client.{NothingT, SttpBackend}
 
-private[spotify] class SpotifyAuthClient[F[_]: Sync: Logger](
+private class SpotifyAuthClient[F[_]: Sync: Logger](
     implicit val sc: SpotifyConfig,
     val b: SttpBackend[F, Nothing, NothingT]
 ) {
@@ -50,7 +50,7 @@ private[spotify] class SpotifyAuthClient[F[_]: Sync: Logger](
     Sync[F].fromEither(spotifyAccessToken).map(_.userId)
 }
 
-private[spotify] object SpotifyAuthClient {
+object SpotifyAuthClient {
   final case class SpotifyAccessToken(accessToken: String, refreshToken: String, userId: String, validUntil: Instant) {
     def isValid: Boolean = validUntil.isAfter(Instant.now())
   }
