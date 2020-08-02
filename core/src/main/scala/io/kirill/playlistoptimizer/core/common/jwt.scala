@@ -28,7 +28,7 @@ object jwt {
       Sync[F].delay(encodeFunc(token))
 
     override def decode(token: String): F[A] =
-      Sync[F].fromEither(decodeFunc(token).toEither.left.map(e => JwtDecodeError(e.getMessage)).flatMap(_.as[A]))
+      Sync[F].fromEither(decodeFunc(token).toEither.flatMap(_.as[A]).left.map(e => JwtDecodeError(e.getMessage)))
   }
 
   object JwtEncoder {

@@ -50,7 +50,7 @@ class JwtEncoderSpec extends CatsIOSpec {
 
     "should return error when unknown algo" in {
       val result = for {
-        encoder <- JwtEncoder.circeJwtEncoder[IO, SpotifyAccessToken](config.copy(alg = "foo"))
+        _ <- JwtEncoder.circeJwtEncoder[IO, SpotifyAccessToken](config.copy(alg = "foo"))
       } yield ()
 
       result.assertThrows[InvalidJwtEncryptionAlgorithm]
