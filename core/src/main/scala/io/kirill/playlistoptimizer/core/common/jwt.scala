@@ -10,8 +10,6 @@ import io.kirill.playlistoptimizer.core.common.errors.{InvalidJwtEncryptionAlgor
 import pdi.jwt.algorithms.{JwtAsymmetricAlgorithm, JwtECDSAAlgorithm, JwtHmacAlgorithm, JwtRSAAlgorithm}
 import pdi.jwt.{JwtAlgorithm, JwtCirce}
 
-import scala.util.{Failure, Try}
-
 object jwt {
 
   sealed trait JwtEncoder[F[_], A] {
@@ -19,34 +17,33 @@ object jwt {
     def decode(token: String): F[A]
   }
 
-  private final class CirceJwtEncoder[F[_]: Sync, A: Encoder: Decoder](
-      private val encodeFunc: A => String,
-      private val decodeFunc: String => Try[Json]
+  class CirceJwtEncoder[F[_]: Sync, A: Encoder: Decoder](
+      private val secretKey: String,
+      private val alg: JwtAlgorithm
   ) extends JwtEncoder[F, A] {
 
+    private val decodeFunc = alg match {
+      case a if JwtAlgorithm.allHmac().contains(a) =>
+        (t: String) => JwtCirce.decodeJson(t, secretKey, List(a.asInstanceOf[JwtHmacAlgorithm]))
+      case a if JwtAlgorithm.allAsymmetric().contains(a) =>
+        (t: String) => JwtCirce.decodeJson(t, secretKey, List(a.asInstanceOf[JwtAsymmetricAlgorithm]))
+    }
+
     override def encode(token: A): F[String] =
-      Sync[F].delay(encodeFunc(token))
+      Sync[F].delay(JwtCirce.encode(token.asJson, secretKey, alg))
 
     override def decode(token: String): F[A] =
       Sync[F].fromEither(decodeFunc(token).toEither.flatMap(_.as[A]).left.map(e => JwtDecodeError(e.getMessage)))
   }
 
   object JwtEncoder {
-    def circeJwtEncoder[F[_]: Sync, A: Encoder: Decoder](config: JwtConfig): F[JwtEncoder[F, A]] = {
-        JwtAlgorithm.fromString(config.alg) match {
-          case a if JwtAlgorithm.allHmac().contains(a) =>
-            Sync[F].delay(new CirceJwtEncoder(
-              t => JwtCirce.encode(t.asJson, config.secret, a),
-              t => JwtCirce.decodeJson(t, config.secret, List(a.asInstanceOf[JwtHmacAlgorithm]))
-            ))
-          case a if JwtAlgorithm.allAsymmetric().contains(a) =>
-            Sync[F].delay(new CirceJwtEncoder(
-              t => JwtCirce.encode(t.asJson, config.secret, a),
-              t => JwtCirce.decodeJson(t, config.secret, List(a.asInstanceOf[JwtAsymmetricAlgorithm]))
-            ))
-          case a  =>
-            Sync[F].raiseError(InvalidJwtEncryptionAlgorithm(a))
+    def circeJwtEncoder[F[_]: Sync, A: Encoder: Decoder](config: JwtConfig): F[JwtEncoder[F, A]] =
+      JwtAlgorithm.fromString(config.alg.toUpperCase) match {
+        case alg if JwtAlgorithm.allHmac().contains(alg) | JwtAlgorithm.allAsymmetric().contains(alg) =>
+          Sync[F].delay(new CirceJwtEncoder(config.secret, alg))
+        case alg =>
+          Sync[F].raiseError(InvalidJwtEncryptionAlgorithm(alg))
       }
-    }
+
   }
 }
