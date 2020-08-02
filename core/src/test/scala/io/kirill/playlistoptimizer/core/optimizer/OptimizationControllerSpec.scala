@@ -82,6 +82,7 @@ class OptimizationControllerSpec extends ControllerSpec {
       val expected =
         s"""
            |{
+           |"id": "607995e0-8e3a-11ea-bc55-0242ac130003",
            |"status": "in progress",
            |"dateInitiated": "2020-01-01T00:00:00Z",
            |"original": {
@@ -115,7 +116,7 @@ class OptimizationControllerSpec extends ControllerSpec {
       verifyJsonResponse(response, Status.Ok, Some(expected))
     }
 
-    "return all optimization" in {
+    "return all optimizations" in {
       when(playlistOptimizerMock.getAll()).thenReturn(IO.pure(List(optimization)))
 
       val request = Request[IO](uri = uri"/playlist-optimizations", method = Method.GET)
@@ -124,6 +125,7 @@ class OptimizationControllerSpec extends ControllerSpec {
       val expected =
         s"""
            |[{
+           |"id": "607995e0-8e3a-11ea-bc55-0242ac130003",
            |"status": "in progress",
            |"dateInitiated": "2020-01-01T00:00:00Z",
            |"original": {

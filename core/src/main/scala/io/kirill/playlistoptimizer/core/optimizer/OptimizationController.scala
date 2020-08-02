@@ -1,6 +1,7 @@
 package io.kirill.playlistoptimizer.core.optimizer
 
 import java.time.Instant
+import java.util.UUID
 
 import cats.effect.{ContextShift, Sync}
 import cats.implicits._
@@ -54,6 +55,7 @@ object OptimizationController {
   final case class InitiateOptimizationResponse(id: OptimizationId)
 
   final case class OptimizationView(
+      id: UUID,
       status: String,
       dateInitiated: Instant,
       original: PlaylistView,
@@ -65,6 +67,7 @@ object OptimizationController {
   object OptimizationView {
     def from(opt: Optimization): OptimizationView =
       OptimizationView(
+        opt.id.value,
         opt.status,
         opt.dateInitiated,
         PlaylistView.from(opt.original),
