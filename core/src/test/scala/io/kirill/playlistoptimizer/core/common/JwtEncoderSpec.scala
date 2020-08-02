@@ -48,6 +48,15 @@ class JwtEncoderSpec extends CatsIOSpec {
       result.assertThrows[JwtDecodeError]
     }
 
+    "should return error when unexpected json payload" in {
+      val result = for {
+        encoder <- JwtEncoder.circeJwtEncoder[IO, SpotifyAccessToken](config)
+        accessToken <- encoder.decode("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c")
+      } yield accessToken
+
+      result.assertThrows[JwtDecodeError]
+    }
+
     "should return error when unknown algo" in {
       val result = for {
         _ <- JwtEncoder.circeJwtEncoder[IO, SpotifyAccessToken](config.copy(alg = "foo"))
