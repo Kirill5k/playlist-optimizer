@@ -19,7 +19,7 @@ object jwt {
     def decode(token: String): F[A]
   }
 
-  class CirceJwtEncoder[F[_]: Sync, A: Encoder: Decoder](
+  private final class CirceJwtEncoder[F[_]: Sync, A: Encoder: Decoder](
       private val encodeFunc: A => String,
       private val decodeFunc: String => Try[Json]
   ) extends JwtEncoder[F, A] {
