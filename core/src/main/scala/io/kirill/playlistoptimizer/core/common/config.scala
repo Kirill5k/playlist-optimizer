@@ -31,9 +31,15 @@ object config {
       homepageUrl: String
   )
 
+  final case class JwtConfig(
+      alg: String,
+      secret: String
+  )
+
   final case class AppConfig(
       server: ServerConfig,
       spotify: SpotifyConfig,
+      jwt: JwtConfig,
       algorithms: AlgorithmsConfig
   )
 
