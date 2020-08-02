@@ -23,6 +23,14 @@ export default {
       return this.$store.state.optimizations
     }
   },
+  watch: {
+    optimizations (newOpts) {
+      const inProgress = newOpts.some(opt => opt.status === 'in progress')
+      if (inProgress) {
+        setTimeout(() => this.$store.dispatch('getOptimizations'), 2000)
+      }
+    }
+  },
   methods: {
     savePlaylist (playlist) {
       this.$store.dispatch('savePlaylist', playlist)
