@@ -11,7 +11,8 @@ import io.kirill.playlistoptimizer.core.playlist.PlaylistController
 import io.kirill.playlistoptimizer.core.playlist._
 import org.http4s.circe._
 import org.http4s.headers.Location
-import org.http4s.{HttpRoutes, Uri}
+import org.http4s.{HttpRoutes, ResponseCookie, Uri}
+import pdi.jwt.{JwtAlgorithm, JwtCirce, JwtClaim}
 
 class SpotifyPlaylistController[F[_]](
     override val playlistService: SpotifyPlaylistService[F],
@@ -44,9 +45,13 @@ class SpotifyPlaylistController[F[_]](
         l.info("redirecting to spotify for authentication") *>
           TemporaryRedirect(authorizationPath)
       case GET -> Root / "authenticate" :? CodeQueryParamMatcher(code) =>
-        l.info(s"received redirect from spotify: $code") *>
-          playlistService.authenticate(code) *>
-          TemporaryRedirect(homePagePath)
+        for {
+          _ <- l.info(s"received redirect from spotify: $code")
+          spotifyToken <- playlistService.authenticate(code)
+          jwtToken <- s.delay(JwtCirce.encode(spotifyToken.asJson, "secret-key", JwtAlgorithm.HS256))
+          spotifyCookie = ResponseCookie("spotify-session", jwtToken, httpOnly = true, secure = true)
+          res <- TemporaryRedirect(homePagePath).map(_.addCookie(spotifyCookie))
+        } yield res
     } <+> super.routes
 }
 

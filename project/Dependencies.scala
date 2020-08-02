@@ -7,6 +7,7 @@ object Dependencies {
     lazy val circe      = "0.13.0"
     lazy val sttp       = "2.0.5"
     lazy val http4s     = "0.21.1"
+    lazy val jwt        = "4.2.0"
 
     lazy val mockito   = "1.10.3"
     lazy val scalatest = "3.2.0"
@@ -39,6 +40,8 @@ object Dependencies {
     lazy val http4sBlaze  = "org.http4s" %% "http4s-blaze-server" % Versions.http4s
     lazy val http4sCirce  = "org.http4s" %% "http4s-circe"        % Versions.http4s
 
+    lazy val jwtCirce = "com.pauldijou" %% "jwt-circe" % Versions.jwt
+
     lazy val mockitoCore      = "org.mockito"    %% "mockito-scala"                 % Versions.mockito
     lazy val mockitoScalatest = "org.mockito"    %% "mockito-scala-scalatest"       % Versions.mockito
     lazy val scalatest        = "org.scalatest"  %% "scalatest"                     % Versions.scalatest
@@ -65,7 +68,8 @@ object Dependencies {
     Libraries.http4sDsl,
     Libraries.http4sServer,
     Libraries.http4sBlaze,
-    Libraries.http4sCirce
+    Libraries.http4sCirce,
+    Libraries.jwtCirce
   )
 
   lazy val test = Seq(
