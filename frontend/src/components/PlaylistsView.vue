@@ -10,7 +10,7 @@
         <p v-b-toggle="'playlist'+index.toString()" class="mb-0 p-1 w-100">
           <strong>{{ playlistSummary(playlist) }}</strong>
         </p>
-        <b-button size="sm" variant="outline-dark" @click="$emit('optimize', playlist)">
+        <b-button size="sm" variant="info" @click="$emit('optimize', playlist)">
           Optimize
         </b-button>
       </b-card-header>

@@ -9,12 +9,15 @@
 </template>
 
 <style lang="scss">
+@import 'assets/bootstrap-overrides.scss';
+@import '~bootstrap/scss/bootstrap.scss';
+@import '~bootstrap-vue/src/index.scss';
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
 }
 
 #nav {
@@ -22,10 +25,9 @@
 
   a {
     font-weight: bold;
-    color: #2c3e50;
 
     &.router-link-exact-active {
-      color: rgba(87, 132, 224, 0.97);
+      color: #1F9BCF;
     }
   }
 }

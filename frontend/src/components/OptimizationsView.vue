@@ -36,7 +36,7 @@
             <b-button v-if="!displayPlaylistSaveForm"  variant="primary" size="sm" @click="showSavePlaylistForm(optimization.result.name)">
               Save optimized playlist
             </b-button>
-            <b-form v-else inline>
+            <b-form v-else inline @submit.prevent="savePlaylist(optimization.result)">
               <label class="sr-only" :for="`optimized-playlist-name-${index}`">New playlist name</label>
               <b-button
                 v-if="newPlaylistNameIsValid"
@@ -52,6 +52,7 @@
                 size="sm"
                 class="mr-2"
                 placeholder="Optimized Playlist"
+                style="width: 300px"
                 v-model="newPlaylistName"
                 :state="newPlaylistNameIsValid"
               />
