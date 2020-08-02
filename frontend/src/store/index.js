@@ -51,6 +51,20 @@ export default new Vuex.Store({
       })
         .then(res => res.status === 201 ? dispatch('getOptimizations') : reject(res.status))
         .catch(err => console.error(err))
+    },
+    savePlaylist ({ commit, dispatch }, playlist) {
+      return fetch('/api/spotify/playlists', {
+        method: 'POST',
+        mode: 'cors',
+        cache: 'no-cache',
+        credentials: 'same-origin',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(playlist)
+      })
+        .then(res => res.status === 201 ? dispatch('getPlaylists') : reject(res.status))
+        .catch(err => console.error(err))
     }
   },
   modules: {

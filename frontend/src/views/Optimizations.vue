@@ -2,6 +2,7 @@
   <div class="optimizations">
     <optimizations-view
       :optimizations="optimizations"
+      @save="savePlaylist"
     />
   </div>
 </template>
@@ -20,6 +21,11 @@ export default {
   computed: {
     optimizations () {
       return this.$store.state.optimizations
+    }
+  },
+  methods: {
+    savePlaylist (playlist) {
+      this.$store.dispatch('savePlaylist', playlist)
     }
   }
 }

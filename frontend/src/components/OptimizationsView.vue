@@ -33,9 +33,37 @@
             <playlist-view v-if="optimization.result" :playlist="optimization.result" class="w-50"/>
           </div>
           <div v-if="optimization.result" class="optimizations-view__controls">
-            <b-button variant="primary" size="sm">
+            <b-button v-if="!displayPlaylistSaveForm"  variant="primary" size="sm" @click="showSavePlaylistForm(optimization.result.name)">
               Save optimized playlist
             </b-button>
+            <b-form v-else inline>
+              <label class="sr-only" :for="`optimized-playlist-name-${index}`">New playlist name</label>
+              <b-button
+                v-if="newPlaylistNameIsValid"
+                variant="outline-success"
+                size="sm"
+                class="mr-2"
+                @click="savePlaylist(optimization.result)"
+              >
+                Save
+              </b-button>
+              <b-form-input
+                :id="`optimized-playlist-name-${index}`"
+                size="sm"
+                class="mr-2"
+                placeholder="Optimized Playlist"
+                v-model="newPlaylistName"
+                :state="newPlaylistNameIsValid"
+              />
+              <b-button
+                variant="outline-danger"
+                size="sm"
+                @click="hideSavePlaylistForm"
+                class="mr-2"
+              >
+                Cancel
+              </b-button>
+            </b-form>
           </div>
         </b-card-body>
       </b-collapse>
@@ -44,16 +72,27 @@
 </template>
 
 <script>
-import { BCard, BCardHeader, BCollapse, BCardBody, BButton, BBadge, BCardText } from 'bootstrap-vue'
+import { BCard, BCardHeader, BCollapse, BCardBody, BButton, BBadge, BCardText, BForm, BFormInput } from 'bootstrap-vue'
 import PlaylistView from '@/components/PlaylistView.vue'
 
 export default {
   name: 'OptimizationsView',
   components: {
-    PlaylistView, BCard, BCardHeader, BCollapse, BCardBody, BButton, BBadge, BCardText
+    PlaylistView, BCard, BCardHeader, BCollapse, BCardBody, BButton, BBadge, BCardText, BForm, BFormInput
+  },
+  data () {
+    return {
+      displayPlaylistSaveForm: false,
+      newPlaylistName: ''
+    }
   },
   props: {
     optimizations: Array
+  },
+  computed: {
+    newPlaylistNameIsValid () {
+      return this.newPlaylistName.length > 2
+    }
   },
   methods: {
     optimizationStatusVariant (status) {
@@ -63,6 +102,19 @@ export default {
         default:
           return 'primary'
       }
+    },
+    showSavePlaylistForm (newPlaylistName) {
+      this.displayPlaylistSaveForm = true
+      this.newPlaylistName = newPlaylistName
+    },
+    hideSavePlaylistForm () {
+      this.displayPlaylistSaveForm = false
+      this.newPlaylistName = ''
+    },
+    savePlaylist (playlist) {
+      const newPlaylist = { ...playlist, name: this.newPlaylistName }
+      this.$emit('save', newPlaylist)
+      this.hideSavePlaylistForm()
     }
   }
 }
