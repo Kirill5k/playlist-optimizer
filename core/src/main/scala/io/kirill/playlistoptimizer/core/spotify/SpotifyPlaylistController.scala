@@ -12,11 +12,9 @@ import io.kirill.playlistoptimizer.core.common.errors.MissingSessionCookie
 import io.kirill.playlistoptimizer.core.common.json._
 import io.kirill.playlistoptimizer.core.common.jwt.JwtEncoder
 import io.kirill.playlistoptimizer.core.playlist._
-import io.kirill.playlistoptimizer.core.spotify.clients.SpotifyAuthClient.SpotifyAccessToken
 import org.http4s.circe._
 import org.http4s.headers.Location
 import org.http4s.{HttpRoutes, Request, RequestCookie, ResponseCookie, Uri}
-import pdi.jwt.{JwtAlgorithm, JwtCirce}
 
 class SpotifyPlaylistController[F[_]](
     val jwtEncoder: JwtEncoder[F, SpotifyAccessToken],
@@ -48,10 +46,10 @@ class SpotifyPlaylistController[F[_]](
       case req @ GET -> Root / "ping" =>
         withErrorHandling {
           for {
-            _   <- l.info("spotify ping")
+            _             <- l.info("spotify ping")
             spotifyCookie <- getSessionCookie[F](req)
-            spotifyToken <- jwtEncoder.decode(spotifyCookie.content)
-            res <- Ok("spotify-pong")
+            _             <- jwtEncoder.decode(spotifyCookie.content)
+            res           <- Ok("spotify-pong")
           } yield res
         }
       case GET -> Root / "login" =>
@@ -59,36 +57,42 @@ class SpotifyPlaylistController[F[_]](
           TemporaryRedirect(authorizationPath)
       case GET -> Root / "authenticate" :? CodeQueryParamMatcher(code) =>
         for {
-          _            <- l.info(s"received redirect from spotify: $code")
-          spotifyToken <- playlistService.authenticate(code)
-          jwtToken     <- jwtEncoder.encode(spotifyToken)
-          res <- TemporaryRedirect(homePagePath).map(_.addCookie(newSessionCookie(jwtToken)))
-        } yield res
-      case GET -> Root / "playlists" =>
+          _           <- l.info(s"received redirect from spotify: $code")
+          accessToken <- playlistService.authenticate(code)
+          jwt         <- jwtEncoder.encode(accessToken)
+          res         <- TemporaryRedirect(homePagePath)
+        } yield res.addCookie(newSessionCookie(jwt))
+      case req @ GET -> Root / "playlists" =>
         withErrorHandling {
           for {
-            _         <- l.info("get all playlists")
-            playlists <- playlistService.getAll
-            views = playlists.map(PlaylistView.from)
-            resp <- Ok(views.asJson)
-          } yield resp
+            _             <- l.info("get all playlists")
+            spotifyCookie <- getSessionCookie[F](req)
+            accessToken   <- jwtEncoder.decode(spotifyCookie.content)
+            playlists     <- playlistService.getAll(accessToken)
+            views = playlists._1.map(PlaylistView.from)
+            jwt <- jwtEncoder.encode(playlists._2)
+            res <- Ok(views.asJson)
+          } yield res.addCookie(newSessionCookie(jwt))
         }
       case req @ POST -> Root / "playlists" =>
         withErrorHandling {
           for {
-            view <- req.as[PlaylistView]
-            _    <- l.info(s"save playlist ${view.name}")
-            _    <- playlistService.save(view.toDomain)
-            resp <- Created()
-          } yield resp
+            view               <- req.as[PlaylistView]
+            _                  <- l.info(s"save playlist ${view.name}")
+            spotifyCookie      <- getSessionCookie[F](req)
+            accessToken        <- jwtEncoder.decode(spotifyCookie.content)
+            updatedAccessToken <- playlistService.save(accessToken, view.toDomain)
+            jwt                <- jwtEncoder.encode(updatedAccessToken)
+            res                <- Created()
+          } yield res.addCookie(newSessionCookie(jwt))
         }
     }
 
-  private def getSessionCookie[F[_]: Sync](req: Request[F]): F[RequestCookie] =
-    Sync[F].fromOption(req.cookies.find(_.name == SpotifySessionCookie), MissingSessionCookie)
+  private def getSessionCookie[F[_]](req: Request[F])(implicit s: Sync[F]): F[RequestCookie] =
+    s.fromOption(req.cookies.find(_.name == SpotifySessionCookie), MissingSessionCookie)
 
-  private def newSessionCookie(content: String): ResponseCookie =
-    ResponseCookie(SpotifySessionCookie, content, httpOnly = true, secure = true)
+  private def newSessionCookie(jwt: String): ResponseCookie =
+    ResponseCookie(SpotifySessionCookie, jwt, httpOnly = true, secure = true)
 }
 
 object SpotifyPlaylistController {

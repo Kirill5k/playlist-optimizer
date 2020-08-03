@@ -10,7 +10,7 @@ import io.kirill.playlistoptimizer.core.CatsIOSpec
 import io.kirill.playlistoptimizer.core.common.config.JwtConfig
 import io.kirill.playlistoptimizer.core.common.errors.{InvalidJwtEncryptionAlgorithm, JwtDecodeError}
 import io.kirill.playlistoptimizer.core.common.jwt.JwtEncoder
-import io.kirill.playlistoptimizer.core.spotify.clients.SpotifyAuthClient.SpotifyAccessToken
+import io.kirill.playlistoptimizer.core.spotify.SpotifyAccessToken
 import json._
 
 class JwtEncoderSpec extends CatsIOSpec {

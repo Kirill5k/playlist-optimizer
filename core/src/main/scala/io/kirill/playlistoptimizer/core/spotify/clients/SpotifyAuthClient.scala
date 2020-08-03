@@ -7,14 +7,14 @@ import cats.implicits._
 import io.chrisdavenport.log4cats.Logger
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
 import io.kirill.playlistoptimizer.core.common.errors.AuthenticationRequiredError
+import io.kirill.playlistoptimizer.core.spotify.SpotifyAccessToken
 import io.kirill.playlistoptimizer.core.spotify.clients.api.{SpotifyAuthApi, SpotifyRestApi}
 import sttp.client.{NothingT, SttpBackend}
 
-class SpotifyAuthClient[F[_]: Sync: Logger](
+private[spotify] class SpotifyAuthClient[F[_]: Sync: Logger](
     implicit val sc: SpotifyConfig,
     val b: SttpBackend[F, Nothing, NothingT]
 ) {
-  import SpotifyAuthClient._
 
   private var spotifyAccessToken: Either[Throwable, SpotifyAccessToken] =
     Left(AuthenticationRequiredError("authorization with Spotify is required"))
@@ -50,18 +50,6 @@ class SpotifyAuthClient[F[_]: Sync: Logger](
     Sync[F].fromEither(spotifyAccessToken).map(_.userId)
 }
 
-object SpotifyAuthClient {
-  final case class SpotifyAccessToken(
-      accessToken: String,
-      refreshToken: String,
-      userId: String,
-      validUntil: Instant
-  ) {
-    def isValid: Boolean = validUntil.isAfter(Instant.now())
-  }
+private[spotify] object SpotifyAuthClient {
 
-  object SpotifyAccessToken {
-    def apply(accessToken: String, refreshToken: String, userId: String, expiresIn: Int): SpotifyAccessToken =
-      new SpotifyAccessToken(accessToken, refreshToken, userId, Instant.now().plusSeconds(expiresIn))
-  }
 }

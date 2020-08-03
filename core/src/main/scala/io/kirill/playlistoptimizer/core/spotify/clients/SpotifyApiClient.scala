@@ -62,3 +62,8 @@ private[spotify] class SpotifyApiClient[F[_]: Sync: Logger](
     } yield tracksAndFeatures.toList
   }
 }
+
+private[spotify] object SpotifyApiClient {
+
+}
+

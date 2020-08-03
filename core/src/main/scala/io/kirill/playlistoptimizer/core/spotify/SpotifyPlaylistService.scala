@@ -4,8 +4,7 @@ import cats.effect.Sync
 import cats.implicits._
 import io.chrisdavenport.log4cats.Logger
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
-import io.kirill.playlistoptimizer.core.playlist.{Playlist}
-import io.kirill.playlistoptimizer.core.spotify.clients.SpotifyAuthClient.SpotifyAccessToken
+import io.kirill.playlistoptimizer.core.playlist.Playlist
 import io.kirill.playlistoptimizer.core.spotify.clients.{SpotifyApiClient, SpotifyAuthClient}
 import sttp.client.{NothingT, SttpBackend}
 
@@ -20,24 +19,24 @@ class SpotifyPlaylistService[F[_]: Sync: Logger](
   def authenticate(accessCode: String): F[SpotifyAccessToken] =
     authClient.authorize(accessCode)
 
-  def getAll: F[Seq[Playlist]] =
+  def getAll(accessToken: SpotifyAccessToken): F[(Seq[Playlist], SpotifyAccessToken)] =
     for {
       token     <- authClient.token
       playlists <- apiClient.getAllPlaylists(token)
-    } yield playlists
+    } yield (playlists, accessToken)
 
-  def findByName(name: String): F[Playlist] =
+  def findByName(accessToken: SpotifyAccessToken, name: String): F[(Playlist, SpotifyAccessToken)] =
     for {
       token    <- authClient.token
       playlist <- apiClient.findPlaylistByName(token, name)
-    } yield playlist
+    } yield (playlist, accessToken)
 
-  def save(playlist: Playlist): F[Unit] =
+  def save(accessToken: SpotifyAccessToken, playlist: Playlist): F[SpotifyAccessToken] =
     for {
       userId <- authClient.userId
       token  <- authClient.token
       _      <- apiClient.createPlaylist(token, userId, playlist)
-    } yield ()
+    } yield accessToken
 }
 
 object SpotifyPlaylistService {

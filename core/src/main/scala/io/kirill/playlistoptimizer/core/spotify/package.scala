@@ -1,5 +1,7 @@
 package io.kirill.playlistoptimizer.core
 
+import java.time.Instant
+
 import cats.effect.{Concurrent, ContextShift, Resource, Sync}
 import cats.implicits._
 import io.circe.generic.auto._
@@ -10,10 +12,23 @@ import io.kirill.playlistoptimizer.core.common.jwt.JwtEncoder
 import io.kirill.playlistoptimizer.core.common.json._
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.OptimizationAlgorithm
 import io.kirill.playlistoptimizer.core.playlist.Track
-import io.kirill.playlistoptimizer.core.spotify.clients.SpotifyAuthClient.SpotifyAccessToken
 import sttp.client.{NothingT, SttpBackend}
 
 package object spotify {
+
+  final case class SpotifyAccessToken(
+      accessToken: String,
+      refreshToken: String,
+      userId: String,
+      validUntil: Instant
+  ) {
+    def isValid: Boolean = validUntil.isAfter(Instant.now())
+  }
+
+  object SpotifyAccessToken {
+    def apply(accessToken: String, refreshToken: String, userId: String, expiresIn: Int): SpotifyAccessToken =
+      new SpotifyAccessToken(accessToken, refreshToken, userId, Instant.now().plusSeconds(expiresIn))
+  }
 
   final class Spotify[F[_]](
       val playlistController: AppController[F]
