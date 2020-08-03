@@ -3,18 +3,13 @@ package io.kirill.playlistoptimizer.core.spotify
 import cats.effect.Sync
 import cats.implicits._
 import io.chrisdavenport.log4cats.Logger
-import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
 import io.kirill.playlistoptimizer.core.playlist.Playlist
 import io.kirill.playlistoptimizer.core.spotify.clients.{SpotifyApiClient, SpotifyAuthClient}
-import sttp.client.{NothingT, SttpBackend}
 
 class SpotifyPlaylistService[F[_]: Sync: Logger](
-    implicit sc: SpotifyConfig,
-    b: SttpBackend[F, Nothing, NothingT]
+    private val authClient: SpotifyAuthClient[F],
+    private val apiClient: SpotifyApiClient[F]
 ) {
-
-  private val authClient = new SpotifyAuthClient[F]()
-  private val apiClient  = new SpotifyApiClient[F]()
 
   def authenticate(accessCode: String): F[SpotifyAccessToken] =
     authClient.authorize(accessCode)
@@ -41,11 +36,8 @@ class SpotifyPlaylistService[F[_]: Sync: Logger](
 
 object SpotifyPlaylistService {
   def make[F[_]: Sync: Logger](
-      backend: SttpBackend[F, Nothing, NothingT],
-      spotifyConfig: SpotifyConfig
-  ): F[SpotifyPlaylistService[F]] = {
-    implicit val sc: SpotifyConfig                    = spotifyConfig
-    implicit val b: SttpBackend[F, Nothing, NothingT] = backend
-    Sync[F].delay(new SpotifyPlaylistService())
-  }
+      authClient: SpotifyAuthClient[F],
+      apiClient: SpotifyApiClient[F]
+  ): F[SpotifyPlaylistService[F]] =
+    Sync[F].delay(new SpotifyPlaylistService(authClient, apiClient))
 }

@@ -12,6 +12,7 @@ import io.kirill.playlistoptimizer.core.common.jwt.JwtEncoder
 import io.kirill.playlistoptimizer.core.common.json._
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.OptimizationAlgorithm
 import io.kirill.playlistoptimizer.core.playlist.Track
+import io.kirill.playlistoptimizer.core.spotify.clients.{SpotifyApiClient, SpotifyAuthClient}
 import sttp.client.{NothingT, SttpBackend}
 
 package object spotify {
@@ -43,8 +44,10 @@ package object spotify {
         implicit alg: OptimizationAlgorithm[F, Track]
     ): F[Spotify[F]] =
       for {
+        authClient <- SpotifyAuthClient.make(backend, spotifyConfig)
+        apiClient  <- SpotifyApiClient.make(backend, spotifyConfig)
+        service    <- SpotifyPlaylistService.make(authClient, apiClient)
         jwtEncoder <- JwtEncoder.circeJwtEncoder[F, SpotifyAccessToken](jwtConfig)
-        service    <- SpotifyPlaylistService.make(backend, spotifyConfig)
         controller <- SpotifyPlaylistController.make(jwtEncoder, service, spotifyConfig)
       } yield new Spotify(controller)
   }

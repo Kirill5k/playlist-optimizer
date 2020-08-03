@@ -65,5 +65,12 @@ private[spotify] class SpotifyApiClient[F[_]: Sync: Logger](
 
 private[spotify] object SpotifyApiClient {
 
+  def make[F[_]: Sync: Logger](
+      backend: SttpBackend[F, Nothing, NothingT],
+      spotifyConfig: SpotifyConfig
+  ): F[SpotifyApiClient[F]] = {
+    implicit val b  = backend
+    implicit val sc = spotifyConfig
+    Sync[F].delay(new SpotifyApiClient[F]())
+  }
 }
-
