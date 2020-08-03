@@ -17,7 +17,7 @@ private[spotify] class SpotifyAuthClient[F[_]: Sync: Logger](
     for {
       authResponse <- SpotifyAuthApi.authorize(accessCode)
       userResponse <- SpotifyRestApi.getCurrentUser(authResponse.access_token)
-    } yield SpotifyAccessToken(authResponse.access_token, accessCode, userResponse.id, authResponse.expires_in)
+    } yield SpotifyAccessToken(authResponse.access_token, authResponse.refresh_token, userResponse.id, authResponse.expires_in)
 
   def refresh(accessToken: SpotifyAccessToken): F[SpotifyAccessToken] =
     SpotifyAuthApi

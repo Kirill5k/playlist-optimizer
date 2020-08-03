@@ -37,7 +37,10 @@ class SpotifyAuthClientSpec extends ApiClientSpec {
 
       client
         .authorize("code")
-        .asserting(_.accessToken must be ("access-O3qzgejLCgXwAE5acsqk8LQcih2qpDkaCjrJRRhuY"))
+        .asserting { t =>
+          t.accessToken must be ("access-O3qzgejLCgXwAE5acsqk8LQcih2qpDkaCjrJRRhuY")
+          t.refreshToken must be ("cnczbmrInWjs4So1F4Gm")
+        }
     }
 
     "obtain new refreshed token when original token has expired" in {

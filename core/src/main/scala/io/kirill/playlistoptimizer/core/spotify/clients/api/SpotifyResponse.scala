@@ -7,7 +7,8 @@ object SpotifyResponse {
       access_token: String,
       token_type: String,
       expires_in: Int,
-      scope: String
+      scope: String,
+      refresh_token: String
   ) extends SpotifyResponse
 
   final case class SpotifyAuthRefreshResponse(

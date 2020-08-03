@@ -35,7 +35,7 @@ class SpotifyAuthApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
 
       val authResponse = SpotifyAuthApi.authorize[IO]("code")
 
-      authResponse.asserting(_ must be(SpotifyAuthResponse("BQC3wD_w-ODtKQsbz7woOZPvffQX5iX7rychivVGQxO3qzgejLCgXwAE5acsqk8LQcih2qpDkaCjrJRRhuY", "Bearer", 3600, "")))
+      authResponse.asserting(_ must be(SpotifyAuthResponse("BQC3wD_w-ODtKQsbz7woOZPvffQX5iX7rychivVGQxO3qzgejLCgXwAE5acsqk8LQcih2qpDkaCjrJRRhuY", "Bearer", 3600, "", "cnczbmrInWjs4So1F4Gm")))
     }
 
     "return auth refresh response when success" in {
