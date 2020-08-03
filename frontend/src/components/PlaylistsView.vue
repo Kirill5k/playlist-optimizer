@@ -6,7 +6,13 @@
       v-for="(playlist, index) in playlists"
       :key="index"
     >
-      <b-card-header header-tag="header" class="p-1 playlists-view__header" role="tab">
+      <b-card-header
+        header-bg-variant="dark"
+        header-text-variant="white"
+        header-tag="header"
+        class="p-1 playlists-view__header"
+        role="tab"
+      >
         <p v-b-toggle="'playlist'+index.toString()" class="mb-0 p-1 w-100">
           <strong>{{ playlistSummary(playlist) }}</strong>
         </p>

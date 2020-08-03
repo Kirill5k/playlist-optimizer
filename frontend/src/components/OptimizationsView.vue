@@ -6,7 +6,13 @@
       v-for="(optimization, index) in optimizations"
       :key="index"
     >
-      <b-card-header header-tag="header" class="p-1 optimizations-view__header" role="tab">
+      <b-card-header
+        header-tag="header"
+        header-bg-variant="dark"
+        header-text-variant="white"
+        class="p-1 optimizations-view__header"
+        role="tab"
+      >
         <p v-b-toggle="'optimization'+index.toString()" class="mb-0 p-1 w-100">
           <strong>{{ optimization.original.name }}</strong> playlist optimization
           <b-badge :variant="optimizationStatusVariant(optimization.status)" class="ml-2">{{ optimization.status }}</b-badge>
