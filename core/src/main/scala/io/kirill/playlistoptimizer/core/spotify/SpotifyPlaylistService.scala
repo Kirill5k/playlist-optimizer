@@ -16,21 +16,20 @@ class SpotifyPlaylistService[F[_]: Sync: Logger](
 
   def getAll(accessToken: SpotifyAccessToken): F[(Seq[Playlist], SpotifyAccessToken)] =
     for {
-      token     <- authClient.token
-      playlists <- apiClient.getAllPlaylists(token)
+      token     <- if (accessToken.isValid) accessToken.pure[F] else authClient.refresh(accessToken)
+      playlists <- apiClient.getAllPlaylists(token.accessToken)
     } yield (playlists, accessToken)
 
   def findByName(accessToken: SpotifyAccessToken, name: String): F[(Playlist, SpotifyAccessToken)] =
     for {
-      token    <- authClient.token
-      playlist <- apiClient.findPlaylistByName(token, name)
+      token    <- if (accessToken.isValid) accessToken.pure[F] else authClient.refresh(accessToken)
+      playlist <- apiClient.findPlaylistByName(token.accessToken, name)
     } yield (playlist, accessToken)
 
   def save(accessToken: SpotifyAccessToken, playlist: Playlist): F[SpotifyAccessToken] =
     for {
-      userId <- authClient.userId
-      token  <- authClient.token
-      _      <- apiClient.createPlaylist(token, userId, playlist)
+      token <- if (accessToken.isValid) accessToken.pure[F] else authClient.refresh(accessToken)
+      _     <- apiClient.createPlaylist(token.accessToken, token.userId, playlist)
     } yield accessToken
 }
 

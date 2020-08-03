@@ -17,7 +17,7 @@ import sttp.client._
 import sttp.client.circe._
 import sttp.model.MediaType
 
-object SpotifyAuthApi {
+private[spotify] object SpotifyAuthApi {
 
   def authorize[F[_]: Logger: Sync](code: String)(
       implicit sc: SpotifyConfig,

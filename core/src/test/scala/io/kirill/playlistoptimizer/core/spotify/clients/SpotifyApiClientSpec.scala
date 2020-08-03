@@ -6,6 +6,7 @@ import cats.effect.testing.scalatest.AsyncIOSpec
 import cats.effect.{ContextShift, IO}
 import io.chrisdavenport.log4cats.Logger
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
+import io.kirill.playlistoptimizer.core.ApiClientSpec
 import io.kirill.playlistoptimizer.core.common.SpotifyConfigBuilder
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
 import io.kirill.playlistoptimizer.core.playlist.Key._
@@ -24,9 +25,7 @@ import scala.concurrent.duration._
 import scala.io.Source
 import scala.language.postfixOps
 
-class SpotifyApiClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
-  implicit val logger: Logger[IO] = Slf4jLogger.getLogger[IO]
-  implicit val sc: SpotifyConfig = SpotifyConfigBuilder.testConfig
+class SpotifyApiClientSpec extends ApiClientSpec {
 
   val token = "token-5lcpIsBqfb0Slx9fzZuCu_rM3aBDg"
 
@@ -127,7 +126,5 @@ class SpotifyApiClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers 
   def isAuthorized(req: client.Request[_, _], host: String, paths: Seq[String] = Nil): Boolean =
     req.uri.host == host && (paths.isEmpty || req.uri.path.startsWith(paths)) &&
       req.headers.contains(new Header("Authorization", "Bearer token-5lcpIsBqfb0Slx9fzZuCu_rM3aBDg"))
-
-  def json(path: String): String = Source.fromResource(path).getLines.toList.mkString
 
 }
