@@ -99,7 +99,7 @@ class SpotifyPlaylistControllerSpec extends ControllerSpec {
       val request = Request[IO](uri = uri"/ping").addCookie("spotify-session", "foo-bar")
       val response: IO[Response[IO]] = controller.routes.orNotFound.run(request)
 
-      verifyResponse[ErrorResponse](response, Status.Forbidden, Some(ErrorResponse("invalid jwt token")))
+      verifyResponse[ErrorResponse](response, Status.Forbidden, Some(ErrorResponse("invalid-token")))
     }
 
     "get all playlists" in {

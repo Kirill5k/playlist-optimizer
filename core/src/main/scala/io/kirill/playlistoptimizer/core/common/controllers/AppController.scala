@@ -23,15 +23,9 @@ trait AppController[F[_]] extends Http4sDsl[F] {
       l: Logger[F]
   ): F[Response[F]] =
     response.handleErrorWith {
-      case MissingSessionCookie =>
-        l.error(s"missing session cookie") *>
-          Forbidden(ErrorResponse(MissingSessionCookie.message).asJson)
-      case AuthenticationRequiredError(message) =>
-        l.error(s"authentication error: $message") *>
-          Forbidden(ErrorResponse(message).asJson)
-      case error: JwtDecodeError =>
-        l.error(s"error decoding jwt token: ${error.message}") *>
-          Forbidden(ErrorResponse("invalid jwt token").asJson)
+      case error: ForbiddenError =>
+        l.error(s"forbidden error: ${error.message}") *>
+          Forbidden(ErrorResponse(error.message).asJson)
       case error: NotFoundError =>
         l.error(s"not found error: ${error.message}") *>
           NotFound(ErrorResponse(error.message).asJson)

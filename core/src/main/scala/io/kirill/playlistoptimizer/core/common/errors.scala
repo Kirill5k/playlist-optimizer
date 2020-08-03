@@ -13,12 +13,13 @@ object errors {
   sealed trait AuthError extends ApplicationError
   sealed trait NotFoundError extends ApplicationError
   sealed trait BadRequestError extends ApplicationError
+  sealed trait ForbiddenError extends ApplicationError
 
-  final case object MissingSessionCookie extends ApplicationError {
+  final case object MissingSessionCookie extends ForbiddenError {
     val message = "missing session cookie"
   }
 
-  final case class JwtDecodeError(message: String) extends ApplicationError
+  final case class JwtDecodeError(message: String) extends ForbiddenError
 
   final case class SpotifyApiError(message: String) extends ApplicationError
 
@@ -30,7 +31,7 @@ object errors {
     val message = s"optimization with id ${id.value} does not exist"
   }
 
-  final case class AuthenticationRequiredError(message: String) extends ApplicationError
+  final case class AuthenticationRequiredError(message: String) extends ForbiddenError
 
   final case class UnexpectedPlaylistSource(source: String) extends BadRequestError {
     val message = s"unrecognized playlist source $source"
