@@ -4,7 +4,7 @@ import java.time.{Instant, LocalDate}
 import java.util.UUID
 
 import cats.effect.{ContextShift, IO}
-import io.kirill.playlistoptimizer.core.common.errors.AuthenticationRequiredError
+import io.kirill.playlistoptimizer.core.common.errors.{AuthenticationRequiredError, JwtDecodeError}
 import io.circe._
 import io.circe.generic.auto._
 import io.circe.literal._
@@ -61,6 +61,47 @@ class SpotifyPlaylistControllerSpec extends ControllerSpec {
 
   "A SpotifyPlaylistController" should {
 
+    "set spotify-session cookie on authentication" in {
+      val (jwtEncoder, service) = mocks
+      val controller = new SpotifyPlaylistController(jwtEncoder, service, sc)
+
+      val spotifyAccessToken = SpotifyAccessToken("access-token", "refresh-token", "user-id", Instant.parse("2020-01-01T00:00:00Z"))
+      when(service.authenticate(any[String])).thenReturn(IO.pure(spotifyAccessToken))
+      when(jwtEncoder.encode(spotifyAccessToken)).thenReturn(IO.pure("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhY2Nlc3NUb2tlbiI6ImFjY2Vzcy10b2tlbiIsInJlZnJlc2hUb2tlbiI6InJlZnJlc2gtdG9rZW4iLCJ1c2VySWQiOiJ1c2VyLWlkIiwidmFsaWRVbnRpbCI6IjIwMjAtMDEtMDFUMDA6MDA6MDBaIn0.e14E3Fp-aJDpcs86HYfGAkUQjQwS9d73YjSHhaIxpUw"))
+
+      val request = Request[IO](uri = uri"/authenticate?code=access-code")
+      val response: IO[Response[IO]] = controller.routes.orNotFound.run(request)
+
+      val cookies = response.map(_.cookies).unsafeRunSync()
+      cookies.find(_.name == "spotify-session").map(_.content) must be (Some("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhY2Nlc3NUb2tlbiI6ImFjY2Vzcy10b2tlbiIsInJlZnJlc2hUb2tlbiI6InJlZnJlc2gtdG9rZW4iLCJ1c2VySWQiOiJ1c2VyLWlkIiwidmFsaWRVbnRpbCI6IjIwMjAtMDEtMDFUMDA6MDA6MDBaIn0.e14E3Fp-aJDpcs86HYfGAkUQjQwS9d73YjSHhaIxpUw"))
+
+      verify(service).authenticate("access-code")
+    }
+
+    "return forbidden when no spotify-session cookie" in {
+      val (jwtEncoder, service) = mocks
+      val controller = new SpotifyPlaylistController(jwtEncoder, service, sc)
+
+      when(jwtEncoder.decode(any[String])).thenReturn(IO.raiseError(JwtDecodeError("invalid-token")))
+
+      val request = Request[IO](uri = uri"/ping")
+      val response: IO[Response[IO]] = controller.routes.orNotFound.run(request)
+
+      verifyResponse[ErrorResponse](response, Status.Forbidden, Some(ErrorResponse("missing session cookie")))
+    }
+
+    "return forbidden when invalid spotify-session cookie" in {
+      val (jwtEncoder, service) = mocks
+      val controller = new SpotifyPlaylistController(jwtEncoder, service, sc)
+
+      when(jwtEncoder.decode(any[String])).thenReturn(IO.raiseError(JwtDecodeError("invalid-token")))
+
+      val request = Request[IO](uri = uri"/ping").addCookie("spotify-session", "foo-bar")
+      val response: IO[Response[IO]] = controller.routes.orNotFound.run(request)
+
+      verifyResponse[ErrorResponse](response, Status.Forbidden, Some(ErrorResponse("invalid jwt token")))
+    }
+
     "get all playlists" in {
       val (jwtEncoder, service) = mocks
       val controller = new SpotifyPlaylistController(jwtEncoder, service, sc)
@@ -114,23 +155,6 @@ class SpotifyPlaylistControllerSpec extends ControllerSpec {
       val response: IO[Response[IO]] = controller.routes.orNotFound.run(request)
 
       verifyResponse[ErrorResponse](response, Status.Forbidden, Some(ErrorResponse("authorization with Spotify is required")))
-    }
-
-    "set spotify-session cookie on authentication" in {
-      val (jwtEncoder, service) = mocks
-      val controller = new SpotifyPlaylistController(jwtEncoder, service, sc)
-
-      val spotifyAccessToken = SpotifyAccessToken("access-token", "refresh-token", "user-id", Instant.parse("2020-01-01T00:00:00Z"))
-      when(service.authenticate(any[String])).thenReturn(IO.pure(spotifyAccessToken))
-      when(jwtEncoder.encode(spotifyAccessToken)).thenReturn(IO.pure("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhY2Nlc3NUb2tlbiI6ImFjY2Vzcy10b2tlbiIsInJlZnJlc2hUb2tlbiI6InJlZnJlc2gtdG9rZW4iLCJ1c2VySWQiOiJ1c2VyLWlkIiwidmFsaWRVbnRpbCI6IjIwMjAtMDEtMDFUMDA6MDA6MDBaIn0.e14E3Fp-aJDpcs86HYfGAkUQjQwS9d73YjSHhaIxpUw"))
-
-      val request = Request[IO](uri = uri"/authenticate?code=access-code")
-      val response: IO[Response[IO]] = controller.routes.orNotFound.run(request)
-
-      val cookies = response.map(_.cookies).unsafeRunSync()
-      cookies.find(_.name == "spotify-session").map(_.content) must be (Some("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhY2Nlc3NUb2tlbiI6ImFjY2Vzcy10b2tlbiIsInJlZnJlc2hUb2tlbiI6InJlZnJlc2gtdG9rZW4iLCJ1c2VySWQiOiJ1c2VyLWlkIiwidmFsaWRVbnRpbCI6IjIwMjAtMDEtMDFUMDA6MDA6MDBaIn0.e14E3Fp-aJDpcs86HYfGAkUQjQwS9d73YjSHhaIxpUw"))
-
-      verify(service).authenticate("access-code")
     }
   }
   
