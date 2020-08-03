@@ -32,7 +32,7 @@ object Application extends IOApp {
       for {
         _                      <- logger.info("starting playlist-optimizer app...")
         optimizer              <- Optimizer.make[IO]
-        spotify                <- Spotify.make(res.backend, config.spotify)
+        spotify                <- Spotify.make(res.backend, config.spotify, config.jwt)
         _ <- BlazeServerBuilder[IO]
           .bindHttp(config.server.port, config.server.host)
           .withHttpApp(

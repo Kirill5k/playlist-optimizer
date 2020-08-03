@@ -14,6 +14,7 @@ import io.kirill.playlistoptimizer.core.common.SpotifyConfigBuilder
 import io.kirill.playlistoptimizer.core.common.json._
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
 import io.kirill.playlistoptimizer.core.common.controllers.AppController.ErrorResponse
+import io.kirill.playlistoptimizer.core.common.jwt.JwtEncoder
 import io.kirill.playlistoptimizer.core.optimizer.PlaylistOptimizer.{Optimization, OptimizationId}
 import io.kirill.playlistoptimizer.core.playlist.{Playlist, PlaylistBuilder, PlaylistView, TrackView}
 import io.kirill.playlistoptimizer.core.spotify.clients.SpotifyAuthClient.SpotifyAccessToken
@@ -24,7 +25,7 @@ import org.mockito.ArgumentCaptor
 
 class SpotifyPlaylistControllerSpec extends ControllerSpec {
 
-  implicit val sc: SpotifyConfig = SpotifyConfigBuilder.testConfig
+  val sc: SpotifyConfig = SpotifyConfigBuilder.testConfig
 
   val playlist = PlaylistBuilder.playlist
   val shortenedPlaylist = playlist.copy(tracks = List(playlist.tracks.head))
@@ -61,9 +62,9 @@ class SpotifyPlaylistControllerSpec extends ControllerSpec {
   "A SpotifyPlaylistController" should {
 
     "get all playlists" in {
-      val playlistServiceMock = mock[SpotifyPlaylistService[IO]]
-      val controller = new SpotifyPlaylistController(playlistServiceMock, sc)
-      when(playlistServiceMock.getAll).thenReturn(IO.pure(List(shortenedPlaylist)))
+      val (jwtEncoder, service) = mocks
+      val controller = new SpotifyPlaylistController(jwtEncoder, service, sc)
+      when(service.getAll).thenReturn(IO.pure(List(shortenedPlaylist)))
 
       val request = Request[IO](uri = uri"/playlists")
       val response: IO[Response[IO]] = controller.routes.orNotFound.run(request)
@@ -76,14 +77,14 @@ class SpotifyPlaylistControllerSpec extends ControllerSpec {
       ))
 
       verifyResponse[Seq[PlaylistView]](response, Status.Ok, Some(expected))
-      verify(playlistServiceMock).getAll
+      verify(service).getAll
     }
 
     "create new playlist" in {
-      val playlistServiceMock = mock[SpotifyPlaylistService[IO]]
-      val controller = new SpotifyPlaylistController(playlistServiceMock, sc)
+      val (jwtEncoder, service) = mocks
+      val controller = new SpotifyPlaylistController(jwtEncoder, service, sc)
       val playlistCaptor: ArgumentCaptor[Playlist] = ArgumentCaptor.forClass(classOf[Playlist])
-      when(playlistServiceMock.save(playlistCaptor.capture())).thenReturn(IO.pure(()))
+      when(service.save(playlistCaptor.capture())).thenReturn(IO.pure(()))
 
       val request = Request[IO](uri = uri"/playlists", method = Method.POST).withEntity(shortenedPlaylistJson)
       val response: IO[Response[IO]] = controller.routes.orNotFound.run(request)
@@ -93,9 +94,9 @@ class SpotifyPlaylistControllerSpec extends ControllerSpec {
     }
 
     "return internal server error if uncategorized error" in {
-      val playlistServiceMock = mock[SpotifyPlaylistService[IO]]
-      val controller = new SpotifyPlaylistController(playlistServiceMock, sc)
-      when(playlistServiceMock.getAll).thenReturn(IO.raiseError(new NullPointerException("error-message")))
+      val (jwtEncoder, service) = mocks
+      val controller = new SpotifyPlaylistController(jwtEncoder, service, sc)
+      when(service.getAll).thenReturn(IO.raiseError(new NullPointerException("error-message")))
 
       val request = Request[IO](uri = uri"/playlists")
       val response: IO[Response[IO]] = controller.routes.orNotFound.run(request)
@@ -104,10 +105,10 @@ class SpotifyPlaylistControllerSpec extends ControllerSpec {
     }
 
     "return error when not authenticated" in {
-      val playlistServiceMock = mock[SpotifyPlaylistService[IO]]
-      val controller = new SpotifyPlaylistController(playlistServiceMock, sc)
+      val (jwtEncoder, service) = mocks
+      val controller = new SpotifyPlaylistController(jwtEncoder, service, sc)
 
-      when(playlistServiceMock.getAll).thenReturn(IO.raiseError(AuthenticationRequiredError("authorization with Spotify is required")))
+      when(service.getAll).thenReturn(IO.raiseError(AuthenticationRequiredError("authorization with Spotify is required")))
 
       val request = Request[IO](uri = uri"/playlists")
       val response: IO[Response[IO]] = controller.routes.orNotFound.run(request)
@@ -116,11 +117,12 @@ class SpotifyPlaylistControllerSpec extends ControllerSpec {
     }
 
     "set spotify-session cookie on authentication" in {
-      val playlistServiceMock = mock[SpotifyPlaylistService[IO]]
-      val controller = new SpotifyPlaylistController(playlistServiceMock, sc)
+      val (jwtEncoder, service) = mocks
+      val controller = new SpotifyPlaylistController(jwtEncoder, service, sc)
 
       val spotifyAccessToken = SpotifyAccessToken("access-token", "refresh-token", "user-id", Instant.parse("2020-01-01T00:00:00Z"))
-      when(playlistServiceMock.authenticate(any[String])).thenReturn(IO.pure(spotifyAccessToken))
+      when(service.authenticate(any[String])).thenReturn(IO.pure(spotifyAccessToken))
+      when(jwtEncoder.encode(spotifyAccessToken)).thenReturn(IO.pure("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhY2Nlc3NUb2tlbiI6ImFjY2Vzcy10b2tlbiIsInJlZnJlc2hUb2tlbiI6InJlZnJlc2gtdG9rZW4iLCJ1c2VySWQiOiJ1c2VyLWlkIiwidmFsaWRVbnRpbCI6IjIwMjAtMDEtMDFUMDA6MDA6MDBaIn0.e14E3Fp-aJDpcs86HYfGAkUQjQwS9d73YjSHhaIxpUw"))
 
       val request = Request[IO](uri = uri"/authenticate?code=access-code")
       val response: IO[Response[IO]] = controller.routes.orNotFound.run(request)
@@ -128,7 +130,10 @@ class SpotifyPlaylistControllerSpec extends ControllerSpec {
       val cookies = response.map(_.cookies).unsafeRunSync()
       cookies.find(_.name == "spotify-session").map(_.content) must be (Some("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhY2Nlc3NUb2tlbiI6ImFjY2Vzcy10b2tlbiIsInJlZnJlc2hUb2tlbiI6InJlZnJlc2gtdG9rZW4iLCJ1c2VySWQiOiJ1c2VyLWlkIiwidmFsaWRVbnRpbCI6IjIwMjAtMDEtMDFUMDA6MDA6MDBaIn0.e14E3Fp-aJDpcs86HYfGAkUQjQwS9d73YjSHhaIxpUw"))
 
-      verify(playlistServiceMock).authenticate("access-code")
+      verify(service).authenticate("access-code")
     }
   }
+  
+  def mocks: (JwtEncoder[IO, SpotifyAccessToken], SpotifyPlaylistService[IO]) =
+    (mock[JwtEncoder[IO, SpotifyAccessToken]], mock[SpotifyPlaylistService[IO]])
 }
