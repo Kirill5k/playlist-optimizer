@@ -12,8 +12,8 @@ import io.circe.syntax._
 import io.kirill.playlistoptimizer.core.common.controllers.AppController
 import io.kirill.playlistoptimizer.core.optimizer.OptimizationController.{InitiateOptimizationResponse, OptimizationView}
 import io.kirill.playlistoptimizer.core.optimizer.PlaylistOptimizer.{Optimization, OptimizationId}
-import io.kirill.playlistoptimizer.core.playlist.PlaylistController.PlaylistView
 import io.kirill.playlistoptimizer.core.common.json._
+import io.kirill.playlistoptimizer.core.playlist.PlaylistView
 import org.http4s.circe._
 import org.http4s.{EntityDecoder, HttpRoutes}
 
@@ -21,8 +21,7 @@ class OptimizationController[F[_]](
     private val playlistOptimizer: PlaylistOptimizer[F]
 ) extends AppController[F] {
 
-  override def routes(implicit cs: ContextShift[F], s: Sync[F], l: Logger[F]): HttpRoutes[F] = {
-    implicit val decoder: EntityDecoder[F, PlaylistView] = jsonOf[F, PlaylistView]
+  override def routes(implicit cs: ContextShift[F], s: Sync[F], l: Logger[F]): HttpRoutes[F] =
     HttpRoutes.of[F] {
       case req @ POST -> Root / "playlist-optimizations" =>
         withErrorHandling {
@@ -48,7 +47,6 @@ class OptimizationController[F[_]](
           } yield resp
         }
     }
-  }
 }
 
 object OptimizationController {

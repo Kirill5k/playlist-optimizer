@@ -4,14 +4,15 @@ import cats.effect.{Concurrent, ContextShift, Resource, Sync}
 import cats.implicits._
 import io.chrisdavenport.log4cats.Logger
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
+import io.kirill.playlistoptimizer.core.common.controllers.AppController
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.OptimizationAlgorithm
-import io.kirill.playlistoptimizer.core.playlist.{PlaylistController, PlaylistService, Track}
+import io.kirill.playlistoptimizer.core.playlist.{Track}
 import sttp.client.{NothingT, SttpBackend}
 
 package object spotify {
 
   final class Spotify[F[_]](
-      val playlistController: PlaylistController[F]
+      val playlistController: AppController[F]
   )
 
   object Spotify {

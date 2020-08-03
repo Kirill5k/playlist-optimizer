@@ -7,17 +7,18 @@ import io.circe._
 import io.circe.generic.auto._
 import io.circe.syntax._
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
-import io.kirill.playlistoptimizer.core.playlist.PlaylistController
+import io.kirill.playlistoptimizer.core.common.controllers.AppController
+import io.kirill.playlistoptimizer.core.common.json._
 import io.kirill.playlistoptimizer.core.playlist._
 import org.http4s.circe._
 import org.http4s.headers.Location
 import org.http4s.{HttpRoutes, ResponseCookie, Uri}
-import pdi.jwt.{JwtAlgorithm, JwtCirce, JwtClaim}
+import pdi.jwt.{JwtAlgorithm, JwtCirce}
 
 class SpotifyPlaylistController[F[_]](
-    override val playlistService: SpotifyPlaylistService[F],
+    val playlistService: SpotifyPlaylistService[F],
     val spotifyConfig: SpotifyConfig
-) extends PlaylistController[F] {
+) extends AppController[F] {
 
   private object CodeQueryParamMatcher extends QueryParamDecoderMatcher[String]("code")
 
@@ -38,6 +39,24 @@ class SpotifyPlaylistController[F[_]](
 
   override def routes(implicit cs: ContextShift[F], s: Sync[F], l: Logger[F]): HttpRoutes[F] =
     HttpRoutes.of[F] {
+      case GET -> Root / "playlists" =>
+        withErrorHandling {
+          for {
+            _         <- l.info("get all playlists")
+            playlists <- playlistService.getAll
+            views = playlists.map(PlaylistView.from)
+            resp <- Ok(views.asJson)
+          } yield resp
+        }
+      case req @ POST -> Root / "playlists" =>
+        withErrorHandling {
+          for {
+            view <- req.as[PlaylistView]
+            _    <- l.info(s"save playlist ${view.name}")
+            _    <- playlistService.save(view.toDomain)
+            resp <- Created()
+          } yield resp
+        }
       case GET -> Root / "ping" =>
         l.info("spotify ping") *>
           Ok("spotify-pong")
@@ -52,13 +71,13 @@ class SpotifyPlaylistController[F[_]](
           spotifyCookie = ResponseCookie("spotify-session", jwtToken, httpOnly = true, secure = true)
           res <- TemporaryRedirect(homePagePath).map(_.addCookie(spotifyCookie))
         } yield res
-    } <+> super.routes
+    }
 }
 
 object SpotifyPlaylistController {
   def make[F[_]: Sync](
       spotifyService: SpotifyPlaylistService[F],
       spotifyConfig: SpotifyConfig
-  ): F[PlaylistController[F]] =
+  ): F[AppController[F]] =
     Sync[F].delay(new SpotifyPlaylistController[F](spotifyService, spotifyConfig))
 }

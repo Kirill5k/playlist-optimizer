@@ -1,6 +1,6 @@
 package io.kirill.playlistoptimizer.core.optimizer
 
-import java.time.{Instant, LocalDate}
+import java.time.Instant
 import java.util.UUID
 
 import cats.effect._
