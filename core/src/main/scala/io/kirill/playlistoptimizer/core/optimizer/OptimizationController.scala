@@ -49,6 +49,7 @@ class OptimizationController[F[_]](
       case DELETE -> Root / "playlist-optimizations" / UUIDVar(optimizationId) =>
         withErrorHandling {
           for {
+            _    <- l.info(s"delete optimization $optimizationId")
             _    <- playlistOptimizer.delete(OptimizationId(optimizationId))
             resp <- NoContent()
           } yield resp
