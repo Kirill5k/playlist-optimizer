@@ -7,6 +7,7 @@ import SpotifyResponse.{SpotifyAuthRefreshResponse, SpotifyAuthResponse}
 import io.chrisdavenport.log4cats.Logger
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import io.kirill.playlistoptimizer.core.common.SpotifyConfigBuilder
+import io.kirill.playlistoptimizer.core.common.errors.SpotifyApiError
 import org.scalatest.freespec.AsyncFreeSpec
 import org.scalatest.matchers.must.Matchers
 import sttp.client.Response
@@ -40,7 +41,7 @@ class SpotifyAuthApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     "return auth refresh response when success" in {
       implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if r.uri.host == "account.spotify.com" && r.uri.path == List("api", "token") && r.method == Method.POST && r.body.toString.contains("refresh_token=token") =>
+          case r if r.uri.host == "account.spotify.com" && r.uri.path == List("api", "token") && r.method == Method.POST && r.body.toString.contains("refresh_token=token&grant_type=refresh_token") =>
             Response.ok(json("spotify/api/auth-refresh-response.json"))
           case _ => throw new RuntimeException()
         }
@@ -60,7 +61,7 @@ class SpotifyAuthApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
 
       val authResponse = SpotifyAuthApi.authorize[IO]("code")
 
-      authResponse.assertThrows[SpotifyAuthError]
+      authResponse.assertThrows[SpotifyApiError]
     }
 
   }

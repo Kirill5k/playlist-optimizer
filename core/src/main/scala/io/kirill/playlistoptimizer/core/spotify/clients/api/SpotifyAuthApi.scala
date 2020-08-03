@@ -5,13 +5,13 @@ import cats.MonadError
 import io.circe.Decoder
 import io.circe.generic.auto._
 import io.circe.parser._
-import SpotifyError.SpotifyAuthError
+import SpotifyError.{SpotifyAuthError, SpotifyRegularError}
 import SpotifyResponse.{SpotifyAuthRefreshResponse, SpotifyAuthResponse}
 import cats.effect.Sync
 import io.chrisdavenport.log4cats.Logger
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
+import io.kirill.playlistoptimizer.core.common.errors.SpotifyApiError
 import io.kirill.playlistoptimizer.core.spotify.SpotifyPlaylistController
-import io.kirill.playlistoptimizer.core.spotify.clients.api.SpotifyError.SpotifyAuthError
 import io.kirill.playlistoptimizer.core.spotify.clients.api.SpotifyResponse.{SpotifyAuthRefreshResponse, SpotifyAuthResponse}
 import sttp.client._
 import sttp.client.circe._
@@ -31,7 +31,7 @@ private[spotify] object SpotifyAuthApi {
       b: SttpBackend[F, Nothing, NothingT]
   ): F[SpotifyAuthRefreshResponse] =
     Logger[F].info("sending token refresh request to spotify") *>
-      getToken[F, SpotifyAuthRefreshResponse](Map("refresh_token" -> refreshToken))
+      getToken[F, SpotifyAuthRefreshResponse](Map("refresh_token" -> refreshToken, "grant_type" -> "refresh_token"))
 
   private def getToken[F[_]: Logger: Sync, R <: SpotifyResponse: Decoder](requestBody: Map[String, String])(
       implicit sc: SpotifyConfig,
@@ -56,6 +56,6 @@ private[spotify] object SpotifyAuthApi {
         Sync[F].pure(success)
       case Left(error) =>
         Logger[F].error(s"error sending auth request to spotify: ${error.body}") *>
-          Sync[F].fromEither(decode[SpotifyAuthError](error.body).flatMap(Left(_)))
+          Sync[F].fromEither(decode[SpotifyAuthError](error.body).map(e => SpotifyApiError(e.error_description)).flatMap(Left(_)))
     }
 }
