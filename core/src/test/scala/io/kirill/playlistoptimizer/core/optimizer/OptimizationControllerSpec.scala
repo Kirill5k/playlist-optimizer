@@ -179,5 +179,14 @@ class OptimizationControllerSpec extends ControllerSpec {
 
       verifyResponse[ErrorResponse](response, Status.BadRequest, Some(ErrorResponse("""Invalid message body: Could not decode JSON: "{foo-bar}"""")))
     }
+
+    "return no content when deleting optimization" in {
+      when(playlistOptimizerMock.delete(optimizationId)).thenReturn(IO.unit)
+
+      val request = Request[IO](uri = uri"/playlist-optimizations/607995e0-8e3a-11ea-bc55-0242ac130003", method = Method.DELETE)
+      val response: IO[Response[IO]] = playlistController.routes.orNotFound.run(request)
+
+      verifyJsonResponse(response, Status.NoContent, None)
+    }
   }
 }

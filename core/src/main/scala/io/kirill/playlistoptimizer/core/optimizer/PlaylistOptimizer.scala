@@ -18,6 +18,7 @@ trait PlaylistOptimizer[F[_]] {
   def optimize(playlist: Playlist): F[OptimizationId]
   def get(id: OptimizationId): F[Optimization]
   def getAll(): F[List[Optimization]]
+  def delete(id: OptimizationId): F[Unit]
 }
 
 private class RefBasedPlaylistOptimizer[F[_]: Concurrent: ContextShift](
@@ -52,6 +53,12 @@ private class RefBasedPlaylistOptimizer[F[_]: Concurrent: ContextShift](
       completedOpt      = opt.copy(status = "completed", duration = Some(duration), result = Some(optimizedPlaylist), score = Some(score))
       _ <- state.update(_ + (id -> completedOpt))
     } yield ()
+
+  override def delete(id: OptimizationId): F[Unit] =
+    state.get.flatMap {
+      case s if s.contains(id) => state.update(_ - id)
+      case _ => Sync[F].raiseError(OptimizationNotFound(id))
+    }
 }
 
 object PlaylistOptimizer {

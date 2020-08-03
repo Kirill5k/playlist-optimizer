@@ -20,7 +20,6 @@
       </b-card-header>
       <b-collapse
         :id="'optimization'+index.toString()"
-        visible
         accordion="my-accordion"
         role="tabpanel"
       >

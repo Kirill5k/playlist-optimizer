@@ -1,7 +1,9 @@
 <template>
   <div class="playlist-view">
     <b-table
+      sticky-header="400px"
       small
+      bordered
       borderless
       hover
       no-border-collapse

@@ -46,6 +46,13 @@ class OptimizationController[F[_]](
             resp <- Ok(opts.sortBy(_.dateInitiated).reverse.map(OptimizationView.from).asJson)
           } yield resp
         }
+      case DELETE -> Root / "playlist-optimizations" / UUIDVar(optimizationId) =>
+        withErrorHandling {
+          for {
+            _    <- playlistOptimizer.delete(OptimizationId(optimizationId))
+            resp <- NoContent()
+          } yield resp
+        }
     }
 }
 
