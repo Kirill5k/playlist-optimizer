@@ -70,6 +70,9 @@
                 Cancel
               </b-button>
             </b-form>
+            <b-button class="float-right"  variant="danger" size="sm" @click="deleteOptimization(optimization.id)">
+              Delete optimization
+            </b-button>
           </div>
         </b-card-body>
       </b-collapse>
@@ -121,6 +124,9 @@ export default {
       const newPlaylist = { ...playlist, name: this.newPlaylistName }
       this.$emit('save', newPlaylist)
       this.hideSavePlaylistForm()
+    },
+    deleteOptimization (id) {
+      this.$emit('delete', id)
     }
   }
 }
@@ -157,7 +163,9 @@ export default {
   }
 
   &__controls {
-    float: left;
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
   }
 }
 </style>

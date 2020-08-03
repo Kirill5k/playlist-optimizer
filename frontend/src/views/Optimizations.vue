@@ -3,6 +3,7 @@
     <optimizations-view
       :optimizations="optimizations"
       @save="savePlaylist"
+      @delete="deleteOptimization"
     />
   </div>
 </template>
@@ -34,6 +35,9 @@ export default {
   methods: {
     savePlaylist (playlist) {
       this.$store.dispatch('savePlaylist', playlist)
+    },
+    deleteOptimization (id) {
+      this.$store.dispatch('deleteOptimization', id)
     }
   }
 }

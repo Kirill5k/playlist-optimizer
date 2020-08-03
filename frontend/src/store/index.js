@@ -65,6 +65,16 @@ export default new Vuex.Store({
       })
         .then(res => res.status === 201 ? dispatch('getPlaylists') : reject(res.status))
         .catch(err => console.error(err))
+    },
+    deleteOptimization ({ commit, dispatch }, id) {
+      return fetch('/api/playlists-optimizations/' + id, {
+        method: 'DELETE',
+        mode: 'cors',
+        cache: 'no-cache',
+        credentials: 'same-origin'
+      })
+        .then(res => res.status === 204 ? dispatch('getOptimizations') : reject(res.status))
+        .catch(err => console.error(err))
     }
   },
   modules: {
