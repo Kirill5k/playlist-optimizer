@@ -8,9 +8,6 @@ import io.chrisdavenport.log4cats.Logger
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import io.kirill.playlistoptimizer.core.common.SpotifyConfigBuilder
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
-import io.kirill.playlistoptimizer.core.common.errors.AuthenticationRequiredError
-import io.kirill.playlistoptimizer.core.playlist.Track
-import io.kirill.playlistoptimizer.core.spotify.clients.SpotifyAuthClient.SpotifyAccessToken
 import org.mockito.{ArgumentMatchersSugar, MockitoSugar}
 import org.scalatest.freespec.AsyncFreeSpec
 import org.scalatest.matchers.must.Matchers

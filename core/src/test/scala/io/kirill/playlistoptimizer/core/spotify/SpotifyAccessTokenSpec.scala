@@ -1,10 +1,9 @@
-package io.kirill.playlistoptimizer.core.spotify.clients
+package io.kirill.playlistoptimizer.core.spotify
 
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
 class SpotifyAccessTokenSpec extends AnyWordSpec with Matchers {
-  import SpotifyAuthClient._
 
   "A SpotifyAccessToken" should {
 
