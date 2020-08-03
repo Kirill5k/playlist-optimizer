@@ -92,7 +92,7 @@ class SpotifyPlaylistController[F[_]](
     s.fromOption(req.cookies.find(_.name == SpotifySessionCookie), MissingSessionCookie)
 
   private def newSessionCookie(jwt: String): ResponseCookie =
-    ResponseCookie(SpotifySessionCookie, jwt, httpOnly = true, secure = true)
+    ResponseCookie(SpotifySessionCookie, jwt, httpOnly = true)
 }
 
 object SpotifyPlaylistController {
