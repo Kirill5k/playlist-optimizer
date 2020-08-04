@@ -13,6 +13,7 @@
 
 <script>
 import PlaylistsView from '@/components/PlaylistsView.vue'
+import NotificationsMixin from '@/mixins/NotificationsMixin'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faSpotify } from '@fortawesome/free-brands-svg-icons'
 
@@ -22,6 +23,7 @@ export default {
     PlaylistsView,
     FontAwesomeIcon
   },
+  mixins: [NotificationsMixin],
   created () {
     this.$store.dispatch('getPlaylists')
   },
@@ -39,6 +41,8 @@ export default {
   methods: {
     optimizePlaylist (playlist) {
       this.$store.dispatch('optimizePlaylist', playlist)
+        .then(() => this.displayNotification({ message: `Optimization of ${playlist.name} has been initiated` }))
+        .catch(this.displayError)
     }
   }
 }

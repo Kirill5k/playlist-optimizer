@@ -49,8 +49,6 @@ export default new Vuex.Store({
         },
         body: JSON.stringify(playlist)
       })
-        .then(res => res.status === 201 ? Promise.resolve : reject(res))
-        .catch(err => console.error(err))
     },
     savePlaylist ({ commit, dispatch }, playlist) {
       return fetch('/api/spotify/playlists', {
@@ -64,12 +62,10 @@ export default new Vuex.Store({
         body: JSON.stringify(playlist)
       })
         .then(res => res.status === 201 ? dispatch('getPlaylists') : reject(res))
-        .catch(err => console.error(err))
     },
     deleteOptimization ({ commit, dispatch }, id) {
       return fetch(`/api/playlist-optimizations/${id}`, { method: 'DELETE' })
         .then(res => res.status === 204 ? dispatch('getOptimizations') : reject(res))
-        .catch(err => console.error(err))
     }
   },
   modules: {
