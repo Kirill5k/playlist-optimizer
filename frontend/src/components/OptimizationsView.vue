@@ -17,6 +17,7 @@
           <strong>{{ optimization.original.name }}</strong> playlist optimization
           <b-badge :variant="optimizationStatusVariant(optimization.status)" class="ml-2">{{ optimization.status }}</b-badge>
         </p>
+        <b-spinner v-if="optimization.status === 'in progress'" small class="mt-2 mr-3" label="Loading..."></b-spinner>
       </b-card-header>
       <b-collapse
         :id="'optimization'+index.toString()"
@@ -81,13 +82,13 @@
 </template>
 
 <script>
-import { BCard, BCardHeader, BCollapse, BCardBody, BButton, BBadge, BCardText, BForm, BFormInput } from 'bootstrap-vue'
+import { BCard, BCardHeader, BCollapse, BCardBody, BButton, BBadge, BCardText, BForm, BFormInput, BSpinner } from 'bootstrap-vue'
 import PlaylistView from '@/components/PlaylistView.vue'
 
 export default {
   name: 'OptimizationsView',
   components: {
-    PlaylistView, BCard, BCardHeader, BCollapse, BCardBody, BButton, BBadge, BCardText, BForm, BFormInput
+    PlaylistView, BCard, BCardHeader, BCollapse, BCardBody, BButton, BBadge, BCardText, BForm, BFormInput, BSpinner
   },
   data () {
     return {
