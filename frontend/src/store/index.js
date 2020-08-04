@@ -3,7 +3,7 @@ import Vuex from 'vuex'
 
 Vue.use(Vuex)
 
-const reject = err => Promise.reject(new Error(err))
+const reject = (res) => res.json().then(e => Promise.reject(new Error(`${res.status}: ${e.message}`)))
 
 export default new Vuex.Store({
   state: {
@@ -25,7 +25,7 @@ export default new Vuex.Store({
   actions: {
     getPlaylists ({ commit }) {
       return fetch('/api/spotify/playlists')
-        .then(res => res.status === 200 ? res.json() : reject(res.status))
+        .then(res => res.status === 200 ? res.json() : reject(res))
         .then(playlists => commit('setPlaylists', playlists))
         .catch(err => {
           console.error(err)
@@ -34,7 +34,7 @@ export default new Vuex.Store({
     },
     getOptimizations ({ commit }) {
       return fetch('/api/playlist-optimizations')
-        .then(res => res.status === 200 ? res.json() : reject(res.status))
+        .then(res => res.status === 200 ? res.json() : reject(res))
         .then(optimizations => commit('setOptimizations', optimizations))
         .catch(err => console.error(err))
     },
@@ -49,7 +49,7 @@ export default new Vuex.Store({
         },
         body: JSON.stringify(playlist)
       })
-        .then(res => res.status === 201 ? Promise.resolve : reject(res.status))
+        .then(res => res.status === 201 ? Promise.resolve : reject(res))
         .catch(err => console.error(err))
     },
     savePlaylist ({ commit, dispatch }, playlist) {
@@ -63,14 +63,12 @@ export default new Vuex.Store({
         },
         body: JSON.stringify(playlist)
       })
-        .then(res => res.status === 201 ? dispatch('getPlaylists') : reject(res.status))
+        .then(res => res.status === 201 ? dispatch('getPlaylists') : reject(res))
         .catch(err => console.error(err))
     },
     deleteOptimization ({ commit, dispatch }, id) {
-      return fetch(`/api/playlist-optimizations/${id}`, {
-        method: 'DELETE'
-      })
-        .then(res => res.status === 204 ? dispatch('getOptimizations') : reject(res.status))
+      return fetch(`/api/playlist-optimizations/${id}`, { method: 'DELETE' })
+        .then(res => res.status === 204 ? dispatch('getOptimizations') : reject(res))
         .catch(err => console.error(err))
     }
   },

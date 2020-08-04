@@ -35,9 +35,22 @@ export default {
   methods: {
     savePlaylist (playlist) {
       this.$store.dispatch('savePlaylist', playlist)
+        .then(() => this.displayNotification({ message: `Playlist ${playlist.name} has been added to the library` }))
     },
     deleteOptimization (id) {
       this.$store.dispatch('deleteOptimization', id)
+        .then(() => this.displayNotification({ message: 'Optimization has been deleted' }))
+    },
+    displayNotification (props) {
+      this.$bvToast.toast(props.message, {
+        title: 'Success!',
+        autoHideDelay: 3000,
+        appendToast: true,
+        solid: true,
+        toaster: 'b-toaster-bottom-right',
+        variant: 'success',
+        ...props
+      })
     }
   }
 }
