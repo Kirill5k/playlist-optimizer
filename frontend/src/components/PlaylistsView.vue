@@ -27,7 +27,7 @@
             {{ playlist.tracks.length }} tracks
           </b-card-text>
           <b-card-text>
-            Total duration {{ duration(playlist) }} min
+            {{ duration(playlist) }}
           </b-card-text>
           <playlist-view :playlist="playlist"/>
           <b-button size="sm" variant="info" v-b-toggle="'playlist-params'+index.toString()" class="mb-1">
@@ -156,7 +156,13 @@ export default {
   methods: {
     duration (playlist) {
       const duration = playlist.tracks.map(t => t.duration).reduce((s, d) => s + d, 0) / 60
-      return duration.toFixed(2)
+      if (duration < 60) {
+        return `Total duration ${duration.toFixed(2)} min`
+      } else {
+        const hours = Math.floor(duration / 60)
+        const mins = duration - hours * 60
+        return `Total duration ${hours} hr ${mins.toFixed(2)} min`
+      }
     },
     optimizePlaylist (playlist) {
       this.$emit('optimize', { playlist, optimizationParameters: this.optimizationParams })
