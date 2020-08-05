@@ -11,13 +11,13 @@ import io.circe.generic.auto._
 import io.circe.syntax._
 import io.kirill.playlistoptimizer.core.common.controllers.AppController
 import io.kirill.playlistoptimizer.core.optimizer.OptimizationController._
-import io.kirill.playlistoptimizer.core.optimizer.PlaylistOptimizer.{Optimization, OptimizationId}
+import io.kirill.playlistoptimizer.core.optimizer.PlaylistOptimizer.{Optimization, OptimizationId, OptimizationParameters}
 import io.kirill.playlistoptimizer.core.common.json._
 import io.kirill.playlistoptimizer.core.playlist.PlaylistView
 import org.http4s.circe._
-import org.http4s.{HttpRoutes}
+import org.http4s.HttpRoutes
 
-class OptimizationController[F[_]](
+final class OptimizationController[F[_]](
     private val playlistOptimizer: PlaylistOptimizer[F]
 ) extends AppController[F] {
 
@@ -28,7 +28,7 @@ class OptimizationController[F[_]](
           for {
             requestBody    <- req.as[PlaylistOptimizationRequest]
             _              <- l.info(s"optimize playlist ${requestBody.playlist.name}")
-            optimizationId <- playlistOptimizer.optimize(requestBody.playlist.toDomain)
+            optimizationId <- playlistOptimizer.optimize(requestBody.playlist.toDomain, requestBody.optimizationParameters)
             resp           <- Created(PlaylistOptimizationResponse(optimizationId).asJson)
           } yield resp
         }
@@ -58,13 +58,6 @@ class OptimizationController[F[_]](
 }
 
 object OptimizationController {
-  final case class OptimizationParameters(
-      populationSize: Integer,
-      mutationFactor: Double,
-      iterations: Integer,
-      shuffle: Boolean
-  )
-
   final case class PlaylistOptimizationRequest(
       playlist: PlaylistView,
       optimizationParameters: OptimizationParameters

@@ -6,7 +6,7 @@ import cats.effect.IO
 import cats.effect.testing.scalatest.AsyncIOSpec
 import cats.implicits._
 import io.kirill.playlistoptimizer.core.common.errors.OptimizationNotFound
-import io.kirill.playlistoptimizer.core.optimizer.PlaylistOptimizer.OptimizationId
+import io.kirill.playlistoptimizer.core.optimizer.PlaylistOptimizer.{OptimizationId, OptimizationParameters}
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.OptimizationAlgorithm
 import io.kirill.playlistoptimizer.core.playlist.{PlaylistBuilder, Track}
 import org.scalatest.freespec.AsyncFreeSpec
@@ -22,6 +22,7 @@ class PlaylistOptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
   val optimizedTracks = random.shuffle(playlist.tracks)
 
   val optimizationId = OptimizationId(UUID.randomUUID())
+  val parameters = OptimizationParameters(100, 0.2, 1000, true)
 
   "A RefBasedPlaylistOptimizer" - {
 
@@ -33,7 +34,7 @@ class PlaylistOptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
 
       val result = for {
         optimizer <- PlaylistOptimizer.refBasedPlaylistOptimizer[IO]
-        id        <- optimizer.optimize(playlist)
+        id        <- optimizer.optimize(playlist, parameters)
       } yield id
 
       result.asserting(_ mustBe an[OptimizationId])
@@ -58,7 +59,7 @@ class PlaylistOptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
       }
       val result = for {
         optimizer <- PlaylistOptimizer.refBasedPlaylistOptimizer[IO]
-        id        <- optimizer.optimize(playlist)
+        id        <- optimizer.optimize(playlist, parameters)
         res       <- optimizer.get(id)
       } yield res
 
@@ -77,7 +78,7 @@ class PlaylistOptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
       }
       val result = for {
         optimizer <- PlaylistOptimizer.refBasedPlaylistOptimizer[IO]
-        id        <- optimizer.optimize(playlist)
+        id        <- optimizer.optimize(playlist, parameters)
         _         <- IO.sleep(3.seconds)
         res       <- optimizer.get(id)
       } yield res
@@ -97,8 +98,8 @@ class PlaylistOptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
       }
       val result = for {
         optimizer <- PlaylistOptimizer.refBasedPlaylistOptimizer[IO]
-        _         <- optimizer.optimize(playlist)
-        _         <- optimizer.optimize(playlist)
+        _         <- optimizer.optimize(playlist, parameters)
+        _         <- optimizer.optimize(playlist, parameters)
         res       <- optimizer.getAll()
       } yield res
 
@@ -115,7 +116,7 @@ class PlaylistOptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
 
       val result = for {
         optimizer <- PlaylistOptimizer.refBasedPlaylistOptimizer[IO]
-        id        <- optimizer.optimize(playlist)
+        id        <- optimizer.optimize(playlist, parameters)
         _         <- optimizer.delete(id)
         res       <- optimizer.getAll()
       } yield res

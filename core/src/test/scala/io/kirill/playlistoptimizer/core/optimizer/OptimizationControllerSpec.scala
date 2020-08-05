@@ -10,7 +10,7 @@ import io.kirill.playlistoptimizer.core.ControllerSpec
 import io.kirill.playlistoptimizer.core.common.controllers.AppController
 import io.kirill.playlistoptimizer.core.common.errors.OptimizationNotFound
 import io.kirill.playlistoptimizer.core.common.json._
-import io.kirill.playlistoptimizer.core.optimizer.PlaylistOptimizer.{Optimization, OptimizationId}
+import io.kirill.playlistoptimizer.core.optimizer.PlaylistOptimizer.{Optimization, OptimizationId, OptimizationParameters}
 import io.kirill.playlistoptimizer.core.playlist.{Playlist, PlaylistBuilder}
 import org.http4s._
 import org.http4s.circe._
@@ -59,7 +59,8 @@ class OptimizationControllerSpec extends ControllerSpec {
 
     "initiate optimization of a playlist" in {
       val playlistCaptor: ArgumentCaptor[Playlist] = ArgumentCaptor.forClass(classOf[Playlist])
-      when(playlistOptimizerMock.optimize(playlistCaptor.capture())).thenReturn(IO.pure(optimizationId))
+      val parametersCaptor: ArgumentCaptor[OptimizationParameters] = ArgumentCaptor.forClass(classOf[OptimizationParameters])
+      when(playlistOptimizerMock.optimize(playlistCaptor.capture(), parametersCaptor.capture())).thenReturn(IO.pure(optimizationId))
 
       val requestBody =
         json"""
@@ -84,6 +85,7 @@ class OptimizationControllerSpec extends ControllerSpec {
 
       verifyJsonResponse(response, Status.Created, Some(expected))
       playlistCaptor.getValue must be (shortenedPlaylist)
+      parametersCaptor.getValue must be (OptimizationParameters(100, 0.2, 1000, true))
     }
 
     "get playlist optimization by id" in {

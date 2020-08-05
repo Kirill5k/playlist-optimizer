@@ -16,7 +16,7 @@ import org.http4s.circe._
 import org.http4s.headers.Location
 import org.http4s.{HttpRoutes, Request, RequestCookie, ResponseCookie, Uri}
 
-class SpotifyPlaylistController[F[_]](
+final class SpotifyPlaylistController[F[_]](
     val jwtEncoder: JwtEncoder[F, SpotifyAccessToken],
     val playlistService: SpotifyPlaylistService[F],
     val spotifyConfig: SpotifyConfig
