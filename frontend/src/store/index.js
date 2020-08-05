@@ -49,6 +49,7 @@ export default new Vuex.Store({
         },
         body: JSON.stringify(requestBody)
       })
+        .then(res => res.status === 201 ? res.json() : reject(res))
     },
     savePlaylist ({ commit, dispatch }, playlist) {
       return fetch('/api/spotify/playlists', {
