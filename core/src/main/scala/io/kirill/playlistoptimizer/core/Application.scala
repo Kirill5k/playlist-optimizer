@@ -25,7 +25,7 @@ object Application extends IOApp {
   implicit val r: Random                             = new Random()
   implicit val c: Crossover[Track]                   = Crossover.bestKeySequenceTrackCrossover
   implicit val m: Mutator[Track]                     = Mutator.randomSwapMutator[Track]
-  implicit val alg: OptimizationAlgorithm[IO, Track] = OptimizationAlgorithm.geneticAlgorithm(config.algorithms.ga)
+  implicit val alg: OptimizationAlgorithm[IO, Track] = OptimizationAlgorithm.geneticAlgorithm[IO, Track]
 
   override def run(args: List[String]): IO[ExitCode] =
     Resources.make[IO].use { res =>

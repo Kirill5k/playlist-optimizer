@@ -15,7 +15,7 @@ import io.kirill.playlistoptimizer.core.common.json._
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
 import io.kirill.playlistoptimizer.core.common.controllers.AppController.ErrorResponse
 import io.kirill.playlistoptimizer.core.common.jwt.JwtEncoder
-import io.kirill.playlistoptimizer.core.optimizer.{Optimization, OptimizationId}
+import io.kirill.playlistoptimizer.core.optimizer.{Optimization, OptimizationId, OptimizationParameters}
 import io.kirill.playlistoptimizer.core.playlist.{Playlist, PlaylistBuilder, PlaylistView, TrackView}
 import org.http4s._
 import org.http4s.circe._
@@ -30,7 +30,8 @@ class SpotifyPlaylistControllerSpec extends ControllerSpec {
   val shortenedPlaylist = playlist.copy(tracks = List(playlist.tracks.head))
 
   val optimizationId = OptimizationId(UUID.fromString("607995e0-8e3a-11ea-bc55-0242ac130003"))
-  val optimization = Optimization(optimizationId, "in progress", shortenedPlaylist, Instant.parse("2020-01-01T00:00:00Z"))
+  val optimizationParameters = OptimizationParameters(100, 0.2, 1000, true)
+  val optimization = Optimization(optimizationId, "in progress", optimizationParameters, shortenedPlaylist, Instant.parse("2020-01-01T00:00:00Z"))
 
   val sessionCookie = RequestCookie("spotify-session", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhY2Nlc3NUb2tlbiI6ImFjY2Vzcy10b2tlbiIsInJlZnJlc2hUb2tlbiI6InJlZnJlc2gtdG9rZW4iLCJ1c2VySWQiOiJ1c2VyLWlkIiwidmFsaWRVbnRpbCI6IjIwMjAtMDEtMDFUMDA6MDA6MDBaIn0.e14E3Fp-aJDpcs86HYfGAkUQjQwS9d73YjSHhaIxpUw")
   val accessToken = SpotifyAccessToken("access-token", "refresh-token", "user-id", Instant.parse("2020-01-01T00:00:00Z"))

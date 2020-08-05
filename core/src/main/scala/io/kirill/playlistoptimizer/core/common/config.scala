@@ -7,16 +7,6 @@ import pureconfig.module.catseffect.syntax._
 
 object config {
 
-  final case class GeneticAlgorithmConfig(
-      populationSize: Int,
-      iterations: Int,
-      mutationFactor: Double
-  )
-
-  final case class AlgorithmsConfig(
-      ga: GeneticAlgorithmConfig
-  )
-
   final case class ServerConfig(
       host: String,
       port: Int
@@ -39,8 +29,7 @@ object config {
   final case class AppConfig(
       server: ServerConfig,
       spotify: SpotifyConfig,
-      jwt: JwtConfig,
-      algorithms: AlgorithmsConfig
+      jwt: JwtConfig
   )
 
   object AppConfig {

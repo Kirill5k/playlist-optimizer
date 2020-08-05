@@ -24,7 +24,8 @@ class OptimizationControllerSpec extends ControllerSpec {
   val shortenedPlaylist = playlist.copy(tracks = List(playlist.tracks.head))
 
   val optimizationId = OptimizationId(UUID.fromString("607995e0-8e3a-11ea-bc55-0242ac130003"))
-  val optimization = Optimization(optimizationId, "in progress", shortenedPlaylist, Instant.parse("2020-01-01T00:00:00Z"))
+  val optimizationParameters = OptimizationParameters(100, 0.2, 1000, true)
+  val optimization = Optimization(optimizationId, "in progress", optimizationParameters, shortenedPlaylist, Instant.parse("2020-01-01T00:00:00Z"))
 
   val shortenedPlaylistJson =
     json"""
@@ -84,7 +85,7 @@ class OptimizationControllerSpec extends ControllerSpec {
 
       verifyJsonResponse(response, Status.Created, Some(expected))
       playlistCaptor.getValue must be (shortenedPlaylist)
-      parametersCaptor.getValue must be (OptimizationParameters(100, 0.2, 1000, true))
+      parametersCaptor.getValue must be (optimizationParameters)
     }
 
     "get playlist optimization by id" in {
@@ -98,6 +99,7 @@ class OptimizationControllerSpec extends ControllerSpec {
            |{
            |"id": "607995e0-8e3a-11ea-bc55-0242ac130003",
            |"status": "in progress",
+           |"parameters": { "populationSize": 100, "iterations": 1000, "mutationFactor": 0.2, "shuffle": true},
            |"dateInitiated": "2020-01-01T00:00:00Z",
            |"original": {
            |    "name" : "Mel",
@@ -141,6 +143,7 @@ class OptimizationControllerSpec extends ControllerSpec {
            |[{
            |"id": "607995e0-8e3a-11ea-bc55-0242ac130003",
            |"status": "in progress",
+           |"parameters": { "populationSize": 100, "iterations": 1000, "mutationFactor": 0.2, "shuffle": true},
            |"dateInitiated": "2020-01-01T00:00:00Z",
            |"original": {
            |    "name" : "Mel",

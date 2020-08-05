@@ -14,9 +14,9 @@ import scala.concurrent.duration.FiniteDuration
 package object optimizer {
 
   final case class OptimizationParameters(
-      populationSize: Integer,
+      populationSize: Int,
       mutationFactor: Double,
-      iterations: Integer,
+      iterations: Int,
       shuffle: Boolean
   )
 
@@ -25,6 +25,7 @@ package object optimizer {
   final case class Optimization(
       id: OptimizationId,
       status: String,
+      parameters: OptimizationParameters,
       original: Playlist,
       dateInitiated: Instant,
       duration: Option[FiniteDuration] = None,

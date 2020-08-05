@@ -67,6 +67,7 @@ object OptimizationController {
   final case class OptimizationView(
       id: UUID,
       status: String,
+      parameters: OptimizationParameters,
       dateInitiated: Instant,
       original: PlaylistView,
       durationMs: Option[Long] = None,
@@ -79,6 +80,7 @@ object OptimizationController {
       OptimizationView(
         opt.id.value,
         opt.status,
+        opt.parameters,
         opt.dateInitiated,
         PlaylistView.from(opt.original),
         opt.duration.map(_.toMillis),
