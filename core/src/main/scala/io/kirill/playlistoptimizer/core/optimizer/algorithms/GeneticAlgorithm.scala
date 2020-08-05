@@ -3,6 +3,7 @@ package io.kirill.playlistoptimizer.core.optimizer.algorithms
 import cats.effect.Concurrent
 import cats.implicits._
 import fs2.Stream
+import io.kirill.playlistoptimizer.core.optimizer.OptimizationParameters
 import io.kirill.playlistoptimizer.core.optimizer.operators.{Crossover, Evaluator, Mutator}
 import io.kirill.playlistoptimizer.core.utils.CollectionOps._
 
@@ -16,7 +17,7 @@ class GeneticAlgorithm[F[_]: Concurrent, A: Crossover: Mutator: Evaluator](
     implicit val rand: Random
 ) extends OptimizationAlgorithm[F, A] {
 
-  override def optimizeSeq(items: Seq[A]): F[(Seq[A], Double)] =
+  override def optimizeSeq(items: Seq[A], parameters: OptimizationParameters): F[(Seq[A], Double)] =
     Stream
       .range[F](0, iterations)
       .evalScan(items.shuffledCopies(populationSize))((currPop, _) => singleIteration(currPop))

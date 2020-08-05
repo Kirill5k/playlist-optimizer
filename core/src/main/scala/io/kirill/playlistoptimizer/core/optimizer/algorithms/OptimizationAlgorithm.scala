@@ -2,12 +2,13 @@ package io.kirill.playlistoptimizer.core.optimizer.algorithms
 
 import cats.effect.Concurrent
 import io.kirill.playlistoptimizer.core.common.config.GeneticAlgorithmConfig
+import io.kirill.playlistoptimizer.core.optimizer.OptimizationParameters
 import io.kirill.playlistoptimizer.core.optimizer.operators.{Crossover, Evaluator, Mutator}
 
 import scala.util.Random
 
 trait OptimizationAlgorithm[F[_], A] {
-  def optimizeSeq(items: Seq[A]): F[(Seq[A], Double)]
+  def optimizeSeq(items: Seq[A], parameters: OptimizationParameters): F[(Seq[A], Double)]
 }
 
 object OptimizationAlgorithm {

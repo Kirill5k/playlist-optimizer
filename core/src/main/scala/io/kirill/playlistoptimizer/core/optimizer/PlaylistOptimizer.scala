@@ -41,7 +41,7 @@ private class RefBasedPlaylistOptimizer[F[_]: Concurrent: ContextShift](
     for {
       id <- Sync[F].delay(OptimizationId(UUID.randomUUID()))
       _  <- state.update(s => s + (id -> Optimization(id, "in progress", playlist, Instant.now())))
-      _  <- Concurrent[F].start(alg.optimizeSeq(playlist.tracks).flatMap(res => updateState(id, res._1, res._2))).void
+      _  <- Concurrent[F].start(alg.optimizeSeq(playlist.tracks, parameters).flatMap(res => updateState(id, res._1, res._2))).void
     } yield id
 
   private def updateState(id: OptimizationId, result: Seq[Track], score: Double): F[Unit] =
