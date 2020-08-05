@@ -10,7 +10,6 @@ import io.kirill.playlistoptimizer.core.ControllerSpec
 import io.kirill.playlistoptimizer.core.common.controllers.AppController
 import io.kirill.playlistoptimizer.core.common.errors.OptimizationNotFound
 import io.kirill.playlistoptimizer.core.common.json._
-import io.kirill.playlistoptimizer.core.optimizer.PlaylistOptimizer.{Optimization, OptimizationId, OptimizationParameters}
 import io.kirill.playlistoptimizer.core.playlist.{Playlist, PlaylistBuilder}
 import org.http4s._
 import org.http4s.circe._

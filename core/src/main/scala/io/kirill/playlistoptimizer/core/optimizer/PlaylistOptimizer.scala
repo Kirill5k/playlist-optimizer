@@ -8,7 +8,6 @@ import cats.effect.concurrent.Ref
 import cats.effect.{Concurrent, ContextShift, Sync}
 import cats.implicits._
 import io.kirill.playlistoptimizer.core.common.errors.OptimizationNotFound
-import io.kirill.playlistoptimizer.core.optimizer.PlaylistOptimizer.{Optimization, OptimizationId, OptimizationParameters}
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.OptimizationAlgorithm
 import io.kirill.playlistoptimizer.core.playlist.{Playlist, Track}
 
@@ -62,24 +61,6 @@ private class RefBasedPlaylistOptimizer[F[_]: Concurrent: ContextShift](
 }
 
 object PlaylistOptimizer {
-  final case class OptimizationParameters(
-      populationSize: Integer,
-      mutationFactor: Double,
-      iterations: Integer,
-      shuffle: Boolean
-  )
-
-  final case class OptimizationId(value: UUID) extends AnyVal
-
-  final case class Optimization(
-      id: OptimizationId,
-      status: String,
-      original: Playlist,
-      dateInitiated: Instant,
-      duration: Option[FiniteDuration] = None,
-      result: Option[Playlist] = None,
-      score: Option[Double] = None
-  )
 
   def refBasedPlaylistOptimizer[F[_]: Concurrent: ContextShift](
       implicit alg: OptimizationAlgorithm[F, Track]

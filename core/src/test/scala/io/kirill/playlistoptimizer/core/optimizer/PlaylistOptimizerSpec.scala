@@ -6,7 +6,6 @@ import cats.effect.IO
 import cats.effect.testing.scalatest.AsyncIOSpec
 import cats.implicits._
 import io.kirill.playlistoptimizer.core.common.errors.OptimizationNotFound
-import io.kirill.playlistoptimizer.core.optimizer.PlaylistOptimizer.{OptimizationId, OptimizationParameters}
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.OptimizationAlgorithm
 import io.kirill.playlistoptimizer.core.playlist.{PlaylistBuilder, Track}
 import org.scalatest.freespec.AsyncFreeSpec

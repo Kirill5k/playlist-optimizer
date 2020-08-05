@@ -11,7 +11,6 @@ import io.circe.generic.auto._
 import io.circe.syntax._
 import io.kirill.playlistoptimizer.core.common.controllers.AppController
 import io.kirill.playlistoptimizer.core.optimizer.OptimizationController._
-import io.kirill.playlistoptimizer.core.optimizer.PlaylistOptimizer.{Optimization, OptimizationId, OptimizationParameters}
 import io.kirill.playlistoptimizer.core.common.json._
 import io.kirill.playlistoptimizer.core.playlist.PlaylistView
 import org.http4s.circe._

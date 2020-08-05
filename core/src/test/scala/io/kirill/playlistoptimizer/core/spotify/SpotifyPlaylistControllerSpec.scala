@@ -15,7 +15,7 @@ import io.kirill.playlistoptimizer.core.common.json._
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
 import io.kirill.playlistoptimizer.core.common.controllers.AppController.ErrorResponse
 import io.kirill.playlistoptimizer.core.common.jwt.JwtEncoder
-import io.kirill.playlistoptimizer.core.optimizer.PlaylistOptimizer.{Optimization, OptimizationId}
+import io.kirill.playlistoptimizer.core.optimizer.{Optimization, OptimizationId}
 import io.kirill.playlistoptimizer.core.playlist.{Playlist, PlaylistBuilder, PlaylistView, TrackView}
 import org.http4s._
 import org.http4s.circe._

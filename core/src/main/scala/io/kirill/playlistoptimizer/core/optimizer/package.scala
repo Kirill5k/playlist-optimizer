@@ -1,12 +1,36 @@
 package io.kirill.playlistoptimizer.core
 
+import java.time.Instant
+import java.util.UUID
+
 import cats.effect.{Concurrent, ContextShift}
 import cats.implicits._
 import io.chrisdavenport.log4cats.Logger
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.OptimizationAlgorithm
-import io.kirill.playlistoptimizer.core.playlist.Track
+import io.kirill.playlistoptimizer.core.playlist.{Playlist, Track}
+
+import scala.concurrent.duration.FiniteDuration
 
 package object optimizer {
+
+  final case class OptimizationParameters(
+      populationSize: Integer,
+      mutationFactor: Double,
+      iterations: Integer,
+      shuffle: Boolean
+  )
+
+  final case class OptimizationId(value: UUID) extends AnyVal
+
+  final case class Optimization(
+      id: OptimizationId,
+      status: String,
+      original: Playlist,
+      dateInitiated: Instant,
+      duration: Option[FiniteDuration] = None,
+      result: Option[Playlist] = None,
+      score: Option[Double] = None
+  )
 
   final class Optimizer[F[_]](
       val optimizationController: OptimizationController[F]

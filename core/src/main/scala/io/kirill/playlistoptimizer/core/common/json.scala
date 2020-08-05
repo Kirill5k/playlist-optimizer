@@ -7,7 +7,7 @@ import cats.effect.Sync
 import io.circe.generic.extras.defaults._
 import io.circe.generic.extras.semiauto._
 import io.circe.{Decoder, Encoder}
-import io.kirill.playlistoptimizer.core.optimizer.PlaylistOptimizer.OptimizationId
+import io.kirill.playlistoptimizer.core.optimizer.OptimizationId
 import org.http4s.circe.{jsonEncoderOf, jsonOf}
 import org.http4s.{EntityDecoder, EntityEncoder}
 
