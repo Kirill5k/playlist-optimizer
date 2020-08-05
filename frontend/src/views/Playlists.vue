@@ -39,8 +39,8 @@ export default {
     }
   },
   methods: {
-    optimizePlaylist (playlist) {
-      this.$store.dispatch('optimizePlaylist', playlist)
+    optimizePlaylist ({ playlist, optimizationParams }) {
+      this.$store.dispatch('optimizePlaylist', { playlist, optimizationParams })
         .then(() => this.displayNotification({ message: `Optimization of ${playlist.name} has been initiated` }))
         .catch(this.displayError)
     }
