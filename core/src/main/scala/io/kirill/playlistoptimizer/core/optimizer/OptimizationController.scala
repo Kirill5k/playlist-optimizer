@@ -10,12 +10,12 @@ import io.circe._
 import io.circe.generic.auto._
 import io.circe.syntax._
 import io.kirill.playlistoptimizer.core.common.controllers.AppController
-import io.kirill.playlistoptimizer.core.optimizer.OptimizationController.{InitiateOptimizationResponse, OptimizationView}
+import io.kirill.playlistoptimizer.core.optimizer.OptimizationController._
 import io.kirill.playlistoptimizer.core.optimizer.PlaylistOptimizer.{Optimization, OptimizationId}
 import io.kirill.playlistoptimizer.core.common.json._
 import io.kirill.playlistoptimizer.core.playlist.PlaylistView
 import org.http4s.circe._
-import org.http4s.{EntityDecoder, HttpRoutes}
+import org.http4s.{HttpRoutes}
 
 class OptimizationController[F[_]](
     private val playlistOptimizer: PlaylistOptimizer[F]
@@ -26,10 +26,10 @@ class OptimizationController[F[_]](
       case req @ POST -> Root / "playlist-optimizations" =>
         withErrorHandling {
           for {
-            view           <- req.as[PlaylistView]
-            _              <- l.info(s"optimize playlist ${view.name}")
-            optimizationId <- playlistOptimizer.optimize(view.toDomain)
-            resp           <- Created(InitiateOptimizationResponse(optimizationId).asJson)
+            requestBody    <- req.as[PlaylistOptimizationRequest]
+            _              <- l.info(s"optimize playlist ${requestBody.playlist.name}")
+            optimizationId <- playlistOptimizer.optimize(requestBody.playlist.toDomain)
+            resp           <- Created(PlaylistOptimizationResponse(optimizationId).asJson)
           } yield resp
         }
       case GET -> Root / "playlist-optimizations" / UUIDVar(optimizationId) =>
@@ -58,7 +58,19 @@ class OptimizationController[F[_]](
 }
 
 object OptimizationController {
-  final case class InitiateOptimizationResponse(id: OptimizationId)
+  final case class OptimizationParameters(
+      populationSize: Integer,
+      mutationFactor: Double,
+      iterations: Integer,
+      shuffle: Boolean
+  )
+
+  final case class PlaylistOptimizationRequest(
+      playlist: PlaylistView,
+      optimizationParameters: OptimizationParameters
+  )
+
+  final case class PlaylistOptimizationResponse(id: OptimizationId)
 
   final case class OptimizationView(
       id: UUID,

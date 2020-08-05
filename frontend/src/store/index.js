@@ -38,8 +38,7 @@ export default new Vuex.Store({
         .then(optimizations => commit('setOptimizations', optimizations))
         .catch(err => console.error(err))
     },
-    optimizePlaylist ({ commit, dispatch }, { playlist, optimizationParams }) {
-      console.log('optimizationParams', optimizationParams)
+    optimizePlaylist ({ commit, dispatch }, requestBody) {
       return fetch('/api/playlist-optimizations', {
         method: 'POST',
         mode: 'cors',
@@ -48,7 +47,7 @@ export default new Vuex.Store({
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(playlist)
+        body: JSON.stringify(requestBody)
       })
     },
     savePlaylist ({ commit, dispatch }, playlist) {

@@ -159,7 +159,7 @@ export default {
       return duration.toFixed(2)
     },
     optimizePlaylist (playlist) {
-      this.$emit('optimize', { playlist, optimizationParams: this.optimizationParams })
+      this.$emit('optimize', { playlist, optimizationParameters: this.optimizationParams })
     }
   }
 }

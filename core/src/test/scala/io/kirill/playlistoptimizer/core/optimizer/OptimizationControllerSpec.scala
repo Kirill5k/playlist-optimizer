@@ -61,7 +61,20 @@ class OptimizationControllerSpec extends ControllerSpec {
       val playlistCaptor: ArgumentCaptor[Playlist] = ArgumentCaptor.forClass(classOf[Playlist])
       when(playlistOptimizerMock.optimize(playlistCaptor.capture())).thenReturn(IO.pure(optimizationId))
 
-      val request = Request[IO](uri = uri"/playlist-optimizations", method = Method.POST).withEntity(shortenedPlaylistJson)
+      val requestBody =
+        json"""
+              {
+                "playlist": $shortenedPlaylistJson,
+                "optimizationParameters": {
+                  "populationSize": 100,
+                  "iterations": 1000,
+                  "mutationFactor": 0.2,
+                  "shuffle": true
+                }
+              }
+              """
+
+      val request = Request[IO](uri = uri"/playlist-optimizations", method = Method.POST).withEntity(requestBody)
       val response: IO[Response[IO]] = playlistController.routes.orNotFound.run(request)
 
       val expected =
