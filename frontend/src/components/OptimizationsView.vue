@@ -28,6 +28,9 @@
           <b-card-text class="mb-0">
             Initiated on {{ optimization.dateInitiated.slice(0, 10) }} at {{ optimization.dateInitiated.slice(11, 19) }}
           </b-card-text>
+          <b-card-text class="mb-0">
+            {{ optimizationParameters(optimization.parameters) }}
+          </b-card-text>
           <b-card-text v-if="optimization.durationMs" class="small mb-0">
             Total duration {{ optimization.durationMs / 1000 }}s
           </b-card-text>
@@ -128,6 +131,13 @@ export default {
     },
     deleteOptimization (id) {
       this.$emit('delete', id)
+    },
+    optimizationParameters (params) {
+      const popSize = `Population size ${params.populationSize}`
+      const mutFactor = `Mutation factor ${params.mutationFactor}`
+      const its = `${params.iterations} iterations`
+      const shuffle = params.shuffle ? 'Shuffle' : 'No Shuffle'
+      return `${popSize} / ${mutFactor} / ${its} / ${shuffle}`
     }
   }
 }
