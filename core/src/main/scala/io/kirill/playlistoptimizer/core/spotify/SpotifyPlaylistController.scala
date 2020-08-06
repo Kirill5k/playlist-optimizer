@@ -13,6 +13,7 @@ import io.kirill.playlistoptimizer.core.common.json._
 import io.kirill.playlistoptimizer.core.common.jwt.JwtEncoder
 import io.kirill.playlistoptimizer.core.playlist._
 import org.http4s.circe._
+import org.http4s.dsl.io.QueryParamDecoderMatcher
 import org.http4s.headers.Location
 import org.http4s.{HttpRoutes, Request, RequestCookie, ResponseCookie, Uri}
 
@@ -21,10 +22,7 @@ final class SpotifyPlaylistController[F[_]](
     val playlistService: SpotifyPlaylistService[F],
     val spotifyConfig: SpotifyConfig
 ) extends AppController[F] {
-
-  private val SpotifySessionCookie = "spotify-session"
-
-  private object CodeQueryParamMatcher extends QueryParamDecoderMatcher[String]("code")
+  import SpotifyPlaylistController._
 
   private val authorizationParams = Map(
     "response_type" -> "code",
@@ -47,7 +45,7 @@ final class SpotifyPlaylistController[F[_]](
         withErrorHandling {
           for {
             _             <- l.info("spotify ping")
-            spotifyCookie <- getSessionCookie[F](req)
+            spotifyCookie <- getSessionCookie(req)
             _             <- jwtEncoder.decode(spotifyCookie.content)
             res           <- Ok("spotify-pong")
           } yield res
@@ -66,7 +64,7 @@ final class SpotifyPlaylistController[F[_]](
         withErrorHandling {
           for {
             _             <- l.info("get all playlists")
-            spotifyCookie <- getSessionCookie[F](req)
+            spotifyCookie <- getSessionCookie(req)
             accessToken   <- jwtEncoder.decode(spotifyCookie.content)
             playlists     <- playlistService.getAll(accessToken)
             views = playlists._1.map(PlaylistView.from)
@@ -79,7 +77,7 @@ final class SpotifyPlaylistController[F[_]](
           for {
             view               <- req.as[PlaylistView]
             _                  <- l.info(s"save playlist ${view.name}")
-            spotifyCookie      <- getSessionCookie[F](req)
+            spotifyCookie      <- getSessionCookie(req)
             accessToken        <- jwtEncoder.decode(spotifyCookie.content)
             updatedAccessToken <- playlistService.save(accessToken, view.toDomain)
             jwt                <- jwtEncoder.encode(updatedAccessToken)
@@ -88,7 +86,7 @@ final class SpotifyPlaylistController[F[_]](
         }
     }
 
-  private def getSessionCookie[F[_]](req: Request[F])(implicit s: Sync[F]): F[RequestCookie] =
+  private def getSessionCookie(req: Request[F])(implicit s: Sync[F]): F[RequestCookie] =
     s.fromOption(getCookie(req, SpotifySessionCookie), MissingSessionCookie)
 
   private def newSessionCookie(jwt: String): ResponseCookie =
@@ -96,6 +94,10 @@ final class SpotifyPlaylistController[F[_]](
 }
 
 object SpotifyPlaylistController {
+  val SpotifySessionCookie = "spotify-session"
+
+  object CodeQueryParamMatcher extends QueryParamDecoderMatcher[String]("code")
+
   def make[F[_]: Sync](
       jwtEncoder: JwtEncoder[F, SpotifyAccessToken],
       spotifyService: SpotifyPlaylistService[F],
