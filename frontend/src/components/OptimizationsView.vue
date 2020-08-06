@@ -113,7 +113,7 @@ export default {
         case 'completed':
           return 'success'
         default:
-          return 'primary'
+          return 'secondary'
       }
     },
     showSavePlaylistForm (newPlaylistName) {
