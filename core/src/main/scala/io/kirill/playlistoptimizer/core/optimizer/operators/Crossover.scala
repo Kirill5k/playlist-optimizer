@@ -8,13 +8,13 @@ import scala.util.Random
 
 
 sealed trait Crossover[A] {
-  def cross(p1: Seq[A], p2: Seq[A]): Seq[A]
+  def cross(p1: IndexedSeq[A], p2: IndexedSeq[A]): IndexedSeq[A]
 }
 
 object Crossover {
   implicit def bestKeySequenceTrackCrossover(implicit r: Random): Crossover[Track] = new Crossover[Track] {
-    override def cross(p1: Seq[Track], p2: Seq[Track]): Seq[Track] = {
-      val (bestSeq, seqIndex) = p1.tails.take(p1.size).zipWithIndex.foldLeft[(Seq[Track], Int)]((Nil, -1)) {
+    override def cross(p1: IndexedSeq[Track], p2: IndexedSeq[Track]): IndexedSeq[Track] = {
+      val (bestSeq, seqIndex) = p1.tails.take(p1.size).zipWithIndex.foldLeft[(IndexedSeq[Track], Int)]((Vector(), -1)) {
         case ((currentBest, bestIndex), (tail, index)) =>
           val newBest = combo(tail)
           if (newBest.size > currentBest.size) (newBest, index) else (currentBest, bestIndex)
@@ -27,8 +27,8 @@ object Crossover {
       left.filterNot(slicedBestSeq.contains) :++ slicedBestSeq :++ right.filterNot(slicedBestSeq.contains)
     }
 
-    private def combo(ts: Seq[Track]): Seq[Track] = {
-      def go(combo: Seq[Track], remaining: Seq[Track], previous: Track): Seq[Track] = {
+    private def combo(ts: IndexedSeq[Track]): IndexedSeq[Track] = {
+      def go(combo: IndexedSeq[Track], remaining: IndexedSeq[Track], previous: Track): IndexedSeq[Track] = {
         val newCombo = combo :+ previous
         if (remaining.isEmpty) newCombo
         else {
@@ -36,17 +36,17 @@ object Crossover {
           if (distance <= 1) go(newCombo, remaining.tail, remaining.head) else newCombo
         }
       }
-      go(Nil, ts.tail, ts.head)
+      go(Vector(), ts.tail, ts.head)
     }
 
-    private def cut(ts: Seq[Track], sliceSize: Int)(implicit R: Random): Seq[Track] = {
+    private def cut(ts: IndexedSeq[Track], sliceSize: Int)(implicit R: Random): IndexedSeq[Track] = {
       val slicePoint = R.nextInt(sliceSize / 2)
       ts.slice(slicePoint, slicePoint+sliceSize)
     }
   }
 
   implicit def threeWaySplitCrossover[A](implicit r: Random): Crossover[A] = new Crossover[A] {
-    override def cross(p1: Seq[A], p2: Seq[A]): Seq[A] = {
+    override def cross(p1: IndexedSeq[A], p2: IndexedSeq[A]): IndexedSeq[A] = {
       val middle = p1.size / 2
       val point1: Int = r.nextInt(middle)
       val point2: Int = r.nextInt(middle) + middle

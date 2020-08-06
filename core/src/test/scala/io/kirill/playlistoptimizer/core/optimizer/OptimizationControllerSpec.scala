@@ -21,7 +21,7 @@ class OptimizationControllerSpec extends ControllerSpec {
   import AppController._
 
   val playlist = PlaylistBuilder.playlist
-  val shortenedPlaylist = playlist.copy(tracks = List(playlist.tracks.head))
+  val shortenedPlaylist = playlist.copy(tracks = Vector(playlist.tracks.head))
 
   val optimizationId = OptimizationId(UUID.fromString("607995e0-8e3a-11ea-bc55-0242ac130003"))
   val optimizationParameters = OptimizationParameters(100, 0.2, 1000, true)

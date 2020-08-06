@@ -40,7 +40,7 @@ private[spotify] class SpotifyApiClient[F[_]: Sync: Logger](
       playlist <- SpotifyRestApi.getPlaylist(token, id)
       playListTracks = playlist.tracks.items.map(_.track)
       tracksDetails <- getTrackDetails(token, playListTracks)
-      tracks = tracksDetails.map(details => SpotifyMapper.toDomain(details._1, details._2))
+      tracks = tracksDetails.map(details => SpotifyMapper.toDomain(details._1, details._2)).toVector
     } yield Playlist(playlist.name, playlist.description, tracks, PlaylistSource.Spotify)
 
   private def getPlaylistId(token: String, name: String): F[String] =

@@ -23,7 +23,7 @@ object Application extends IOApp {
   implicit val logger: Logger[IO] = Slf4jLogger.getLogger[IO]
 
   implicit val r: Random                             = new Random()
-  implicit val c: Crossover[Track]                   = Crossover.bestKeySequenceTrackCrossover
+  implicit val c: Crossover[Track]                   = Crossover.threeWaySplitCrossover
   implicit val m: Mutator[Track]                     = Mutator.randomSwapMutator[Track]
   implicit val alg: OptimizationAlgorithm[IO, Track] = OptimizationAlgorithm.geneticAlgorithm[IO, Track]
 

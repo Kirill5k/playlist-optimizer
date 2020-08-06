@@ -13,7 +13,7 @@ class GeneticAlgorithm[F[_]: Concurrent, A: Crossover: Mutator: Evaluator](
     implicit val rand: Random
 ) extends OptimizationAlgorithm[F, A] {
 
-  override def optimizeSeq(items: Seq[A], params: OptimizationParameters): F[(Seq[A], Double)] = {
+  override def optimizeSeq(items: IndexedSeq[A], params: OptimizationParameters): F[(IndexedSeq[A], Double)] = {
     val initialPopulation = Seq.fill(params.populationSize)(if (params.shuffle) rand.shuffle(items) else items)
     Stream
       .range[F](0, params.iterations)
@@ -24,20 +24,25 @@ class GeneticAlgorithm[F[_]: Concurrent, A: Crossover: Mutator: Evaluator](
       .map(res => (res, Evaluator[A].evaluate(res)))
   }
 
-  private def singleIteration(population: Seq[Seq[A]], mutationFactor: Double)(implicit e: Evaluator[A]): F[Seq[Seq[A]]] = {
+  private def singleIteration(population: Seq[IndexedSeq[A]], mutationFactor: Double)(implicit e: Evaluator[A]): F[Seq[IndexedSeq[A]]] = {
     val newPopulation = Stream
       .evalSeq(Concurrent[F].delay(population.pairs))
-      .map { case (p1, p2) =>
-        Stream.evalSeq(Concurrent[F].delay(List(breed(p1, p2, mutationFactor), breed(p2, p1, mutationFactor))))
+      .map {
+        case (p1, p2) =>
+          Stream.evalSeq(Concurrent[F].delay(List(breed(p1, p2, mutationFactor), breed(p2, p1, mutationFactor))))
       }
       .parJoinUnbounded
 
     val oldPopulation = Stream.evalSeq(population.pure[F])
 
-    (newPopulation ++ oldPopulation).compile.toList.map(_.sortBy(e.evaluate).take(population.size))
+    (newPopulation ++ oldPopulation).compile.toVector.map(_.sortBy(e.evaluate).take(population.size))
   }
 
-  private def breed(p1: Seq[A], p2: Seq[A], mutationFactor: Double)(implicit c: Crossover[A], m: Mutator[A], r: Random): Seq[A] = {
+  private def breed(
+      p1: IndexedSeq[A],
+      p2: IndexedSeq[A],
+      mutationFactor: Double
+  )(implicit c: Crossover[A], m: Mutator[A], r: Random): IndexedSeq[A] = {
     val child = c.cross(p1, p2)
     if (r.nextDouble < mutationFactor) m.mutate(child) else child
   }

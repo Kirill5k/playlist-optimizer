@@ -44,6 +44,6 @@ final case class Track(
 final case class Playlist(
     name: String,
     description: Option[String],
-    tracks: Seq[Track],
+    tracks: IndexedSeq[Track],
     source: PlaylistSource
 )

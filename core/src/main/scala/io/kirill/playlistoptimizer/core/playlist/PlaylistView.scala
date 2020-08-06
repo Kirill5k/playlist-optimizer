@@ -54,7 +54,7 @@ final case class PlaylistView(
     tracks: Seq[TrackView],
     source: String
 ) {
-  def toDomain: Playlist = Playlist(name, description, tracks.map(_.toDomain), PlaylistSource(source))
+  def toDomain: Playlist = Playlist(name, description, tracks.map(_.toDomain).toVector, PlaylistSource(source))
 }
 
 object PlaylistView {
