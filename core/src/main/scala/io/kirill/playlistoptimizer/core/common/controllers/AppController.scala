@@ -1,5 +1,8 @@
 package io.kirill.playlistoptimizer.core.common.controllers
 
+import java.util.UUID
+
+import cats.data.Kleisli
 import cats.effect._
 import cats.implicits._
 import io.chrisdavenport.log4cats.Logger
@@ -7,7 +10,7 @@ import io.circe._
 import io.circe.generic.auto._
 import io.circe.syntax._
 import io.kirill.playlistoptimizer.core.common.errors._
-import org.http4s.{HttpRoutes, MessageFailure, Response}
+import org.http4s.{HttpRoutes, MessageFailure, Request, RequestCookie, Response, ResponseCookie}
 import org.http4s.dsl.Http4sDsl
 import org.http4s.circe._
 
@@ -39,11 +42,23 @@ trait AppController[F[_]] extends Http4sDsl[F] {
         l.error(error)(s"unexpected error: ${error.getMessage}") *>
           InternalServerError(ErrorResponse(error.getMessage()).asJson)
     }
+
+  protected def getCookie(req: Request[F], name: String): Option[RequestCookie] =
+    req.cookies.find(_.name == name)
 }
 
 object AppController {
+  val UserSessionCookie = "user-session"
+
   final case class ErrorResponse(message: String)
 
   def homeController[F[_]: ContextShift](blocker: Blocker): AppController[F] =
     new HomeController[F](blocker)
+
+  def userSessionMiddleware[F[_]: Sync](
+    routes: HttpRoutes[F]
+  ): HttpRoutes[F] = Kleisli { req: Request[F] =>
+    if (req.cookies.exists(_.name == UserSessionCookie)) routes(req)
+    else routes(req.addCookie(RequestCookie(UserSessionCookie, UUID.randomUUID().toString)))
+  }
 }
