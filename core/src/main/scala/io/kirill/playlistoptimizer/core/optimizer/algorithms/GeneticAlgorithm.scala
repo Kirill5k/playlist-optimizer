@@ -14,9 +14,7 @@ class GeneticAlgorithm[F[_]: Concurrent, A: Crossover: Mutator: Evaluator](
 ) extends OptimizationAlgorithm[F, A] {
 
   override def optimizeSeq(items: Seq[A], params: OptimizationParameters): F[(Seq[A], Double)] = {
-    val initialPopulation =
-      if (params.shuffle) items.shuffledCopies(params.populationSize)
-      else List.fill(params.populationSize)(items)
+    val initialPopulation = Seq.fill(params.populationSize)(if (params.shuffle) rand.shuffle(items) else items)
     Stream
       .range[F](0, params.iterations)
       .evalScan(initialPopulation)((currPop, _) => singleIteration(currPop, params.mutationFactor))

@@ -1,7 +1,5 @@
 package io.kirill.playlistoptimizer.core.utils
 
-import scala.util.Random
-
 object CollectionOps {
 
   implicit class SeqOps[A](private val seq: Seq[A]) extends AnyVal {
@@ -23,7 +21,5 @@ object CollectionOps {
 
     def pairs: Seq[(A, A)] =
       seq.zip(seq.tail).zipWithIndex collect { case (x, i) if (i + 1) % 2 != 0 => x }
-
-    def shuffledCopies(n: Int): Seq[Seq[A]] = List.fill(n)(Random.shuffle(seq))
   }
 }

@@ -54,16 +54,5 @@ class CollectionOpsSpec extends AnyWordSpec with Matchers with Inspectors {
         Vector(1, 2, 3, 4, 5, 6, 7).swap(2, 10)
       } must have message "pos cannot be greater than size"
     }
-
-    "create initial population" in {
-      val nums = (1 to 100).toList
-      val shuffledCopies = nums.shuffledCopies(10)
-
-      shuffledCopies must have size 10
-      forAll (shuffledCopies) { copy =>
-        copy must contain theSameElementsAs nums
-        copy must not contain theSameElementsInOrderAs (nums)
-      }
-    }
   }
 }
