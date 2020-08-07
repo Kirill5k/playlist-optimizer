@@ -64,6 +64,39 @@ class SpotifyPlaylistControllerSpec extends ControllerSpec {
 
   "A SpotifyPlaylistController" should {
 
+    "return existing user-session cookie" in {
+      val (jwtEncoder, service) = mocks
+      val controller = new SpotifyPlaylistController(jwtEncoder, service, sc)
+
+      val spotifyAccessToken = SpotifyAccessToken("access-token", "refresh-token", "user-id", Instant.parse("2020-01-01T00:00:00Z"))
+      when(service.authenticate(any[String])).thenReturn(IO.pure(spotifyAccessToken))
+      when(jwtEncoder.encode(spotifyAccessToken)).thenReturn(IO.pure(sessionCookie.content))
+
+      val request = Request[IO](uri = uri"/authenticate?code=access-code").addCookie(RequestCookie("user-session", "user-id"))
+      val response: IO[Response[IO]] = controller.routesWithUserSession.orNotFound.run(request)
+
+      val cookies = response.map(_.cookies).unsafeRunSync()
+
+      cookies.map(_.name) must contain ("user-session")
+      cookies.find(_.name == "user-session").map(_.content) must be (Some("user-id"))
+    }
+
+    "set user-session cookie" in {
+      val (jwtEncoder, service) = mocks
+      val controller = new SpotifyPlaylistController(jwtEncoder, service, sc)
+
+      val spotifyAccessToken = SpotifyAccessToken("access-token", "refresh-token", "user-id", Instant.parse("2020-01-01T00:00:00Z"))
+      when(service.authenticate(any[String])).thenReturn(IO.pure(spotifyAccessToken))
+      when(jwtEncoder.encode(spotifyAccessToken)).thenReturn(IO.pure(sessionCookie.content))
+
+      val request = Request[IO](uri = uri"/authenticate?code=access-code")
+      val response: IO[Response[IO]] = controller.routesWithUserSession.orNotFound.run(request)
+
+      val cookies = response.map(_.cookies).unsafeRunSync()
+
+      cookies.map(_.name) must contain ("user-session")
+    }
+
     "set spotify-session cookie on authentication" in {
       val (jwtEncoder, service) = mocks
       val controller = new SpotifyPlaylistController(jwtEncoder, service, sc)
@@ -102,6 +135,7 @@ class SpotifyPlaylistControllerSpec extends ControllerSpec {
       val response: IO[Response[IO]] = controller.routes.orNotFound.run(request)
 
       verifyResponse[ErrorResponse](response, Status.Forbidden, Some(ErrorResponse("invalid-token")))
+      verify(jwtEncoder).decode("foo-bar")
     }
 
     "get all playlists" in {

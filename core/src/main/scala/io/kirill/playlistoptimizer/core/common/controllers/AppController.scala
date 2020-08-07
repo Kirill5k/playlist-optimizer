@@ -53,10 +53,15 @@ trait AppController[F[_]] extends Http4sDsl[F] {
     s.fromOption(getCookie(req, UserSessionCookie), MissingUserSessionCookie)
 
   private def userSessionMiddleware[F[_]: Sync](
-      routes: HttpRoutes[F]
+      httpRoutes: HttpRoutes[F]
   ): HttpRoutes[F] = Kleisli { req: Request[F] =>
-    if (req.cookies.exists(_.name == UserSessionCookie)) routes(req)
-    else routes(req.addCookie(RequestCookie(UserSessionCookie, UUID.randomUUID().toString)))
+    val res =
+      if (req.cookies.exists(_.name == UserSessionCookie)) httpRoutes(req)
+      else httpRoutes(req.addCookie(RequestCookie(UserSessionCookie, UUID.randomUUID().toString)))
+    res.map { r =>
+      val userSessionId = req.cookies.find(_.name == UserSessionCookie).fold(UUID.randomUUID().toString)(_.content)
+      r.addCookie(ResponseCookie(UserSessionCookie, userSessionId, httpOnly = true))
+    }
   }
 }
 

@@ -4,7 +4,7 @@ import cats.effect._
 import io.chrisdavenport.log4cats.Logger
 import org.http4s.{HttpRoutes, StaticFile}
 
-class HomeController[F[_]](blocker: Blocker) extends AppController[F] {
+private[controllers] class HomeController[F[_]](blocker: Blocker) extends AppController[F] {
 
   override def routes(implicit cs: ContextShift[F], s: Sync[F], l: Logger[F]): HttpRoutes[F] =
     HttpRoutes.of[F] {
