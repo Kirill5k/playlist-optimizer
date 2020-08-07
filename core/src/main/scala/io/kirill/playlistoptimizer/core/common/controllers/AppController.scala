@@ -17,6 +17,9 @@ import org.http4s.circe._
 trait AppController[F[_]] extends Http4sDsl[F] {
   import AppController._
 
+  def routesWithUserSession(implicit cs: ContextShift[F], s: Sync[F], l: Logger[F]): HttpRoutes[F] =
+    userSessionMiddleware(routes)
+
   def routes(implicit cs: ContextShift[F], s: Sync[F], l: Logger[F]): HttpRoutes[F]
 
   protected def withErrorHandling(
@@ -45,6 +48,16 @@ trait AppController[F[_]] extends Http4sDsl[F] {
 
   protected def getCookie(req: Request[F], name: String): Option[RequestCookie] =
     req.cookies.find(_.name == name)
+
+  protected def getUserSessionCookie(req: Request[F])(implicit s: Sync[F]): F[RequestCookie] =
+    s.fromOption(getCookie(req, UserSessionCookie), MissingUserSessionCookie)
+
+  private def userSessionMiddleware[F[_]: Sync](
+      routes: HttpRoutes[F]
+  ): HttpRoutes[F] = Kleisli { req: Request[F] =>
+    if (req.cookies.exists(_.name == UserSessionCookie)) routes(req)
+    else routes(req.addCookie(RequestCookie(UserSessionCookie, UUID.randomUUID().toString)))
+  }
 }
 
 object AppController {
@@ -54,11 +67,4 @@ object AppController {
 
   def homeController[F[_]: ContextShift](blocker: Blocker): AppController[F] =
     new HomeController[F](blocker)
-
-  def userSessionMiddleware[F[_]: Sync](
-    routes: HttpRoutes[F]
-  ): HttpRoutes[F] = Kleisli { req: Request[F] =>
-    if (req.cookies.exists(_.name == UserSessionCookie)) routes(req)
-    else routes(req.addCookie(RequestCookie(UserSessionCookie, UUID.randomUUID().toString)))
-  }
 }

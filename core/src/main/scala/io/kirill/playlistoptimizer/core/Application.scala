@@ -37,9 +37,9 @@ object Application extends IOApp {
           .bindHttp(config.server.port, config.server.host)
           .withHttpApp(
             Router(
-              ""            -> AppController.homeController(res.blocker).routes,
-              "api"         -> optimizer.optimizationController.routes,
-              "api/spotify" -> spotify.playlistController.routes
+              ""            -> AppController.homeController(res.blocker).routesWithUserSession,
+              "api"         -> optimizer.optimizationController.routesWithUserSession,
+              "api/spotify" -> spotify.playlistController.routesWithUserSession
             ).orNotFound
           )
           .serve

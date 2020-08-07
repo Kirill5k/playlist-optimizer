@@ -15,8 +15,12 @@ object errors {
   sealed trait BadRequestError extends ApplicationError
   sealed trait ForbiddenError extends ApplicationError
 
-  final case object MissingSessionCookie extends ForbiddenError {
-    val message = "missing session cookie"
+  final case object MissingSpotifySessionCookie extends ForbiddenError {
+    val message = "missing spotify session cookie"
+  }
+
+  final case object MissingUserSessionCookie extends ApplicationError {
+    val message = "missing user session cookie"
   }
 
   final case class JwtDecodeError(message: String) extends ForbiddenError

@@ -89,7 +89,7 @@ class SpotifyPlaylistControllerSpec extends ControllerSpec {
       val request = Request[IO](uri = uri"/ping")
       val response: IO[Response[IO]] = controller.routes.orNotFound.run(request)
 
-      verifyResponse[ErrorResponse](response, Status.Forbidden, Some(ErrorResponse("missing session cookie")))
+      verifyResponse[ErrorResponse](response, Status.Forbidden, Some(ErrorResponse("missing spotify session cookie")))
     }
 
     "return forbidden when invalid spotify-session cookie" in {
