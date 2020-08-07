@@ -22,7 +22,7 @@ class PlaylistOptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
   val optimizedTracks = random.shuffle(playlist.tracks)
 
   val optimizationId = OptimizationId(UUID.randomUUID())
-  val parameters = OptimizationParameters(100, 0.2, 1000, true)
+  val parameters     = OptimizationParameters(100, 0.2, 1000, true)
 
   val userSessionId = UserSessionId("user-session-id")
 
@@ -45,6 +45,18 @@ class PlaylistOptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
       val result = for {
         optimizer <- PlaylistOptimizer.refBasedPlaylistOptimizer[IO]
         res       <- optimizer.get(userSessionId, optimizationId)
+      } yield res
+
+      result.assertThrows[OptimizationNotFound]
+    }
+
+    "return error when user id is not recognized" in {
+      implicit val alg = mockAlg(IO.sleep(2.seconds) *> IO.pure((optimizedTracks, 25.0)))
+
+      val result = for {
+        optimizer <- PlaylistOptimizer.refBasedPlaylistOptimizer[IO]
+        id        <- optimizer.optimize(userSessionId, playlist, parameters)
+        res       <- optimizer.get(UserSessionId("foo"), id)
       } yield res
 
       result.assertThrows[OptimizationNotFound]
@@ -119,6 +131,18 @@ class PlaylistOptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
         optimizer <- PlaylistOptimizer.refBasedPlaylistOptimizer[IO]
         _         <- optimizer.delete(userSessionId, optimizationId)
         res       <- optimizer.getAll(userSessionId)
+      } yield res
+
+      result.assertThrows[OptimizationNotFound]
+    }
+
+    "return error if user id does not match" in {
+      implicit val alg = mockAlg(IO.sleep(2.seconds) *> IO.pure((optimizedTracks, 25.0)))
+
+      val result = for {
+        optimizer <- PlaylistOptimizer.refBasedPlaylistOptimizer[IO]
+        id        <- optimizer.optimize(userSessionId, playlist, parameters)
+        res       <- optimizer.delete(UserSessionId("foo"), id)
       } yield res
 
       result.assertThrows[OptimizationNotFound]
