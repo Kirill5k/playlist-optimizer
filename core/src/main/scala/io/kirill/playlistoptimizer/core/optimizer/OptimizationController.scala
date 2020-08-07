@@ -31,21 +31,21 @@ final class OptimizationController[F[_]](
             resp           <- Created(PlaylistOptimizationResponse(optimizationId).asJson)
           } yield resp
         }
-      case GET -> Root / "playlist-optimizations" / UUIDVar(optimizationId) =>
+      case req @ GET -> Root / "playlist-optimizations" / UUIDVar(optimizationId) =>
         withErrorHandling {
           for {
             opt  <- playlistOptimizer.get(OptimizationId(optimizationId))
             resp <- Ok(OptimizationView.from(opt).asJson)
           } yield resp
         }
-      case GET -> Root / "playlist-optimizations" =>
+      case req @ GET -> Root / "playlist-optimizations" =>
         withErrorHandling {
           for {
             opts <- playlistOptimizer.getAll()
             resp <- Ok(opts.sortBy(_.dateInitiated).reverse.map(OptimizationView.from).asJson)
           } yield resp
         }
-      case DELETE -> Root / "playlist-optimizations" / UUIDVar(optimizationId) =>
+      case req @ DELETE -> Root / "playlist-optimizations" / UUIDVar(optimizationId) =>
         withErrorHandling {
           for {
             _    <- l.info(s"delete optimization $optimizationId")

@@ -49,8 +49,9 @@ trait AppController[F[_]] extends Http4sDsl[F] {
   protected def getCookie(req: Request[F], name: String): Option[RequestCookie] =
     req.cookies.find(_.name == name)
 
-  protected def getUserSessionCookie(req: Request[F])(implicit s: Sync[F]): F[RequestCookie] =
+  protected def getUserSessionId(req: Request[F])(implicit s: Sync[F]): F[UserSessionId] =
     s.fromOption(getCookie(req, UserSessionCookie), MissingUserSessionCookie)
+      .map(c => UserSessionId(c.content))
 
   private def userSessionMiddleware[F[_]: Sync](
       httpRoutes: HttpRoutes[F]
@@ -69,6 +70,8 @@ object AppController {
   val UserSessionCookie = "user-session"
 
   final case class ErrorResponse(message: String)
+
+  final case class UserSessionId(value: String) extends AnyVal
 
   def homeController[F[_]: ContextShift](blocker: Blocker): AppController[F] =
     new HomeController[F](blocker)

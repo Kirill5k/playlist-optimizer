@@ -27,6 +27,8 @@ class OptimizationControllerSpec extends ControllerSpec {
   val optimizationParameters = OptimizationParameters(100, 0.2, 1000, true)
   val optimization = Optimization(optimizationId, "in progress", optimizationParameters, shortenedPlaylist, Instant.parse("2020-01-01T00:00:00Z"))
 
+  val UserSessionCookie = RequestCookie("user-session", "user-session-id")
+
   val shortenedPlaylistJson =
     json"""
       {
@@ -75,15 +77,17 @@ class OptimizationControllerSpec extends ControllerSpec {
               }
               """
 
-      val request = Request[IO](uri = uri"/playlist-optimizations", method = Method.POST).withEntity(requestBody)
-      val response: IO[Response[IO]] = playlistController.routes.orNotFound.run(request)
+      val request = Request[IO](uri = uri"/playlist-optimizations", method = Method.POST)
+        .withEntity(requestBody)
+        .addCookie(UserSessionCookie)
+      val response: IO[Response[IO]] = playlistController.routesWithUserSession.orNotFound.run(request)
 
       val expected =
         s"""
           |{"id": "${optimizationId.value}"}
           |""".stripMargin
 
-      verifyJsonResponse(response, Status.Created, Some(expected))
+      verifyJsonResponse(response, Status.Created, Some(expected), Map("user-session" -> "user-session-id"))
       playlistCaptor.getValue must be (shortenedPlaylist)
       parametersCaptor.getValue must be (optimizationParameters)
     }
@@ -92,7 +96,8 @@ class OptimizationControllerSpec extends ControllerSpec {
       when(playlistOptimizerMock.get(optimizationId)).thenReturn(IO.pure(optimization))
 
       val request = Request[IO](uri = uri"/playlist-optimizations/607995e0-8e3a-11ea-bc55-0242ac130003", method = Method.GET)
-      val response: IO[Response[IO]] = playlistController.routes.orNotFound.run(request)
+        .addCookie(UserSessionCookie)
+      val response: IO[Response[IO]] = playlistController.routesWithUserSession.orNotFound.run(request)
 
       val expected =
         s"""
@@ -129,14 +134,14 @@ class OptimizationControllerSpec extends ControllerSpec {
            |}
            |""".stripMargin
 
-      verifyJsonResponse(response, Status.Ok, Some(expected))
+      verifyJsonResponse(response, Status.Ok, Some(expected), Map("user-session" -> "user-session-id"))
     }
 
     "return all optimizations" in {
       when(playlistOptimizerMock.getAll()).thenReturn(IO.pure(List(optimization)))
 
-      val request = Request[IO](uri = uri"/playlist-optimizations", method = Method.GET)
-      val response: IO[Response[IO]] = playlistController.routes.orNotFound.run(request)
+      val request = Request[IO](uri = uri"/playlist-optimizations", method = Method.GET).addCookie(UserSessionCookie)
+      val response: IO[Response[IO]] = playlistController.routesWithUserSession.orNotFound.run(request)
 
       val expected =
         s"""
@@ -173,35 +178,43 @@ class OptimizationControllerSpec extends ControllerSpec {
            |}]
            |""".stripMargin
 
-      verifyJsonResponse(response, Status.Ok, Some(expected))
+      verifyJsonResponse(response, Status.Ok, Some(expected), Map("user-session" -> "user-session-id"))
     }
 
     "return not found when optimization id is not recognized" in {
       when(playlistOptimizerMock.get(optimizationId)).thenReturn(IO.raiseError(OptimizationNotFound(optimizationId)))
 
       val request = Request[IO](uri = uri"/playlist-optimizations/607995e0-8e3a-11ea-bc55-0242ac130003", method = Method.GET)
-      val response: IO[Response[IO]] = playlistController.routes.orNotFound.run(request)
+        .addCookie(UserSessionCookie)
+      val response: IO[Response[IO]] = playlistController.routesWithUserSession.orNotFound.run(request)
 
       val expected =
         s"""
            |{"message": "optimization with id 607995e0-8e3a-11ea-bc55-0242ac130003 does not exist"}
            |""".stripMargin
 
-      verifyJsonResponse(response, Status.NotFound, Some(expected))
+      verifyJsonResponse(response, Status.NotFound, Some(expected), Map("user-session" -> "user-session-id"))
     }
 
     "return bad request error if invalid json" in {
       val request = Request[IO](uri = uri"/playlist-optimizations", method = Method.POST).withEntity("{foo-bar}")
-      val response: IO[Response[IO]] = playlistController.routes.orNotFound.run(request)
+        .addCookie(UserSessionCookie)
+      val response: IO[Response[IO]] = playlistController.routesWithUserSession.orNotFound.run(request)
 
-      verifyResponse[ErrorResponse](response, Status.BadRequest, Some(ErrorResponse("""Invalid message body: Could not decode JSON: "{foo-bar}"""")))
+      verifyResponse[ErrorResponse](
+        response,
+        Status.BadRequest,
+        Some(ErrorResponse("""Invalid message body: Could not decode JSON: "{foo-bar}"""")),
+        Map("user-session" -> "user-session-id")
+      )
     }
 
     "return no content when deleting optimization" in {
       when(playlistOptimizerMock.delete(optimizationId)).thenReturn(IO.unit)
 
       val request = Request[IO](uri = uri"/playlist-optimizations/607995e0-8e3a-11ea-bc55-0242ac130003", method = Method.DELETE)
-      val response: IO[Response[IO]] = playlistController.routes.orNotFound.run(request)
+        .addCookie(UserSessionCookie)
+      val response: IO[Response[IO]] = playlistController.routesWithUserSession.orNotFound.run(request)
 
       verifyJsonResponse(response, Status.NoContent, None)
     }
