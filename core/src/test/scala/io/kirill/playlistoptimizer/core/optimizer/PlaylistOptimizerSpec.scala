@@ -5,6 +5,7 @@ import java.util.UUID
 import cats.effect.IO
 import cats.effect.testing.scalatest.AsyncIOSpec
 import cats.implicits._
+import io.kirill.playlistoptimizer.core.common.controllers.AppController.UserSessionId
 import io.kirill.playlistoptimizer.core.common.errors.OptimizationNotFound
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.OptimizationAlgorithm
 import io.kirill.playlistoptimizer.core.playlist.{PlaylistBuilder, Track}
@@ -23,6 +24,8 @@ class PlaylistOptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
   val optimizationId = OptimizationId(UUID.randomUUID())
   val parameters = OptimizationParameters(100, 0.2, 1000, true)
 
+  val userSessionId = UserSessionId("user-session-id")
+
   "A RefBasedPlaylistOptimizer" - {
 
     "initiate optimization of a playlist" in {
@@ -33,7 +36,7 @@ class PlaylistOptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
 
       val result = for {
         optimizer <- PlaylistOptimizer.refBasedPlaylistOptimizer[IO]
-        id        <- optimizer.optimize(playlist, parameters)
+        id        <- optimizer.optimize(userSessionId, playlist, parameters)
       } yield id
 
       result.asserting(_ mustBe an[OptimizationId])
@@ -45,7 +48,7 @@ class PlaylistOptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
       }
       val result = for {
         optimizer <- PlaylistOptimizer.refBasedPlaylistOptimizer[IO]
-        res       <- optimizer.get(optimizationId)
+        res       <- optimizer.get(userSessionId, optimizationId)
       } yield res
 
       result.assertThrows[OptimizationNotFound]
@@ -58,8 +61,8 @@ class PlaylistOptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
       }
       val result = for {
         optimizer <- PlaylistOptimizer.refBasedPlaylistOptimizer[IO]
-        id        <- optimizer.optimize(playlist, parameters)
-        res       <- optimizer.get(id)
+        id        <- optimizer.optimize(userSessionId, playlist, parameters)
+        res       <- optimizer.get(userSessionId, id)
       } yield res
 
       result.asserting { optimization =>
@@ -77,9 +80,9 @@ class PlaylistOptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
       }
       val result = for {
         optimizer <- PlaylistOptimizer.refBasedPlaylistOptimizer[IO]
-        id        <- optimizer.optimize(playlist, parameters)
+        id        <- optimizer.optimize(userSessionId, playlist, parameters)
         _         <- IO.sleep(3.seconds)
-        res       <- optimizer.get(id)
+        res       <- optimizer.get(userSessionId, id)
       } yield res
 
       result.asserting { optimization =>
@@ -97,9 +100,9 @@ class PlaylistOptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
       }
       val result = for {
         optimizer <- PlaylistOptimizer.refBasedPlaylistOptimizer[IO]
-        _         <- optimizer.optimize(playlist, parameters)
-        _         <- optimizer.optimize(playlist, parameters)
-        res       <- optimizer.getAll()
+        _         <- optimizer.optimize(userSessionId, playlist, parameters)
+        _         <- optimizer.optimize(userSessionId, playlist, parameters)
+        res       <- optimizer.getAll(userSessionId)
       } yield res
 
       result.asserting { optimizations =>
@@ -115,9 +118,9 @@ class PlaylistOptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
 
       val result = for {
         optimizer <- PlaylistOptimizer.refBasedPlaylistOptimizer[IO]
-        id        <- optimizer.optimize(playlist, parameters)
-        _         <- optimizer.delete(id)
-        res       <- optimizer.getAll()
+        id        <- optimizer.optimize(userSessionId, playlist, parameters)
+        _         <- optimizer.delete(userSessionId, id)
+        res       <- optimizer.getAll(userSessionId)
       } yield res
 
       result.asserting(_ must be(Nil))
@@ -130,8 +133,8 @@ class PlaylistOptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
 
       val result = for {
         optimizer <- PlaylistOptimizer.refBasedPlaylistOptimizer[IO]
-        _         <- optimizer.delete(optimizationId)
-        res       <- optimizer.getAll()
+        _         <- optimizer.delete(userSessionId, optimizationId)
+        res       <- optimizer.getAll(userSessionId)
       } yield res
 
       result.assertThrows[OptimizationNotFound]

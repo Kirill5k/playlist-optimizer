@@ -28,7 +28,7 @@ final class OptimizationController[F[_]](
             userSessionId  <- getUserSessionId(req)
             requestBody    <- req.as[PlaylistOptimizationRequest]
             _              <- l.info(s"optimize playlist ${requestBody.playlist.name} for user ${userSessionId.value}")
-            optimizationId <- playlistOptimizer.optimize(requestBody.playlist.toDomain, requestBody.optimizationParameters)
+            optimizationId <- playlistOptimizer.optimize(userSessionId, requestBody.playlist.toDomain, requestBody.optimizationParameters)
             resp           <- Created(PlaylistOptimizationResponse(optimizationId).asJson)
           } yield resp
         }
@@ -37,7 +37,7 @@ final class OptimizationController[F[_]](
           for {
             userSessionId <- getUserSessionId(req)
             _             <- l.info(s"get playlist optimization ${optimizationId} for user ${userSessionId.value}")
-            opt           <- playlistOptimizer.get(OptimizationId(optimizationId))
+            opt           <- playlistOptimizer.get(userSessionId, OptimizationId(optimizationId))
             resp          <- Ok(OptimizationView.from(opt).asJson)
           } yield resp
         }
@@ -46,7 +46,7 @@ final class OptimizationController[F[_]](
           for {
             userSessionId <- getUserSessionId(req)
             _             <- l.info(s"get all playlist optimizations for user ${userSessionId.value}")
-            opts          <- playlistOptimizer.getAll()
+            opts          <- playlistOptimizer.getAll(userSessionId)
             resp          <- Ok(opts.sortBy(_.dateInitiated).reverse.map(OptimizationView.from).asJson)
           } yield resp
         }
@@ -55,7 +55,7 @@ final class OptimizationController[F[_]](
           for {
             userSessionId <- getUserSessionId(req)
             _             <- l.info(s"delete optimization $optimizationId for user ${userSessionId.value}")
-            _             <- playlistOptimizer.delete(OptimizationId(optimizationId))
+            _             <- playlistOptimizer.delete(userSessionId, OptimizationId(optimizationId))
             resp          <- NoContent()
           } yield resp
         }

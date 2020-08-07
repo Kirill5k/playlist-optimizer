@@ -36,7 +36,7 @@ class CrossoverSpec extends AnyWordSpec with Matchers {
 
       val c = Crossover.bestKeySequenceTrackCrossover.cross(p1, p2)
 
-      c must contain inOrder (track("s6", AMinor), track("s7", DMinor), track("s8", DMinor), track("s9", GMinor), track("s10", CMinor))
+      c must contain.inOrder (track("s6", AMinor), track("s7", DMinor), track("s8", DMinor), track("s9", GMinor), track("s10", CMinor))
       c must contain theSameElementsAs p1
       c must contain theSameElementsAs p2
       c must not contain theSameElementsInOrderAs (p1)
@@ -65,7 +65,7 @@ class CrossoverSpec extends AnyWordSpec with Matchers {
 
       val c = Crossover.bestKeySequenceTrackCrossover.cross(p1, p2)
 
-      c must contain inOrder (track("s2", EMajor),track("s3", BMajor), track("s4", FSharpMajor), track("s5", DFlatMajor), track("s6", AFlatMajor), track("s7", EFlatMajor))
+      c must contain.inOrder (track("s2", EMajor),track("s3", BMajor), track("s4", FSharpMajor), track("s5", DFlatMajor), track("s6", AFlatMajor), track("s7", EFlatMajor))
       c must contain theSameElementsAs p1
       c must contain theSameElementsAs p2
       c must not contain theSameElementsInOrderAs (p1)
