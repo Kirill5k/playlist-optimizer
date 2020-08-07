@@ -25,8 +25,9 @@ final class OptimizationController[F[_]](
       case req @ POST -> Root / "playlist-optimizations" =>
         withErrorHandling {
           for {
+            userSessionId  <- getUserSessionId(req)
             requestBody    <- req.as[PlaylistOptimizationRequest]
-            _              <- l.info(s"optimize playlist ${requestBody.playlist.name}")
+            _              <- l.info(s"optimize playlist ${requestBody.playlist.name} for user ${userSessionId.value}")
             optimizationId <- playlistOptimizer.optimize(requestBody.playlist.toDomain, requestBody.optimizationParameters)
             resp           <- Created(PlaylistOptimizationResponse(optimizationId).asJson)
           } yield resp
@@ -34,23 +35,28 @@ final class OptimizationController[F[_]](
       case req @ GET -> Root / "playlist-optimizations" / UUIDVar(optimizationId) =>
         withErrorHandling {
           for {
-            opt  <- playlistOptimizer.get(OptimizationId(optimizationId))
-            resp <- Ok(OptimizationView.from(opt).asJson)
+            userSessionId <- getUserSessionId(req)
+            _             <- l.info(s"get playlist optimization ${optimizationId} for user ${userSessionId.value}")
+            opt           <- playlistOptimizer.get(OptimizationId(optimizationId))
+            resp          <- Ok(OptimizationView.from(opt).asJson)
           } yield resp
         }
       case req @ GET -> Root / "playlist-optimizations" =>
         withErrorHandling {
           for {
-            opts <- playlistOptimizer.getAll()
-            resp <- Ok(opts.sortBy(_.dateInitiated).reverse.map(OptimizationView.from).asJson)
+            userSessionId <- getUserSessionId(req)
+            _             <- l.info(s"get all playlist optimizations for user ${userSessionId.value}")
+            opts          <- playlistOptimizer.getAll()
+            resp          <- Ok(opts.sortBy(_.dateInitiated).reverse.map(OptimizationView.from).asJson)
           } yield resp
         }
       case req @ DELETE -> Root / "playlist-optimizations" / UUIDVar(optimizationId) =>
         withErrorHandling {
           for {
-            _    <- l.info(s"delete optimization $optimizationId")
-            _    <- playlistOptimizer.delete(OptimizationId(optimizationId))
-            resp <- NoContent()
+            userSessionId <- getUserSessionId(req)
+            _             <- l.info(s"delete optimization $optimizationId for user ${userSessionId.value}")
+            _             <- playlistOptimizer.delete(OptimizationId(optimizationId))
+            resp          <- NoContent()
           } yield resp
         }
     }

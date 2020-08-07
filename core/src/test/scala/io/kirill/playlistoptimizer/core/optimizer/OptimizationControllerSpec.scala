@@ -216,7 +216,19 @@ class OptimizationControllerSpec extends ControllerSpec {
         .addCookie(UserSessionCookie)
       val response: IO[Response[IO]] = playlistController.routesWithUserSession.orNotFound.run(request)
 
-      verifyJsonResponse(response, Status.NoContent, None)
+      verifyJsonResponse(response, Status.NoContent, None, Map("user-session" -> "user-session-id"))
+    }
+
+    "set new user session cookie if none present" in {
+      when(playlistOptimizerMock.delete(optimizationId)).thenReturn(IO.unit)
+
+      val request = Request[IO](uri = uri"/playlist-optimizations/607995e0-8e3a-11ea-bc55-0242ac130003", method = Method.DELETE)
+      val response: IO[Response[IO]] = playlistController.routesWithUserSession.orNotFound.run(request)
+
+      val executedResponse = response.unsafeRunSync()
+
+      executedResponse.status must be (Status.NoContent)
+      executedResponse.cookies.map(_.name) must contain ("user-session")
     }
   }
 }
