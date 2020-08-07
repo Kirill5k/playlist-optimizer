@@ -29,10 +29,7 @@ class PlaylistOptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
   "A RefBasedPlaylistOptimizer" - {
 
     "initiate optimization of a playlist" in {
-      implicit val alg = new OptimizationAlgorithm[IO, Track] {
-        override def optimizeSeq(items: IndexedSeq[Track], parameters: OptimizationParameters): IO[(IndexedSeq[Track], Double)] =
-          IO.sleep(10.seconds) *> IO.pure((optimizedTracks, 25.0))
-      }
+      implicit val alg = mockAlg(IO.sleep(10.seconds) *> IO.pure((optimizedTracks, 25.0)))
 
       val result = for {
         optimizer <- PlaylistOptimizer.refBasedPlaylistOptimizer[IO]
@@ -43,9 +40,8 @@ class PlaylistOptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
     }
 
     "return error when optimization id is not recognized" in {
-      implicit val alg = new OptimizationAlgorithm[IO, Track] {
-        override def optimizeSeq(items: IndexedSeq[Track], parameters: OptimizationParameters): IO[(IndexedSeq[Track], Double)] = ???
-      }
+      implicit val alg = mockAlg(???)
+
       val result = for {
         optimizer <- PlaylistOptimizer.refBasedPlaylistOptimizer[IO]
         res       <- optimizer.get(userSessionId, optimizationId)
@@ -55,10 +51,8 @@ class PlaylistOptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
     }
 
     "return incomplete optimization result after if it has not completed" in {
-      implicit val alg = new OptimizationAlgorithm[IO, Track] {
-        override def optimizeSeq(items: IndexedSeq[Track], parameters: OptimizationParameters): IO[(IndexedSeq[Track], Double)] =
-          IO.sleep(2.seconds) *> IO.pure((optimizedTracks, 25.0))
-      }
+      implicit val alg = mockAlg(IO.sleep(2.seconds) *> IO.pure((optimizedTracks, 25.0)))
+
       val result = for {
         optimizer <- PlaylistOptimizer.refBasedPlaylistOptimizer[IO]
         id        <- optimizer.optimize(userSessionId, playlist, parameters)
@@ -74,10 +68,7 @@ class PlaylistOptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
     }
 
     "return optimization result after it has completed" in {
-      implicit val alg = new OptimizationAlgorithm[IO, Track] {
-        override def optimizeSeq(items: IndexedSeq[Track], parameters: OptimizationParameters): IO[(IndexedSeq[Track], Double)] =
-          IO.sleep(2.seconds) *> IO.pure((optimizedTracks, 25.0))
-      }
+      implicit val alg = mockAlg(IO.sleep(2.seconds) *> IO.pure((optimizedTracks, 25.0)))
       val result = for {
         optimizer <- PlaylistOptimizer.refBasedPlaylistOptimizer[IO]
         id        <- optimizer.optimize(userSessionId, playlist, parameters)
@@ -94,10 +85,8 @@ class PlaylistOptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
     }
 
     "return all optimizations" in {
-      implicit val alg = new OptimizationAlgorithm[IO, Track] {
-        override def optimizeSeq(items: IndexedSeq[Track], parameters: OptimizationParameters): IO[(IndexedSeq[Track], Double)] =
-          IO.sleep(2.seconds) *> IO.pure((optimizedTracks, 25.0))
-      }
+      implicit val alg = mockAlg(IO.sleep(2.seconds) *> IO.pure((optimizedTracks, 25.0)))
+
       val result = for {
         optimizer <- PlaylistOptimizer.refBasedPlaylistOptimizer[IO]
         _         <- optimizer.optimize(userSessionId, playlist, parameters)
@@ -111,10 +100,7 @@ class PlaylistOptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
     }
 
     "delete optimization" in {
-      implicit val alg = new OptimizationAlgorithm[IO, Track] {
-        override def optimizeSeq(items: IndexedSeq[Track], parameters: OptimizationParameters): IO[(IndexedSeq[Track], Double)] =
-          IO.sleep(2.seconds) *> IO.pure((optimizedTracks, 25.0))
-      }
+      implicit val alg = mockAlg(IO.sleep(2.seconds) *> IO.pure((optimizedTracks, 25.0)))
 
       val result = for {
         optimizer <- PlaylistOptimizer.refBasedPlaylistOptimizer[IO]
@@ -127,9 +113,7 @@ class PlaylistOptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
     }
 
     "return error if deleted optimization does not exist" in {
-      implicit val alg = new OptimizationAlgorithm[IO, Track] {
-        override def optimizeSeq(items: IndexedSeq[Track], parameters: OptimizationParameters): IO[(IndexedSeq[Track], Double)] = ???
-      }
+      implicit val alg = mockAlg(???)
 
       val result = for {
         optimizer <- PlaylistOptimizer.refBasedPlaylistOptimizer[IO]
@@ -139,5 +123,11 @@ class PlaylistOptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
 
       result.assertThrows[OptimizationNotFound]
     }
+
+    def mockAlg(returnResult: => IO[(IndexedSeq[Track], Double)]) =
+      new OptimizationAlgorithm[IO, Track] {
+        override def optimizeSeq(items: IndexedSeq[Track], parameters: OptimizationParameters): IO[(IndexedSeq[Track], Double)] =
+          returnResult
+      }
   }
 }
