@@ -1,29 +1,30 @@
 package io.kirill.playlistoptimizer.core.optimizer.operators
 
 import io.kirill.playlistoptimizer.core.common.errors.CalculationError
+import io.kirill.playlistoptimizer.core.utils.CollectionOps._
 
 import scala.annotation.tailrec
 import scala.util.Random
 
 trait Selector[A] {
-  def select(population: IndexedSeq[(A, Double)])(implicit r: Random): IndexedSeq[A]
+  def selectPairs(population: Seq[(A, Double)])(implicit r: Random): Seq[(A, A)]
 }
 
 final class RouletteWheelSelector[A] extends Selector[A] {
 
-  override def select(population: IndexedSeq[(A, Double)])(implicit r: Random): IndexedSeq[A] = {
+  override def selectPairs(population: Seq[(A, Double)])(implicit r: Random): Seq[(A, A)] = {
     @tailrec
-    def go(newPop: IndexedSeq[A], remPop: IndexedSeq[(A, Double)]): IndexedSeq[A] = {
+    def go(newPop: Seq[A], remPop: Seq[(A, Double)]): Seq[A] = {
       if (remPop.isEmpty) newPop
       else {
         val pickedInd = pickOne(remPop)
         go(newPop :+ pickedInd, remPop.filter(_._1 != pickedInd))
       }
     }
-    go(Vector(), population)
+    go(List(), population).pairs
   }
 
-  private def pickOne(population: IndexedSeq[(A, Double)])(implicit r: Random): A = {
+  private def pickOne(population: Seq[(A, Double)])(implicit r: Random): A = {
     val popByFitness = population
       .sortBy(_._2)
       .map {
