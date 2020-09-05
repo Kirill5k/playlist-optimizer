@@ -42,9 +42,9 @@
             >
               <div class="d-flex justify-content-start">
                 <b-form-group
-                  :id="'iterations'+index.toString()"
-                  label="Iterations"
-                  :label-for="'iterations-input'+index.toString()"
+                  :id="'max-gen'+index.toString()"
+                  label="Max Generation"
+                  :label-for="'max-gen-input'+index.toString()"
                   label-size="sm"
                   label-class="mb-0"
                   class="mr-2 w-25"
@@ -55,8 +55,8 @@
                     min="10"
                     max="10000"
                     size="sm"
-                    :id="'iterations-input'+index.toString()"
-                    v-model="optimizationParams.iterations"
+                    :id="'max-gen-input'+index.toString()"
+                    v-model="optimizationParams.maxGen"
                     trim
                   />
                 </b-form-group>
@@ -154,7 +154,7 @@ const DEFAULT_OPTIMIZATION_PARAMS = {
   populationSize: 100,
   crossoverProbability: 0.6,
   mutationProbability: 0.2,
-  iterations: 250,
+  maxGen: 250,
   shuffle: true
 }
 

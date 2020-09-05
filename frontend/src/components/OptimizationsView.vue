@@ -136,7 +136,7 @@ export default {
       const popSize = `Population size ${params.populationSize}`
       const crossProb = `Crossover prob. ${params.crossoverProbability}`
       const mutProb = `Mutation prob. ${params.mutationProbability}`
-      const its = `${params.iterations} iterations`
+      const its = `Max gen. ${params.maxGen}`
       const shuffle = params.shuffle ? 'Shuffle' : 'No Shuffle'
       return `${popSize} / ${crossProb} / ${mutProb} / ${its} / ${shuffle}`
     }

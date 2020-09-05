@@ -7,7 +7,7 @@ import io.kirill.playlistoptimizer.core.common.config.AppConfig
 import io.kirill.playlistoptimizer.core.common.controllers.AppController
 import io.kirill.playlistoptimizer.core.optimizer.Optimizer
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.OptimizationAlgorithm
-import io.kirill.playlistoptimizer.core.optimizer.operators.{Crossover, Mutator}
+import io.kirill.playlistoptimizer.core.optimizer.algorithms.operators.{Crossover, Mutator}
 import io.kirill.playlistoptimizer.core.playlist.Track
 import io.kirill.playlistoptimizer.core.spotify.Spotify
 import org.http4s.server.Router

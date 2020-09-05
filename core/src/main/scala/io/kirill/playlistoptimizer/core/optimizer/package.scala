@@ -17,7 +17,7 @@ package object optimizer {
       populationSize: Int,
       crossoverProbability: Double,
       mutationProbability: Double,
-      iterations: Int,
+      maxGen: Int,
       shuffle: Boolean
   )
 

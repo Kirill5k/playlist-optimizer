@@ -1,4 +1,4 @@
-package io.kirill.playlistoptimizer.core.optimizer.operators
+package io.kirill.playlistoptimizer.core.optimizer.algorithms.operators
 
 import io.kirill.playlistoptimizer.core.utils.CollectionOps._
 

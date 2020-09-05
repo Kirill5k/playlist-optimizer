@@ -71,8 +71,9 @@ class OptimizationControllerSpec extends ControllerSpec {
                 "playlist": $shortenedPlaylistJson,
                 "optimizationParameters": {
                   "populationSize": 100,
-                  "iterations": 1000,
-                  "mutationFactor": 0.2,
+                  "maxGen": 1000,
+                  "crossoverProbability": 0.5,
+                  "mutationProbability": 0.2,
                   "shuffle": true
                 }
               }
@@ -105,7 +106,7 @@ class OptimizationControllerSpec extends ControllerSpec {
            |{
            |"id": "607995e0-8e3a-11ea-bc55-0242ac130003",
            |"status": "in progress",
-           |"parameters": { "populationSize": 100, "iterations": 1000, "mutationFactor": 0.2, "shuffle": true},
+           |"parameters": { "populationSize": 100, "maxGen": 1000, "crossOverProbability": 0.5, "mutationProbability": 0.2, "shuffle": true},
            |"dateInitiated": "2020-01-01T00:00:00Z",
            |"original": {
            |    "name" : "Mel",
@@ -149,7 +150,7 @@ class OptimizationControllerSpec extends ControllerSpec {
            |[{
            |"id": "607995e0-8e3a-11ea-bc55-0242ac130003",
            |"status": "in progress",
-           |"parameters": { "populationSize": 100, "iterations": 1000, "mutationFactor": 0.2, "shuffle": true},
+           |"parameters": { "populationSize": 100, "maxGen": 1000, "crossOverProbability": 0.5, "mutationProbability": 0.2, "shuffle": true},
            |"dateInitiated": "2020-01-01T00:00:00Z",
            |"original": {
            |    "name" : "Mel",

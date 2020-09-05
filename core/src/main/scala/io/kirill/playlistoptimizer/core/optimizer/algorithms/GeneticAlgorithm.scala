@@ -4,7 +4,7 @@ import cats.effect.Concurrent
 import cats.implicits._
 import fs2.Stream
 import io.kirill.playlistoptimizer.core.optimizer.OptimizationParameters
-import io.kirill.playlistoptimizer.core.optimizer.operators.{Crossover, Evaluator, Mutator}
+import io.kirill.playlistoptimizer.core.optimizer.algorithms.operators.{Crossover, Evaluator, Mutator}
 import io.kirill.playlistoptimizer.core.utils.CollectionOps._
 
 import scala.util.Random
@@ -16,7 +16,7 @@ class GeneticAlgorithm[F[_]: Concurrent, A: Crossover: Mutator: Evaluator](
   override def optimizeSeq(items: IndexedSeq[A], params: OptimizationParameters): F[(IndexedSeq[A], Double)] = {
     val initialPopulation = Seq.fill(params.populationSize)(if (params.shuffle) rand.shuffle(items) else items)
     Stream
-      .range[F](0, params.iterations)
+      .range[F](0, params.maxGen)
       .evalScan(initialPopulation)((currPop, _) => singleIteration(currPop, params.mutationProbability))
       .compile
       .lastOrError
