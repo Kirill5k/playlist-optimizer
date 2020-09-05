@@ -8,12 +8,12 @@ import scala.util.Random
 
 
 sealed trait Crossover[A] {
-  def cross(p1: IndexedSeq[A], p2: IndexedSeq[A]): IndexedSeq[A]
+  def cross(p1: IndexedSeq[A], p2: IndexedSeq[A])(implicit r: Random): IndexedSeq[A]
 }
 
 object Crossover {
-  implicit def bestKeySequenceTrackCrossover(implicit r: Random): Crossover[Track] = new Crossover[Track] {
-    override def cross(p1: IndexedSeq[Track], p2: IndexedSeq[Track]): IndexedSeq[Track] = {
+  implicit def bestKeySequenceTrackCrossover: Crossover[Track] = new Crossover[Track] {
+    override def cross(p1: IndexedSeq[Track], p2: IndexedSeq[Track])(implicit r: Random): IndexedSeq[Track] = {
       val (bestSeq, seqIndex) = p1.tails.take(p1.size).zipWithIndex.foldLeft[(IndexedSeq[Track], Int)]((Vector(), -1)) {
         case ((currentBest, bestIndex), (tail, index)) =>
           val newBest = combo(tail)
@@ -46,7 +46,7 @@ object Crossover {
   }
 
   implicit def threeWaySplitCrossover[A](implicit r: Random): Crossover[A] = new Crossover[A] {
-    override def cross(p1: IndexedSeq[A], p2: IndexedSeq[A]): IndexedSeq[A] = {
+    override def cross(p1: IndexedSeq[A], p2: IndexedSeq[A])(implicit r: Random): IndexedSeq[A] = {
       val middle = p1.size / 2
       val point1: Int = r.nextInt(middle)
       val point2: Int = r.nextInt(middle) + middle

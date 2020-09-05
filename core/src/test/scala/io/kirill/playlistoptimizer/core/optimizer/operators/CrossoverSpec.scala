@@ -10,8 +10,6 @@ import scala.util.Random
 
 class CrossoverSpec extends AnyWordSpec with Matchers {
 
-
-
   "A bestKeySequenceTrackCrossover" should {
 
     "transfer best sequence of a parent 1 to a child" in {

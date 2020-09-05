@@ -47,7 +47,7 @@ class GeneticAlgorithm[F[_]: Concurrent, A: Crossover: Mutator: Evaluator](
     m: Mutator[A],
     r: Random
   ): IndexedSeq[A] = {
-    val child = c.cross(p1, p2)
+    val child = c.cross(p1, p2)(r = r)
     if (r.nextDouble < mutationFactor) m.mutate(child)(r = r) else child
   }
 }
