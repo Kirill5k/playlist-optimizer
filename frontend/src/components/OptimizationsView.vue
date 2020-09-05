@@ -134,10 +134,11 @@ export default {
     },
     optimizationParameters (params) {
       const popSize = `Population size ${params.populationSize}`
-      const mutFactor = `Mutation factor ${params.mutationFactor}`
+      const crossProb = `Crossover prob. ${params.crossoverProbability}`
+      const mutProb = `Mutation prob. ${params.mutationProbability}`
       const its = `${params.iterations} iterations`
       const shuffle = params.shuffle ? 'Shuffle' : 'No Shuffle'
-      return `${popSize} / ${mutFactor} / ${its} / ${shuffle}`
+      return `${popSize} / ${crossProb} / ${mutProb} / ${its} / ${shuffle}`
     }
   }
 }

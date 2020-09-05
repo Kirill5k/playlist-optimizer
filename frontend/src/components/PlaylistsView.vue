@@ -80,9 +80,9 @@
                   />
                 </b-form-group>
                 <b-form-group
-                  :id="'mutation-factor'+index.toString()"
-                  label="Mutation Factor"
-                  :label-for="'mutation-factor-input'+index.toString()"
+                  :id="'crossover-probability'+index.toString()"
+                  label="Crossover Probability"
+                  :label-for="'crossover-probability-input'+index.toString()"
                   label-size="sm"
                   label-class="mb-0"
                   class="w-25"
@@ -93,8 +93,27 @@
                     min="0.01"
                     max="1"
                     size="sm"
-                    :id="'mutation-factor-input'+index.toString()"
-                    v-model="optimizationParams.mutationFactor"
+                    :id="'crossover-probability-input'+index.toString()"
+                    v-model="optimizationParams.crossoverProbability"
+                    trim
+                  />
+                </b-form-group>
+                <b-form-group
+                  :id="'mutation-probability'+index.toString()"
+                  label="Mutation Probability"
+                  :label-for="'mutation-probability-input'+index.toString()"
+                  label-size="sm"
+                  label-class="mb-0"
+                  class="w-25"
+                >
+                  <b-form-input
+                    type="number"
+                    step="0.01"
+                    min="0.01"
+                    max="1"
+                    size="sm"
+                    :id="'mutation-probability-input'+index.toString()"
+                    v-model="optimizationParams.mutationProbability"
                     trim
                   />
                 </b-form-group>
@@ -133,7 +152,8 @@ import PlaylistView from '@/components/PlaylistView.vue'
 
 const DEFAULT_OPTIMIZATION_PARAMS = {
   populationSize: 100,
-  mutationFactor: 0.2,
+  crossoverProbability: 0.6,
+  mutationProbability: 0.2,
   iterations: 250,
   shuffle: true
 }

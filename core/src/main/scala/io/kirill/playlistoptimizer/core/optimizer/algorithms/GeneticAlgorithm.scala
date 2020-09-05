@@ -17,7 +17,7 @@ class GeneticAlgorithm[F[_]: Concurrent, A: Crossover: Mutator: Evaluator](
     val initialPopulation = Seq.fill(params.populationSize)(if (params.shuffle) rand.shuffle(items) else items)
     Stream
       .range[F](0, params.iterations)
-      .evalScan(initialPopulation)((currPop, _) => singleIteration(currPop, params.mutationFactor))
+      .evalScan(initialPopulation)((currPop, _) => singleIteration(currPop, params.mutationProbability))
       .compile
       .lastOrError
       .map(_.head)

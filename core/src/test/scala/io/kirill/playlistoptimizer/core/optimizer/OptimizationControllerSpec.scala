@@ -24,7 +24,7 @@ class OptimizationControllerSpec extends ControllerSpec {
   val shortenedPlaylist = playlist.copy(tracks = Vector(playlist.tracks.head))
 
   val optimizationId = OptimizationId(UUID.fromString("607995e0-8e3a-11ea-bc55-0242ac130003"))
-  val optimizationParameters = OptimizationParameters(100, 0.2, 1000, true)
+  val optimizationParameters = OptimizationParameters(100, 0.5, 0.2, 1000, true)
   val optimization = Optimization(optimizationId, "in progress", optimizationParameters, shortenedPlaylist, Instant.parse("2020-01-01T00:00:00Z"))
 
   val userSessionCookie = RequestCookie("user-session", "user-session-id")

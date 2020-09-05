@@ -15,7 +15,8 @@ package object optimizer {
 
   final case class OptimizationParameters(
       populationSize: Int,
-      mutationFactor: Double,
+      crossoverProbability: Double,
+      mutationProbability: Double,
       iterations: Int,
       shuffle: Boolean
   )
