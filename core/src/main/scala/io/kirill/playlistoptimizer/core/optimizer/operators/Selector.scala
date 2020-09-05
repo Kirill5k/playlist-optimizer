@@ -5,13 +5,13 @@ import io.kirill.playlistoptimizer.core.common.errors.CalculationError
 import scala.annotation.tailrec
 import scala.util.Random
 
-trait Selector {
-  def select[A](population: IndexedSeq[(A, Double)])(implicit r: Random): IndexedSeq[A]
+trait Selector[A] {
+  def select(population: IndexedSeq[(A, Double)])(implicit r: Random): IndexedSeq[A]
 }
 
-final class RouletteWheelSelector extends Selector {
+final class RouletteWheelSelector[A] extends Selector[A] {
 
-  override def select[A](population: IndexedSeq[(A, Double)])(implicit r: Random): IndexedSeq[A] = {
+  override def select(population: IndexedSeq[(A, Double)])(implicit r: Random): IndexedSeq[A] = {
     @tailrec
     def go(newPop: IndexedSeq[A], remPop: IndexedSeq[(A, Double)]): IndexedSeq[A] = {
       if (remPop.isEmpty) newPop
@@ -23,7 +23,7 @@ final class RouletteWheelSelector extends Selector {
     go(Vector(), population)
   }
 
-  private def pickOne[A](population: IndexedSeq[(A, Double)])(implicit r: Random): A = {
+  private def pickOne(population: IndexedSeq[(A, Double)])(implicit r: Random): A = {
     val popByFitness = population
       .sortBy(_._2)
       .map {
@@ -53,5 +53,5 @@ final class RouletteWheelSelector extends Selector {
 }
 
 object Selector {
-  def rouletteWheelSelector: Selector = new RouletteWheelSelector
+  def rouletteWheelSelector[A]: Selector[A] = new RouletteWheelSelector[A]
 }

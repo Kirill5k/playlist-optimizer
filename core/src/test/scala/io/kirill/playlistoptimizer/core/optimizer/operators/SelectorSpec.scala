@@ -14,9 +14,9 @@ class SelectorSpec extends AnyWordSpec with Matchers {
 
       val population = Vector((1, 4.0), (2, 2.0), (3, 5.0), (4, 10.0), (5, 1.0))
 
-      val selector = Selector.rouletteWheelSelector
+      val selector = Selector.rouletteWheelSelector[Int]
 
-      val newPopulation = selector.select[Int](population)
+      val newPopulation = selector.select(population)
 
       newPopulation must be (Vector(5, 2, 3, 4, 1))
     }
