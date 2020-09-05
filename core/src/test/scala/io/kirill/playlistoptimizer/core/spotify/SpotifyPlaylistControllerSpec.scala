@@ -30,7 +30,7 @@ class SpotifyPlaylistControllerSpec extends ControllerSpec {
   val shortenedPlaylist = playlist.copy(tracks = Vector(playlist.tracks.head))
 
   val optimizationId = OptimizationId(UUID.fromString("607995e0-8e3a-11ea-bc55-0242ac130003"))
-  val optimizationParameters = OptimizationParameters(100, 0.5, 0.2, 1000, true)
+  val optimizationParameters = OptimizationParameters(100, 1000, 0.5, 0.2, 0.1, true)
   val optimization = Optimization(optimizationId, "in progress", optimizationParameters, shortenedPlaylist, Instant.parse("2020-01-01T00:00:00Z"))
 
   val sessionCookie = RequestCookie("spotify-session", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhY2Nlc3NUb2tlbiI6ImFjY2Vzcy10b2tlbiIsInJlZnJlc2hUb2tlbiI6InJlZnJlc2gtdG9rZW4iLCJ1c2VySWQiOiJ1c2VyLWlkIiwidmFsaWRVbnRpbCI6IjIwMjAtMDEtMDFUMDA6MDA6MDBaIn0.e14E3Fp-aJDpcs86HYfGAkUQjQwS9d73YjSHhaIxpUw")

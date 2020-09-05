@@ -22,7 +22,7 @@ class PlaylistOptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
   val optimizedTracks = random.shuffle(playlist.tracks)
 
   val optimizationId = OptimizationId(UUID.randomUUID())
-  val parameters     = OptimizationParameters(100, 0.5, 0.2, 1000, true)
+  val parameters     = OptimizationParameters(100, 1000, 0.5, 0.2, 0.1, true)
 
   val userSessionId = UserSessionId("user-session-id")
 

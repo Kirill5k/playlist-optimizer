@@ -117,6 +117,25 @@
                     trim
                   />
                 </b-form-group>
+                <b-form-group
+                  :id="'elitism-ratio'+index.toString()"
+                  label="Elitism ratio"
+                  :label-for="'elitism-ratio-input'+index.toString()"
+                  label-size="sm"
+                  label-class="mb-0"
+                  class="w-25"
+                >
+                  <b-form-input
+                    type="number"
+                    step="0.01"
+                    min="0.01"
+                    max="1"
+                    size="sm"
+                    :id="'elitism-ratio-input'+index.toString()"
+                    v-model="optimizationParams.elitismRatio"
+                    trim
+                  />
+                </b-form-group>
               </div>
               <b-form-group
                 :id="'shuffle'+index.toString()"
@@ -152,9 +171,10 @@ import PlaylistView from '@/components/PlaylistView.vue'
 
 const DEFAULT_OPTIMIZATION_PARAMS = {
   populationSize: 100,
-  crossoverProbability: 0.6,
-  mutationProbability: 0.2,
   maxGen: 250,
+  crossoverProbability: 0.5,
+  mutationProbability: 0.2,
+  elitismRatio: 0.1,
   shuffle: true
 }
 

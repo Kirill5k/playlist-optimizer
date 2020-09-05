@@ -15,9 +15,10 @@ package object optimizer {
 
   final case class OptimizationParameters(
       populationSize: Int,
+      maxGen: Int,
       crossoverProbability: Double,
       mutationProbability: Double,
-      maxGen: Int,
+      elitismRatio: Double,
       shuffle: Boolean
   )
 
