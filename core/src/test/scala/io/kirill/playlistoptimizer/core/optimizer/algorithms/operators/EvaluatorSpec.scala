@@ -23,7 +23,7 @@ class EvaluatorSpec extends AnyWordSpec with Matchers {
         track("song 10", GMajor)
       )
 
-      Evaluator.keyDistanceBasedTracksEvaluator.evaluateIndividual(tracks) must be (4)
+      Evaluator.keyDistanceBasedTracksEvaluator.evaluateIndividual(tracks).value must be (4)
     }
 
     "penalize if tracks are too far apart" in {
@@ -34,7 +34,7 @@ class EvaluatorSpec extends AnyWordSpec with Matchers {
         track("song 4", EMinor)
       )
 
-      Evaluator.keyDistanceBasedTracksEvaluator.evaluateIndividual(tracks) must be (94)
+      Evaluator.keyDistanceBasedTracksEvaluator.evaluateIndividual(tracks).value must be (94)
     }
   }
 }

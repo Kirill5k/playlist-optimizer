@@ -1,6 +1,6 @@
 package io.kirill.playlistoptimizer.core.optimizer.algorithms
 
-import cats.effect.Concurrent
+import cats.effect.{Concurrent, Sync}
 import cats.implicits._
 import fs2.Stream
 import io.kirill.playlistoptimizer.core.optimizer.OptimizationParameters
@@ -28,7 +28,7 @@ class GeneticAlgorithm[F[_]: Concurrent, A](
       .evalScan(initialPopulation)((currPop, _) => singleGeneration(currPop, params))
       .compile
       .lastOrError
-      .map(finalPop => evaluator.evaluatePopulation(finalPop).minBy(_._2))
+      .map(finalPop => evaluator.evaluatePopulation(finalPop).map(p => (p._1, p._2.value)).minBy(_._2))
   }
 
   private def singleGeneration(
@@ -36,9 +36,7 @@ class GeneticAlgorithm[F[_]: Concurrent, A](
       params: OptimizationParameters
   )(implicit rand: Random): F[List[IndexedSeq[A]]] = {
     val fitpop = evaluator.evaluatePopulation(population)
-
-    val elites = Stream.evalSeq(Concurrent[F].delay(elitism.select(fitpop, params.elitismRatio)))
-
+    val elites = Stream.evalSeq(Sync[F].delay(elitism.select(fitpop, params.elitismRatio)))
     val newPopulation = Stream
       .evalSeq(Concurrent[F].delay(selector.selectPairs(fitpop, params.populationSize)))
       .map {
@@ -49,7 +47,7 @@ class GeneticAlgorithm[F[_]: Concurrent, A](
           )
       }
       .parJoinUnbounded
-      .flatMap(ind => Stream.eval(Concurrent[F].delay(mutator.mutate(ind, params.mutationProbability))))
+      .flatMap(ind => Stream.eval(Sync[F].delay(mutator.mutate(ind, params.mutationProbability))))
 
     (newPopulation ++ elites).compile.toList
   }
