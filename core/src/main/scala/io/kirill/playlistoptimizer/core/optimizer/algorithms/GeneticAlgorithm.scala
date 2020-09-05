@@ -16,7 +16,10 @@ class GeneticAlgorithm[F[_]: Concurrent, A](
     val elitism: Elitism[A]
 ) extends OptimizationAlgorithm[F, A] {
 
-  override def optimizeSeq(items: IndexedSeq[A], params: OptimizationParameters)(
+  override def optimizeSeq(
+    items: IndexedSeq[A],
+    params: OptimizationParameters
+  )(
       implicit rand: Random
   ): F[(IndexedSeq[A], Double)] = {
     val initialPopulation = List.fill(params.populationSize)(if (params.shuffle) rand.shuffle(items) else items)
@@ -25,15 +28,14 @@ class GeneticAlgorithm[F[_]: Concurrent, A](
       .evalScan(initialPopulation)((currPop, _) => singleGeneration(currPop, params))
       .compile
       .lastOrError
-      .map(_.head)
-      .map(res => (res, Evaluator[A].evaluate(res)))
+      .map(finalPop => evaluator.evaluatePopulation(finalPop).minBy(_._2))
   }
 
   private def singleGeneration(
       population: List[IndexedSeq[A]],
       params: OptimizationParameters
   )(implicit rand: Random): F[List[IndexedSeq[A]]] = {
-    val fitpop = population.map(i => (i, evaluator.evaluate(i)))
+    val fitpop = evaluator.evaluatePopulation(population)
 
     val elites = Stream.evalSeq(Concurrent[F].delay(elitism.select(fitpop, params.elitismRatio)))
 

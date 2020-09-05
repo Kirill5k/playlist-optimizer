@@ -34,14 +34,14 @@ class GeneticAlgorithmSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers 
         val end = Instant.now()
 
         println(s"total time taken: ${end.getEpochSecond - start.getEpochSecond}s")
-        println(s"original score: ${Evaluator.keyDistanceBasedTracksEvaluator.evaluate(songs)}, optimized score: ${Evaluator.keyDistanceBasedTracksEvaluator.evaluate(tracks)}")
+        println(s"original score: ${Evaluator.keyDistanceBasedTracksEvaluator.evaluateIndividual(songs)}, optimized score: ${Evaluator.keyDistanceBasedTracksEvaluator.evaluateIndividual(tracks)}")
         println(tracks)
         println(keyStreak(tracks))
 
 
         tracks must contain theSameElementsAs songs
         tracks must not contain theSameElementsInOrderAs (songs)
-        score must be < Evaluator.keyDistanceBasedTracksEvaluator.evaluate(songs) / 20
+        score must be < Evaluator.keyDistanceBasedTracksEvaluator.evaluateIndividual(songs) / 20
       }
     }
   }
