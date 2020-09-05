@@ -38,10 +38,9 @@ class GeneticAlgorithmSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers 
         println(tracks)
         println(keyStreak(tracks))
 
-
         tracks must contain theSameElementsAs songs
         tracks must not contain theSameElementsInOrderAs (songs)
-        score must be < Evaluator.keyDistanceBasedTracksEvaluator.evaluateIndividual(songs) / 20
+        score must be < Evaluator.keyDistanceBasedTracksEvaluator.evaluateIndividual(songs).value / 20
       }
     }
   }
