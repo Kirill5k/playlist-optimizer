@@ -42,8 +42,12 @@ class GeneticAlgorithm[F[_]: Concurrent, A: Crossover: Mutator: Evaluator](
       p1: IndexedSeq[A],
       p2: IndexedSeq[A],
       mutationFactor: Double
-  )(implicit c: Crossover[A], m: Mutator[A], r: Random): IndexedSeq[A] = {
+  )(
+    implicit c: Crossover[A],
+    m: Mutator[A],
+    r: Random
+  ): IndexedSeq[A] = {
     val child = c.cross(p1, p2)
-    if (r.nextDouble < mutationFactor) m.mutate(child) else child
+    if (r.nextDouble < mutationFactor) m.mutate(child)(r = r) else child
   }
 }
