@@ -14,6 +14,7 @@ object errors {
   sealed trait NotFoundError extends ApplicationError
   sealed trait BadRequestError extends ApplicationError
   sealed trait ForbiddenError extends ApplicationError
+  sealed trait InternalError extends ApplicationError
 
   final case object MissingSpotifySessionCookie extends ForbiddenError {
     val message = "missing spotify session cookie"
@@ -52,4 +53,6 @@ object errors {
   final case class InvalidJwtEncryptionAlgorithm(alg: JwtAlgorithm) extends ApplicationError {
     val message = s"unrecognized jwt encryption algorithm $alg"
   }
+
+  final case class CalculationError(message: String) extends ApplicationError
 }
