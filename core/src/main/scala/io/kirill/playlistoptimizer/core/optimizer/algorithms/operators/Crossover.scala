@@ -9,6 +9,11 @@ import scala.util.Random
 
 sealed trait Crossover[A] {
   def cross(p1: IndexedSeq[A], p2: IndexedSeq[A])(implicit r: Random): IndexedSeq[A]
+
+  def cross(p1: IndexedSeq[A], p2: IndexedSeq[A], crossoverProbability: Double)(implicit r: Random): IndexedSeq[A] = {
+    val n = r.nextDouble()
+    if (n < crossoverProbability) cross(p1, p2) else p1
+  }
 }
 
 object Crossover {

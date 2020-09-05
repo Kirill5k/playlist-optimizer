@@ -4,7 +4,7 @@ import io.kirill.playlistoptimizer.core.playlist.{Key, Track}
 import io.kirill.playlistoptimizer.core.playlist.Key
 
 sealed trait Evaluator[A] {
-  def evaluate(items: Seq[A]): Double
+  def evaluate(individual: Seq[A]): Double
 }
 
 object Evaluator {

@@ -13,6 +13,7 @@ import io.kirill.playlistoptimizer.core.optimizer.algorithms.OptimizationAlgorit
 import io.kirill.playlistoptimizer.core.playlist.{Playlist, Track}
 
 import scala.concurrent.duration.FiniteDuration
+import scala.util.Random
 
 trait PlaylistOptimizer[F[_]] {
   def optimize(userId: UserSessionId, playlist: Playlist, parameters: OptimizationParameters): F[OptimizationId]
@@ -26,6 +27,8 @@ private class RefBasedPlaylistOptimizer[F[_]: Concurrent: ContextShift](
 )(
     implicit val alg: OptimizationAlgorithm[F, Track]
 ) extends PlaylistOptimizer[F] {
+
+  implicit val r: Random = new Random()
 
   override def get(userId: UserSessionId, id: OptimizationId): F[Optimization] =
     state.get
@@ -53,7 +56,6 @@ private class RefBasedPlaylistOptimizer[F[_]: Concurrent: ContextShift](
       completedOpt      = opt.copy(status = "completed", duration = Some(duration), result = Some(optimizedPlaylist), score = Some(score))
       _ <- updateOptInState(userId, id, completedOpt)
     } yield ()
-
 
   private def updateOptInState(userId: UserSessionId, id: OptimizationId, optimization: Optimization): F[Unit] =
     state.update(s => s + (userId -> (s.getOrElse(userId, Map()) + (id -> optimization))))

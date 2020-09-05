@@ -5,7 +5,7 @@ import java.time.Instant
 import cats.effect.IO
 import cats.effect.testing.scalatest.AsyncIOSpec
 import io.kirill.playlistoptimizer.core.optimizer.OptimizationParameters
-import io.kirill.playlistoptimizer.core.optimizer.algorithms.operators.{Crossover, Evaluator, Mutator}
+import io.kirill.playlistoptimizer.core.optimizer.algorithms.operators.{Crossover, Elitism, Evaluator, Mutator, Selector}
 import io.kirill.playlistoptimizer.core.playlist.{PlaylistBuilder, Track}
 import org.scalatest.freespec.AsyncFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -20,6 +20,8 @@ class GeneticAlgorithmSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers 
     "should optimize a seq of tracks" in {
       implicit val c: Crossover[Track] = Crossover.bestKeySequenceTrackCrossover
       implicit val m: Mutator[Track] = Mutator.randomSwapMutator[Track]
+      implicit val s: Selector[Track] = Selector.rouletteWheelSelector[Track]
+      implicit val e: Elitism[Track] = Elitism.elitism[Track]
 
       val start = Instant.now
 

@@ -7,24 +7,31 @@ import scala.annotation.tailrec
 import scala.util.Random
 
 trait Selector[A] {
-  def selectPairs(population: Seq[(A, Double)])(implicit r: Random): Seq[(A, A)]
+  def selectPairs(
+      population: Seq[(IndexedSeq[A], Double)],
+      populationLimit: Int
+  )(implicit r: Random): Seq[(IndexedSeq[A], IndexedSeq[A])]
 }
 
 final class RouletteWheelSelector[A] extends Selector[A] {
 
-  override def selectPairs(population: Seq[(A, Double)])(implicit r: Random): Seq[(A, A)] = {
+  override def selectPairs(
+      population: Seq[(IndexedSeq[A], Double)],
+      populationLimit: Int
+  )(
+      implicit r: Random
+  ): Seq[(IndexedSeq[A], IndexedSeq[A])] = {
     @tailrec
-    def go(newPop: Seq[A], remPop: Seq[(A, Double)]): Seq[A] = {
-      if (remPop.isEmpty) newPop
+    def go(newPop: Seq[IndexedSeq[A]], remPop: Seq[(IndexedSeq[A], Double)]): Seq[IndexedSeq[A]] =
+      if (remPop.isEmpty || newPop.size >= populationLimit) newPop
       else {
         val pickedInd = pickOne(remPop)
         go(newPop :+ pickedInd, remPop.filter(_._1 != pickedInd))
       }
-    }
     go(List(), population).pairs
   }
 
-  private def pickOne(population: Seq[(A, Double)])(implicit r: Random): A = {
+  private def pickOne(population: Seq[(IndexedSeq[A], Double)])(implicit r: Random): IndexedSeq[A] = {
     val popByFitness = population
       .sortBy(_._2)
       .map {
@@ -36,7 +43,8 @@ final class RouletteWheelSelector[A] extends Selector[A] {
     val popByCumulativeSum = popByFitness
       .map {
         case (i, f) => (i, f / fTotal)
-      }.tails
+      }
+      .tails
       .take(population.size)
       .map(t => (t.head._1, t.map(_._2).sum))
       .toVector

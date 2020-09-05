@@ -12,13 +12,13 @@ class SelectorSpec extends AnyWordSpec with Matchers {
     "sort population by fittest candidates based on probability and distribute them in pairs" in {
       implicit val r = new Random(42)
 
-      val population = List((1, 4.0), (2, 2.0), (3, 5.0), (4, 10.0), (5, 1.0), (6, 20.0))
+      val population = List((Vector(1), 4.0), (Vector(2), 2.0), (Vector(3), 5.0), (Vector(4), 10.0), (Vector(5), 1.0), (Vector(6), 20.0))
 
       val selector = Selector.rouletteWheelSelector[Int]
 
-      val newPopulation = selector.selectPairs(population)
+      val newPopulation = selector.selectPairs(population, 4)
 
-      newPopulation must be (List((5, 2), (3, 4), (1, 6)))
+      newPopulation must be (List((Vector(5), Vector(2)), (Vector(3), Vector(4))))
     }
   }
 }
