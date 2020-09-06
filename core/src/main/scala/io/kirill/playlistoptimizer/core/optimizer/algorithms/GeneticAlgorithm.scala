@@ -47,7 +47,8 @@ class GeneticAlgorithm[F[_]: Concurrent, A](
           )
       }
       .parJoinUnbounded
-      .flatMap(ind => Stream.eval(Sync[F].delay(mutator.mutate(ind, params.mutationProbability))))
+      .map(ind => Stream.eval(Concurrent[F].delay(mutator.mutate(ind, params.mutationProbability))))
+      .parJoinUnbounded
 
     (newPopulation ++ elites).compile.toList
   }

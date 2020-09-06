@@ -26,22 +26,22 @@ class MutatorSpec extends AnyWordSpec with Matchers {
   "A randomSwapMutator" should {
     "swap 2 random elements in seq" in {
       implicit val r = new Random(1)
-      val mutatedTracks = Mutator.randomSwapMutator[Track].mutate(tracks)
+      val mutatedTracks = Mutator.randomSwapMutator[Track].mutate(tracks, 1)
 
       mutatedTracks must not contain theSameElementsInOrderAs (tracks)
       mutatedTracks must contain theSameElementsAs tracks
-      mutatedTracks.map(_.song.name) must contain theSameElementsInOrderAs List("song 1", "song 2", "song 3", "song 4", "song 5", "song 9", "song 7", "song 8", "song 6", "song 10")
+      mutatedTracks.map(_.song.name) must contain theSameElementsInOrderAs List("song 1", "song 2", "song 3", "song 8", "song 5", "song 6", "song 7", "song 4", "song 9", "song 10")
     }
   }
 
   "A neighbourSwapMutator" should {
     "swap 2 neighbour elements in seq" in {
-      implicit val r = new Random(1)
-      val mutatedTracks = Mutator.neighbourSwapMutator[Track].mutate(tracks)
+      implicit val r = new Random(13)
+      val mutatedTracks = Mutator.neighbourSwapMutator[Track].mutate(tracks, 0.25)
 
       mutatedTracks must not contain theSameElementsInOrderAs (tracks)
       mutatedTracks must contain theSameElementsAs tracks
-      mutatedTracks.map(_.song.name) must contain theSameElementsInOrderAs List("song 1", "song 2", "song 3", "song 4", "song 5", "song 7", "song 6", "song 8", "song 9", "song 10")
+      mutatedTracks.map(_.song.name) must contain theSameElementsInOrderAs List("song 1", "song 2", "song 4", "song 3", "song 5", "song 7", "song 6", "song 8", "song 9", "song 10")
     }
   }
 }
