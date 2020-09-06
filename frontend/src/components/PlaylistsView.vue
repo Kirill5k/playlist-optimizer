@@ -42,25 +42,6 @@
             >
               <div class="d-flex justify-content-start">
                 <b-form-group
-                  :id="'max-gen'+index.toString()"
-                  label="Max Generation"
-                  :label-for="'max-gen-input'+index.toString()"
-                  label-size="sm"
-                  label-class="mb-0"
-                  class="mr-2 w-25"
-                >
-                  <b-form-input
-                    step="10"
-                    type="number"
-                    min="10"
-                    max="10000"
-                    size="sm"
-                    :id="'max-gen-input'+index.toString()"
-                    v-model="optimizationParams.maxGen"
-                    trim
-                  />
-                </b-form-group>
-                <b-form-group
                   :id="'population-size'+index.toString()"
                   label="Population size"
                   :label-for="'population-size-input'+index.toString()"
@@ -80,12 +61,33 @@
                   />
                 </b-form-group>
                 <b-form-group
+                  :id="'max-gen'+index.toString()"
+                  label="Max Generation"
+                  :label-for="'max-gen-input'+index.toString()"
+                  label-size="sm"
+                  label-class="mb-0"
+                  class="mr-2 w-25"
+                >
+                  <b-form-input
+                    step="10"
+                    type="number"
+                    min="10"
+                    max="10000"
+                    size="sm"
+                    :id="'max-gen-input'+index.toString()"
+                    v-model="optimizationParams.maxGen"
+                    trim
+                  />
+                </b-form-group>
+              </div>
+              <div class="d-flex justify-content-start">
+                <b-form-group
                   :id="'crossover-probability'+index.toString()"
                   label="Crossover Probability"
                   :label-for="'crossover-probability-input'+index.toString()"
                   label-size="sm"
                   label-class="mb-0"
-                  class="w-25"
+                  class="mr-2 w-25"
                 >
                   <b-form-input
                     type="number"
@@ -104,7 +106,7 @@
                   :label-for="'mutation-probability-input'+index.toString()"
                   label-size="sm"
                   label-class="mb-0"
-                  class="w-25"
+                  class="mr-2 w-25"
                 >
                   <b-form-input
                     type="number"
@@ -170,11 +172,11 @@ import { BCard, BCardHeader, BCollapse, BCardBody, BButton, BCardText, BFormGrou
 import PlaylistView from '@/components/PlaylistView.vue'
 
 const DEFAULT_OPTIMIZATION_PARAMS = {
-  populationSize: 100,
-  maxGen: 250,
-  crossoverProbability: 0.5,
-  mutationProbability: 0.2,
-  elitismRatio: 0.1,
+  populationSize: 250,
+  maxGen: 1000,
+  crossoverProbability: 0.6,
+  mutationProbability: 0.1,
+  elitismRatio: 0.2,
   shuffle: true
 }
 

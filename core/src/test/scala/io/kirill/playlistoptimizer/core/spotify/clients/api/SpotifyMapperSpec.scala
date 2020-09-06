@@ -24,26 +24,15 @@ class SpotifyMapperSpec extends AnyWordSpec with Matchers {
       "spotify:track:track-id",
       PlaylistTrackUrls("http://spotify.com/tracks/track-id")
     )
-    val audioAnalysis = AudioAnalysisTrack(255.34898, 98.002, 5, 0)
 
-    val audioFeatures = SpotifyAudioFeaturesResponse("1wtxI9YhL1t4yDIwGAFljP", 5, 0, 255348.98, 98.002)
-
-    "map song and audioAnalysis details to a song" in {
-      val track = SpotifyMapper.toDomain(song, audioAnalysis)
-
-      track must be (Track(
-        SongDetails("I'm Not The Only One - Radio Edit", List("Sam Smith", "Bruno Mars"), Some("I'm Not The Only One"), Some(LocalDate.of(2012, 10 ,10)), Some("Single")),
-        AudioDetails(98.002, FiniteDuration(255, TimeUnit.SECONDS), GMinor),
-        SourceDetails("spotify:track:track-id", Some("http://spotify.com/tracks/track-id"))
-      ))
-    }
+    val audioFeatures = SpotifyAudioFeaturesResponse("1wtxI9YhL1t4yDIwGAFljP", 5, 0, 255348.98, 98.002, 0.613, 0.807)
 
     "map song and audioFeatures details to a song" in {
       val track = SpotifyMapper.toDomain(song, audioFeatures)
 
       track must be (Track(
         SongDetails("I'm Not The Only One - Radio Edit", List("Sam Smith", "Bruno Mars"), Some("I'm Not The Only One"), Some(LocalDate.of(2012, 10 ,10)), Some("Single")),
-        AudioDetails(98.002, FiniteDuration(255348, TimeUnit.MILLISECONDS), GMinor),
+        AudioDetails(98.002, FiniteDuration(255348, TimeUnit.MILLISECONDS), GMinor, 0.807, 0.613),
         SourceDetails("spotify:track:track-id", Some("http://spotify.com/tracks/track-id"))
       ))
     }
@@ -51,13 +40,13 @@ class SpotifyMapperSpec extends AnyWordSpec with Matchers {
 
     "throw exception when invalid key" in {
       the [InvalidKey] thrownBy {
-        SpotifyMapper.toDomain(song, audioAnalysis.copy(key = 15))
+        SpotifyMapper.toDomain(song, audioFeatures.copy(key = 15))
       }
     }
 
     "throw exception when invalid mode" in {
       the [InvalidMode] thrownBy {
-        SpotifyMapper.toDomain(song, audioAnalysis.copy(mode = 2))
+        SpotifyMapper.toDomain(song, audioFeatures.copy(mode = 2))
       }
     }
   }

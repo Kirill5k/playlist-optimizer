@@ -61,7 +61,7 @@ class SpotifyRestApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
 
       val response = SpotifyRestApi.getAudioFeatures[IO]("token", "track-1")
 
-      response.asserting(_ must be (SpotifyAudioFeaturesResponse("1wtxI9YhL1t4yDIwGAFljP", 7,0,535975.0,123.996)))
+      response.asserting(_ must be (SpotifyAudioFeaturesResponse("1wtxI9YhL1t4yDIwGAFljP", 7,0,535975.0,123.996, 0.807, 0.613)))
     }
 
     "return multiple audio features response when success" in {
@@ -75,9 +75,9 @@ class SpotifyRestApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
       val response = SpotifyRestApi.getMultipleAudioFeatures[IO]("token", List("track-1", "track-2"))
 
       response.asserting(_ must be (SpotifyMultipleAudioFeaturesResponse(List(
-        SpotifyAudioFeaturesResponse("4JpKVNYnVcJ8tuMKjAj50A", 7,1,535223.0,123.99),
-        SpotifyAudioFeaturesResponse("2NRANZE9UCmPAS5XVbXL40", 1,1,187800.0,96.083),
-        SpotifyAudioFeaturesResponse("24JygzOLM0EmRQeGtFcIcG", 4,1,497493.0,115.7)
+        SpotifyAudioFeaturesResponse("4JpKVNYnVcJ8tuMKjAj50A", 7,1,535223.0,123.99, 0.626, 0.808),
+        SpotifyAudioFeaturesResponse("2NRANZE9UCmPAS5XVbXL40", 1,1,187800.0,96.083, 0.815, 0.457),
+        SpotifyAudioFeaturesResponse("24JygzOLM0EmRQeGtFcIcG", 4,1,497493.0,115.7, 0.402, 0.281)
       ))))
     }
 

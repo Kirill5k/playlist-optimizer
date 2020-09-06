@@ -14,13 +14,15 @@ final case class TrackView(
     duration: Double,
     key: Int,
     mode: Int,
+    danceability: Double,
+    energy: Double,
     uri: String,
     url: Option[String]
 ) {
   def toDomain: Track =
     Track(
       SongDetails(name, artists, releaseName, releaseDate, releaseType),
-      AudioDetails(tempo, duration.seconds, Key(key, mode)),
+      AudioDetails(tempo, duration.seconds, Key(key, mode), danceability, energy),
       SourceDetails(uri, url)
     )
 }
@@ -29,7 +31,7 @@ object TrackView {
   def from(track: Track): TrackView = track match {
     case Track(
         SongDetails(name, artists, releaseName, releaseDate, releaseType),
-        AudioDetails(tempo, duration, key),
+        AudioDetails(tempo, duration, key, danceability, energy),
         SourceDetails(uri, url)
         ) =>
       TrackView(
@@ -42,6 +44,8 @@ object TrackView {
         duration.toUnit(TimeUnit.SECONDS),
         key.number,
         key.mode.number,
+        danceability,
+        energy,
         uri,
         url
       )

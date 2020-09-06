@@ -51,7 +51,9 @@ object SpotifyResponse {
       key: Int,
       mode: Int,
       duration_ms: Double,
-      tempo: Double
+      tempo: Double,
+      energy: Double,
+      danceability: Double
   ) extends SpotifyResponse
 
   final case class SpotifyMultipleAudioFeaturesResponse(

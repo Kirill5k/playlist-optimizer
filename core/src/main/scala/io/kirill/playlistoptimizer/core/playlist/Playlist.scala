@@ -27,7 +27,9 @@ final case class SongDetails(
 final case class AudioDetails(
     tempo: Double,
     duration: FiniteDuration,
-    key: Key
+    key: Key,
+    danceability: Double,
+    energy: Double
 )
 
 final case class SourceDetails(

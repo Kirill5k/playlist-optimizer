@@ -50,7 +50,7 @@ object Crossover {
     }
   }
 
-  implicit def threeWaySplitCrossover[A](implicit r: Random): Crossover[A] = new Crossover[A] {
+  implicit def threeWaySplitCrossover[A]: Crossover[A] = new Crossover[A] {
     override def cross(p1: IndexedSeq[A], p2: IndexedSeq[A])(implicit r: Random): IndexedSeq[A] = {
       val middle = p1.size / 2
       val point1: Int = r.nextInt(middle)
