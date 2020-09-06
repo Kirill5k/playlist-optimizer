@@ -36,34 +36,6 @@ class SpotifyPlaylistControllerSpec extends ControllerSpec {
   val sessionCookie = RequestCookie("spotify-session", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhY2Nlc3NUb2tlbiI6ImFjY2Vzcy10b2tlbiIsInJlZnJlc2hUb2tlbiI6InJlZnJlc2gtdG9rZW4iLCJ1c2VySWQiOiJ1c2VyLWlkIiwidmFsaWRVbnRpbCI6IjIwMjAtMDEtMDFUMDA6MDA6MDBaIn0.e14E3Fp-aJDpcs86HYfGAkUQjQwS9d73YjSHhaIxpUw")
   val accessToken = SpotifyAccessToken("access-token", "refresh-token", "user-id", Instant.parse("2020-01-01T00:00:00Z"))
 
-  val shortenedPlaylistJson =
-    json"""
-      {
-          "name" : "Mel",
-          "description" : "Melodic deep house and techno songs",
-          "source" : "Spotify",
-          "tracks" : [
-            {
-              "name" : "Glue",
-              "artists" : [
-                "Bicep"
-              ],
-              "releaseName" : "Bicep",
-              "releaseDate" : "2017-09-01",
-              "releaseType" : "album",
-              "tempo" : 129.983,
-              "duration" : 269.15,
-              "key" : 5,
-              "mode" : 0,
-              "danceability": 0.613,
-              "energy": 0.807,
-              "uri" : "spotify:track:2aJDlirz6v2a4HREki98cP",
-              "url" : "https://open.spotify.com/track/2aJDlirz6v2a4HREki98cP"
-            }
-          ]
-        }
-      """
-
   "A SpotifyPlaylistController" should {
 
     "return existing user-session cookie" in {

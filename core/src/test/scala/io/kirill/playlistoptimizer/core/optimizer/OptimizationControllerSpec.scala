@@ -30,32 +30,6 @@ class OptimizationControllerSpec extends ControllerSpec {
   val userSessionCookie = RequestCookie("user-session", "user-session-id")
   val userSessionId = UserSessionId("user-session-id")
 
-  val shortenedPlaylistJson =
-    json"""
-      {
-          "name" : "Mel",
-          "description" : "Melodic deep house and techno songs",
-          "source" : "Spotify",
-          "tracks" : [
-            {
-              "name" : "Glue",
-              "artists" : [
-                "Bicep"
-              ],
-              "releaseName" : "Bicep",
-              "releaseDate" : "2017-09-01",
-              "releaseType" : "album",
-              "tempo" : 129.983,
-              "duration" : 269.15,
-              "key" : 5,
-              "mode" : 0,
-              "uri" : "spotify:track:2aJDlirz6v2a4HREki98cP",
-              "url" : "https://open.spotify.com/track/2aJDlirz6v2a4HREki98cP"
-            }
-          ]
-        }
-      """
-
   "A PlaylistController" should {
     val playlistOptimizerMock = mock[PlaylistOptimizer[IO]]
     val playlistController = new OptimizationController[IO](playlistOptimizerMock)
@@ -109,28 +83,7 @@ class OptimizationControllerSpec extends ControllerSpec {
            |"status": "in progress",
            |"parameters": { "populationSize": 100, "maxGen": 1000, "crossoverProbability": 0.5, "mutationProbability": 0.2, "elitismRatio": 0.1, "shuffle": true},
            |"dateInitiated": "2020-01-01T00:00:00Z",
-           |"original": {
-           |    "name" : "Mel",
-           |    "description" : "Melodic deep house and techno songs",
-           |    "tracks" : [
-           |      {
-           |        "name" : "Glue",
-           |        "artists" : [
-           |          "Bicep"
-           |        ],
-           |        "releaseName" : "Bicep",
-           |        "releaseDate" : "2017-09-01",
-           |        "releaseType" : "album",
-           |        "tempo" : 129.983,
-           |        "duration" : 269.15,
-           |        "key" : 5,
-           |        "mode" : 0,
-           |        "uri" : "spotify:track:2aJDlirz6v2a4HREki98cP",
-           |        "url" : "https://open.spotify.com/track/2aJDlirz6v2a4HREki98cP"
-           |      }
-           |    ],
-           |    "source" : "Spotify"
-           |  },
+           |"original": $shortenedPlaylistJson,
            |"durationMs": null,
            |"result": null,
            |"score": null
@@ -153,28 +106,7 @@ class OptimizationControllerSpec extends ControllerSpec {
            |"status": "in progress",
            |"parameters": { "populationSize": 100, "maxGen": 1000, "crossoverProbability": 0.5, "mutationProbability": 0.2, "elitismRatio": 0.1, "shuffle": true},
            |"dateInitiated": "2020-01-01T00:00:00Z",
-           |"original": {
-           |    "name" : "Mel",
-           |    "description" : "Melodic deep house and techno songs",
-           |    "tracks" : [
-           |      {
-           |        "name" : "Glue",
-           |        "artists" : [
-           |          "Bicep"
-           |        ],
-           |        "releaseName" : "Bicep",
-           |        "releaseDate" : "2017-09-01",
-           |        "releaseType" : "album",
-           |        "tempo" : 129.983,
-           |        "duration" : 269.15,
-           |        "key" : 5,
-           |        "mode" : 0,
-           |        "uri" : "spotify:track:2aJDlirz6v2a4HREki98cP",
-           |        "url" : "https://open.spotify.com/track/2aJDlirz6v2a4HREki98cP"
-           |      }
-           |    ],
-           |    "source" : "Spotify"
-           |  },
+           |"original": $shortenedPlaylistJson,
            |"durationMs": null,
            |"result": null,
            |"score": null
