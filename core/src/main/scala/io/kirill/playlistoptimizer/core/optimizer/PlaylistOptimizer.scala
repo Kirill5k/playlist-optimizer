@@ -48,7 +48,7 @@ private class RefBasedPlaylistOptimizer[F[_]: Concurrent: ContextShift](
       _  <- Concurrent[F].start(alg.optimizeSeq(playlist.tracks, parameters).flatMap(res => updateState(userId, id, res._1, res._2))).void
     } yield id
 
-  private def updateState(userId: UserSessionId, id: OptimizationId, result: IndexedSeq[Track], score: Double): F[Unit] =
+  private def updateState(userId: UserSessionId, id: OptimizationId, result: IndexedSeq[Track], score: BigDecimal): F[Unit] =
     for {
       opt <- get(userId, id)
       optimizedPlaylist = opt.original.copy(name = s"${opt.original.name} optimized", tracks = result)

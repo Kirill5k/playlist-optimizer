@@ -2,13 +2,15 @@ package io.kirill.playlistoptimizer.core.playlist
 
 import java.util.concurrent.TimeUnit
 
+import io.kirill.playlistoptimizer.core.playlist.Key.EMajor
+
 import scala.concurrent.duration.Duration
 
 object TrackBuilder {
 
   def track(
       name: String,
-      key: Key,
+      key: Key = EMajor,
       danceability: Double = 0.807,
       energy: Double = 0.613,
       artist: String = "Artist"

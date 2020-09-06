@@ -32,7 +32,7 @@ package object optimizer {
       dateInitiated: Instant,
       duration: Option[FiniteDuration] = None,
       result: Option[Playlist] = None,
-      score: Option[Double] = None
+      score: Option[BigDecimal] = None
   )
 
   final class Optimizer[F[_]](

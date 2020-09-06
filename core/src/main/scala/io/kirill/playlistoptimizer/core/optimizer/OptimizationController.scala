@@ -78,7 +78,7 @@ object OptimizationController {
       original: PlaylistView,
       durationMs: Option[Long] = None,
       result: Option[PlaylistView] = None,
-      score: Option[Double] = None
+      score: Option[BigDecimal] = None
   )
 
   object OptimizationView {

@@ -12,15 +12,29 @@ sealed trait Evaluator[A] {
 }
 
 object Evaluator {
-  implicit val keyDistanceBasedTracksEvaluator: Evaluator[Track] = new Evaluator[Track] {
+  implicit def keyDistanceBasedTracksEvaluator: Evaluator[Track] = new Evaluator[Track] {
     override def evaluateIndividual(tracks: IndexedSeq[Track]): Fitness = {
-      val score = tracks.sliding(2).foldLeft[Double](0) {
-        case (acc, t1 +: t2 +: _) => math.pow(Key.distance(t1.audio.key, t2.audio.key), 2) + acc
-      }
-      Fitness(score)
+      val score = calcScore[Track](tracks, (prev, curr) => math.pow(Key.distance(prev.audio.key, curr.audio.key), 2))
+      Fitness(BigDecimal(score).setScale(4, BigDecimal.RoundingMode.HALF_UP))
     }
   }
 
-  @scala.inline
-  def apply[A](implicit instance : Evaluator[A]): Evaluator[A] = instance
+  def energyFlowBasedTracksEvaluator: Evaluator[Track] = new Evaluator[Track] {
+    override def evaluateIndividual(individual: IndexedSeq[Track]): Fitness = {
+      val score = calcScore[Track](individual, (prev, curr) => math.abs(prev.audio.energy - curr.audio.energy))
+      Fitness(BigDecimal(score).setScale(4, BigDecimal.RoundingMode.HALF_UP))
+    }
+  }
+
+  def danceabilityBasedTracksEvaluator: Evaluator[Track] = new Evaluator[Track] {
+    override def evaluateIndividual(individual: IndexedSeq[Track]): Fitness = {
+      val score = calcScore[Track](individual, (prev, curr) => math.abs(prev.audio.danceability - curr.audio.danceability))
+      Fitness(BigDecimal(score).setScale(4, BigDecimal.RoundingMode.HALF_UP))
+    }
+  }
+
+  private def calcScore[A](individual: IndexedSeq[A], calculation: (A, A) => Double): Double =
+    individual.tail.foldLeft[(Double, A)]((0, individual.head)) {
+      case ((acc, prev), curr) => (acc + calculation(prev, curr), curr)
+    }._1
 }

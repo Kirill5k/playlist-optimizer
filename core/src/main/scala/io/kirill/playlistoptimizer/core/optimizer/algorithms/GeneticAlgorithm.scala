@@ -21,14 +21,15 @@ class GeneticAlgorithm[F[_]: Concurrent, A](
     params: OptimizationParameters
   )(
       implicit rand: Random
-  ): F[(IndexedSeq[A], Double)] = {
+  ): F[(IndexedSeq[A], BigDecimal)] = {
     val initialPopulation = List.fill(params.populationSize)(if (params.shuffle) rand.shuffle(items) else items)
     Stream
       .range[F](0, params.maxGen)
       .evalScan(initialPopulation)((currPop, _) => singleGeneration(currPop, params))
       .compile
       .lastOrError
-      .map(finalPop => evaluator.evaluatePopulation(finalPop).map(p => (p._1, p._2.value)).minBy(_._2))
+      .map(evaluator.evaluatePopulation)
+      .map(_.map(p => (p._1, p._2.value)).minBy(_._2))
   }
 
   private def singleGeneration(

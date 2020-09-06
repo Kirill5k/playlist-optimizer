@@ -148,12 +148,12 @@ class PlaylistOptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers
       result.assertThrows[OptimizationNotFound]
     }
 
-    def mockAlg(returnResult: => IO[(IndexedSeq[Track], Double)]) =
+    def mockAlg(returnResult: => IO[(IndexedSeq[Track], BigDecimal)]) =
       new OptimizationAlgorithm[IO, Track] {
         override def optimizeSeq(
             items: IndexedSeq[Track],
             parameters: OptimizationParameters
-        )(implicit r: Random): IO[(IndexedSeq[Track], Double)] =
+        )(implicit r: Random): IO[(IndexedSeq[Track], BigDecimal)] =
           returnResult
       }
   }

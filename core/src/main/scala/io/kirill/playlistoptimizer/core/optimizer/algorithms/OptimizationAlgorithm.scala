@@ -12,7 +12,7 @@ trait OptimizationAlgorithm[F[_], A] {
       parameters: OptimizationParameters
   )(
       implicit rand: Random
-  ): F[(IndexedSeq[A], Double)]
+  ): F[(IndexedSeq[A], BigDecimal)]
 }
 
 object OptimizationAlgorithm {

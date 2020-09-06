@@ -1,40 +1,78 @@
 package io.kirill.playlistoptimizer.core.optimizer.algorithms.operators
 
-import io.kirill.playlistoptimizer.core.playlist.Key._
+import io.kirill.playlistoptimizer.core.optimizer.algorithms.operators.operators.Fitness
+import io.kirill.playlistoptimizer.core.playlist.Key.{AMajor, DMajor, EMajor, GMajor, _}
+import io.kirill.playlistoptimizer.core.playlist.{Key, Track}
+import org.scalatest.Inspectors
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-class EvaluatorSpec extends AnyWordSpec with Matchers {
+class EvaluatorSpec extends AnyWordSpec with Matchers with Inspectors {
   import io.kirill.playlistoptimizer.core.playlist.TrackBuilder._
 
   "A keyDistanceBasedTracksEvaluator" should {
 
-    "evaluate a sequence of tracks" in {
-      val tracks = Vector(
-        track("song 1", BMajor),
-        track("song 2", EMajor),
-        track("song 3", EMajor),
-        track("song 4", AMajor),
-        track("song 5", DMajor),
-        track("song 6", GMajor),
-        track("song 7", GMajor),
-        track("song 8", GMajor),
-        track("song 9", GMajor),
-        track("song 10", GMajor)
+    val evaluator = Evaluator.keyDistanceBasedTracksEvaluator
+
+    "evaluate a sequence of tracks based on keys position" in {
+      val keysWithScore   = Map(
+        List(BMajor, EMajor, EMajor, AMajor, DMajor, GMajor, GMajor, GMajor, GMajor, GMajor) -> 4,
+        List(EMajor, GMinor, BFlatMinor, EMinor) -> 94
       )
 
-      Evaluator.keyDistanceBasedTracksEvaluator.evaluateIndividual(tracks).value must be (4)
+      forAll(keysWithScore) {
+        case (keys, expected) =>
+          val tracks = tracksSeq(keys = keys)
+          evaluator.evaluateIndividual(tracks) must be(Fitness(expected))
+      }
     }
+  }
 
-    "penalize if tracks are too far apart" in {
-      val tracks = Vector(
-        track("song 1", EMajor),
-        track("song 2", GMinor),
-        track("song 3", BFlatMinor),
-        track("song 4", EMinor)
+  "energyBasedTracksEvaluator" should {
+
+    val evaluator = Evaluator.energyFlowBasedTracksEvaluator
+
+    "evaluate a sequence of tracks based on track's energy" in {
+      val energiesWithScore = Map(
+        List(0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55) -> 0.45,
+        List(0.50, 0.45, 0.40, 0.35, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55) -> 0.45,
+        List(0.50, 0.49, 0.48, 0.47, 0.95, 0.45, 0.44, 0.43, 0.42, 0.41) -> 1.05
       )
 
-      Evaluator.keyDistanceBasedTracksEvaluator.evaluateIndividual(tracks).value must be (94)
+      forAll(energiesWithScore) {
+        case (en, expected) =>
+          val tracks = tracksSeq(energies = en)
+          evaluator.evaluateIndividual(tracks) must be(Fitness(expected))
+      }
     }
+  }
+
+  "danceabilityBasedTracksEvaluator" should {
+
+    val evaluator = Evaluator.danceabilityBasedTracksEvaluator
+
+    "evaluate a sequence of tracks based on track's danceability" in {
+      val danceabilitiesWithScore = Map(
+        List(0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55) -> 0.45,
+        List(0.50, 0.45, 0.40, 0.35, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55) -> 0.45,
+        List(0.50, 0.49, 0.48, 0.47, 0.95, 0.45, 0.44, 0.43, 0.42, 0.41) -> 1.05
+      )
+
+      forAll(danceabilitiesWithScore) {
+        case (dance, expected) =>
+          val tracks = tracksSeq(danceabilities = dance)
+          evaluator.evaluateIndividual(tracks) must be(Fitness(expected))
+      }
+    }
+  }
+
+  def tracksSeq(
+      keys: List[Key] = Nil,
+      energies: List[Double] = Nil,
+      danceabilities: List[Double] = Nil
+  ): IndexedSeq[Track] = {
+    keys.zipAll(energies, EMajor, 0.5).zipAll(danceabilities, (EMajor, 0.5), 0.5).zipWithIndex.map {
+      case (((key, en), dance), i) => track(s"song $i", key = key, energy = en, danceability = dance)
+    }.toVector
   }
 }
