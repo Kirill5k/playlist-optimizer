@@ -18,6 +18,7 @@ sealed trait Crossover[A] {
 
 object Crossover {
   implicit def bestKeySequenceTrackCrossover: Crossover[Track] = new Crossover[Track] {
+
     override def cross(p1: IndexedSeq[Track], p2: IndexedSeq[Track])(implicit r: Random): IndexedSeq[Track] = {
       val (bestSeq, seqIndex) = p1.tails.take(p1.size).zipWithIndex.foldLeft[(IndexedSeq[Track], Int)]((Vector(), -1)) {
         case ((currentBest, bestIndex), (tail, index)) =>
@@ -33,6 +34,7 @@ object Crossover {
     }
 
     private def combo(ts: IndexedSeq[Track]): IndexedSeq[Track] = {
+      @scala.annotation.tailrec
       def go(combo: IndexedSeq[Track], remaining: IndexedSeq[Track], previous: Track): IndexedSeq[Track] = {
         val newCombo = combo :+ previous
         if (remaining.isEmpty) newCombo
@@ -44,8 +46,8 @@ object Crossover {
       go(Vector(), ts.tail, ts.head)
     }
 
-    private def cut(ts: IndexedSeq[Track], sliceSize: Int)(implicit R: Random): IndexedSeq[Track] = {
-      val slicePoint = R.nextInt(sliceSize / 2)
+    private def cut(ts: IndexedSeq[Track], sliceSize: Int)(implicit r: Random): IndexedSeq[Track] = {
+      val slicePoint = r.nextInt(sliceSize / 2)
       ts.slice(slicePoint, slicePoint+sliceSize)
     }
   }

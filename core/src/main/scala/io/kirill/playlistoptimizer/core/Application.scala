@@ -23,7 +23,7 @@ object Application extends IOApp {
   implicit val c: Crossover[Track]                   = Crossover.bestKeySequenceTrackCrossover
   implicit val m: Mutator[Track]                     = Mutator.neighbourSwapMutator[Track]
   implicit val s: Selector[Track]                    = Selector.rouletteWheelSelector[Track]
-  implicit val e: Elitism[Track]                     = Elitism.elitism[Track]
+  implicit val el: Elitism[Track]                    = Elitism.elitism[Track]
   implicit val alg: OptimizationAlgorithm[IO, Track] = OptimizationAlgorithm.geneticAlgorithm[IO, Track]
 
   override def run(args: List[String]): IO[ExitCode] =

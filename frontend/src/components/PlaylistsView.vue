@@ -176,7 +176,7 @@ const DEFAULT_OPTIMIZATION_PARAMS = {
   maxGen: 1000,
   crossoverProbability: 0.6,
   mutationProbability: 0.1,
-  elitismRatio: 0.2,
+  elitismRatio: 0.1,
   shuffle: true
 }
 
