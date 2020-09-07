@@ -27,7 +27,7 @@ object Evaluator {
   }
 
   private def calcFitness[A](individual: IndexedSeq[A])(calculation: (A, A) => Double): Fitness = {
-    val score = individual.tail.foldLeft[(Double, A)]((0, individual.head)) {
+    val score = individual.toList.tail.foldLeft[(Double, A)]((0, individual.head)) {
       case ((acc, prev), curr) => (acc + calculation(prev, curr), curr)
     }._1
     Fitness(BigDecimal(score).setScale(0, BigDecimal.RoundingMode.HALF_UP))

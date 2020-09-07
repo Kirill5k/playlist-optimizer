@@ -41,7 +41,12 @@ object SpotifyResponse {
   )
   final case class PlaylistItem(track: PlaylistTrack)
   final case class PlaylistTracks(items: IndexedSeq[PlaylistItem], total: Int)
-  final case class SpotifyPlaylistResponse(id: String, name: String, description: Option[String], tracks: PlaylistTracks) extends SpotifyResponse
+  final case class SpotifyPlaylistResponse(
+      id: String,
+      name: String,
+      description: Option[String],
+      tracks: PlaylistTracks
+  ) extends SpotifyResponse
 
   final case class AudioAnalysisTrack(duration: Double, tempo: Double, key: Int, mode: Int)
   final case class SpotifyAudioAnalysisResponse(track: AudioAnalysisTrack) extends SpotifyResponse
@@ -63,4 +68,12 @@ object SpotifyResponse {
   final case class SpotifyOperationSuccessResponse(snapshot_id: String) extends SpotifyResponse
 
   final case class SpotifyUserResponse(id: String, display_name: String) extends SpotifyResponse
+
+  final case class SpotifyTrackSearchResult(
+      id: String,
+      uri: String,
+      href: String
+  )
+  final case class SpotifyTrackSearchResults(items: List[SpotifyTrackSearchResult], total: Int)
+  final case class SpotifySearchResponse(tracks: SpotifyTrackSearchResults) extends SpotifyResponse
 }

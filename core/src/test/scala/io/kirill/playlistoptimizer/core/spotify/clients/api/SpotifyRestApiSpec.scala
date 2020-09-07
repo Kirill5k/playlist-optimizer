@@ -25,6 +25,25 @@ class SpotifyRestApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
 
   "A SpotifyRestApi" - {
 
+    "find track by query" in {
+      implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
+        .whenRequestMatchesPartial {
+          case r if isAuthorized(r, "api.spotify.com", List("v1", "search")) =>
+            Response.ok(json("spotify/api/search-track-response.json"))
+          case _ => throw new RuntimeException()
+        }
+
+      val response = SpotifyRestApi.findTrack[IO]("token", "bicep glue")
+
+      response.asserting { res =>
+        res.tracks.total must be (6)
+        res.tracks.items.size must be (1)
+        val track = res.tracks.items.head
+        track.uri must be ("spotify:track:2aJDlirz6v2a4HREki98cP")
+        track.id must be ("2aJDlirz6v2a4HREki98cP")
+      }
+    }
+
     "return current user when success" in {
       implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {

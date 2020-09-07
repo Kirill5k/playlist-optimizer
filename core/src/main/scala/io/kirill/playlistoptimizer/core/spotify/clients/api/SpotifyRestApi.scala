@@ -16,13 +16,25 @@ import sttp.model.MediaType
 
 object SpotifyRestApi {
 
+  def findTrack[F[_]: Logger: Sync](authToken: String, query: String, limit: Int = 1)(
+    implicit sc: SpotifyConfig,
+    b: SttpBackend[F, Nothing, NothingT]
+  ): F[SpotifySearchResponse] =
+    basicRequest
+      .auth.bearer(authToken)
+      .contentType(MediaType.ApplicationJson)
+      .get(uri"${sc.restUrl}/v1/search?q=$query&type=trac&limit=1")
+      .response(asJson[SpotifySearchResponse])
+      .send()
+      .flatMap(r => mapResponseBody[F, SpotifySearchResponse](r.body))
+
   def getCurrentUser[F[_]: Logger: Sync](authToken: String)(
       implicit sc: SpotifyConfig,
       b: SttpBackend[F, Nothing, NothingT]
   ): F[SpotifyUserResponse] =
     Logger[F].info("sending get current user request") *>
-      basicRequest.auth
-        .bearer(authToken)
+      basicRequest
+        .auth.bearer(authToken)
         .contentType(MediaType.ApplicationJson)
         .get(uri"${sc.restUrl}/v1/me")
         .response(asJson[SpotifyUserResponse])
@@ -34,8 +46,8 @@ object SpotifyRestApi {
       b: SttpBackend[F, Nothing, NothingT]
   ): F[SpotifyAudioAnalysisResponse] =
     Logger[F].info(s"sending get audio analysis from track $trackId request") *>
-      basicRequest.auth
-        .bearer(authToken)
+      basicRequest
+        .auth.bearer(authToken)
         .contentType(MediaType.ApplicationJson)
         .get(uri"${sc.restUrl}/v1/audio-analysis/$trackId")
         .response(asJson[SpotifyAudioAnalysisResponse])
