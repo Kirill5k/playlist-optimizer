@@ -3,7 +3,7 @@ package io.kirill.playlistoptimizer.core.spotify
 import cats.effect.Sync
 import cats.implicits._
 import io.chrisdavenport.log4cats.Logger
-import io.kirill.playlistoptimizer.core.playlist.Playlist
+import io.kirill.playlistoptimizer.core.playlist.{Playlist, Track}
 import io.kirill.playlistoptimizer.core.spotify.clients.{SpotifyApiClient, SpotifyAuthClient}
 
 class SpotifyPlaylistService[F[_]: Sync: Logger](
@@ -31,6 +31,12 @@ class SpotifyPlaylistService[F[_]: Sync: Logger](
       token <- if (accessToken.isValid) accessToken.pure[F] else authClient.refresh(accessToken)
       _     <- apiClient.createPlaylist(token.accessToken, token.userId, playlist)
     } yield accessToken
+
+  def findTrackByName(accessToken: SpotifyAccessToken, name: String): F[(Track, SpotifyAccessToken)] =
+    for {
+      token    <- if (accessToken.isValid) accessToken.pure[F] else authClient.refresh(accessToken)
+      playlist <- apiClient.findTrackByName(token.accessToken, name)
+    } yield (playlist, accessToken)
 }
 
 object SpotifyPlaylistService {

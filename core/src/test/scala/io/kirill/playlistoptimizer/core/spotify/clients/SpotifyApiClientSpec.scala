@@ -9,6 +9,7 @@ import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import io.kirill.playlistoptimizer.core.ApiClientSpec
 import io.kirill.playlistoptimizer.core.common.SpotifyConfigBuilder
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
+import io.kirill.playlistoptimizer.core.common.errors.SpotifyTrackNotFound
 import io.kirill.playlistoptimizer.core.playlist.Key._
 import io.kirill.playlistoptimizer.core.playlist.{AudioDetails, Playlist, PlaylistBuilder, PlaylistSource, SongDetails, SourceDetails, Track}
 import io.kirill.playlistoptimizer.core.playlist._
@@ -133,6 +134,18 @@ class SpotifyApiClientSpec extends ApiClientSpec {
       response.asserting { t =>
         t.song.name must be ("Glue")
       }
+    }
+
+    "return track not found when search result empty" in {
+      implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
+        .whenRequestMatchesPartial {
+          case r if isAuthorized(r, "api.spotify.com", List("v1", "search")) => Response.ok(json("spotify/flow/search/3-search-empty.json"))
+          case r => throw new RuntimeException(s"no mocks for ${r.uri.host}/${r.uri.path.mkString("/")}")
+        }
+
+      val response = new SpotifyApiClient[IO]().findTrackByName(token, "bicep glue")
+
+      response.assertThrows[SpotifyTrackNotFound]
     }
   }
 
