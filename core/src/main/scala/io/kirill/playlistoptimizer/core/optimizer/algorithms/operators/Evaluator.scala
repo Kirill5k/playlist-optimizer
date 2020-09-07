@@ -12,22 +12,21 @@ sealed trait Evaluator[A] {
 }
 
 object Evaluator {
-  implicit def keyDistanceBasedTracksEvaluator: Evaluator[Track] = new Evaluator[Track] {
+  implicit def harmonicSeqBasedTracksEvaluator: Evaluator[Track] = new Evaluator[Track] {
     override def evaluateIndividual(tracks: IndexedSeq[Track]): Fitness =
-      calcFitness[Track](tracks, (prev, curr) => math.pow(Key.distance(prev.audio.key, curr.audio.key), 2))
+      calcFitness[Track](tracks)((prev, curr) => math.pow(Key.distance(prev.audio.key, curr.audio.key), 2))
   }
 
   def energyFlowBasedTracksEvaluator: Evaluator[Track] = new Evaluator[Track] {
     override def evaluateIndividual(individual: IndexedSeq[Track]): Fitness =
-      calcFitness[Track](individual, (prev, curr) => math.abs(prev.audio.energy - curr.audio.energy))
+      calcFitness[Track](individual){ (prev, curr) =>
+        val energy = math.abs(prev.audio.energy - curr.audio.energy)
+        val danceability = math.abs(prev.audio.danceability - curr.audio.danceability)
+        (energy + danceability) / 2
+      }
   }
 
-  def danceabilityBasedTracksEvaluator: Evaluator[Track] = new Evaluator[Track] {
-    override def evaluateIndividual(individual: IndexedSeq[Track]): Fitness =
-      calcFitness[Track](individual, (prev, curr) => math.abs(prev.audio.danceability - curr.audio.danceability))
-  }
-
-  private def calcFitness[A](individual: IndexedSeq[A], calculation: (A, A) => Double): Fitness = {
+  private def calcFitness[A](individual: IndexedSeq[A])(calculation: (A, A) => Double): Fitness = {
     val score = individual.tail.foldLeft[(Double, A)]((0, individual.head)) {
       case ((acc, prev), curr) => (acc + calculation(prev, curr), curr)
     }._1

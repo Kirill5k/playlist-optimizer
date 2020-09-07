@@ -10,9 +10,9 @@ import org.scalatest.wordspec.AnyWordSpec
 class EvaluatorSpec extends AnyWordSpec with Matchers with Inspectors {
   import io.kirill.playlistoptimizer.core.playlist.TrackBuilder._
 
-  "A keyDistanceBasedTracksEvaluator" should {
+  "A harmonicSeqBasedTracksEvaluator" should {
 
-    val evaluator = Evaluator.keyDistanceBasedTracksEvaluator
+    val evaluator = Evaluator.harmonicSeqBasedTracksEvaluator
 
     "evaluate a sequence of tracks based on keys position" in {
       val keysWithScore   = Map(
@@ -32,11 +32,11 @@ class EvaluatorSpec extends AnyWordSpec with Matchers with Inspectors {
 
     val evaluator = Evaluator.energyFlowBasedTracksEvaluator
 
-    "evaluate a sequence of tracks based on track's energy" in {
+    "evaluate a sequence of tracks based on track's energy when danceability doesnt change" in {
       val energiesWithScore = Map(
-        List(0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55) -> 0.45,
-        List(0.50, 0.45, 0.40, 0.35, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55) -> 0.45,
-        List(0.50, 0.49, 0.48, 0.47, 0.95, 0.45, 0.44, 0.43, 0.42, 0.41) -> 1.05
+        List(0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55) -> 0.2250,
+        List(0.50, 0.45, 0.40, 0.35, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55) -> 0.2250,
+        List(0.50, 0.49, 0.48, 0.47, 0.95, 0.45, 0.44, 0.43, 0.42, 0.41) -> 0.5250
       )
 
       forAll(energiesWithScore) {
@@ -45,22 +45,32 @@ class EvaluatorSpec extends AnyWordSpec with Matchers with Inspectors {
           evaluator.evaluateIndividual(tracks) must be(Fitness(expected))
       }
     }
-  }
 
-  "danceabilityBasedTracksEvaluator" should {
-
-    val evaluator = Evaluator.danceabilityBasedTracksEvaluator
-
-    "evaluate a sequence of tracks based on track's danceability" in {
+    "evaluate a sequence of tracks based on track's danceability when energy doesnt change" in {
       val danceabilitiesWithScore = Map(
-        List(0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55) -> 0.45,
-        List(0.50, 0.45, 0.40, 0.35, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55) -> 0.45,
-        List(0.50, 0.49, 0.48, 0.47, 0.95, 0.45, 0.44, 0.43, 0.42, 0.41) -> 1.05
+        List(0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55) -> 0.2250,
+        List(0.50, 0.45, 0.40, 0.35, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55) -> 0.2250,
+        List(0.50, 0.49, 0.48, 0.47, 0.95, 0.45, 0.44, 0.43, 0.42, 0.41) -> 0.5250
       )
 
       forAll(danceabilitiesWithScore) {
         case (dance, expected) =>
           val tracks = tracksSeq(danceabilities = dance)
+          evaluator.evaluateIndividual(tracks) must be(Fitness(expected))
+      }
+    }
+
+    "evaluate a sequence of tracks based on track's danceability and energy" in {
+      val danceabilitiesWithScore = Map(
+        (
+          List(0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55),
+          List(0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55)
+        ) -> 0.45
+      )
+
+      forAll(danceabilitiesWithScore) {
+        case ((energies, danceabilities), expected) =>
+          val tracks = tracksSeq(danceabilities = danceabilities, energies = energies)
           evaluator.evaluateIndividual(tracks) must be(Fitness(expected))
       }
     }

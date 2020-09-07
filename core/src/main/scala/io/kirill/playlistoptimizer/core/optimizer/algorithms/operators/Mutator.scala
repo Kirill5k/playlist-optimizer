@@ -5,7 +5,6 @@ import io.kirill.playlistoptimizer.core.utils.CollectionOps._
 import scala.util.Random
 
 sealed trait Mutator[A] {
-
   def mutate(ind: IndexedSeq[A], mutationProbability: Double)(implicit r: Random): IndexedSeq[A]
 }
 
@@ -21,12 +20,12 @@ object Mutator {
   implicit def neighbourSwapMutator[A]: Mutator[A] = new Mutator[A] {
 
     override def mutate(ind: IndexedSeq[A], mutationFactor: Double)(implicit r: Random): IndexedSeq[A] = {
-      ind.tail.foldLeft[IndexedSeq[A]](Vector(ind.head)) {
-        case (newInd, el) =>
+      ind.toList.tail.foldLeft[List[A]](List(ind.head)) {
+        case (last :: tail, el) =>
           val n = r.nextDouble()
-          if (n < mutationFactor) (newInd :+ el).swap(newInd.length, newInd.length-1)
-          else newInd :+ el
-      }
+          if (n < mutationFactor) last :: el :: tail
+          else el :: last :: tail
+      }.reverse.toVector
     }
   }
 
