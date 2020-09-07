@@ -35,7 +35,6 @@ final class SpotifyPlaylistController[F[_]](
     Uri.unsafeFromString(s"${spotifyConfig.authUrl}/authorize")
   private val authorizationPath =
     Location(authUri.withQueryParams(authorizationParams))
-
   private val homePagePath =
     Location(Uri.unsafeFromString(spotifyConfig.homepageUrl))
 

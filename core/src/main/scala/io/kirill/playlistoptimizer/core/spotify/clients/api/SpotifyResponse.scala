@@ -69,11 +69,6 @@ object SpotifyResponse {
 
   final case class SpotifyUserResponse(id: String, display_name: String) extends SpotifyResponse
 
-  final case class SpotifyTrackSearchResult(
-      id: String,
-      uri: String,
-      href: String
-  )
-  final case class SpotifyTrackSearchResults(items: List[SpotifyTrackSearchResult], total: Int)
+  final case class SpotifyTrackSearchResults(items: List[PlaylistTrack], total: Int)
   final case class SpotifySearchResponse(tracks: SpotifyTrackSearchResults) extends SpotifyResponse
 }

@@ -10,8 +10,8 @@ sealed trait PlaylistSource
 object PlaylistSource {
   final case object Spotify extends PlaylistSource
 
-  def apply(source: String): PlaylistSource = source match {
-    case "Spotify" => Spotify
+  def apply(source: String): PlaylistSource = source.toLowerCase match {
+    case "spotify" => Spotify
     case _         => throw UnexpectedPlaylistSource(source)
   }
 }

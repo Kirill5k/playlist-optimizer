@@ -32,6 +32,10 @@ object errors {
     val message = s"""couldn't find playlist "$name" in Spotify for current user"""
   }
 
+  final case class SpotifyTrackNotFound(name: String) extends NotFoundError {
+    val message = s"""couldn't find track "$name" in Spotify"""
+  }
+
   final case class OptimizationNotFound(id: OptimizationId) extends NotFoundError {
     val message = s"optimization with id ${id.value} does not exist"
   }

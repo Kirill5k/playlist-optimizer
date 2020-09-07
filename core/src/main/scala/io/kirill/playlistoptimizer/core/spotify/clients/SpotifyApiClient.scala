@@ -5,8 +5,8 @@ import cats.implicits._
 import fs2.Stream
 import io.chrisdavenport.log4cats.Logger
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
-import io.kirill.playlistoptimizer.core.common.errors.SpotifyPlaylistNotFound
-import io.kirill.playlistoptimizer.core.playlist.{Playlist, PlaylistSource}
+import io.kirill.playlistoptimizer.core.common.errors.{SpotifyPlaylistNotFound, SpotifyTrackNotFound}
+import io.kirill.playlistoptimizer.core.playlist.{Playlist, PlaylistSource, Track}
 import io.kirill.playlistoptimizer.core.spotify.clients.api.SpotifyResponse.{PlaylistTrack, SpotifyAudioFeaturesResponse}
 import io.kirill.playlistoptimizer.core.spotify.clients.api.{SpotifyMapper, SpotifyRestApi}
 import sttp.client.{NothingT, SttpBackend}
@@ -61,6 +61,13 @@ private[spotify] class SpotifyApiClient[F[_]: Sync: Logger](
       tracksAndFeatures = tracks.map(t => (t, featuresByIds(t.id).head))
     } yield tracksAndFeatures.toList
   }
+
+  def findTrackByName(token: String, name: String): F[Track] =
+    for {
+      searchResult <- SpotifyRestApi.findTrack(token, name)
+      track <- Sync[F].fromOption(searchResult.tracks.items.headOption, SpotifyTrackNotFound(name))
+      features <- SpotifyRestApi.getAudioFeatures(token, track.id)
+    } yield SpotifyMapper.toDomain(track, features)
 }
 
 private[spotify] object SpotifyApiClient {

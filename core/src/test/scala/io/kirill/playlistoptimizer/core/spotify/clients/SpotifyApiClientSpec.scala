@@ -119,6 +119,21 @@ class SpotifyApiClientSpec extends ApiClientSpec {
 
       response.asserting(_.map(_.name) must be (List("Mel 1", "Mel 2")))
     }
+
+    "find track by name" in {
+      implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
+        .whenRequestMatchesPartial {
+          case r if isAuthorized(r, "api.spotify.com", List("v1", "search")) => Response.ok(json("spotify/flow/search/1-search-track.json"))
+          case r if isAuthorized(r, "api.spotify.com", List("v1", "audio-features")) => Response.ok(json("spotify/flow/search/2-audio-features.json"))
+          case r => throw new RuntimeException(s"no mocks for ${r.uri.host}/${r.uri.path.mkString("/")}")
+        }
+
+      val response = new SpotifyApiClient[IO]().findTrackByName(token, "bicep glue")
+
+      response.asserting { t =>
+        t.song.name must be ("Glue")
+      }
+    }
   }
 
   def isAuthorized(req: client.Request[_, _], host: String, paths: Seq[String] = Nil): Boolean =
