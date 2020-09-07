@@ -16,7 +16,7 @@ import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
 import io.kirill.playlistoptimizer.core.common.controllers.AppController.ErrorResponse
 import io.kirill.playlistoptimizer.core.common.jwt.JwtEncoder
 import io.kirill.playlistoptimizer.core.optimizer.{Optimization, OptimizationId, OptimizationParameters}
-import io.kirill.playlistoptimizer.core.playlist.{Playlist, PlaylistBuilder, PlaylistView, TrackView}
+import io.kirill.playlistoptimizer.core.playlist.{Playlist, PlaylistBuilder, PlaylistSource, PlaylistView, TrackView}
 import org.http4s._
 import org.http4s.circe._
 import org.http4s.implicits._
@@ -174,6 +174,37 @@ class SpotifyPlaylistControllerSpec extends ControllerSpec {
       val response: IO[Response[IO]] = controller.routes.orNotFound.run(request)
 
       verifyResponse[ErrorResponse](response, Status.Forbidden, Some(ErrorResponse("authorization with Spotify is required")))
+    }
+
+    "import new playlist into spotify" in {
+      val (jwtEncoder, service) = mocks
+      val controller = new SpotifyPlaylistController(jwtEncoder, service, sc)
+      when(jwtEncoder.decode(sessionCookie.content)).thenReturn(IO.pure(accessToken))
+      when(service.findTracksByNames(eqTo(accessToken), anyList[String])).thenReturn(IO.pure((shortenedPlaylist.tracks.toList, accessToken)))
+      when(service.save(eqTo(accessToken),any[Playlist])).thenReturn(IO.pure(accessToken))
+      when(jwtEncoder.encode(accessToken)).thenReturn(IO.pure(sessionCookie.content))
+
+      val importPlaylistRequest =
+        json"""
+        {
+          "name" : "New Imported playlist",
+          "description" : "Imported playlist with songs",
+          "tracks" : [
+            "bicep - glue",
+            "bicep - ayaya",
+            "bicep - oval"
+          ]
+        }
+      """
+
+      val request = Request[IO](uri = uri"/playlists/import", method = Method.POST).withEntity(importPlaylistRequest).addCookie(sessionCookie)
+      val response: IO[Response[IO]] = controller.routes.orNotFound.run(request)
+
+      verifyResponse[PlaylistView](response, Status.Created, cookies = Map("spotify-session" -> sessionCookie.content))
+      verify(jwtEncoder).decode(sessionCookie.content)
+      verify(jwtEncoder).encode(accessToken)
+      verify(service).findTracksByNames(accessToken, List("bicep - glue", "bicep - ayaya", "bicep - oval"))
+      verify(service).save(accessToken, Playlist("New Imported playlist", Some("Imported playlist with songs"), shortenedPlaylist.tracks, PlaylistSource.Spotify))
     }
   }
   

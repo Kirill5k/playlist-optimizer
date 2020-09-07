@@ -32,6 +32,12 @@ class SpotifyPlaylistService[F[_]: Sync: Logger](
       _     <- apiClient.createPlaylist(token.accessToken, token.userId, playlist)
     } yield accessToken
 
+  def findTracksByNames(accessToken: SpotifyAccessToken, names: List[String]): F[(List[Track], SpotifyAccessToken)] =
+    for {
+      token <- if (accessToken.isValid) accessToken.pure[F] else authClient.refresh(accessToken)
+      tracks <- names.map(n => apiClient.findTrackByName(token.accessToken, n)).sequence
+    } yield (tracks, accessToken)
+
   def findTrackByName(accessToken: SpotifyAccessToken, name: String): F[(Track, SpotifyAccessToken)] =
     for {
       token    <- if (accessToken.isValid) accessToken.pure[F] else authClient.refresh(accessToken)

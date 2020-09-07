@@ -28,7 +28,7 @@ package object spotify {
 
   object SpotifyAccessToken {
     def apply(accessToken: String, refreshToken: String, userId: String, expiresIn: Int): SpotifyAccessToken =
-      new SpotifyAccessToken(accessToken, refreshToken, userId, Instant.now().plusSeconds(expiresIn))
+      new SpotifyAccessToken(accessToken, refreshToken, userId, Instant.now().plusSeconds(expiresIn - 60))
   }
 
   final class Spotify[F[_]](

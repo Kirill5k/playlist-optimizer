@@ -83,6 +83,20 @@ final class SpotifyPlaylistController[F[_]](
             res                <- Created()
           } yield res.addCookie(newSessionCookie(jwt))
         }
+      case req @ POST -> Root / "playlists" / "import" =>
+        withErrorHandling {
+          for {
+            importReq       <- req.as[ImportPlaylistRequest]
+            _               <- l.info(s"import playlist ${importReq.name}")
+            spotifyCookie   <- getSpotifySessionCookie(req)
+            accessToken     <- jwtEncoder.decode(spotifyCookie.content)
+            tracksWithToken <- playlistService.findTracksByNames(accessToken, importReq.tracks)
+            playlist = Playlist(importReq.name, importReq.description, tracksWithToken._1.toVector, PlaylistSource.Spotify)
+            updatedAccessToken <- playlistService.save(tracksWithToken._2, playlist)
+            jwt                <- jwtEncoder.encode(updatedAccessToken)
+            res                <- Created()
+          } yield res.addCookie(newSessionCookie(jwt))
+        }
     }
 
   private def getSpotifySessionCookie(req: Request[F])(implicit s: Sync[F]): F[RequestCookie] =
@@ -96,6 +110,12 @@ object SpotifyPlaylistController {
   val SpotifySessionCookie = "spotify-session"
 
   object CodeQueryParamMatcher extends QueryParamDecoderMatcher[String]("code")
+
+  final case class ImportPlaylistRequest(
+      name: String,
+      description: Option[String],
+      tracks: List[String]
+  )
 
   def make[F[_]: Sync](
       jwtEncoder: JwtEncoder[F, SpotifyAccessToken],
