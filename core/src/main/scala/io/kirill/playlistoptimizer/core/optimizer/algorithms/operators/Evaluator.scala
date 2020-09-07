@@ -20,9 +20,9 @@ object Evaluator {
   def energyFlowBasedTracksEvaluator: Evaluator[Track] = new Evaluator[Track] {
     override def evaluateIndividual(individual: IndexedSeq[Track]): Fitness =
       calcFitness[Track](individual){ (prev, curr) =>
-        val energy = math.abs(prev.audio.energy - curr.audio.energy)
-        val danceability = math.abs(prev.audio.danceability - curr.audio.danceability)
-        (energy + danceability) / 2
+        val energy = math.abs(prev.audio.energy * 1000 - curr.audio.energy * 1000)
+        val danceability = math.abs(prev.audio.danceability * 1000 - curr.audio.danceability * 1000)
+        (energy + danceability) / 10
       }
   }
 
@@ -30,6 +30,6 @@ object Evaluator {
     val score = individual.tail.foldLeft[(Double, A)]((0, individual.head)) {
       case ((acc, prev), curr) => (acc + calculation(prev, curr), curr)
     }._1
-    Fitness(BigDecimal(score).setScale(4, BigDecimal.RoundingMode.HALF_UP))
+    Fitness(BigDecimal(score).setScale(0, BigDecimal.RoundingMode.HALF_UP))
   }
 }

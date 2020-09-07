@@ -34,9 +34,9 @@ class EvaluatorSpec extends AnyWordSpec with Matchers with Inspectors {
 
     "evaluate a sequence of tracks based on track's energy when danceability doesnt change" in {
       val energiesWithScore = Map(
-        List(0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55) -> 0.2250,
-        List(0.50, 0.45, 0.40, 0.35, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55) -> 0.2250,
-        List(0.50, 0.49, 0.48, 0.47, 0.95, 0.45, 0.44, 0.43, 0.42, 0.41) -> 0.5250
+        List(0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55) -> 45,
+        List(0.50, 0.45, 0.40, 0.35, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55) -> 45,
+        List(0.50, 0.49, 0.48, 0.47, 0.95, 0.45, 0.44, 0.43, 0.42, 0.41) -> 105
       )
 
       forAll(energiesWithScore) {
@@ -48,9 +48,9 @@ class EvaluatorSpec extends AnyWordSpec with Matchers with Inspectors {
 
     "evaluate a sequence of tracks based on track's danceability when energy doesnt change" in {
       val danceabilitiesWithScore = Map(
-        List(0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55) -> 0.2250,
-        List(0.50, 0.45, 0.40, 0.35, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55) -> 0.2250,
-        List(0.50, 0.49, 0.48, 0.47, 0.95, 0.45, 0.44, 0.43, 0.42, 0.41) -> 0.5250
+        List(0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55) -> 45,
+        List(0.50, 0.45, 0.40, 0.35, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55) -> 45,
+        List(0.50, 0.49, 0.48, 0.47, 0.95, 0.45, 0.44, 0.43, 0.42, 0.41) -> 105
       )
 
       forAll(danceabilitiesWithScore) {
@@ -65,7 +65,7 @@ class EvaluatorSpec extends AnyWordSpec with Matchers with Inspectors {
         (
           List(0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55),
           List(0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55)
-        ) -> 0.45
+        ) -> 90
       )
 
       forAll(danceabilitiesWithScore) {

@@ -10,7 +10,6 @@ sealed trait Mutator[A] {
 
 object Mutator {
   implicit def randomSwapMutator[A]: Mutator[A] = new Mutator[A] {
-
     override def mutate(ind: IndexedSeq[A], mutationFactor: Double)(implicit r: Random): IndexedSeq[A] = {
       val n = r.nextDouble()
       if (n < mutationFactor) ind.swap(r.nextInt(ind.size), r.nextInt(ind.size)) else ind
@@ -18,7 +17,6 @@ object Mutator {
   }
 
   implicit def neighbourSwapMutator[A]: Mutator[A] = new Mutator[A] {
-
     override def mutate(ind: IndexedSeq[A], mutationFactor: Double)(implicit r: Random): IndexedSeq[A] = {
       ind.toList.tail.foldLeft[List[A]](List(ind.head)) {
         case (last :: tail, el) =>
