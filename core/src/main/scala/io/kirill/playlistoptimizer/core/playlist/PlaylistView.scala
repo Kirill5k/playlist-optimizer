@@ -6,7 +6,7 @@ import scala.concurrent.duration._
 
 final case class TrackView(
     name: String,
-    artists: Seq[String],
+    artists: List[String],
     releaseName: Option[String],
     releaseDate: Option[LocalDate],
     releaseType: Option[String],

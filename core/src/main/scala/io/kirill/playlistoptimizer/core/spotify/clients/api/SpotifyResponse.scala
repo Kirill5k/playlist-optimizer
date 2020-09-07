@@ -19,7 +19,7 @@ object SpotifyResponse {
   ) extends SpotifyResponse
 
   final case class PlaylistsItem(id: String, name: String)
-  final case class SpotifyPlaylistsResponse(items: Seq[PlaylistsItem], total: Int) extends SpotifyResponse
+  final case class SpotifyPlaylistsResponse(items: List[PlaylistsItem], total: Int) extends SpotifyResponse
 
   final case class PlaylistTrackArtist(id: String, name: String)
   final case class PlaylistTrackAlbum(
@@ -34,7 +34,7 @@ object SpotifyResponse {
       id: String,
       name: String,
       album: PlaylistTrackAlbum,
-      artists: Seq[PlaylistTrackArtist],
+      artists: List[PlaylistTrackArtist],
       popularity: Double,
       uri: String,
       external_urls: PlaylistTrackUrls

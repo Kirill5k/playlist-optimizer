@@ -18,7 +18,7 @@ object PlaylistSource {
 
 final case class SongDetails(
     name: String,
-    artists: Seq[String],
+    artists: List[String],
     releaseName: Option[String],
     releaseDate: Option[LocalDate],
     releaseType: Option[String]
