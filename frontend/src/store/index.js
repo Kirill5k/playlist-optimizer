@@ -24,6 +24,9 @@ export default new Vuex.Store({
     },
     setCurrentTrack (state, track) {
       state.currentTrack = track
+    },
+    clearCurrentTrack (state) {
+      state.currentTrack = null
     }
   },
   actions: {

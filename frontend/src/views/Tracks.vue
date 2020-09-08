@@ -1,16 +1,32 @@
 <template>
-  <div class="tracks">
-  </div>
+  <b-container>
+    <b-row clas="justify-content-md-center">
+      <b-col>
+        <track-search-bar
+          @input="findTrack"
+        />
+      </b-col>
+    </b-row>
+    <b-row v-if="track">
+      <b-col>
+        <track-view
+          :track="track"
+        />
+      </b-col>
+    </b-row>
+  </b-container>
 </template>
 
 <script>
+import { BContainer, BCol, BRow } from 'bootstrap-vue'
 import NotificationsMixin from '@/mixins/NotificationsMixin'
-import {faSpotify} from "@fortawesome/free-brands-svg-icons";
+import TrackSearchBar from '@/components/TrackSearchBar.vue'
+import TrackView from '@/components/TrackView.vue'
 
 export default {
   name: 'Tracks',
   components: {
-    OptimizationsView
+    TrackSearchBar, TrackView, BContainer, BCol, BRow
   },
   mixins: [NotificationsMixin],
   computed: {
@@ -20,17 +36,12 @@ export default {
   },
   methods: {
     findTrack (name) {
-      this.$store.dispatch('findTrack', name)
-        .catch(this.displayError)
+      if (name.length) {
+        this.$store.dispatch('findTrack', name).catch(this.displayError)
+      } else {
+        this.$store.commit('clearCurrentTrack')
+      }
     }
   }
 }
 </script>
-
-<style scoped lang="scss">
-.tracks {
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-}
-</style>
