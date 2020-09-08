@@ -33,7 +33,6 @@ export default new Vuex.Store({
     findTrack ({ commit }, name) {
       return fetch(`/api/spotify/tracks?name=${name}`)
         .then(res => res.status === 200 ? res.json() : reject(res))
-        .then(track => commit('setCurrentTrack', track))
     },
     getPlaylists ({ commit }) {
       return fetch('/api/spotify/playlists')

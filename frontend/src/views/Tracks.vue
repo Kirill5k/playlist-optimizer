@@ -29,7 +29,10 @@ export default {
   methods: {
     findTrack (name) {
       if (name.length) {
-        this.$store.dispatch('findTrack', name).catch(this.displayError)
+        this.$store
+          .dispatch('findTrack', name)
+          .then(track => this.$store.commit('setCurrentTrack', track))
+          .catch(this.displayError)
       } else {
         this.$store.commit('clearCurrentTrack')
       }
