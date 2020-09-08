@@ -8,12 +8,12 @@ import io.circe.generic.auto._
 import io.circe.syntax._
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
 import io.kirill.playlistoptimizer.core.common.controllers.AppController
-import io.kirill.playlistoptimizer.core.common.errors.MissingSpotifySessionCookie
+import io.kirill.playlistoptimizer.core.common.errors.{MissingRequiredQueryParam, MissingSpotifySessionCookie}
 import io.kirill.playlistoptimizer.core.common.json._
 import io.kirill.playlistoptimizer.core.common.jwt.JwtEncoder
 import io.kirill.playlistoptimizer.core.playlist._
 import org.http4s.circe._
-import org.http4s.dsl.io.QueryParamDecoderMatcher
+import org.http4s.dsl.io.{OptionalQueryParamDecoderMatcher, QueryParamDecoderMatcher}
 import org.http4s.headers.Location
 import org.http4s.{HttpRoutes, Request, RequestCookie, ResponseCookie, Uri}
 
@@ -59,6 +59,18 @@ final class SpotifyPlaylistController[F[_]](
           jwt         <- jwtEncoder.encode(accessToken)
           res         <- TemporaryRedirect(homePagePath)
         } yield res.addCookie(newSessionCookie(jwt))
+      case req @ GET -> Root / "tracks" :? TrackQueryParamMatcher(name) =>
+        withErrorHandling {
+          for {
+            _             <- l.info(s"find track $name")
+            query         <- Sync[F].fromOption(name, MissingRequiredQueryParam("name"))
+            spotifyCookie <- getSpotifySessionCookie(req)
+            accessToken   <- jwtEncoder.decode(spotifyCookie.content)
+            track         <- playlistService.findTrackByName(accessToken, query)
+            jwt           <- jwtEncoder.encode(track._2)
+            res           <- Ok(TrackView.from(track._1).asJson)
+          } yield res.addCookie(newSessionCookie(jwt))
+        }
       case req @ GET -> Root / "playlists" =>
         withErrorHandling {
           for {
@@ -109,7 +121,8 @@ final class SpotifyPlaylistController[F[_]](
 object SpotifyPlaylistController {
   val SpotifySessionCookie = "spotify-session"
 
-  object CodeQueryParamMatcher extends QueryParamDecoderMatcher[String]("code")
+  object CodeQueryParamMatcher  extends QueryParamDecoderMatcher[String]("code")
+  object TrackQueryParamMatcher extends OptionalQueryParamDecoderMatcher[String]("name")
 
   final case class ImportPlaylistRequest(
       name: String,

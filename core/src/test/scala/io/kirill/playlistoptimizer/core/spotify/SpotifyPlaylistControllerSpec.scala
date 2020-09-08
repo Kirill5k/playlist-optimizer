@@ -112,7 +112,36 @@ class SpotifyPlaylistControllerSpec extends ControllerSpec {
       verify(jwtEncoder).decode("foo-bar")
     }
 
-    "get all playlists" in {
+    "GET /tracks - find track by name" in {
+      val (jwtEncoder, service) = mocks
+      val controller = new SpotifyPlaylistController(jwtEncoder, service, sc)
+      when(jwtEncoder.decode(sessionCookie.content)).thenReturn(IO.pure(accessToken))
+      when(service.findTrackByName(eqTo(accessToken), any[String])).thenReturn(IO.pure(shortenedPlaylist.tracks.head, accessToken))
+      when(jwtEncoder.encode(accessToken)).thenReturn(IO.pure(sessionCookie.content))
+
+      val request = Request[IO](uri = uri"/tracks?name=track-name").addCookie(sessionCookie)
+      val response: IO[Response[IO]] = controller.routes.orNotFound.run(request)
+
+      val expected = TrackView("Glue", List("Bicep"), Some("Bicep"), Some(LocalDate.of(2017, 9, 1)), Some("album"), 129.983, 269.15, 5, 0, 0.613,0.807, "spotify:track:2aJDlirz6v2a4HREki98cP", Some("https://open.spotify.com/track/2aJDlirz6v2a4HREki98cP"))
+
+      verifyResponse[TrackView](response, Status.Ok, Some(expected), cookies = Map("spotify-session" -> sessionCookie.content))
+      verify(jwtEncoder).decode(sessionCookie.content)
+      verify(service).findTrackByName(accessToken, "track-name")
+      verify(jwtEncoder).encode(accessToken)
+    }
+
+    "GET /tracks - return bad request when query param is missing" in {
+      val (jwtEncoder, service) = mocks
+      val controller = new SpotifyPlaylistController(jwtEncoder, service, sc)
+
+      val request = Request[IO](uri = uri"/tracks").addCookie(sessionCookie)
+      val response: IO[Response[IO]] = controller.routes.orNotFound.run(request)
+
+      verifyResponse[ErrorResponse](response, Status.BadRequest, Some(ErrorResponse("query parameter name is required to make this request")))
+      verifyZeroInteractions(jwtEncoder, service)
+    }
+
+    "GET /playlists - get all playlists" in {
       val (jwtEncoder, service) = mocks
       val controller = new SpotifyPlaylistController(jwtEncoder, service, sc)
       when(jwtEncoder.decode(sessionCookie.content)).thenReturn(IO.pure(accessToken))
@@ -135,7 +164,7 @@ class SpotifyPlaylistControllerSpec extends ControllerSpec {
       verify(jwtEncoder).encode(accessToken)
     }
 
-    "create new playlist" in {
+    "POST /playlists - create new playlist" in {
       val (jwtEncoder, service) = mocks
       val controller = new SpotifyPlaylistController(jwtEncoder, service, sc)
       val playlistCaptor: ArgumentCaptor[Playlist] = ArgumentCaptor.forClass(classOf[Playlist])
@@ -152,7 +181,7 @@ class SpotifyPlaylistControllerSpec extends ControllerSpec {
       verify(jwtEncoder).encode(accessToken)
     }
 
-    "return internal server error if uncategorized error" in {
+    "return internal server error if unexpected error" in {
       val (jwtEncoder, service) = mocks
       val controller = new SpotifyPlaylistController(jwtEncoder, service, sc)
       when(jwtEncoder.decode(sessionCookie.content)).thenReturn(IO.pure(accessToken))
@@ -176,7 +205,7 @@ class SpotifyPlaylistControllerSpec extends ControllerSpec {
       verifyResponse[ErrorResponse](response, Status.Forbidden, Some(ErrorResponse("authorization with Spotify is required")))
     }
 
-    "import new playlist into spotify" in {
+    "POST /playlists/import - import new playlist into spotify" in {
       val (jwtEncoder, service) = mocks
       val controller = new SpotifyPlaylistController(jwtEncoder, service, sc)
       when(jwtEncoder.decode(sessionCookie.content)).thenReturn(IO.pure(accessToken))

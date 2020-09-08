@@ -54,6 +54,10 @@ object errors {
     val message = s"couldn't find key with number $keyNumber and mode number $mode"
   }
 
+  final case class MissingRequiredQueryParam(name: String) extends BadRequestError {
+    val message = s"query parameter $name is required to make this request"
+  }
+
   final case class InvalidJwtEncryptionAlgorithm(alg: JwtAlgorithm) extends ApplicationError {
     val message = s"unrecognized jwt encryption algorithm $alg"
   }
