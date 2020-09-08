@@ -9,7 +9,8 @@ export default new Vuex.Store({
   state: {
     isAuthenticated: true,
     playlists: [],
-    optimizations: []
+    optimizations: [],
+    currentTrack: null
   },
   mutations: {
     setPlaylists (state, playlists) {
@@ -20,9 +21,17 @@ export default new Vuex.Store({
     },
     unAuthenticate (state) {
       state.isAuthenticated = false
+    },
+    setCurrentTrack (state, track) {
+      state.currentTrack = track
     }
   },
   actions: {
+    findTrack ({ commit }, name) {
+      return fetch(`/api/spotify/tracks?name=${name}`)
+        .then(res => res.status === 200 ? res.json() : reject(res))
+        .then(track => commit('setCurrentTrack', track))
+    },
     getPlaylists ({ commit }) {
       return fetch('/api/spotify/playlists')
         .then(res => res.status === 200 ? res.json() : reject(res))

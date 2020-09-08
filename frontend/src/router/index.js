@@ -14,6 +14,11 @@ const routes = [
     path: '/optimizations',
     name: 'Optimizations',
     component: () => import(/* webpackChunkName: "about" */ '../views/Optimizations.vue')
+  },
+  {
+    path: '/tracks',
+    name: 'Tracks',
+    component: () => import(/* webpackChunkName: "about" */ '../views/Tracks.vue')
   }
 ]
 
