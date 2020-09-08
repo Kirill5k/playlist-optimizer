@@ -1,22 +1,17 @@
 <template>
-  <b-container>
-    <b-row class="justify-content-center">
-      <b-col>
-        <playlists-view
-          v-if="isAuthenticated"
-          :playlists="playlists"
-          @optimize="optimizePlaylist"
-        />
-        <a v-else href="/api/spotify/login" aria-label="Left Align">
-          <font-awesome-icon :icon="spotifyIcon" size="7x"/>
-        </a>
-      </b-col>
-    </b-row>
-  </b-container>
+  <div class="playlists">
+    <playlists-view
+      v-if="isAuthenticated"
+      :playlists="playlists"
+      @optimize="optimizePlaylist"
+    />
+    <a v-else href="/api/spotify/login" aria-label="Left Align">
+      <font-awesome-icon :icon="spotifyIcon" size="7x"/>
+    </a>
+  </div>
 </template>
 
 <script>
-import { BContainer, BCol, BRow } from 'bootstrap-vue'
 import PlaylistsView from '@/components/PlaylistsView.vue'
 import NotificationsMixin from '@/mixins/NotificationsMixin'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
@@ -25,7 +20,8 @@ import { faSpotify } from '@fortawesome/free-brands-svg-icons'
 export default {
   name: 'Playlists',
   components: {
-    PlaylistsView, FontAwesomeIcon, BContainer, BCol, BRow
+    PlaylistsView,
+    FontAwesomeIcon
   },
   mixins: [NotificationsMixin],
   created () {
@@ -51,3 +47,11 @@ export default {
   }
 }
 </script>
+
+<style scoped lang="scss">
+.playlists {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+</style>

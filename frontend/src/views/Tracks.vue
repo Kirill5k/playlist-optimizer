@@ -1,24 +1,16 @@
 <template>
-  <b-container>
-    <b-row clas="justify-content-md-center">
-      <b-col>
-        <track-search-bar
-          @input="findTrack"
-        />
-      </b-col>
-    </b-row>
-    <b-row v-if="track">
-      <b-col>
-        <track-view
-          :track="track"
-        />
-      </b-col>
-    </b-row>
-  </b-container>
+  <div class="tracks">
+    <track-search-bar
+      @input="findTrack"
+    />
+    <track-view
+      v-if="track"
+      :track="track"
+    />
+  </div>
 </template>
 
 <script>
-import { BContainer, BCol, BRow } from 'bootstrap-vue'
 import NotificationsMixin from '@/mixins/NotificationsMixin'
 import TrackSearchBar from '@/components/TrackSearchBar.vue'
 import TrackView from '@/components/TrackView.vue'
@@ -26,7 +18,7 @@ import TrackView from '@/components/TrackView.vue'
 export default {
   name: 'Tracks',
   components: {
-    TrackSearchBar, TrackView, BContainer, BCol, BRow
+    TrackSearchBar, TrackView
   },
   mixins: [NotificationsMixin],
   computed: {
@@ -45,3 +37,12 @@ export default {
   }
 }
 </script>
+
+<style scoped lang="scss">
+.tracks {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+</style>

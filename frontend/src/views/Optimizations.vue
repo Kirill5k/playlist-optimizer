@@ -1,26 +1,21 @@
 <template>
-  <b-container>
-    <b-row>
-      <b-col>
-        <optimizations-view
-          :optimizations="optimizations"
-          @save="savePlaylist"
-          @delete="deleteOptimization"
-        />
-      </b-col>
-    </b-row>
-  </b-container>
+  <div class="optimizations">
+    <optimizations-view
+      :optimizations="optimizations"
+      @save="savePlaylist"
+      @delete="deleteOptimization"
+    />
+  </div>
 </template>
 
 <script>
-import { BContainer, BCol, BRow } from 'bootstrap-vue'
 import OptimizationsView from '@/components/OptimizationsView.vue'
 import NotificationsMixin from '@/mixins/NotificationsMixin'
 
 export default {
   name: 'Optimizations',
   components: {
-    OptimizationsView, BContainer, BCol, BRow
+    OptimizationsView
   },
   mixins: [NotificationsMixin],
   created () {
@@ -53,3 +48,11 @@ export default {
   }
 }
 </script>
+
+<style scoped lang="scss">
+.optimizations {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+</style>
