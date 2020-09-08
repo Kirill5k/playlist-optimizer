@@ -1,5 +1,5 @@
 <template>
-  <div class="track-search-bar" :style="{width: `${width}px`}">
+  <div class="track-search-bar">
     <b-form-input
       id="track-search-input"
       placeholder="Enter track name"
@@ -34,11 +34,14 @@ export default {
     size: {
       type: String,
       default: 'default'
-    },
-    width: {
-      type: Number,
-      default: 800
     }
   }
 }
 </script>
+
+<style scoped lang="scss">
+.track-search-bar {
+  width: 100%;
+  max-width: 800px;
+}
+</style>
