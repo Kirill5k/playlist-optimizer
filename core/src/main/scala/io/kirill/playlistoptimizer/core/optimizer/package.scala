@@ -3,7 +3,7 @@ package io.kirill.playlistoptimizer.core
 import java.time.Instant
 import java.util.UUID
 
-import cats.effect.{Concurrent, ContextShift}
+import cats.effect.{Concurrent, ContextShift, Timer}
 import cats.implicits._
 import io.chrisdavenport.log4cats.Logger
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.OptimizationAlgorithm
@@ -40,11 +40,11 @@ package object optimizer {
   )
 
   object Optimizer {
-    def make[F[_]: Concurrent: Logger: ContextShift](
+    def make[F[_]: Concurrent: Logger: ContextShift: Timer](
         implicit alg: OptimizationAlgorithm[F, Track]
     ): F[Optimizer[F]] =
       for {
-        playlistOptimizer <- PlaylistOptimizer.refBasedPlaylistOptimizer[F]
+        playlistOptimizer <- PlaylistOptimizer.inmemoryPlaylistOptimizer[F]()
         controller        <- OptimizationController.make(playlistOptimizer)
       } yield new Optimizer(controller)
   }

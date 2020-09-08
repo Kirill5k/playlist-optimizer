@@ -5,14 +5,14 @@ import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 import cats.effect.concurrent.Ref
-import cats.effect.{Concurrent, ContextShift, Sync}
+import cats.effect.{Concurrent, ContextShift, Sync, Timer}
 import cats.implicits._
 import io.kirill.playlistoptimizer.core.common.controllers.AppController.UserSessionId
 import io.kirill.playlistoptimizer.core.common.errors.OptimizationNotFound
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.OptimizationAlgorithm
 import io.kirill.playlistoptimizer.core.playlist.{Playlist, Track}
 
-import scala.concurrent.duration.FiniteDuration
+import scala.concurrent.duration.{FiniteDuration, _}
 import scala.util.Random
 
 trait PlaylistOptimizer[F[_]] {
@@ -22,7 +22,7 @@ trait PlaylistOptimizer[F[_]] {
   def delete(userId: UserSessionId, id: OptimizationId): F[Unit]
 }
 
-private class RefBasedPlaylistOptimizer[F[_]: Concurrent: ContextShift](
+private class InmemoryPlaylistOptimizer[F[_]: Concurrent: ContextShift](
     private val state: Ref[F, Map[UserSessionId, Map[OptimizationId, Optimization]]]
 )(
     implicit val alg: OptimizationAlgorithm[F, Track]
@@ -69,10 +69,24 @@ private class RefBasedPlaylistOptimizer[F[_]: Concurrent: ContextShift](
 
 object PlaylistOptimizer {
 
-  def refBasedPlaylistOptimizer[F[_]: Concurrent: ContextShift](
+  def inmemoryPlaylistOptimizer[F[_]: Concurrent: ContextShift: Timer](
+      expiresIn: FiniteDuration = 24.hours,
+      checkOnExpirationsEvery: FiniteDuration = 15.minutes
+  )(
       implicit alg: OptimizationAlgorithm[F, Track]
-  ): F[PlaylistOptimizer[F]] =
+  ): F[PlaylistOptimizer[F]] = {
+    def runExpiration(state: Ref[F, Map[UserSessionId, Map[OptimizationId, Optimization]]]): F[Unit] = {
+      val process = state.get.map(_.foldLeft[Map[UserSessionId, Map[OptimizationId, Optimization]]](Map()){
+        case (res, (uid, optsMap)) => res + (uid -> optsMap.filter {
+          case (_, opt) => opt.dateInitiated.isAfter(Instant.now.minusNanos(expiresIn.toNanos)) && opt.result.isDefined
+        })
+      }).flatTap(state.set)
+      Timer[F].sleep(checkOnExpirationsEvery) >> process >> runExpiration(state)
+    }
+
     Ref
       .of[F, Map[UserSessionId, Map[OptimizationId, Optimization]]](Map())
-      .map(s => new RefBasedPlaylistOptimizer(s))
+      .flatTap(s => Concurrent[F].start(runExpiration(s)).void)
+      .map(s => new InmemoryPlaylistOptimizer(s))
+  }
 }
