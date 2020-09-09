@@ -3,7 +3,7 @@ import Vuex from 'vuex'
 
 Vue.use(Vuex)
 
-const reject = (res) => res.json().then(e => Promise.reject(new Error(`${res.status}: ${e.message}`)))
+const reject = (res) => res.json().then(e => Promise.reject(new Error(e.message)))
 
 export default new Vuex.Store({
   state: {

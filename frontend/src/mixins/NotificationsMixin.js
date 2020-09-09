@@ -1,6 +1,6 @@
 export default {
   methods: {
-    displayNotification (props) {
+    displayNotification (props = {}) {
       this.$bvToast.toast(props.message, {
         title: 'Success!',
         autoHideDelay: 3000,
@@ -13,7 +13,7 @@ export default {
     },
     displayError (err) {
       this.displayNotification({
-        message: err,
+        message: err.toString(),
         title: 'Error',
         variant: 'danger'
       })
