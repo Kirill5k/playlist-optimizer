@@ -1,5 +1,5 @@
 <template>
-  <div class="track-view m-2 w-50">
+  <div class="track-view m-2">
     <b-card :title="fullName" :sub-title="release">
       <b-card-text class="mb-0 mt-3">Duration {{ duration }}</b-card-text>
       <b-card-text class="mb-0">Key {{ track.key }}, mode {{ track.mode }}</b-card-text>
