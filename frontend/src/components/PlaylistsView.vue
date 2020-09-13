@@ -139,19 +139,15 @@
                   />
                 </b-form-group>
               </div>
-              <b-form-group
-                :id="'shuffle'+index.toString()"
-                :label-for="'shuffle-radio'+index.toString()"
-                label="Shuffle on start"
-                label-size="sm"
-                label-class="mb-0"
+              <b-form-checkbox
+                class="mb-1"
+                v-model="optimizationParams.shuffle"
+                :id="'shuffle-radio'+index.toString()"
+                size="sm"
+                switch
               >
-                <b-form-radio-group
-                  v-model="optimizationParams.shuffle"
-                  :options="[{ text: 'Yes', value: true }, { text: 'No', value: false }]"
-                  :id="'shuffle-radio'+index.toString()"
-                ></b-form-radio-group>
-              </b-form-group>
+                Shuffle on start
+              </b-form-checkbox>
               <b-button
                 variant="success"
                 @click="optimizePlaylist(playlist)"
@@ -168,7 +164,7 @@
 </template>
 
 <script>
-import { BCard, BCardHeader, BCollapse, BCardBody, BButton, BCardText, BFormGroup, BFormInput, BFormRadioGroup } from 'bootstrap-vue'
+import { BCard, BCardHeader, BCollapse, BCardBody, BButton, BCardText, BFormGroup, BFormInput, BFormCheckbox } from 'bootstrap-vue'
 import PlaylistView from '@/components/PlaylistView.vue'
 
 const DEFAULT_OPTIMIZATION_PARAMS = {
@@ -183,7 +179,7 @@ const DEFAULT_OPTIMIZATION_PARAMS = {
 export default {
   name: 'PlaylistsView',
   components: {
-    PlaylistView, BCard, BCardHeader, BCollapse, BCardBody, BButton, BCardText, BFormGroup, BFormInput, BFormRadioGroup
+    PlaylistView, BCard, BCardHeader, BCollapse, BCardBody, BButton, BCardText, BFormGroup, BFormInput, BFormCheckbox
   },
   props: {
     playlists: Array
@@ -199,11 +195,11 @@ export default {
     duration (playlist) {
       const duration = playlist.tracks.map(t => t.duration).reduce((s, d) => s + d, 0) / 60
       if (duration < 60) {
-        return `Total duration ${duration.toFixed(2)} min`
+        return `Total duration ${duration.toFixed(2)}m`
       } else {
         const hours = Math.floor(duration / 60)
         const mins = duration - hours * 60
-        return `Total duration ${hours} hr ${mins.toFixed(2)} min`
+        return `Total duration ${hours}h ${mins.toFixed(2)}m`
       }
     },
     optimizePlaylist (playlist) {

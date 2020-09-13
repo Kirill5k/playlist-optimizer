@@ -5,7 +5,7 @@
       <b-card-text class="mb-0">Key {{ track.key }}, mode {{ track.mode }}</b-card-text>
       <b-card-text>Tempo {{ bpm }}, energy {{ track.energy }}, danceability {{ track.danceability }}</b-card-text>
 
-      <b-link :href="track.url" class="p-1 card-link badge badge-primary text-wrap" target="_blank">Spotify</b-link>
+      <b-link :href="track.url" class="p-1 card-link badge badge-success text-wrap" target="_blank">Spotify</b-link>
     </b-card>
   </div>
 </template>
