@@ -211,7 +211,7 @@ export default {
 
 <style scoped lang="scss">
 .playlists-view {
-  width: 800px;
+  width: 100%;
   align-self: center;
   text-align: left;
 

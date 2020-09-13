@@ -1,13 +1,23 @@
 <template>
-  <div id="app">
+  <b-container id="app">
     <div v-if="$store.state.isAuthenticated" id="nav">
       <router-link to="/">Playlists</router-link> |
       <router-link to="/optimizations">Optimizations</router-link> |
       <router-link to="/tracks">Tracks</router-link>
     </div>
     <router-view/>
-  </div>
+  </b-container>
 </template>
+
+<script>
+import { BContainer } from 'bootstrap-vue'
+
+export default {
+  name: 'App',
+  components: { BContainer }
+}
+
+</script>
 
 <style lang="scss">
 @import 'assets/bootstrap-overrides.scss';

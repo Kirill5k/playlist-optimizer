@@ -146,7 +146,7 @@ export default {
 
 <style lang="scss">
 .optimizations-view {
-  width: 1000px;
+  width: 100%;
   align-self: center;
 
   &__header {

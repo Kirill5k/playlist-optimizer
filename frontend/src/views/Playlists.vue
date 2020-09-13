@@ -1,18 +1,21 @@
 <template>
-  <div class="playlists">
+  <div v-if="isAuthenticated" class="playlists">
     <playlists-view
-      v-if="isAuthenticated"
       :playlists="playlists"
       @optimize="optimizePlaylist"
     />
-    <a v-else href="/api/spotify/login" aria-label="Left Align">
+    <playlist-import />
+  </div>
+  <div v-else class="playlists">
+    <a href="/api/spotify/login" aria-label="Left Align">
       <font-awesome-icon :icon="spotifyIcon" size="7x"/>
     </a>
   </div>
 </template>
 
 <script>
-import PlaylistsView from '@/components/PlaylistsView.vue'
+import PlaylistsView from '@/components/PlaylistsView'
+import PlaylistImport from '@/components/PlaylistImport'
 import NotificationsMixin from '@/mixins/NotificationsMixin'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faSpotify } from '@fortawesome/free-brands-svg-icons'
@@ -21,6 +24,7 @@ export default {
   name: 'Playlists',
   components: {
     PlaylistsView,
+    PlaylistImport,
     FontAwesomeIcon
   },
   mixins: [NotificationsMixin],
