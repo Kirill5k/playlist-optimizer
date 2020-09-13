@@ -9,11 +9,15 @@
       Import
     </b-button>
 
-    <b-modal ref="my-modal" hide-footer title="Using Component Methods">
+    <b-modal ref="my-modal" title="Enter playlist details">
       <div class="d-block text-center">
         <h3>Hello From My Modal!</h3>
       </div>
-      <b-button class="mt-3" variant="outline-danger" block @click="hideModal">Close Me</b-button>
+
+      <template v-slot:modal-footer="{ ok, hide }">
+        <b-button class="mt-3" variant="primary" @click="ok()">Save</b-button>
+        <b-button class="mt-3" variant="secondary" @click="hide()">Close</b-button>
+      </template>
     </b-modal>
   </div>
 </template>
@@ -32,9 +36,6 @@ export default {
   methods: {
     showModal () {
       this.$refs['my-modal'].show()
-    },
-    hideModal () {
-      this.$refs['my-modal'].hide()
     }
   }
 }
