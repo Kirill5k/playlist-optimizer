@@ -78,7 +78,7 @@ object PlaylistOptimizer {
     def runExpiration(state: Ref[F, Map[UserSessionId, Map[OptimizationId, Optimization]]]): F[Unit] = {
       val process = state.get.map(_.foldLeft[Map[UserSessionId, Map[OptimizationId, Optimization]]](Map()){
         case (res, (uid, optsMap)) => res + (uid -> optsMap.filter {
-          case (_, opt) => opt.dateInitiated.isAfter(Instant.now.minusNanos(expiresIn.toNanos)) && opt.result.isDefined
+          case (_, opt) => opt.duration.fold(true)(d => opt.dateInitiated.plusNanos(d.toNanos).plusNanos(expiresIn.toNanos).isAfter(Instant.now))
         })
       }).flatTap(state.set)
       Timer[F].sleep(checkOnExpirationsEvery) >> process >> runExpiration(state)
