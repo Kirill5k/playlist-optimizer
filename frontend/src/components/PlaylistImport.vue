@@ -15,7 +15,9 @@
       title="New playlist"
       content-class="playlist-import__import-modal"
     >
-      <b-form>
+      <b-form
+        @submit.prevent.stop
+      >
         <b-form-group
           id="playlist-name-group"
           label="Playlist name:"
@@ -30,8 +32,13 @@
             required
             placeholder="My new playlist"
             size="sm"
+            :state="isValidName"
             trim
           />
+
+          <b-form-invalid-feedback size="sm" :state="isValidName">
+            Playlist name is required
+          </b-form-invalid-feedback>
         </b-form-group>
 
         <b-form-group
@@ -66,12 +73,17 @@
             no-auto-shrink
             required
             trim
+            :state="areValidTracks"
           />
+
+          <b-form-invalid-feedback size="sm" :state="areValidTracks">
+            At least 1 track is required
+          </b-form-invalid-feedback>
         </b-form-group>
       </b-form>
 
       <template v-slot:modal-footer="{ ok, hide }">
-        <b-button size="sm" class="mt-3" variant="primary" @click="ok()">Save</b-button>
+        <b-button size="sm" class="mt-3" variant="primary" @click="save">Save</b-button>
         <b-button size="sm" class="mt-3" variant="secondary" @click="hide()">Close</b-button>
       </template>
     </b-modal>
@@ -79,7 +91,7 @@
 </template>
 
 <script>
-import { BButton, BModal, BForm, BFormGroup, BFormInput, BFormTextarea } from 'bootstrap-vue'
+import { BButton, BModal, BForm, BFormGroup, BFormInput, BFormTextarea, BFormInvalidFeedback } from 'bootstrap-vue'
 
 export default {
   name: 'PlaylistImport',
@@ -87,18 +99,29 @@ export default {
     track: Object
   },
   components: {
-    BButton, BModal, BForm, BFormGroup, BFormInput, BFormTextarea
+    BButton, BModal, BForm, BFormGroup, BFormInput, BFormTextarea, BFormInvalidFeedback
   },
   data () {
     return {
-      name: '',
-      description: '',
-      tracks: ''
+      name: null,
+      description: null,
+      tracks: null
+    }
+  },
+  computed: {
+    isValidName () {
+      return this.name === null ? null : this.name.length > 0
+    },
+    areValidTracks () {
+      return this.tracks === null ? null : this.tracks.length > 0
     }
   },
   methods: {
     showModal () {
       this.$refs['my-modal'].show()
+    },
+    save () {
+      console.log('saving form')
     }
   }
 }
