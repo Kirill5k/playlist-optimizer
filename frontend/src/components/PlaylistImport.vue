@@ -127,7 +127,16 @@ export default {
       this.$refs['playlist-import-modal'].show()
     },
     save () {
+      this.triggerValidation()
       console.log('saving form')
+    },
+    triggerValidation () {
+      if (this.name === null) {
+        this.name = ''
+      }
+      if (this.tracks === null) {
+        this.tracks = ''
+      }
     }
   }
 }
