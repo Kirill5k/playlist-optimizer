@@ -4,7 +4,9 @@
       :playlists="playlists"
       @optimize="optimizePlaylist"
     />
-    <playlist-import />
+    <playlist-import
+      @import="importPlaylist"
+    />
   </div>
   <div v-else class="playlists">
     <a href="/api/spotify/login" aria-label="Left Align">
@@ -46,6 +48,11 @@ export default {
     optimizePlaylist ({ playlist, optimizationParameters }) {
       this.$store.dispatch('optimizePlaylist', { playlist, optimizationParameters })
         .then(() => this.displayNotification({ message: `Optimization of ${playlist.name} has been initiated` }))
+        .catch(this.displayError)
+    },
+    importPlaylist (playlist) {
+      this.$store.dispatch('importPlaylist', playlist)
+        .then(() => this.displayNotification({ message: `${playlist.name} has been added to the library` }))
         .catch(this.displayError)
     }
   }

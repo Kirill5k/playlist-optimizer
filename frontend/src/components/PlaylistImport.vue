@@ -128,7 +128,14 @@ export default {
     },
     save () {
       this.triggerValidation()
-      console.log('saving form')
+      if (this.isValidName === true && this.areValidTracks === true) {
+        const importedPlaylist = {
+          name: this.name,
+          description: this.description,
+          tracks: this.tracks.split('\n')
+        }
+        this.$emit('import', importedPlaylist)
+      }
     },
     triggerValidation () {
       if (this.name === null) {

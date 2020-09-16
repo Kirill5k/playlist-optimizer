@@ -75,6 +75,19 @@ export default new Vuex.Store({
       })
         .then(res => res.status === 201 ? dispatch('getPlaylists') : reject(res))
     },
+    importPlaylist ({ commit, dispatch }, playlist) {
+      return fetch('/api/spotify/playlists/import', {
+        method: 'POST',
+        mode: 'cors',
+        cache: 'no-cache',
+        credentials: 'same-origin',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(playlist)
+      })
+        .then(res => res.status === 201 ? dispatch('getPlaylists') : reject(res))
+    },
     deleteOptimization ({ commit, dispatch }, id) {
       return fetch(`/api/playlist-optimizations/${id}`, { method: 'DELETE' })
         .then(res => res.status === 204 ? dispatch('getOptimizations') : reject(res))
