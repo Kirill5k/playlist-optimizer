@@ -4,16 +4,17 @@
       class="playlist-import__import-button"
       variant="outline-primary"
       size="sm"
-      @click="showModal"
+      @click="show"
     >
       Import
     </b-button>
 
     <b-modal
       size="sm"
-      ref="my-modal"
+      ref="playlist-import-modal"
       title="New playlist"
       content-class="playlist-import__import-modal"
+      @hidden="reset"
     >
       <b-form
         @submit.prevent.stop
@@ -117,8 +118,13 @@ export default {
     }
   },
   methods: {
-    showModal () {
-      this.$refs['my-modal'].show()
+    reset () {
+      this.name = null
+      this.description = null
+      this.tracks = null
+    },
+    show () {
+      this.$refs['playlist-import-modal'].show()
     },
     save () {
       console.log('saving form')
