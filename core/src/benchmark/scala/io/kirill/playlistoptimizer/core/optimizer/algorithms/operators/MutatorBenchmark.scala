@@ -19,10 +19,12 @@ object MutatorBenchmark extends Bench.LocalTime {
     HtmlReporter(true)
   )
 
-  val mutationFactors: Gen[Double] = Gen.range("mutationFactor")(0, 100, 5).map(_ / 100.0)
-  val sizes: Gen[Playlist] = Gen.range("playlist")(50, 1000, 50).map(randomizedPlaylist _)
+  val mutationFactors: Gen[Double] =
+    Gen.range("mutationFactor")(5, 100, 5).map(_ / 100.0)
+  val playlists: Gen[Playlist] =
+    Gen.range("playlist")(50, 1000, 50).map(randomizedPlaylist _)
 
-  val playlistsVsMutation = Gen.crossProduct(sizes, mutationFactors)
+  val playlistsVsMutation = Gen.crossProduct(playlists, mutationFactors)
 
   performance of "randomSwapMutator" in {
     val mutator = Mutator.randomSwapMutator[Track]
@@ -30,7 +32,7 @@ object MutatorBenchmark extends Bench.LocalTime {
     measure method "mutate" in {
       using(playlistsVsMutation) config (
         exec.benchRuns -> 500,
-        exec.independentSamples -> 2
+        exec.independentSamples -> 20
       ) in { case (pl, mutationFactor) =>
         val res = mutator.mutate(pl.tracks, mutationFactor)
       }
