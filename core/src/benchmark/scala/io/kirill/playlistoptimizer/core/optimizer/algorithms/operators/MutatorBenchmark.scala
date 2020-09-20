@@ -31,7 +31,7 @@ object MutatorBenchmark extends Bench.LocalTime {
 
     measure method "mutate" in {
       using(playlistsVsMutation) config (
-        exec.benchRuns -> 500,
+        exec.benchRuns -> 1000,
         exec.independentSamples -> 20
       ) in { case (pl, mutationFactor) =>
         val res = mutator.mutate(pl.tracks, mutationFactor)
@@ -44,8 +44,8 @@ object MutatorBenchmark extends Bench.LocalTime {
 
     measure method "mutate" in {
       using(playlistsVsMutation) config (
-        exec.benchRuns -> 500,
-        exec.independentSamples -> 2
+        exec.benchRuns -> 1000,
+        exec.independentSamples -> 20
       ) in { case (pl, mutationFactor) =>
         val res = mutator.mutate(pl.tracks, mutationFactor)
       }
