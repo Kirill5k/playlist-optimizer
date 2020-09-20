@@ -2,7 +2,7 @@ package io.kirill.playlistoptimizer.core.optimizer.algorithms
 
 import cats.effect.Concurrent
 import io.kirill.playlistoptimizer.core.optimizer.OptimizationParameters
-import io.kirill.playlistoptimizer.core.optimizer.algorithms.operators.{Crossover, Elitism, Evaluator, Mutator, Selector}
+import io.kirill.playlistoptimizer.core.optimizer.algorithms.operators._
 
 import scala.util.Random
 

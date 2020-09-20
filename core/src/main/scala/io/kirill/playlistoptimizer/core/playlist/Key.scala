@@ -44,7 +44,7 @@ object Key {
   final case object DFlatMinor extends Key(12, "D-Flat Minor", Minor, "Dbm", "C#m")
   final case object EMajor extends Key(12, "E Major", Major, "E")
 
-  lazy val values: Seq[Key] = List(
+  lazy val values: List[Key] = List(
     AFlatMinor, EFlatMinor, BFlatMinor, FMinor, CMinor, GMinor, DMinor, AMinor, EMinor, BMinor, FSharpMinor, DFlatMinor,
     BMajor, FSharpMajor, DFlatMajor, AFlatMajor, EFlatMajor, BFlatMajor, FMajor, CMajor, GMajor, DMajor, AMajor, EMajor
   )

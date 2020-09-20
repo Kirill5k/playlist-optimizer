@@ -9,8 +9,9 @@ object Dependencies {
     lazy val http4s     = "0.21.1"
     lazy val jwt        = "4.2.0"
 
-    lazy val mockito   = "1.10.3"
-    lazy val scalatest = "3.2.0"
+    lazy val mockito    = "1.10.3"
+    lazy val scalatest  = "3.2.0"
+    lazy val scalameter = "0.19"
   }
 
   object Libraries {
@@ -42,10 +43,11 @@ object Dependencies {
 
     lazy val jwtCirce = "com.pauldijou" %% "jwt-circe" % Versions.jwt
 
-    lazy val mockitoCore      = "org.mockito"    %% "mockito-scala"                 % Versions.mockito
-    lazy val mockitoScalatest = "org.mockito"    %% "mockito-scala-scalatest"       % Versions.mockito
-    lazy val scalatest        = "org.scalatest"  %% "scalatest"                     % Versions.scalatest
-    lazy val catsEffectTest   = "com.codecommit" %% "cats-effect-testing-scalatest" % "0.4.0"
+    lazy val mockitoCore      = "org.mockito"       %% "mockito-scala"                 % Versions.mockito
+    lazy val mockitoScalatest = "org.mockito"       %% "mockito-scala-scalatest"       % Versions.mockito
+    lazy val scalatest        = "org.scalatest"     %% "scalatest"                     % Versions.scalatest
+    lazy val scalameter       = "com.storm-enroute" %% "scalameter"                    % Versions.scalameter
+    lazy val catsEffectTest   = "com.codecommit"    %% "cats-effect-testing-scalatest" % "0.4.0"
   }
 
   lazy val core = Seq(
@@ -76,6 +78,7 @@ object Dependencies {
     Libraries.mockitoCore      % Test,
     Libraries.mockitoScalatest % Test,
     Libraries.scalatest        % Test,
-    Libraries.catsEffectTest
+    Libraries.scalameter       % Test,
+    Libraries.catsEffectTest   % Test
   )
 }

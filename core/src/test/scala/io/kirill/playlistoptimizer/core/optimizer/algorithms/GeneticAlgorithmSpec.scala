@@ -5,7 +5,7 @@ import java.time.Instant
 import cats.effect.IO
 import cats.effect.testing.scalatest.AsyncIOSpec
 import io.kirill.playlistoptimizer.core.optimizer.OptimizationParameters
-import io.kirill.playlistoptimizer.core.optimizer.algorithms.operators.{Crossover, Elitism, Evaluator, Mutator, Selector}
+import io.kirill.playlistoptimizer.core.optimizer.algorithms.operators._
 import io.kirill.playlistoptimizer.core.playlist.{PlaylistBuilder, Track}
 import org.scalatest.freespec.AsyncFreeSpec
 import org.scalatest.matchers.must.Matchers

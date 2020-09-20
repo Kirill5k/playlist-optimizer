@@ -11,7 +11,7 @@ project/target/**
 null/
 .DS_Store
 node_modules
-/dist
+/frontend/dist
 
 .env.local
 .env.*.local

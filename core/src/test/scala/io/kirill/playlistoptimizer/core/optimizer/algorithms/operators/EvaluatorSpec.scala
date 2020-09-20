@@ -1,6 +1,6 @@
 package io.kirill.playlistoptimizer.core.optimizer.algorithms.operators
 
-import io.kirill.playlistoptimizer.core.optimizer.algorithms.operators.operators.Fitness
+import io.kirill.playlistoptimizer.core.optimizer.algorithms.operators.operators._
 import io.kirill.playlistoptimizer.core.playlist.Key.{AMajor, DMajor, EMajor, GMajor, _}
 import io.kirill.playlistoptimizer.core.playlist.{Key, Track}
 import org.scalatest.Inspectors
