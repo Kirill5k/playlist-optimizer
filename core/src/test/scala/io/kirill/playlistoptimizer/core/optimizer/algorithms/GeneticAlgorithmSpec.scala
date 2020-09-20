@@ -20,7 +20,7 @@ class GeneticAlgorithmSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers 
     "should optimize a seq of tracks" in {
       implicit val c: Crossover[Track] = Crossover.bestKeySequenceTrackCrossover
       implicit val m: Mutator[Track] = Mutator.randomSwapMutator[Track]
-      implicit val s: Selector[Track] = Selector.rouletteWheelSelector[Track]
+      implicit val s: Selector[Track] = Selector.fitnessBasedSelector[Track]
       implicit val e: Elitism[Track] = Elitism.elitism[Track]
 
       val start = Instant.now
@@ -34,21 +34,11 @@ class GeneticAlgorithmSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers 
         val end = Instant.now()
 
         println(s"total time taken: ${end.getEpochSecond - start.getEpochSecond}s")
-        println(s"original score: ${Evaluator.harmonicSeqBasedTracksEvaluator.evaluateIndividual(songs)}, optimized score: ${Evaluator.harmonicSeqBasedTracksEvaluator.evaluateIndividual(tracks)}")
-        println(tracks)
-        println(keyStreak(tracks))
 
         tracks must contain theSameElementsAs songs
         tracks must not contain theSameElementsInOrderAs (songs)
         score must be < Evaluator.harmonicSeqBasedTracksEvaluator.evaluateIndividual(songs).value / 20
       }
     }
-  }
-
-  def keyStreak(tracks: Seq[Track]): String = {
-    tracks
-      .map(_.audio.key)
-      .map(k => (k.name, s"${k.number}${if (k.mode.number == 0) "A" else "B"}"))
-      .mkString(" -> ")
   }
 }
