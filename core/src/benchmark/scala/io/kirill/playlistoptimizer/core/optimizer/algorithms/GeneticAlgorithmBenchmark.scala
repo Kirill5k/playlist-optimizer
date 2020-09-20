@@ -9,7 +9,7 @@ import org.scalameter.api._
 
 import scala.concurrent.ExecutionContext
 
-class GeneticAlgorithmBenchmark extends Benchmark {
+object GeneticAlgorithmBenchmark extends Benchmark {
   implicit val cs = IO.contextShift(ExecutionContext.global)
 
   val playlists = playlistGen(50, 250, 50)
@@ -19,7 +19,7 @@ class GeneticAlgorithmBenchmark extends Benchmark {
     implicit val m: Mutator[Track] = Mutator.randomSwapMutator[Track]
     implicit val s: Selector[Track] = Selector.rouletteWheelSelector[Track]
     implicit val e: Elitism[Track] = Elitism.elitism[Track]
-    val params = OptimizationParameters(200, 250, 0.75, 0.05, 0.1, true)
+    val params = OptimizationParameters(50, 100, 0.75, 0.05, 0.1, true)
     val algorithm = OptimizationAlgorithm.geneticAlgorithm[IO, Track]
 
     measure method "optimizeSeq" in {

@@ -14,6 +14,21 @@ trait Selector[A] {
   )(implicit r: Random): Seq[(IndexedSeq[A], IndexedSeq[A])]
 }
 
+final class FitnessBasedSelector[A] extends Selector[A] {
+
+  override def selectPairs(
+      population: Seq[(IndexedSeq[A], Fitness)],
+      populationLimit: Int
+  )(
+      implicit r: Random
+  ): Seq[(IndexedSeq[A], IndexedSeq[A])] =
+    population
+      .sortBy(_._2.value)
+      .map(_._1)
+      .take(populationLimit)
+      .pairs
+}
+
 final class RouletteWheelSelector[A] extends Selector[A] {
 
   override def selectPairs(
@@ -64,4 +79,6 @@ final class RouletteWheelSelector[A] extends Selector[A] {
 
 object Selector {
   def rouletteWheelSelector[A]: Selector[A] = new RouletteWheelSelector[A]
+
+  def fitnessBasedSelector[A]: Selector[A] = new FitnessBasedSelector[A]
 }
