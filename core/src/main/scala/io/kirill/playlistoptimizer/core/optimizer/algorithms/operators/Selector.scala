@@ -23,13 +23,13 @@ final class RouletteWheelSelector[A] extends Selector[A] {
       implicit r: Random
   ): Seq[(IndexedSeq[A], IndexedSeq[A])] = {
     @tailrec
-    def go(newPop: Seq[IndexedSeq[A]], remPop: Seq[(IndexedSeq[A], Fitness)]): Seq[IndexedSeq[A]] =
+    def go(newPop: List[IndexedSeq[A]], remPop: List[(IndexedSeq[A], Fitness)]): List[IndexedSeq[A]] =
       if (remPop.isEmpty || newPop.size >= populationLimit) newPop
       else {
         val pickedInd = pickOne(remPop)
-        go(newPop :+ pickedInd, remPop.filter(_._1 != pickedInd))
+        go(pickedInd :: newPop, remPop.filter(_._1 != pickedInd))
       }
-    go(List(), population).pairs
+    go(List(), population.toList).reverse.pairs
   }
 
   private def pickOne(population: Seq[(IndexedSeq[A], Fitness)])(implicit r: Random): IndexedSeq[A] = {

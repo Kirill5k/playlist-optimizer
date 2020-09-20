@@ -7,7 +7,7 @@ import org.scalameter.api._
 object MutatorBenchmark extends Benchmark {
 
   val mutationFactors: Gen[Double] = probabilityGen("mutationFactor")
-  val playlists: Gen[Playlist] = playlistGen(50, 1000, 50)
+  val playlists: Gen[Playlist] = playlistGen()
 
   val playlistsVsMutation = Gen.crossProduct(playlists, mutationFactors)
 
@@ -16,8 +16,8 @@ object MutatorBenchmark extends Benchmark {
 
     measure method "mutate" in {
       using(playlistsVsMutation) config (
-        exec.benchRuns -> 1000,
-        exec.independentSamples -> 20
+        exec.benchRuns -> 2500,
+        exec.independentSamples -> 50
       ) in { case (pl, mutationFactor) =>
         val res = mutator.mutate(pl.tracks, mutationFactor)
       }
@@ -29,8 +29,8 @@ object MutatorBenchmark extends Benchmark {
 
     measure method "mutate" in {
       using(playlistsVsMutation) config (
-        exec.benchRuns -> 1000,
-        exec.independentSamples -> 20
+        exec.benchRuns -> 2500,
+        exec.independentSamples -> 50
       ) in { case (pl, mutationFactor) =>
         val res = mutator.mutate(pl.tracks, mutationFactor)
       }
