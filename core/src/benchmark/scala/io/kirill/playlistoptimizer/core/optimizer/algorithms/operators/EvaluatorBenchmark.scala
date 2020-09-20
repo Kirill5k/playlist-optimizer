@@ -1,6 +1,6 @@
 package io.kirill.playlistoptimizer.core.optimizer.algorithms.operators
 
-import io.kirill.playlistoptimizer.core.{Benchmark, BenchmarkUtils}
+import io.kirill.playlistoptimizer.core.Benchmark
 import io.kirill.playlistoptimizer.core.playlist.Playlist
 import org.scalameter.api._
 

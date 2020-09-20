@@ -1,7 +1,7 @@
 package io.kirill.playlistoptimizer.core
 
 import io.kirill.playlistoptimizer.core.BenchmarkUtils.randomizedPlaylist
-import io.kirill.playlistoptimizer.core.playlist.Playlist
+import io.kirill.playlistoptimizer.core.playlist.{Playlist, Track}
 import org.scalameter.api._
 import org.scalameter.picklers.Implicits._
 
@@ -41,4 +41,7 @@ trait Benchmark extends Bench[Double] {
 
   def probabilityGen(name: String): Gen[Double] =
     Gen.range(name)(5, 100, 5).map(_ / 100.0)
+
+  def populationSizesGen(startSize: Int = 50, endSize: Int = 1000, sizeStep: Int = 50): Gen[Int] =
+    Gen.range("populationSize")(startSize, endSize, sizeStep)
 }
