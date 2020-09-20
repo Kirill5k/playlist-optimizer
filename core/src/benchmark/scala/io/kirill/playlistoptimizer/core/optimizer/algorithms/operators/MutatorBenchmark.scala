@@ -11,6 +11,14 @@ object MutatorBenchmark extends Bench.LocalTime {
 
   implicit val rand = Random
 
+  override lazy val reporter = Reporter.Composite(
+    new RegressionReporter(
+      RegressionReporter.Tester.OverlapIntervals(),
+      RegressionReporter.Historian.ExponentialBackoff()
+    ),
+    HtmlReporter(true)
+  )
+
   val mutationFactors: Gen[Double] = Gen.range("mutationFactor")(0, 100, 5).map(_ / 100.0)
   val sizes: Gen[Playlist] = Gen.range("playlist")(50, 1000, 50).map(randomizedPlaylist _)
 
