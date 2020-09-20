@@ -5,12 +5,9 @@ import io.kirill.playlistoptimizer.core.playlist.{Playlist, Track}
 import org.scalameter.api._
 
 object MutatorBenchmark extends Benchmark {
-  import BenchmarkUtils._
 
-  val mutationFactors: Gen[Double] =
-    Gen.range("mutationFactor")(5, 100, 5).map(_ / 100.0)
-  val playlists: Gen[Playlist] =
-    Gen.range("playlist")(50, 1000, 50).map(randomizedPlaylist _)
+  val mutationFactors: Gen[Double] = probabilityGen("mutationFactor")
+  val playlists: Gen[Playlist] = playlistGen(50, 1000, 50)
 
   val playlistsVsMutation = Gen.crossProduct(playlists, mutationFactors)
 

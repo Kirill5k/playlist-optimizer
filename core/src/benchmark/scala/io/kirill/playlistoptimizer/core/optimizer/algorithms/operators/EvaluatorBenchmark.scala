@@ -5,10 +5,8 @@ import io.kirill.playlistoptimizer.core.playlist.Playlist
 import org.scalameter.api._
 
 object EvaluatorBenchmark extends Benchmark  {
-  import BenchmarkUtils._
 
-  val playlists: Gen[Playlist] =
-    Gen.range("playlist")(50, 1000, 50).map(randomizedPlaylist _)
+  val playlists: Gen[Playlist] = playlistGen()
 
   performance of "harmonicSeqBasedTracksEvaluator" in {
     val evaluator = Evaluator.harmonicSeqBasedTracksEvaluator
