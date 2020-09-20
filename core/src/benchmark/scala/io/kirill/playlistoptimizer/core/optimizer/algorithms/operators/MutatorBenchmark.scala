@@ -4,8 +4,6 @@ import io.kirill.playlistoptimizer.core.{Benchmark, BenchmarkUtils}
 import io.kirill.playlistoptimizer.core.playlist.{Playlist, Track}
 import org.scalameter.api._
 
-import scala.util.Random
-
 object MutatorBenchmark extends Benchmark {
   import BenchmarkUtils._
 
