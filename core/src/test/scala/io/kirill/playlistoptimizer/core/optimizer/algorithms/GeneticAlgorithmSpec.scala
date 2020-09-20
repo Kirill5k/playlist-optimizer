@@ -19,14 +19,14 @@ class GeneticAlgorithmSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers 
 
     "should optimize a seq of tracks" in {
       implicit val c: Crossover[Track] = Crossover.bestKeySequenceTrackCrossover
-      implicit val m: Mutator[Track] = Mutator.neighbourSwapMutator[Track]
+      implicit val m: Mutator[Track] = Mutator.randomSwapMutator[Track]
       implicit val s: Selector[Track] = Selector.rouletteWheelSelector[Track]
       implicit val e: Elitism[Track] = Elitism.elitism[Track]
 
       val start = Instant.now
 
       val songs = PlaylistBuilder.playlist.tracks
-      val params = OptimizationParameters(200, 250, 0.5, 0.1, 0.1, true)
+      val params = OptimizationParameters(200, 250, 0.75, 0.05, 0.1, true)
       val alg = OptimizationAlgorithm.geneticAlgorithm[IO, Track]
       val optimizedSongsResult = alg.optimizeSeq(songs, params)
 
