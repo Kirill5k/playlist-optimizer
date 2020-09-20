@@ -1,23 +1,13 @@
 package io.kirill.playlistoptimizer.core.optimizer.algorithms.operators
 
-import io.kirill.playlistoptimizer.core.BenchmarkUtils
+import io.kirill.playlistoptimizer.core.{Benchmark, BenchmarkUtils}
 import io.kirill.playlistoptimizer.core.playlist.{Playlist, Track}
 import org.scalameter.api._
 
 import scala.util.Random
 
-object MutatorBenchmark extends Bench.LocalTime {
+object MutatorBenchmark extends Benchmark {
   import BenchmarkUtils._
-
-  implicit val rand = Random
-
-  override lazy val reporter = Reporter.Composite(
-    new RegressionReporter(
-      RegressionReporter.Tester.OverlapIntervals(),
-      RegressionReporter.Historian.ExponentialBackoff()
-    ),
-    HtmlReporter(true)
-  )
 
   val mutationFactors: Gen[Double] =
     Gen.range("mutationFactor")(5, 100, 5).map(_ / 100.0)
