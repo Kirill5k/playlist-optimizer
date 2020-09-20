@@ -26,7 +26,7 @@ class GeneticAlgorithmSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers 
       val start = Instant.now
 
       val songs = PlaylistBuilder.playlist.tracks
-      val params = OptimizationParameters(200, 250, 0.75, 0.05, 0.1, true)
+      val params = OptimizationParameters(200, 250, 0.75, 0.05, 0.2, true)
       val alg = OptimizationAlgorithm.geneticAlgorithm[IO, Track]
       val optimizedSongsResult = alg.optimizeSeq(songs, params)
 

@@ -11,7 +11,7 @@ sealed trait Mutator[A] {
 object Mutator {
   implicit def randomSwapMutator[A]: Mutator[A] = new Mutator[A] {
     override def mutate(ind: IndexedSeq[A], mutationFactor: Double)(implicit r: Random): IndexedSeq[A] = {
-      val swaps = math.round(ind.size * mutationFactor)
+      val swaps = math.round(ind.size * mutationFactor / 2.0)
       (0 until swaps.toInt).foldLeft(ind)((res, _) => res.swap(r.nextInt(ind.size), r.nextInt(ind.size)))
     }
   }

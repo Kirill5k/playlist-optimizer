@@ -35,7 +35,7 @@ class MutatorSpec extends AnyWordSpec with Matchers {
 
     "do multiple swaps when mutation probability is higher" in {
       implicit val r = new Random(1)
-      val mutatedTracks = Mutator.randomSwapMutator[Track].mutate(tracks, 0.2)
+      val mutatedTracks = Mutator.randomSwapMutator[Track].mutate(tracks, 0.3)
 
       mutatedTracks must not contain theSameElementsInOrderAs (tracks)
       mutatedTracks must contain theSameElementsAs tracks
