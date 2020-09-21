@@ -67,15 +67,16 @@ final class RouletteWheelSelector[A] extends Selector[A] {
       .take(popByFitness.size)
       .map(t => (t.head._1, t.map(_._2).sum))
       .toList
-      .reverse
 
     val n = r.nextDouble()
-
-    val i = popByCumulativeSum.indexWhere(_._2 >= n, 0)
-
-    val ind    = popByCumulativeSum(i)._1
-    val remPop = popByFitness.take(popByFitness.size - i - 1) ++ popByFitness.drop(popByFitness.size - i)
-    (ind, remPop)
+    val i = popByCumulativeSum.indexWhere(_._2 < n, 0) - 1
+    if (i >= 0) {
+      val ind    = popByCumulativeSum(i)._1
+      val remPop = popByFitness.take(i) ++ popByFitness.drop(i + 1)
+      (ind, remPop)
+    } else {
+      (popByFitness.head._1, popByFitness.tail)
+    }
   }
 }
 
