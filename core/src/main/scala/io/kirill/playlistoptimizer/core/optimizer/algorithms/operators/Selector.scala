@@ -1,6 +1,5 @@
 package io.kirill.playlistoptimizer.core.optimizer.algorithms.operators
 
-import io.kirill.playlistoptimizer.core.common.errors.CalculationError
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.operators.operators.Fitness
 import io.kirill.playlistoptimizer.core.utils.CollectionOps._
 
@@ -37,23 +36,28 @@ final class RouletteWheelSelector[A] extends Selector[A] {
   )(
       implicit r: Random
   ): Seq[(IndexedSeq[A], IndexedSeq[A])] = {
-    @tailrec
-    def go(newPop: List[IndexedSeq[A]], remPop: List[(IndexedSeq[A], Fitness)]): List[IndexedSeq[A]] =
-      if (remPop.isEmpty || newPop.size >= populationLimit) newPop
-      else {
-        val pickedInd = pickOne(remPop)
-        go(pickedInd :: newPop, remPop.filter(_._1 != pickedInd))
-      }
-    go(List(), population.toList).reverse.pairs
-  }
-
-  private def pickOne(population: Seq[(IndexedSeq[A], Fitness)])(implicit r: Random): IndexedSeq[A] = {
     val popByFitness = population
+      .toList
       .sortBy(_._2.value)
       .map {
         case (i, f) => (i, 100 / f.value)
       }
 
+    @tailrec
+    def go(newPop: List[IndexedSeq[A]], remPop: Seq[(IndexedSeq[A], BigDecimal)]): List[IndexedSeq[A]] =
+      if (remPop.isEmpty || newPop.size >= populationLimit) newPop
+      else {
+        val (pickedInd, remaining) = pickOne(remPop)
+        go(pickedInd :: newPop, remaining)
+      }
+    go(List(), popByFitness).reverse.pairs
+  }
+
+  private def pickOne(
+      popByFitness: Seq[(IndexedSeq[A], BigDecimal)]
+  )(
+      implicit r: Random
+  ): (IndexedSeq[A], Seq[(IndexedSeq[A], BigDecimal)]) = {
     val fTotal = popByFitness.map(_._2).sum
 
     val popByCumulativeSum = popByFitness
@@ -61,19 +65,18 @@ final class RouletteWheelSelector[A] extends Selector[A] {
         case (i, f) => (i, f / fTotal)
       }
       .tails
-      .take(population.size)
+      .take(popByFitness.size)
       .map(t => (t.head._1, t.map(_._2).sum))
-      .toVector
+      .toList
       .reverse
 
     val n = r.nextDouble()
 
-    popByCumulativeSum
-      .find {
-        case (_, p) => p >= n
-      }
-      .map(_._1)
-      .getOrElse(throw CalculationError("error getting individual via roulette wheel selector"))
+    val i = popByCumulativeSum.indexWhere(_._2 >= n, 0)
+
+    val ind    = popByCumulativeSum(i)._1
+    val remPop = popByFitness.take(popByFitness.size - i - 1) ++ popByFitness.drop(popByFitness.size - i)
+    (ind, remPop)
   }
 }
 
