@@ -37,7 +37,6 @@ final class RouletteWheelSelector[A] extends Selector[A] {
       implicit r: Random
   ): Seq[(IndexedSeq[A], IndexedSeq[A])] = {
     val popByFitness = population
-      .toList
       .sortBy(_._2.value)
       .map {
         case (i, f) => (i, 100 / f.value)

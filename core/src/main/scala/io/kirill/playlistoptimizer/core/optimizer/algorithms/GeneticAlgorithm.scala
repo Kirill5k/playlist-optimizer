@@ -39,17 +39,16 @@ class GeneticAlgorithm[F[_]: Concurrent, A](
     val fitpop = evaluator.evaluatePopulation(population)
     val elites = Stream.evalSeq(Sync[F].delay(elitism.select(fitpop, params.elitismRatio)))
     val newPopulation = Stream
-      .evalSeq(Concurrent[F].delay(selector.selectPairs(fitpop, params.populationSize)))
+      .evalSeq(Sync[F].delay(selector.selectPairs(fitpop, params.populationSize)))
       .map {
         case (p1, p2) =>
-          Stream.evalSeq(
-            Concurrent[F]
-              .delay(List(crossover.cross(p1, p2, params.crossoverProbability), crossover.cross(p2, p1, params.crossoverProbability)))
-          )
+          val prob = params.crossoverProbability
+          val c1 = Stream.eval(Sync[F].delay(crossover.cross(p1, p2, prob)))
+          val c2 = Stream.eval(Sync[F].delay(crossover.cross(p2, p1, prob)))
+          c1 ++ c2
       }
       .parJoinUnbounded
-      .map(ind => Stream.eval(Concurrent[F].delay(mutator.mutate(ind, params.mutationProbability))))
-      .parJoinUnbounded
+      .evalMap(ind => Sync[F].delay(mutator.mutate(ind, params.mutationProbability)))
 
     (newPopulation ++ elites).compile.toList
   }
