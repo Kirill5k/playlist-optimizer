@@ -10,7 +10,7 @@ object Elitism {
   def elitism[A]: Elitism[A] = new Elitism[A] {
     override def select(population: Seq[(IndexedSeq[A], Fitness)], elitismRatio: Double): Seq[IndexedSeq[A]] = {
       val n = population.size * elitismRatio
-      population.sortBy(_._2.value).map(_._1).take(n.toInt)
+      population.toVector.sortBy(_._2.value).map(_._1).take(n.toInt)
     }
   }
 }
