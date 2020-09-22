@@ -59,19 +59,21 @@ final class RouletteWheelSelector[A] extends Selector[A] {
   ): (IndexedSeq[A], Seq[(IndexedSeq[A], BigDecimal)]) = {
     val fTotal = popByFitness.map(_._2).sum
 
-    val popByCumulativeSum = popByFitness
-      .map {
-        case (i, f) => (i, f / fTotal)
-      }
-      .tails
-      .take(popByFitness.size)
-      .map(t => (t.head._1, t.map(_._2).sum))
-      .toList
+    var remFitness = BigDecimal(1.0)
 
     val n = r.nextDouble()
-    val i = popByCumulativeSum.indexWhere(_._2 < n, 0) - 1
+    val i = LazyList
+      .from(popByFitness)
+      .map {
+        case (i, f) =>
+          val res = (i, remFitness)
+          remFitness -= f / fTotal
+          res
+      }
+      .indexWhere(_._2 < n, 0) - 1
+
     if (i >= 0) {
-      val ind    = popByCumulativeSum(i)._1
+      val ind    = popByFitness(i)._1
       val remPop = popByFitness.take(i) ++ popByFitness.drop(i + 1)
       (ind, remPop)
     } else {

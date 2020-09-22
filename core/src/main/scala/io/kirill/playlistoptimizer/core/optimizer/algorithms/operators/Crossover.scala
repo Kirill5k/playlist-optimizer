@@ -30,7 +30,7 @@ object Crossover {
       val slicedBestSeq = if (bestSeq.size <= sliceSize) bestSeq else cut(bestSeq, sliceSize)
 
       val (left, right) = p2.splitAt(seqIndex + slicedBestSeq.size/2)
-      left.filterNot(slicedBestSeq.contains) :++ slicedBestSeq :++ right.filterNot(slicedBestSeq.contains)
+      left.filterNot(slicedBestSeq.contains) ++ slicedBestSeq ++ right.filterNot(slicedBestSeq.contains)
     }
 
     private def combo(ts: IndexedSeq[Track]): IndexedSeq[Track] = {
