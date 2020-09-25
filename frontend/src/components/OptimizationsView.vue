@@ -139,7 +139,7 @@ export default {
       const its = `Max gen. ${params.maxGen}`
       const elit = `Elitism ratio ${params.elitismRatio}`
       const shuffle = params.shuffle ? 'Shuffle' : 'No Shuffle'
-      return `${popSize} / ${crossProb} / ${mutProb} / ${its} / / ${elit} / ${shuffle}`
+      return `${popSize} / ${crossProb} / ${mutProb} / ${its} / ${elit} / ${shuffle}`
     }
   }
 }

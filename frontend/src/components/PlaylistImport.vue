@@ -13,7 +13,6 @@
       size="sm"
       ref="playlist-import-modal"
       title="New playlist"
-      content-class="playlist-import__import-modal"
       @hidden="reset"
     >
       <b-form
@@ -158,10 +157,6 @@ export default {
   &__import-button {
     float: right;
     border: 1px solid #000;
-  }
-
-  &__import-modal {
-    min-width: 600px;
   }
 }
 </style>
