@@ -137,8 +137,9 @@ export default {
       const crossProb = `Crossover prob. ${params.crossoverProbability}`
       const mutProb = `Mutation prob. ${params.mutationProbability}`
       const its = `Max gen. ${params.maxGen}`
+      const elit = `Elitism ratio ${params.elitismRatio}`
       const shuffle = params.shuffle ? 'Shuffle' : 'No Shuffle'
-      return `${popSize} / ${crossProb} / ${mutProb} / ${its} / ${shuffle}`
+      return `${popSize} / ${crossProb} / ${mutProb} / ${its} / / ${elit} / ${shuffle}`
     }
   }
 }

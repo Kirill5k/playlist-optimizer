@@ -198,8 +198,8 @@ export default {
         return `Total duration ${duration.toFixed(2)}m`
       } else {
         const hours = Math.floor(duration / 60)
-        const mins = duration - hours * 60
-        return `Total duration ${hours}h ${mins.toFixed(2)}m`
+        const mins = Math.round(duration - hours * 60)
+        return `Total duration ${hours}h ${mins}m`
       }
     },
     optimizePlaylist (playlist) {
