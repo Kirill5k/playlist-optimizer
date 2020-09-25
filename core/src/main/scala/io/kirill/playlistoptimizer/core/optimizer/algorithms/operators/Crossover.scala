@@ -22,8 +22,12 @@ object Crossover {
     override def cross(p1: IndexedSeq[Track], p2: IndexedSeq[Track])(implicit r: Random): IndexedSeq[Track] = {
       val (bestSeq, seqIndex) = p1.tails.take(p1.size).zipWithIndex.foldLeft[(IndexedSeq[Track], Int)]((Vector(), -1)) {
         case ((currentBest, bestIndex), (tail, index)) =>
-          val newBest = combo(tail)
-          if (newBest.size > currentBest.size) (newBest, index) else (currentBest, bestIndex)
+          if (currentBest.size >= tail.size) (currentBest, bestIndex)
+          else {
+            val newBest = getStreak(tail)
+            if (newBest.size > currentBest.size) (newBest, index)
+            else (currentBest, bestIndex)
+          }
       }
 
       val sliceSize = p1.size / 2
@@ -33,7 +37,7 @@ object Crossover {
       left.filterNot(slicedBestSeq.contains) ++ slicedBestSeq ++ right.filterNot(slicedBestSeq.contains)
     }
 
-    private def combo(ts: IndexedSeq[Track]): IndexedSeq[Track] = {
+    private def getStreak(ts: IndexedSeq[Track]): IndexedSeq[Track] = {
       @scala.annotation.tailrec
       def go(combo: IndexedSeq[Track], remaining: IndexedSeq[Track], previous: Track): IndexedSeq[Track] = {
         val newCombo = combo :+ previous
