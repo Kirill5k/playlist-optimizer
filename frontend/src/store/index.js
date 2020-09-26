@@ -19,6 +19,9 @@ export default new Vuex.Store({
     setOptimizations (state, optimizations) {
       state.optimizations = optimizations
     },
+    authenticate (state) {
+      state.isAuthenticated = true
+    },
     unAuthenticate (state) {
       state.isAuthenticated = false
     },
@@ -38,6 +41,7 @@ export default new Vuex.Store({
       return fetch('/api/spotify/playlists')
         .then(res => res.status === 200 ? res.json() : reject(res))
         .then(playlists => commit('setPlaylists', playlists))
+        .then(() => commit('authenticate'))
         .catch(err => {
           console.error(err)
           commit('unAuthenticate')
