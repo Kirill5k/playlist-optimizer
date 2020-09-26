@@ -42,16 +42,13 @@ export default new Vuex.Store({
         .then(res => res.status === 200 ? res.json() : reject(res))
         .then(playlists => commit('setPlaylists', playlists))
         .then(() => commit('authenticate'))
-        .catch(err => {
-          console.error(err)
-          commit('unAuthenticate')
-        })
+        .catch(() => commit('unAuthenticate'))
     },
     getOptimizations ({ commit }) {
       return fetch('/api/playlist-optimizations')
         .then(res => res.status === 200 ? res.json() : reject(res))
         .then(optimizations => commit('setOptimizations', optimizations))
-        .catch(err => console.error(err))
+        .catch(() => {})
     },
     optimizePlaylist ({ commit, dispatch }, requestBody) {
       return fetch('/api/playlist-optimizations', {

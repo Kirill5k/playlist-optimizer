@@ -32,7 +32,8 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: built-frontend
-          path: frontend/dist/
+          path: |
+            dist
 
   build-backend:
     runs-on: ubuntu-latest
@@ -59,5 +60,7 @@ jobs:
       - name: Print the final result
         shell: bash
         run: |
-          value=`ls built-frontend`
-          echo $value
+          value1=`ls frontend/dist`
+          echo v1 $value1
+          value2=`ls dist`
+          echo v2 $value2
