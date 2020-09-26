@@ -64,8 +64,3 @@ jobs:
           value5=`ls built-frontend`
           echo v5 $value5
           value4=`ls built-backend`
-          echo v4 $value4
-          value1=`ls frontend/dist`
-          echo v1 $value1
-          value3=`ls core/target/scala-2.13/`
-          echo v3 $value3
