@@ -29,10 +29,10 @@ jobs:
       - name: Build frontend
         run: npm run build --prefix frontend
       - name: Upload frontend for the next job
-          uses: actions/upload-artifact@v2
-          with:
-            name: frontend
-            path: frontend/dist/
+        uses: actions/upload-artifact@v2
+        with:
+          name: frontend
+          path: frontend/dist/
 
   build-backend:
     runs-on: ubuntu-latest
@@ -56,8 +56,6 @@ jobs:
     steps:
       - name: Download built artifacts
         uses: actions/download-artifact@v2
-        with:
-          name: frontend
       - name: Print the final result
         shell: bash
         run: |
