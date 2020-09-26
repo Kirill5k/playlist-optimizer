@@ -33,7 +33,7 @@ jobs:
         with:
           name: built-frontend
           path: |
-            dist
+            frontend/dist
 
   build-backend:
     runs-on: ubuntu-latest
@@ -61,6 +61,12 @@ jobs:
       - name: Print the final result
         shell: bash
         run: |
+          value1=`ls frontend/dist`
+          echo v1 $value1
+          value2=`ls dist`
+          echo v2 $value2
+          value3=`ls core/target/scala-2.13/`
+          echo v3 $value3
           value5=`ls built-frontend`
           echo v5 $value5
           value4=`ls built-backend`
