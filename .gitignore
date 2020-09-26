@@ -12,6 +12,7 @@ null/
 .DS_Store
 node_modules
 /frontend/dist
+/static
 
 .env.local
 .env.*.local

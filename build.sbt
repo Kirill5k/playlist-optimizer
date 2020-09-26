@@ -20,7 +20,18 @@ lazy val core = (project in file("core"))
     libraryDependencies ++= Dependencies.core ++ Dependencies.test,
     testFrameworks += new TestFramework("org.scalameter.ScalaMeterFramework"),
     logBuffered := false,
-    Benchmark / parallelExecution := false
+    Benchmark / parallelExecution := false,
+    assembly / mainClass := Some("io.kirill.playlistoptimizer.core.Application"),
+    assembly / assemblyJarName := "playlist-optimizer.jar",
+    assembly / test := {},
+    assembly / assemblyMergeStrategy := {
+      case PathList("javax", "servlet", xs @ _*)         => MergeStrategy.first
+      case PathList(ps @ _*) if ps.last endsWith ".html" => MergeStrategy.first
+      case "application.conf"                            => MergeStrategy.concat
+      case "unwanted.txt"                                => MergeStrategy.discard
+      case PathList("META-INF", "MANIFEST.MF")           => MergeStrategy.discard
+      case _                                             => MergeStrategy.first
+    }
   )
 
 lazy val frontend = (project in file("frontend"))
