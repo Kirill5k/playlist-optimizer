@@ -6,13 +6,60 @@ on:
       - master
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v2
       - uses: olafurpg/setup-scala@v2
         with:
           java-version: adopt@1.11
-      - name: Unit tests
+      - name: Run unit tests
         run: sbt clean test
+
+  build-frontend:
+    runs-on: ubuntu-latest
+    needs: [test]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+      - name: Install dependencies
+        run: npm install --prefix frontend
+      - name: Build frontend
+        run: npm run build --prefix frontend
+      - name: Upload frontend for the next job
+          uses: actions/upload-artifact@v2
+          with:
+            name: frontend
+            path: frontend/dist/
+
+  build-backend:
+    runs-on: ubuntu-latest
+    needs: [test]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: olafurpg/setup-scala@v2
+        with:
+          java-version: adopt@1.11
+      - name: Build jar
+        run: sbt assembly
+      - name: Upload jar for the next job
+          uses: actions/upload-artifact@v2
+          with:
+            name: backend
+            path: core/target/scala-2.13/playlist-optimizer.jar
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [build-frontend, build-backend]
+    steps:
+      - name: Download built artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: frontend
+      - name: Print the final result
+        shell: bash
+        run: |
+          value=`cat static/index.html`
+          echo $value
