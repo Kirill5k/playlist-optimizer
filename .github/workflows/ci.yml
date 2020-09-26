@@ -77,8 +77,8 @@ jobs:
             SERVER_DNS
             SPOTIFY_CLIENT_ID
             SPOTIFY_CLIENT_SECRET
-          env:
-            SERVER_DNS: "playlist-optimizer.herokuapp.com"
-            SERVER_PORT: "8080"
-            SPOTIFY_CLIENT_ID: ${{secrets.SPOTIFY_CLIENT_ID}}
-            SPOTIFY_CLIENT_SECRET: ${{secrets.SPOTIFY_CLIENT_SECRET}}
+        env:
+          SERVER_DNS: "playlist-optimizer.herokuapp.com"
+          SERVER_PORT: "8080"
+          SPOTIFY_CLIENT_ID: ${{secrets.SPOTIFY_CLIENT_ID}}
+          SPOTIFY_CLIENT_SECRET: ${{secrets.SPOTIFY_CLIENT_SECRET}}
