@@ -7,7 +7,7 @@ const reject = (res) => res.json().then(e => Promise.reject(new Error(e.message)
 
 export default new Vuex.Store({
   state: {
-    isAuthenticated: true,
+    isAuthenticated: false,
     playlists: [],
     optimizations: [],
     currentTrack: null
