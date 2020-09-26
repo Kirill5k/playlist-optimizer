@@ -45,10 +45,10 @@ jobs:
       - name: Build jar
         run: sbt assembly
       - name: Upload jar for the next job
-          uses: actions/upload-artifact@v2
-          with:
-            name: backend
-            path: core/target/scala-2.13/playlist-optimizer.jar
+        uses: actions/upload-artifact@v2
+        with:
+          name: backend
+          path: core/target/scala-2.13/playlist-optimizer.jar
 
   deploy:
     runs-on: ubuntu-latest
