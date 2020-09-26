@@ -64,3 +64,4 @@ jobs:
           value5=`ls built-frontend`
           echo v5 $value5
           value4=`ls built-backend`
+          echo v4 $value4
