@@ -59,11 +59,6 @@ jobs:
       - uses: actions/checkout@v2
       - name: Download built artifacts
         uses: actions/download-artifact@v2
-      - name: List files
-        shell: bash
-        run: |
-          value=`ls`
-          echo v4 $value
       - name: Push to heroku
         uses: akhileshns/heroku-deploy@v3.5.6
         with:
@@ -72,12 +67,12 @@ jobs:
           heroku_email: "immotional@aol.com"
           usedocker: true
           docker_build_args: |
-            SERVER_PORT
-            SERVER_DNS
+            PORT
+            DNS
             SPOTIFY_CLIENT_ID
             SPOTIFY_CLIENT_SECRET
         env:
-          SERVER_DNS: "playlist-optimizer.herokuapp.com"
-          SERVER_PORT: "8080"
+          DNS: "playlist-optimizer.herokuapp.com"
+          PORT: "8080"
           SPOTIFY_CLIENT_ID: ${{secrets.SPOTIFY_CLIENT_ID}}
           SPOTIFY_CLIENT_SECRET: ${{secrets.SPOTIFY_CLIENT_SECRET}}
