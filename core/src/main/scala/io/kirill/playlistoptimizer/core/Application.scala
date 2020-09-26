@@ -44,7 +44,6 @@ object Application extends IOApp {
           .serve
           .compile
           .drain
-        _ <- logger.info("playlist-optimizer has started")
       } yield ExitCode.Success
     }
 }
