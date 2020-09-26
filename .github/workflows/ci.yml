@@ -66,13 +66,3 @@ jobs:
           heroku_app_name: "playlist-optimizer"
           heroku_email: "immotional@aol.com"
           usedocker: true
-          docker_build_args: |
-            PORT
-            DNS
-            SPOTIFY_CLIENT_ID
-            SPOTIFY_CLIENT_SECRET
-        env:
-          DNS: "playlist-optimizer.herokuapp.com"
-          PORT: "8080"
-          SPOTIFY_CLIENT_ID: ${{secrets.SPOTIFY_CLIENT_ID}}
-          SPOTIFY_CLIENT_SECRET: ${{secrets.SPOTIFY_CLIENT_SECRET}}
