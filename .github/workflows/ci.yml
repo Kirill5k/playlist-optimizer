@@ -67,7 +67,7 @@ jobs:
           echo v4 $value4
       - name: Push to heroku
         uses: akhileshns/heroku-deploy@v3.5.6
-      - with:
+        with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
           heroku_app_name: "playlist-optimizer"
           heroku_email: "immotional@aol.com"
@@ -78,7 +78,7 @@ jobs:
             SPOTIFY_CLIENT_ID
             SPOTIFY_CLIENT_SECRET
           env:
-            SERVER_DNS: ${{secrets.SERVER_DNS}}
+            SERVER_DNS: playlist-optimizer.herokuapp.com
             SERVER_PORT: 8080
             SPOTIFY_CLIENT_ID: ${{secrets.SPOTIFY_CLIENT_ID}}
             SPOTIFY_CLIENT_SECRET: ${{secrets.SPOTIFY_CLIENT_SECRET}}
