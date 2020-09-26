@@ -58,13 +58,6 @@ jobs:
     steps:
       - name: Download built artifacts
         uses: actions/download-artifact@v2
-      - name: Print the final result
-        shell: bash
-        run: |
-          value5=`ls built-frontend`
-          echo v5 $value5
-          value4=`ls built-backend`
-          echo v4 $value4
       - name: Push to heroku
         uses: akhileshns/heroku-deploy@v3.5.6
         with:
