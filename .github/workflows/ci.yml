@@ -48,8 +48,9 @@ jobs:
       - name: Upload jar for the next job
         uses: actions/upload-artifact@v2
         with:
-          name: build-backend
-          path: core/target/scala-2.13/playlist-optimizer.jar
+          name: built-backend
+          path: |
+            core/target/scala-2.13/playlist-optimizer.jar
 
   deploy:
     runs-on: ubuntu-latest
@@ -64,3 +65,9 @@ jobs:
           echo v1 $value1
           value2=`ls dist`
           echo v2 $value2
+          value3=`ls core/target/scala-2.13/`
+          echo v3 $value3
+          value5=`ls built-frontend`
+          echo v5 $value5
+          value4=`ls built-backend`
+          echo v4 $value4
