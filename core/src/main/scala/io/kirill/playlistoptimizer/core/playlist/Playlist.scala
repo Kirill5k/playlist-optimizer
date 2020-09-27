@@ -21,7 +21,8 @@ final case class SongDetails(
     artists: List[String],
     releaseName: Option[String],
     releaseDate: Option[LocalDate],
-    releaseType: Option[String]
+    releaseType: Option[String],
+    artwork: Option[String]
 )
 
 final case class AudioDetails(

@@ -40,6 +40,7 @@ trait ControllerSpec extends AnyWordSpec with MockitoSugar with ArgumentMatchers
               "releaseName" : "Bicep",
               "releaseDate" : "2017-09-01",
               "releaseType" : "album",
+              "artwork": null,
               "tempo" : 129.983,
               "duration" : 269.15,
               "key" : 5,

@@ -15,7 +15,7 @@ object TrackBuilder {
       energy: Double = 0.613,
       artist: String = "Artist"
   ): Track = {
-    val details = SongDetails(name, List(artist), None, None, None)
+    val details = SongDetails(name, List(artist), None, None, None, None)
     val audio   = AudioDetails(140, Duration(3, TimeUnit.MINUTES), key, danceability, energy)
     val source  = SourceDetails(s"file://$artist-$name", None)
     Track(details, audio, source)

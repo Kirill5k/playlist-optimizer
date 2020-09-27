@@ -18,7 +18,7 @@ class SpotifyMapperSpec extends AnyWordSpec with Matchers {
     val song = PlaylistTrack(
       "track-id",
       "I'm Not The Only One - Radio Edit",
-      PlaylistTrackAlbum("5GWoXPsTQylMuaZ84PC563", "Single", "I'm Not The Only One", Some("2012-10-10"), Some("day"), Nil),
+      PlaylistTrackAlbum("5GWoXPsTQylMuaZ84PC563", "Single", "I'm Not The Only One", Some("2012-10-10"), Some("day"), List(PlaylistTrackAlbumImage("https://i.scdn.co/image/47421900e7534789603de84c03a40a826c058e45",640,640), PlaylistTrackAlbumImage("https://i.scdn.co/image/0d447b6faae870f890dc5780cc58d9afdbc36a1d",300,300), PlaylistTrackAlbumImage("https://i.scdn.co/image/d926b3e5f435ef3ac0874b1ff1571cf675b3ef3b",64,64))),
       List(PlaylistTrackArtist("2wY79sveU1sp5g7SokKOiI", "Sam Smith"), PlaylistTrackArtist("2wY79sveU1ABCg7SokKOiI", "Bruno Mars")),
       45.0,
       "spotify:track:track-id",
@@ -31,7 +31,7 @@ class SpotifyMapperSpec extends AnyWordSpec with Matchers {
       val track = SpotifyMapper.toDomain(song, audioFeatures)
 
       track must be (Track(
-        SongDetails("I'm Not The Only One - Radio Edit", List("Sam Smith", "Bruno Mars"), Some("I'm Not The Only One"), Some(LocalDate.of(2012, 10 ,10)), Some("Single")),
+        SongDetails("I'm Not The Only One - Radio Edit", List("Sam Smith", "Bruno Mars"), Some("I'm Not The Only One"), Some(LocalDate.of(2012, 10 ,10)), Some("Single"), Some("https://i.scdn.co/image/47421900e7534789603de84c03a40a826c058e45")),
         AudioDetails(98.002, FiniteDuration(255348, TimeUnit.MILLISECONDS), GMinor, 0.807, 0.613),
         SourceDetails("spotify:track:track-id", Some("http://spotify.com/tracks/track-id"))
       ))

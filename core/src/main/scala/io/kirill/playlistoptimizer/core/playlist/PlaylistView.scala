@@ -10,6 +10,7 @@ final case class TrackView(
     releaseName: Option[String],
     releaseDate: Option[LocalDate],
     releaseType: Option[String],
+    artwork: Option[String],
     tempo: Double,
     duration: Double,
     key: Int,
@@ -21,7 +22,7 @@ final case class TrackView(
 ) {
   def toDomain: Track =
     Track(
-      SongDetails(name, artists, releaseName, releaseDate, releaseType),
+      SongDetails(name, artists, releaseName, releaseDate, releaseType, artwork),
       AudioDetails(tempo, duration.seconds, Key(key, mode), danceability, energy),
       SourceDetails(uri, url)
     )
@@ -30,7 +31,7 @@ final case class TrackView(
 object TrackView {
   def from(track: Track): TrackView = track match {
     case Track(
-        SongDetails(name, artists, releaseName, releaseDate, releaseType),
+        SongDetails(name, artists, releaseName, releaseDate, releaseType, artwork),
         AudioDetails(tempo, duration, key, danceability, energy),
         SourceDetails(uri, url)
         ) =>
@@ -40,6 +41,7 @@ object TrackView {
         releaseName,
         releaseDate,
         releaseType,
+        artwork,
         tempo,
         duration.toUnit(TimeUnit.SECONDS),
         key.number,

@@ -20,7 +20,8 @@ object SpotifyMapper {
         track.artists.map(_.name),
         Some(track.album.name).filter(_.nonEmpty),
         track.album.release_date_precision.filter(_ == "day").flatMap(_ => track.album.release_date.map(LocalDate.parse)),
-        Some(track.album.album_type)
+        Some(track.album.album_type),
+        track.album.images.maxByOption(_.height).map(_.url)
       )
 
     def toSourceDetails: SourceDetails =
