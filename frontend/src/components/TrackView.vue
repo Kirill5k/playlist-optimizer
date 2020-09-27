@@ -1,6 +1,13 @@
 <template>
   <div class="track-view m-2">
-    <b-card :title="fullName" :sub-title="release">
+    <b-card
+      :title="fullName"
+      :sub-title="release"
+      :img-src="track.artwork"
+      :img-alt="fullName"
+      img-width="180"
+      img-left
+    >
       <b-card-text class="mb-0 mt-3">Duration {{ duration }}</b-card-text>
       <b-card-text class="mb-0">Key {{ track.key }}, mode {{ track.mode }}</b-card-text>
       <b-card-text>Tempo {{ bpm }}, energy {{ track.energy }}, danceability {{ track.danceability }}</b-card-text>

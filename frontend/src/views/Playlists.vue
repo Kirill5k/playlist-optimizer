@@ -9,8 +9,8 @@
     />
   </div>
   <div v-else class="playlists">
-    <a href="/api/spotify/login" aria-label="Left Align">
-      <font-awesome-icon :icon="spotifyIcon" size="7x"/>
+    <a href="/api/spotify/login" aria-label="Left Align" class="mt-5">
+      <font-awesome-icon :icon="spotifyIcon" size="9x"/>
     </a>
   </div>
 </template>
