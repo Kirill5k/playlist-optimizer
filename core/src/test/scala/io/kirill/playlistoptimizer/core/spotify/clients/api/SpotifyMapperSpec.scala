@@ -18,7 +18,7 @@ class SpotifyMapperSpec extends AnyWordSpec with Matchers {
     val song = PlaylistTrack(
       "track-id",
       "I'm Not The Only One - Radio Edit",
-      PlaylistTrackAlbum("5GWoXPsTQylMuaZ84PC563", "Single", "I'm Not The Only One", Some("2012-10-10"), Some("day")),
+      PlaylistTrackAlbum("5GWoXPsTQylMuaZ84PC563", "Single", "I'm Not The Only One", Some("2012-10-10"), Some("day"), Nil),
       List(PlaylistTrackArtist("2wY79sveU1sp5g7SokKOiI", "Sam Smith"), PlaylistTrackArtist("2wY79sveU1ABCg7SokKOiI", "Bruno Mars")),
       45.0,
       "spotify:track:track-id",

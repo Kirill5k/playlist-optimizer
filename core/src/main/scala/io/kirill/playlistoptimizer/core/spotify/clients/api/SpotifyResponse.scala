@@ -22,12 +22,14 @@ object SpotifyResponse {
   final case class SpotifyPlaylistsResponse(items: List[PlaylistsItem], total: Int) extends SpotifyResponse
 
   final case class PlaylistTrackArtist(id: String, name: String)
+  final case class PlaylistTrackAlbumImage(url: String, height: Int, width: Int)
   final case class PlaylistTrackAlbum(
       id: String,
       album_type: String,
       name: String,
       release_date: Option[String],
-      release_date_precision: Option[String]
+      release_date_precision: Option[String],
+      images: List[PlaylistTrackAlbumImage]
   )
   final case class PlaylistTrackUrls(spotify: String)
   final case class PlaylistTrack(
