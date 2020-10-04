@@ -38,6 +38,20 @@ class SpotifyPlaylistControllerSpec extends ControllerSpec {
 
   "A SpotifyPlaylistController" should {
 
+    "GET /logout" in {
+      val (jwtEncoder, service) = mocks
+      val controller = new SpotifyPlaylistController(jwtEncoder, service, sc)
+
+      val request = Request[IO](uri = uri"/logout").addCookie(sessionCookie)
+      val response: IO[Response[IO]] = controller.routesWithUserSession.orNotFound.run(request)
+
+      val res = response.unsafeRunSync()
+
+      res.status must be (Status.TemporaryRedirect)
+      val spotifySessionCookie = res.cookies.find(_.name == "spotify-session").get
+      spotifySessionCookie.expires must be (Some(HttpDate.Epoch))
+    }
+
     "return existing user-session cookie" in {
       val (jwtEncoder, service) = mocks
       val controller = new SpotifyPlaylistController(jwtEncoder, service, sc)
