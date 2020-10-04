@@ -44,7 +44,7 @@ jobs:
 #        with:
 #          java-version: adopt@1.11
 #      - name: Build jar
-#        run: sbt assembly
+#        run: sbt core/assembly
 #      - name: Upload jar for the next job
 #        uses: actions/upload-artifact@v2
 #        with:
