@@ -28,7 +28,8 @@ final class SpotifyPlaylistController[F[_]](
     "response_type" -> "code",
     "client_id"     -> spotifyConfig.clientId,
     "scope"         -> "playlist-read-private playlist-modify-public playlist-modify-private user-read-private user-read-email",
-    "redirect_uri"  -> spotifyConfig.redirectUrl
+    "redirect_uri"  -> spotifyConfig.redirectUrl,
+    "show_dialog" -> "true"
   )
 
   private val authUri =
@@ -52,6 +53,9 @@ final class SpotifyPlaylistController[F[_]](
       case GET -> Root / "login" =>
         l.info("redirecting to spotify for authentication") *>
           TemporaryRedirect(authorizationPath)
+      case GET -> Root / "logout" =>
+        l.info("logging out") *>
+          TemporaryRedirect(homePagePath).map(_.removeCookie(SpotifySessionCookie))
       case GET -> Root / "authenticate" :? CodeQueryParamMatcher(code) =>
         for {
           _           <- l.info(s"received redirect from spotify: $code")
