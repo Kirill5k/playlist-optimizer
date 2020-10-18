@@ -3,11 +3,14 @@ import sbt._
 object Dependencies {
 
   object Versions {
-    lazy val pureConfig = "0.12.3"
+    lazy val fs2        = "2.4.4"
+    lazy val pureConfig = "0.14.0"
     lazy val circe      = "0.13.0"
     lazy val sttp       = "2.0.5"
     lazy val http4s     = "0.21.1"
     lazy val jwt        = "4.2.0"
+    lazy val logback    = "1.2.3"
+    lazy val log4cats   = "1.1.1"
 
     lazy val mockito    = "1.10.3"
     lazy val scalatest  = "3.2.0"
@@ -18,12 +21,10 @@ object Dependencies {
     lazy val pureconfigCore = "com.github.pureconfig" %% "pureconfig"             % Versions.pureConfig
     lazy val pureconfigCats = "com.github.pureconfig" %% "pureconfig-cats-effect" % Versions.pureConfig
 
-    lazy val logback  = "ch.qos.logback"    % "logback-classic" % "1.2.3"
-    lazy val log4cats = "io.chrisdavenport" %% "log4cats-slf4j" % "1.0.1"
+    lazy val logback  = "ch.qos.logback"    % "logback-classic" % Versions.log4cats
+    lazy val log4cats = "io.chrisdavenport" %% "log4cats-slf4j" % Versions.log4cats
 
-    lazy val catsCore   = "org.typelevel" %% "cats-core"   % "2.1.0"
-    lazy val catsEffect = "org.typelevel" %% "cats-effect" % "2.1.1"
-    lazy val fs2        = "co.fs2"        %% "fs2-core"    % "2.2.2"
+    lazy val fs2 = "co.fs2" %% "fs2-core" % Versions.fs2
 
     lazy val circeCore          = "io.circe" %% "circe-core"           % Versions.circe
     lazy val circeLiteral       = "io.circe" %% "circe-literal"        % Versions.circe
@@ -55,8 +56,6 @@ object Dependencies {
     Libraries.pureconfigCore,
     Libraries.logback,
     Libraries.log4cats,
-    Libraries.catsCore,
-    Libraries.catsEffect,
     Libraries.fs2,
     Libraries.circeCore,
     Libraries.circeLiteral,
