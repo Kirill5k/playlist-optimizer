@@ -15,5 +15,5 @@ trait ApiClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
   implicit val logger: Logger[IO] = Slf4jLogger.getLogger[IO]
   implicit val sc: SpotifyConfig = SpotifyConfigBuilder.testConfig
 
-  def json(path: String): String = Source.fromResource(path).getLines.toList.mkString
+  def json(path: String): String = Source.fromResource(path).getLines().toList.mkString
 }

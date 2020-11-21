@@ -1,22 +1,12 @@
 package io.kirill.playlistoptimizer.core.spotify.clients
 
-import cats.effect.{ContextShift, IO}
-import cats.effect.testing.scalatest.AsyncIOSpec
-import io.chrisdavenport.log4cats.Logger
-import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
+import cats.effect.IO
 import io.kirill.playlistoptimizer.core.ApiClientSpec
-import io.kirill.playlistoptimizer.core.common.SpotifyConfigBuilder
-import io.kirill.playlistoptimizer.core.common.errors._
-import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
 import io.kirill.playlistoptimizer.core.spotify.SpotifyAccessToken
-import org.scalatest.freespec.AsyncFreeSpec
-import org.scalatest.matchers.must.Matchers
 import sttp.client.Response
 import sttp.client.asynchttpclient.cats.AsyncHttpClientCatsBackend
 import sttp.client.testing.SttpBackendStub
 import sttp.model.Method
-
-import scala.io.Source
 
 class SpotifyAuthClientSpec extends ApiClientSpec {
 

@@ -1,8 +1,8 @@
 package io.kirill.playlistoptimizer.core
 
 import io.kirill.playlistoptimizer.core.BenchmarkUtils.randomizedPlaylist
-import io.kirill.playlistoptimizer.core.optimizer.algorithms.operators.operators.Fitness
-import io.kirill.playlistoptimizer.core.playlist.{Playlist, Track}
+import io.kirill.playlistoptimizer.core.optimizer.algorithms.operators.Fitness
+import io.kirill.playlistoptimizer.core.playlist.Playlist
 import org.scalameter.api._
 import org.scalameter.picklers.Implicits._
 

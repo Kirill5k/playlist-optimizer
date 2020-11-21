@@ -12,11 +12,9 @@ object CrossoverBenchmark extends Benchmark {
     val crossover = Crossover.threeWaySplitCrossover[Track]
 
     measure method "cross" in {
-      using(playlists) config (
-        exec.benchRuns -> 2500,
-        exec.independentSamples -> 50
-      ) in { pl =>
-        val res = crossover.cross(pl.tracks, rand.shuffle(pl.tracks))
+      val ctx = Context(exec.benchRuns -> 2500, exec.independentSamples -> 50)
+      using(playlists).config(ctx).in { pl =>
+        val _ = crossover.cross(pl.tracks, rand.shuffle(pl.tracks))
       }
     }
   }
@@ -25,11 +23,9 @@ object CrossoverBenchmark extends Benchmark {
     val crossover = Crossover.bestKeySequenceTrackCrossover
 
     measure method "cross" in {
-      using(playlists) config (
-        exec.benchRuns -> 2500,
-        exec.independentSamples -> 50
-      ) in { pl =>
-        val res = crossover.cross(pl.tracks, rand.shuffle(pl.tracks))
+      val ctx = Context(exec.benchRuns -> 2500, exec.independentSamples -> 50)
+      using(playlists).config(ctx).in { pl =>
+        val _ = crossover.cross(pl.tracks, rand.shuffle(pl.tracks))
       }
     }
   }

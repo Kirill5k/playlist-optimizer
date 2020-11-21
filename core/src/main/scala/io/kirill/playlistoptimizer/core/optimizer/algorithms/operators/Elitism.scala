@@ -1,7 +1,5 @@
 package io.kirill.playlistoptimizer.core.optimizer.algorithms.operators
 
-import io.kirill.playlistoptimizer.core.optimizer.algorithms.operators.operators.Fitness
-
 trait Elitism[A] {
   def select(population: Seq[(IndexedSeq[A], Fitness)], elitismRatio: Double): Seq[IndexedSeq[A]]
 }

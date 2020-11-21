@@ -1,5 +1,4 @@
-ThisBuild / name := "playlist-optimizer"
-ThisBuild / organization := "io.kirill"
+ThisBuild / organization := "io.github.kirill5k"
 ThisBuild / version := "1.0"
 ThisBuild / scalaVersion := "2.13.3"
 

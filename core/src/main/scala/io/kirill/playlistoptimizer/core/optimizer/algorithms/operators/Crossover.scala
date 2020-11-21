@@ -1,7 +1,6 @@
 package io.kirill.playlistoptimizer.core.optimizer.algorithms.operators
 
 import io.kirill.playlistoptimizer.core.playlist.{Key, Track}
-import io.kirill.playlistoptimizer.core.playlist.Key
 import io.kirill.playlistoptimizer.core.utils.CollectionOps._
 
 import scala.util.Random

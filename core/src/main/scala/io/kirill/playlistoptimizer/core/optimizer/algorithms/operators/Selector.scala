@@ -1,6 +1,5 @@
 package io.kirill.playlistoptimizer.core.optimizer.algorithms.operators
 
-import io.kirill.playlistoptimizer.core.optimizer.algorithms.operators.operators.Fitness
 import io.kirill.playlistoptimizer.core.utils.CollectionOps._
 
 import scala.annotation.tailrec

@@ -18,7 +18,9 @@ object Mutator {
 
   implicit def neighbourSwapMutator[A]: Mutator[A] = new Mutator[A] {
     override def mutate(ind: IndexedSeq[A], mutationFactor: Double)(implicit r: Random): IndexedSeq[A] = {
-      ind.toList.tail.foldLeft[List[A]](List(ind.head)) {
+      ind.toList.foldLeft[List[A]](Nil) {
+        case (Nil, el) =>
+          List(el)
         case (last :: tail, el) =>
           val n = r.nextDouble()
           if (n < mutationFactor) last :: el :: tail

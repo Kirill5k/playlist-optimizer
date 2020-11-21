@@ -1,6 +1,6 @@
 package io.kirill.playlistoptimizer.core
 
-import cats.effect.{Blocker, Concurrent, ContextShift, IO, Resource, Sync}
+import cats.effect.{Blocker, Concurrent, ContextShift, Resource}
 import cats.implicits._
 import sttp.client.asynchttpclient.cats.AsyncHttpClientCatsBackend
 import sttp.client.{NothingT, SttpBackend}

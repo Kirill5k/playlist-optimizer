@@ -2,8 +2,7 @@ package io.kirill.playlistoptimizer.core.playlist
 
 import java.time.LocalDate
 
-import io.kirill.playlistoptimizer.core.playlist.Key.{AMinor, BFlatMajor, BFlatMinor, BMajor, BMinor, CMajor, CMinor, DFlatMajor, DFlatMinor, DMajor, DMinor, EFlatMajor, EFlatMinor, EMajor, EMinor, FMajor, FMinor, FSharpMajor, FSharpMinor, GMajor, GMinor}
-import Key._
+import io.kirill.playlistoptimizer.core.playlist.Key._
 
 import scala.concurrent.duration._
 import scala.language.postfixOps

@@ -3,10 +3,9 @@ package io.kirill.playlistoptimizer.core.spotify.clients.api
 import java.time.LocalDate
 import java.util.concurrent.TimeUnit
 
-import io.kirill.playlistoptimizer.core.playlist.{AudioDetails, Key, SongDetails, SourceDetails, Track}
 import io.kirill.playlistoptimizer.core.playlist._
 
-import scala.concurrent.duration.{Duration, FiniteDuration}
+import scala.concurrent.duration.FiniteDuration
 
 object SpotifyMapper {
 

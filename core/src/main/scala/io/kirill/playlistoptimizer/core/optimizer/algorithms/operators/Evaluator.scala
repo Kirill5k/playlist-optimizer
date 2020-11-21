@@ -1,8 +1,8 @@
 package io.kirill.playlistoptimizer.core.optimizer.algorithms.operators
 
-import io.kirill.playlistoptimizer.core.optimizer.algorithms.operators.operators.Fitness
 import io.kirill.playlistoptimizer.core.playlist.{Key, Track}
-import io.kirill.playlistoptimizer.core.playlist.Key
+
+final case class Fitness(value: BigDecimal) extends AnyVal
 
 sealed trait Evaluator[A] {
   def evaluateIndividual(individual: IndexedSeq[A]): Fitness
@@ -14,7 +14,7 @@ sealed trait Evaluator[A] {
 object Evaluator {
   implicit def harmonicSeqBasedTracksEvaluator: Evaluator[Track] = new Evaluator[Track] {
     override def evaluateIndividual(tracks: IndexedSeq[Track]): Fitness =
-      calcFitness[Track](tracks)((prev, curr) => math.pow(Key.distance(prev.audio.key, curr.audio.key), 2))
+      calcFitness[Track](tracks)((prev, curr) => math.pow(Key.distance(prev.audio.key, curr.audio.key).toDouble, 2.0))
   }
 
   def energyFlowBasedTracksEvaluator: Evaluator[Track] = new Evaluator[Track] {

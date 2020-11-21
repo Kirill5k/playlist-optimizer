@@ -6,7 +6,6 @@ import cats.data.Kleisli
 import cats.effect._
 import cats.implicits._
 import io.chrisdavenport.log4cats.Logger
-import io.circe._
 import io.circe.generic.auto._
 import io.circe.syntax._
 import io.kirill.playlistoptimizer.core.common.errors._
@@ -53,17 +52,16 @@ trait AppController[F[_]] extends Http4sDsl[F] {
     s.fromOption(getCookie(req, UserSessionCookie), MissingUserSessionCookie)
       .map(c => UserSessionId(c.content))
 
-  private def userSessionMiddleware[F[_]: Sync](
-      httpRoutes: HttpRoutes[F]
-  ): HttpRoutes[F] = Kleisli { req: Request[F] =>
-    val res =
-      if (req.cookies.exists(_.name == UserSessionCookie)) httpRoutes(req)
-      else httpRoutes(req.addCookie(RequestCookie(UserSessionCookie, UUID.randomUUID().toString)))
-    res.map { r =>
-      val userSessionId = req.cookies.find(_.name == UserSessionCookie).fold(UUID.randomUUID().toString)(_.content)
-      r.addCookie(ResponseCookie(UserSessionCookie, userSessionId, httpOnly = true))
+  private def userSessionMiddleware(httpRoutes: HttpRoutes[F])(implicit F: Sync[F]): HttpRoutes[F] =
+    Kleisli { req: Request[F] =>
+      val res =
+        if (req.cookies.exists(_.name == UserSessionCookie)) httpRoutes(req)
+        else httpRoutes(req.addCookie(RequestCookie(UserSessionCookie, UUID.randomUUID().toString)))
+      res.map { r =>
+        val userSessionId = req.cookies.find(_.name == UserSessionCookie).fold(UUID.randomUUID().toString)(_.content)
+        r.addCookie(ResponseCookie(UserSessionCookie, userSessionId, httpOnly = true))
+      }
     }
-  }
 }
 
 object AppController {

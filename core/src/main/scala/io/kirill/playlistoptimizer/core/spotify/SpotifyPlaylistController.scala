@@ -3,7 +3,6 @@ package io.kirill.playlistoptimizer.core.spotify
 import cats.effect._
 import cats.implicits._
 import io.chrisdavenport.log4cats.Logger
-import io.circe._
 import io.circe.generic.auto._
 import io.circe.syntax._
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig

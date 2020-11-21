@@ -6,7 +6,6 @@ import java.util.UUID
 import cats.effect.{ContextShift, Sync}
 import cats.implicits._
 import io.chrisdavenport.log4cats.Logger
-import io.circe._
 import io.circe.generic.auto._
 import io.circe.syntax._
 import io.kirill.playlistoptimizer.core.common.controllers.AppController

@@ -2,8 +2,8 @@ package io.kirill.playlistoptimizer.core.spotify
 
 import java.time.Instant
 
+import cats.effect.IO
 import cats.effect.testing.scalatest.AsyncIOSpec
-import cats.effect.{ContextShift, IO}
 import io.chrisdavenport.log4cats.Logger
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import io.kirill.playlistoptimizer.core.common.SpotifyConfigBuilder

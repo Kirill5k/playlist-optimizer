@@ -1,26 +1,15 @@
 package io.kirill.playlistoptimizer.core.spotify.clients.api
 
-import cats.effect.testing.scalatest.AsyncIOSpec
-import cats.effect.{ContextShift, IO}
-import SpotifyError.SpotifyAuthError
-import SpotifyResponse.{SpotifyAuthRefreshResponse, SpotifyAuthResponse}
-import io.chrisdavenport.log4cats.Logger
-import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
-import io.kirill.playlistoptimizer.core.common.SpotifyConfigBuilder
+import cats.effect.IO
+import io.kirill.playlistoptimizer.core.ApiClientSpec
 import io.kirill.playlistoptimizer.core.common.errors.SpotifyApiError
-import org.scalatest.freespec.AsyncFreeSpec
-import org.scalatest.matchers.must.Matchers
+import io.kirill.playlistoptimizer.core.spotify.clients.api.SpotifyResponse.{SpotifyAuthRefreshResponse, SpotifyAuthResponse}
 import sttp.client.Response
 import sttp.client.asynchttpclient.cats.AsyncHttpClientCatsBackend
 import sttp.client.testing.SttpBackendStub
 import sttp.model.{Method, StatusCode}
 
-import scala.concurrent.ExecutionContext
-import scala.io.Source
-
-class SpotifyAuthApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
-  implicit val logger: Logger[IO] = Slf4jLogger.getLogger[IO]
-  implicit val sc = SpotifyConfigBuilder.testConfig
+class SpotifyAuthApiSpec extends ApiClientSpec {
 
   "A SpotifyAuthApi" - {
 
@@ -64,6 +53,4 @@ class SpotifyAuthApiSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     }
 
   }
-
-  def json(path: String): String = Source.fromResource(path).getLines.toList.mkString
 }

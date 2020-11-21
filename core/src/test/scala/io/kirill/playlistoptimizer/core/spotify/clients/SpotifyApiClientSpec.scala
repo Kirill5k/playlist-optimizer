@@ -2,19 +2,11 @@ package io.kirill.playlistoptimizer.core.spotify.clients
 
 import java.time.LocalDate
 
-import cats.effect.testing.scalatest.AsyncIOSpec
-import cats.effect.{ContextShift, IO}
-import io.chrisdavenport.log4cats.Logger
-import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
+import cats.effect.IO
 import io.kirill.playlistoptimizer.core.ApiClientSpec
-import io.kirill.playlistoptimizer.core.common.SpotifyConfigBuilder
-import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
 import io.kirill.playlistoptimizer.core.common.errors.SpotifyTrackNotFound
 import io.kirill.playlistoptimizer.core.playlist.Key._
-import io.kirill.playlistoptimizer.core.playlist.{AudioDetails, Playlist, PlaylistBuilder, PlaylistSource, SongDetails, SourceDetails, Track}
 import io.kirill.playlistoptimizer.core.playlist._
-import org.scalatest.freespec.AsyncFreeSpec
-import org.scalatest.matchers.must.Matchers
 import sttp.client
 import sttp.client.Response
 import sttp.client.asynchttpclient.cats.AsyncHttpClientCatsBackend
@@ -22,7 +14,6 @@ import sttp.client.testing.SttpBackendStub
 import sttp.model.{Header, Method}
 
 import scala.concurrent.duration._
-import scala.language.postfixOps
 
 class SpotifyApiClientSpec extends ApiClientSpec {
 
@@ -60,7 +51,7 @@ class SpotifyApiClientSpec extends ApiClientSpec {
         pl.name must be("Mel")
         pl.description must be(Some("Melodic deep house and techno songs"))
         pl.tracks must have size 46
-        pl.tracks.head must be(Track(SongDetails("Glue", List("Bicep"), Some("Bicep"), Some(LocalDate.of(2017, 9, 1)), Some("album"), Some("https://i.scdn.co/image/ab67616d0000b273d4322a9004288009f6da2975")), AudioDetails(129.983, 269150 milliseconds, CMinor, 0.853,0.798),SourceDetails("spotify:track:2aJDlirz6v2a4HREki98cP", Some("https://open.spotify.com/track/2aJDlirz6v2a4HREki98cP"))))
+        pl.tracks.head must be(Track(SongDetails("Glue", List("Bicep"), Some("Bicep"), Some(LocalDate.of(2017, 9, 1)), Some("album"), Some("https://i.scdn.co/image/ab67616d0000b273d4322a9004288009f6da2975")), AudioDetails(129.983, 269150.milliseconds, CMinor, 0.853,0.798),SourceDetails("spotify:track:2aJDlirz6v2a4HREki98cP", Some("https://open.spotify.com/track/2aJDlirz6v2a4HREki98cP"))))
         pl.source must be(PlaylistSource.Spotify)
       }
     }

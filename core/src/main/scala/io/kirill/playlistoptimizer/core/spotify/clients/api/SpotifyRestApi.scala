@@ -23,7 +23,7 @@ object SpotifyRestApi {
     basicRequest
       .auth.bearer(authToken)
       .contentType(MediaType.ApplicationJson)
-      .get(uri"${sc.restUrl}/v1/search?q=$query&type=track&limit=1")
+      .get(uri"${sc.restUrl}/v1/search?q=$query&type=track&limit=$limit")
       .response(asJson[SpotifySearchResponse])
       .send()
       .flatMap(r => mapResponseBody[F, SpotifySearchResponse](r.body))

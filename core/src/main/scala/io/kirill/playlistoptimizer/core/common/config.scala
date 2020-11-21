@@ -1,6 +1,6 @@
 package io.kirill.playlistoptimizer.core.common
 
-import cats.effect.{Blocker, ContextShift, IO, Sync}
+import cats.effect.{Blocker, ContextShift, Sync}
 import pureconfig._
 import pureconfig.generic.auto._
 import pureconfig.module.catseffect.syntax._

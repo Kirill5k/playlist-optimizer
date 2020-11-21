@@ -4,7 +4,6 @@ import java.time.Instant
 
 import cats.Applicative
 import cats.effect.Sync
-import io.circe.generic.extras.defaults._
 import io.circe.generic.extras.semiauto._
 import io.circe.{Decoder, Encoder}
 import io.kirill.playlistoptimizer.core.optimizer.OptimizationId

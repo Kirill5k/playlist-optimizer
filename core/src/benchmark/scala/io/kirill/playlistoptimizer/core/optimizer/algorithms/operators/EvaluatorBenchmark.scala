@@ -12,11 +12,9 @@ object EvaluatorBenchmark extends Benchmark  {
     val evaluator = Evaluator.harmonicSeqBasedTracksEvaluator
 
     measure method "evaluate" in {
-      using(playlists) config (
-        exec.benchRuns -> 10000,
-        exec.independentSamples -> 50
-      ) in { pl =>
-        val fitness = evaluator.evaluateIndividual(pl.tracks)
+      val ctx = Context(exec.benchRuns -> 10000, exec.independentSamples -> 50)
+      using(playlists).config(ctx).in { pl =>
+        val _ = evaluator.evaluateIndividual(pl.tracks)
       }
     }
   }

@@ -3,20 +3,18 @@ package io.kirill.playlistoptimizer.core.spotify
 import java.time.{Instant, LocalDate}
 import java.util.UUID
 
-import cats.effect.{ContextShift, IO}
-import io.kirill.playlistoptimizer.core.common.errors.{AuthenticationRequiredError, JwtDecodeError}
-import io.circe._
+import cats.effect.IO
 import io.circe.generic.auto._
 import io.circe.literal._
-import io.circe.syntax._
 import io.kirill.playlistoptimizer.core.ControllerSpec
 import io.kirill.playlistoptimizer.core.common.SpotifyConfigBuilder
-import io.kirill.playlistoptimizer.core.common.json._
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
 import io.kirill.playlistoptimizer.core.common.controllers.AppController.ErrorResponse
+import io.kirill.playlistoptimizer.core.common.errors.{AuthenticationRequiredError, JwtDecodeError}
+import io.kirill.playlistoptimizer.core.common.json._
 import io.kirill.playlistoptimizer.core.common.jwt.JwtEncoder
 import io.kirill.playlistoptimizer.core.optimizer.{Optimization, OptimizationId, OptimizationParameters}
-import io.kirill.playlistoptimizer.core.playlist.{Playlist, PlaylistBuilder, PlaylistSource, PlaylistView, TrackView}
+import io.kirill.playlistoptimizer.core.playlist._
 import org.http4s._
 import org.http4s.circe._
 import org.http4s.implicits._
@@ -130,7 +128,7 @@ class SpotifyPlaylistControllerSpec extends ControllerSpec {
       val (jwtEncoder, service) = mocks
       val controller = new SpotifyPlaylistController(jwtEncoder, service, sc)
       when(jwtEncoder.decode(sessionCookie.content)).thenReturn(IO.pure(accessToken))
-      when(service.findTrackByName(eqTo(accessToken), any[String])).thenReturn(IO.pure(shortenedPlaylist.tracks.head, accessToken))
+      when(service.findTrackByName(eqTo(accessToken), any[String])).thenReturn(IO.pure((shortenedPlaylist.tracks.head, accessToken)))
       when(jwtEncoder.encode(accessToken)).thenReturn(IO.pure(sessionCookie.content))
 
       val request = Request[IO](uri = uri"/tracks?name=track-name").addCookie(sessionCookie)

@@ -1,17 +1,14 @@
 package io.kirill.playlistoptimizer.core.spotify.clients.api
 
+import cats.effect.Sync
 import cats.implicits._
-import cats.MonadError
+import io.chrisdavenport.log4cats.Logger
 import io.circe.Decoder
 import io.circe.generic.auto._
 import io.circe.parser._
-import SpotifyError.{SpotifyAuthError, SpotifyRegularError}
-import SpotifyResponse.{SpotifyAuthRefreshResponse, SpotifyAuthResponse}
-import cats.effect.Sync
-import io.chrisdavenport.log4cats.Logger
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
 import io.kirill.playlistoptimizer.core.common.errors.SpotifyApiError
-import io.kirill.playlistoptimizer.core.spotify.SpotifyPlaylistController
+import io.kirill.playlistoptimizer.core.spotify.clients.api.SpotifyError.SpotifyAuthError
 import io.kirill.playlistoptimizer.core.spotify.clients.api.SpotifyResponse.{SpotifyAuthRefreshResponse, SpotifyAuthResponse}
 import sttp.client._
 import sttp.client.circe._

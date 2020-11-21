@@ -3,7 +3,7 @@ package io.kirill.playlistoptimizer.core.optimizer.algorithms
 import cats.effect.IO
 import io.kirill.playlistoptimizer.core.Benchmark
 import io.kirill.playlistoptimizer.core.optimizer.OptimizationParameters
-import io.kirill.playlistoptimizer.core.optimizer.algorithms.operators.{Crossover, Elitism, Mutator, Selector, operators}
+import io.kirill.playlistoptimizer.core.optimizer.algorithms.operators.{Crossover, Elitism, Mutator, Selector}
 import io.kirill.playlistoptimizer.core.playlist.Track
 import org.scalameter.api._
 
@@ -23,11 +23,9 @@ object GeneticAlgorithmBenchmark extends Benchmark {
     val algorithm = OptimizationAlgorithm.geneticAlgorithm[IO, Track]
 
     measure method "optimizeSeq" in {
-      using(playlists) config (
-        exec.benchRuns -> 250,
-        exec.independentSamples -> 10
-      ) in { pl =>
-        val fitness = algorithm.optimizeSeq(pl.tracks, params).unsafeRunSync()
+      val ctx = Context(exec.benchRuns -> 250, exec.independentSamples -> 10)
+      using(playlists).config(ctx).in { pl =>
+        val _ = algorithm.optimizeSeq(pl.tracks, params).unsafeRunSync()
       }
     }
   }
