@@ -48,7 +48,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: frontend
-          path: core/target/docker/stage
+          path: core/target/docker/stage/frontend
       - name: Display structure of downloaded files
         run: ls -R
         working-directory: core/target/docker/stage
