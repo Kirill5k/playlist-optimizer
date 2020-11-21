@@ -11,7 +11,7 @@ final class Optimizer[F[_]](
 )
 
 object Optimizer {
-  def make[F[_]: Concurrent: Logger: ContextShift: Timer](
+  def playlist[F[_]: Concurrent: Logger: ContextShift: Timer](
       implicit alg: OptimizationAlgorithm[F, Track]
   ): F[Optimizer[F]] =
     for {

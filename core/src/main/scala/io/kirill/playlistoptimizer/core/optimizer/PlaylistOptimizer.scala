@@ -45,14 +45,15 @@ private class InmemoryPlaylistOptimizer[F[_]: Concurrent: ContextShift](
     for {
       id <- Sync[F].delay(OptimizationId(UUID.randomUUID()))
       _  <- updateOptInState(userId, id, Optimization(id, "in progress", parameters, playlist, Instant.now()))
-      _  <- Concurrent[F].start(alg.optimizeSeq(playlist.tracks, parameters).flatMap(res => updateState(userId, id, res._1, res._2))).void
+      process = alg.optimizeSeq(playlist.tracks, parameters).flatMap(res => updateState(userId, id, res._1, res._2))
+      _ <- Concurrent[F].start(process).void
     } yield id
 
   private def updateState(userId: UserSessionId, id: OptimizationId, result: IndexedSeq[Track], score: BigDecimal): F[Unit] =
     for {
       opt <- get(userId, id)
       optimizedPlaylist = opt.original.copy(name = s"${opt.original.name} optimized", tracks = result)
-      duration          = FiniteDuration(Instant.now().toEpochMilli - opt.dateInitiated.toEpochMilli, TimeUnit.MILLISECONDS)
+      duration          = (Instant.now().toEpochMilli - opt.dateInitiated.toEpochMilli).millis
       completedOpt      = opt.copy(status = "completed", duration = Some(duration), result = Some(optimizedPlaylist), score = Some(score))
       _ <- updateOptInState(userId, id, completedOpt)
     } yield ()
@@ -76,11 +77,12 @@ object PlaylistOptimizer {
       implicit alg: OptimizationAlgorithm[F, Track]
   ): F[PlaylistOptimizer[F]] = {
     def runExpiration(state: Ref[F, Map[UserSessionId, Map[OptimizationId, Optimization]]]): F[Unit] = {
-      val process = state.get.map(_.foldLeft[Map[UserSessionId, Map[OptimizationId, Optimization]]](Map()){
-        case (res, (uid, optsMap)) => res + (uid -> optsMap.filter {
-          case (_, opt) => opt.duration.fold(true)(d => opt.dateInitiated.plusNanos(d.toNanos).plusNanos(expiresIn.toNanos).isAfter(Instant.now))
-        })
-      }).flatTap(state.set)
+      val process = state.update(_.foldLeft(Map.empty[UserSessionId, Map[OptimizationId, Optimization]]) {
+        case (res, (uid, optsMap)) =>
+          res + (uid -> optsMap.filter {
+            case (_, opt) => opt.duration.fold(true)(d => opt.dateInitiated.plusNanos(d.toNanos + expiresIn.toNanos).isAfter(Instant.now))
+          })
+      })
       Timer[F].sleep(checkOnExpirationsEvery) >> process >> runExpiration(state)
     }
 
