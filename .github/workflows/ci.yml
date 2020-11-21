@@ -50,11 +50,11 @@ jobs:
           name: frontend
           path: core/target/docker/stage
       - name: Push to heroku
-        uses: akhileshns/heroku-deploy@v3.5.6
+        uses: akhileshns/heroku-deploy@v3.6.8
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
           heroku_app_name: "playlist-optimizer"
           heroku_email: "immotional@aol.com"
           usedocker: true
-          branch: master
-          appdir: ./core/target/docker/stage
+          branch: "master"
+          appdir: "./core/target/docker/stage"
