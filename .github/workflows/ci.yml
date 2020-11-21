@@ -56,6 +56,5 @@ jobs:
           heroku_app_name: "playlist-optimizer"
           heroku_email: "immotional@aol.com"
           usedocker: true
-          dontuseforce: true
           branch: "master"
           appdir: "./core/target/docker/stage"

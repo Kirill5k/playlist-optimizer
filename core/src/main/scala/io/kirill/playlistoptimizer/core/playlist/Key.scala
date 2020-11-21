@@ -1,7 +1,7 @@
 package io.kirill.playlistoptimizer.core.playlist
 
 import io.kirill.playlistoptimizer.core.common.errors.{InvalidKey, InvalidMode}
-import io.kirill.playlistoptimizer.core.utils.CommonUtils._
+import io.kirill.playlistoptimizer.core.utils.common._
 
 sealed abstract class Mode(val number: Int)
 object Mode {

@@ -1,6 +1,6 @@
 package io.kirill.playlistoptimizer.core.optimizer.algorithms.operators
 
-import io.kirill.playlistoptimizer.core.utils.CollectionOps._
+import io.kirill.playlistoptimizer.core.utils.collections._
 
 import scala.annotation.tailrec
 import scala.util.Random

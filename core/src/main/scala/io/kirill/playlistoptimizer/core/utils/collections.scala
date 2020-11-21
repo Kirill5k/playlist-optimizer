@@ -1,6 +1,6 @@
 package io.kirill.playlistoptimizer.core.utils
 
-object CollectionOps {
+object collections {
 
   implicit class SeqOps[A](private val seq: Seq[A]) extends AnyVal {
     def pairs: Seq[(A, A)] =
