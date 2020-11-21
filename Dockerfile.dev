@@ -1,4 +1,4 @@
-FROM openjdk:11.0.4-slim
+FROM adoptopenjdk/openjdk15-openj9:debianslim-jre
 
 WORKDIR /
 RUN mkdir -p /static
