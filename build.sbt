@@ -45,8 +45,13 @@ lazy val core = (project in file("core"))
       val commands         = dockerCommands.value
       val (stage0, stage1) = commands.span(_ != DockerStageBreak)
       val (before, after) = stage1.splitAt(5)
+      val copyFrontend = Seq(
+        Cmd("WORKDIR", "/"),
+        Cmd("RUN", "mkdir", "-p", "/static"),
+        Cmd("COPY", "frontend/", "/static/")
+      )
 
-      stage0 ++ before ++ Seq(Cmd("WORKDIR", "/"), Cmd("COPY", "frontend/", "/static/")) ++ after
+      stage0 ++ before ++ copyFrontend ++ after
     }
   )
 
