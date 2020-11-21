@@ -2,7 +2,6 @@ package io.kirill.playlistoptimizer.core.optimizer
 
 import java.time.Instant
 import java.util.UUID
-import java.util.concurrent.TimeUnit
 
 import cats.effect.concurrent.Ref
 import cats.effect.{Concurrent, ContextShift, Sync, Timer}
@@ -12,7 +11,7 @@ import io.kirill.playlistoptimizer.core.common.errors.OptimizationNotFound
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.OptimizationAlgorithm
 import io.kirill.playlistoptimizer.core.playlist.{Playlist, Track}
 
-import scala.concurrent.duration.{FiniteDuration, _}
+import scala.concurrent.duration._
 import scala.util.Random
 
 trait PlaylistOptimizer[F[_]] {
