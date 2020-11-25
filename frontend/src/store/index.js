@@ -8,6 +8,7 @@ const reject = (res) => res.json().then(e => Promise.reject(new Error(e.message)
 export default new Vuex.Store({
   state: {
     isAuthenticated: false,
+    isLoading: false,
     playlists: [],
     optimizations: [],
     currentTrack: null
@@ -15,6 +16,12 @@ export default new Vuex.Store({
   mutations: {
     setPlaylists (state, playlists) {
       state.playlists = playlists
+    },
+    loading (state) {
+      state.isLoading = true
+    },
+    loaded (state) {
+      state.isLoading = false
     },
     setOptimizations (state, optimizations) {
       state.optimizations = optimizations
@@ -37,9 +44,15 @@ export default new Vuex.Store({
       return fetch(`/api/spotify/tracks?name=${name}`)
         .then(res => res.status === 200 ? res.json() : reject(res))
     },
-    getPlaylists ({ commit }) {
+    getPlaylists ({ commit, state }) {
+      if (state.playlists.length === 0) {
+        commit('loading')
+      }
       return fetch('/api/spotify/playlists')
-        .then(res => res.status === 200 ? res.json() : reject(res))
+        .then(res => {
+          commit('loaded')
+          return res.status === 200 ? res.json() : reject(res)
+        })
         .then(playlists => commit('setPlaylists', playlists))
         .then(() => commit('authenticate'))
         .catch(() => commit('unAuthenticate'))

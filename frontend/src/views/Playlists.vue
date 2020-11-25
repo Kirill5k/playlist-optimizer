@@ -1,5 +1,5 @@
 <template>
-  <div v-if="isAuthenticated" class="playlists">
+  <div v-if="isAuthenticated && !isLoading" class="playlists">
     <playlists-view
       :playlists="playlists"
       @optimize="optimizePlaylist"
@@ -7,6 +7,16 @@
     <playlist-import
       @import="importPlaylist"
     />
+  </div>
+  <div v-else-if="isLoading">
+    <div class="d-flex justify-content-center mb-3">
+      <b-spinner
+        class="m-5"
+        style="width: 4rem; height: 4rem;"
+        variant="dark"
+        label="Loading..."
+      />
+    </div>
   </div>
   <div v-else class="playlists">
     <a href="/api/spotify/login" aria-label="Left Align" class="mt-5">
@@ -21,13 +31,15 @@ import PlaylistImport from '@/components/PlaylistImport'
 import NotificationsMixin from '@/mixins/NotificationsMixin'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faSpotify } from '@fortawesome/free-brands-svg-icons'
+import { BSpinner } from 'bootstrap-vue'
 
 export default {
   name: 'Playlists',
   components: {
     PlaylistsView,
     PlaylistImport,
-    FontAwesomeIcon
+    FontAwesomeIcon,
+    BSpinner
   },
   mixins: [NotificationsMixin],
   created () {
@@ -39,6 +51,9 @@ export default {
     },
     isAuthenticated () {
       return this.$store.state.isAuthenticated
+    },
+    isLoading () {
+      return this.$store.state.isLoading
     },
     playlists () {
       return this.$store.state.playlists
