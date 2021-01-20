@@ -1,18 +1,16 @@
 package io.kirill.playlistoptimizer.core.optimizer
 
-import java.time.Instant
-import java.util.UUID
 import cats.effect.{ContextShift, Sync}
 import cats.implicits._
 import io.chrisdavenport.log4cats.Logger
 import io.circe.generic.auto._
 import io.circe.syntax._
 import io.kirill.playlistoptimizer.core.common.controllers.AppController
-import io.kirill.playlistoptimizer.core.optimizer.OptimizationController._
 import io.kirill.playlistoptimizer.core.common.json._
+import io.kirill.playlistoptimizer.core.optimizer.OptimizationController._
 import io.kirill.playlistoptimizer.core.playlist.{Playlist, PlaylistView}
-import org.http4s.circe._
 import org.http4s.HttpRoutes
+import org.http4s.circe._
 
 final class OptimizationController[F[_]](
     private val playlistOptimizer: Optimizer[F, Playlist]
