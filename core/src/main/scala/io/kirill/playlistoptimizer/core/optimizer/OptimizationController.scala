@@ -1,6 +1,6 @@
 package io.kirill.playlistoptimizer.core.optimizer
 
-import cats.effect.{ContextShift, Sync}
+import cats.effect.Sync
 import cats.implicits._
 import io.chrisdavenport.log4cats.Logger
 import io.circe.generic.auto._
@@ -16,14 +16,14 @@ final class OptimizationController[F[_]](
     private val playlistOptimizer: Optimizer[F, Playlist]
 ) extends AppController[F] {
 
-  override def routes(implicit cs: ContextShift[F], s: Sync[F], l: Logger[F]): HttpRoutes[F] =
+  override def routes(implicit F: Sync[F], L: Logger[F]): HttpRoutes[F] =
     HttpRoutes.of[F] {
       case req @ POST -> Root / "playlist-optimizations" =>
         withErrorHandling {
           for {
             userSessionId  <- getUserSessionId(req)
             requestBody    <- req.as[PlaylistOptimizationRequest]
-            _              <- l.info(s"optimize playlist ${requestBody.playlist.name} for user ${userSessionId.value}")
+            _              <- L.info(s"optimize playlist ${requestBody.playlist.name} for user ${userSessionId.value}")
             optimizationId <- playlistOptimizer.optimize(userSessionId, requestBody.playlist.toDomain, requestBody.optimizationParameters)
             resp           <- Created(PlaylistOptimizationResponse(optimizationId).asJson)
           } yield resp
@@ -32,7 +32,7 @@ final class OptimizationController[F[_]](
         withErrorHandling {
           for {
             userSessionId <- getUserSessionId(req)
-            _             <- l.info(s"get playlist optimization ${optimizationId} for user ${userSessionId.value}")
+            _             <- L.info(s"get playlist optimization ${optimizationId} for user ${userSessionId.value}")
             opt           <- playlistOptimizer.get(userSessionId, OptimizationId(optimizationId))
             resp          <- Ok(OptimizationView.from(opt, PlaylistView.from).asJson)
           } yield resp
@@ -41,7 +41,7 @@ final class OptimizationController[F[_]](
         withErrorHandling {
           for {
             userSessionId <- getUserSessionId(req)
-            _             <- l.info(s"get all playlist optimizations for user ${userSessionId.value}")
+            _             <- L.info(s"get all playlist optimizations for user ${userSessionId.value}")
             opts          <- playlistOptimizer.getAll(userSessionId)
             resp          <- Ok(opts.sortBy(_.dateInitiated).reverse.map(OptimizationView.from(_, PlaylistView.from)).asJson)
           } yield resp
@@ -50,7 +50,7 @@ final class OptimizationController[F[_]](
         withErrorHandling {
           for {
             userSessionId <- getUserSessionId(req)
-            _             <- l.info(s"delete optimization $optimizationId for user ${userSessionId.value}")
+            _             <- L.info(s"delete optimization $optimizationId for user ${userSessionId.value}")
             _             <- playlistOptimizer.delete(userSessionId, OptimizationId(optimizationId))
             resp          <- NoContent()
           } yield resp

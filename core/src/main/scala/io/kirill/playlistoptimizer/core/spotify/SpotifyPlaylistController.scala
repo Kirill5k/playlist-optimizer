@@ -38,26 +38,26 @@ final class SpotifyPlaylistController[F[_]](
   private val homePagePath =
     Location(Uri.unsafeFromString(spotifyConfig.homepageUrl))
 
-  override def routes(implicit cs: ContextShift[F], s: Sync[F], l: Logger[F]): HttpRoutes[F] =
+  override def routes(implicit F: Sync[F], L: Logger[F]): HttpRoutes[F] =
     HttpRoutes.of[F] {
       case req @ GET -> Root / "ping" =>
         withErrorHandling {
           for {
-            _             <- l.info("spotify ping")
+            _             <- L.info("spotify ping")
             spotifyCookie <- getSpotifySessionCookie(req)
             _             <- jwtEncoder.decode(spotifyCookie.content)
             res           <- Ok("spotify-pong")
           } yield res
         }
       case GET -> Root / "login" =>
-        l.info("redirecting to spotify for authentication") *>
+        L.info("redirecting to spotify for authentication") *>
           TemporaryRedirect(authorizationPath)
       case GET -> Root / "logout" =>
-        l.info("logging out") *>
+        L.info("logging out") *>
           TemporaryRedirect(homePagePath).map(_.removeCookie(SpotifySessionCookie))
       case GET -> Root / "authenticate" :? CodeQueryParamMatcher(code) =>
         for {
-          _           <- l.info(s"received redirect from spotify: $code")
+          _           <- L.info(s"received redirect from spotify: $code")
           accessToken <- playlistService.authenticate(code)
           jwt         <- jwtEncoder.encode(accessToken)
           res         <- TemporaryRedirect(homePagePath)
@@ -65,7 +65,7 @@ final class SpotifyPlaylistController[F[_]](
       case req @ GET -> Root / "tracks" :? TrackQueryParamMatcher(name) =>
         withErrorHandling {
           for {
-            _             <- l.info(s"find track $name")
+            _             <- L.info(s"find track $name")
             query         <- Sync[F].fromOption(name, MissingRequiredQueryParam("name"))
             spotifyCookie <- getSpotifySessionCookie(req)
             accessToken   <- jwtEncoder.decode(spotifyCookie.content)
@@ -77,7 +77,7 @@ final class SpotifyPlaylistController[F[_]](
       case req @ GET -> Root / "playlists" =>
         withErrorHandling {
           for {
-            _             <- l.info("get all playlists")
+            _             <- L.info("get all playlists")
             spotifyCookie <- getSpotifySessionCookie(req)
             accessToken   <- jwtEncoder.decode(spotifyCookie.content)
             playlists     <- playlistService.getAll(accessToken)
@@ -90,7 +90,7 @@ final class SpotifyPlaylistController[F[_]](
         withErrorHandling {
           for {
             view               <- req.as[PlaylistView]
-            _                  <- l.info(s"save playlist ${view.name}")
+            _                  <- L.info(s"save playlist ${view.name}")
             spotifyCookie      <- getSpotifySessionCookie(req)
             accessToken        <- jwtEncoder.decode(spotifyCookie.content)
             updatedAccessToken <- playlistService.save(accessToken, view.toDomain)
@@ -102,7 +102,7 @@ final class SpotifyPlaylistController[F[_]](
         withErrorHandling {
           for {
             importReq       <- req.as[ImportPlaylistRequest]
-            _               <- l.info(s"import playlist ${importReq.name}")
+            _               <- L.info(s"import playlist ${importReq.name}")
             spotifyCookie   <- getSpotifySessionCookie(req)
             accessToken     <- jwtEncoder.decode(spotifyCookie.content)
             tracksWithToken <- playlistService.findTracksByNames(accessToken, importReq.tracks)

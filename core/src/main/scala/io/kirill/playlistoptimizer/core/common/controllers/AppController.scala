@@ -16,10 +16,10 @@ import org.http4s.circe._
 trait AppController[F[_]] extends Http4sDsl[F] {
   import AppController._
 
-  def routesWithUserSession(implicit cs: ContextShift[F], s: Sync[F], l: Logger[F]): HttpRoutes[F] =
+  def routesWithUserSession(implicit s: Sync[F], l: Logger[F]): HttpRoutes[F] =
     userSessionMiddleware(routes)
 
-  def routes(implicit cs: ContextShift[F], s: Sync[F], l: Logger[F]): HttpRoutes[F]
+  def routes(implicit s: Sync[F], l: Logger[F]): HttpRoutes[F]
 
   protected def withErrorHandling(
       response: => F[Response[F]]
