@@ -18,13 +18,33 @@ final case class OptimizationParameters(
 
 final case class OptimizationId(value: UUID) extends AnyVal
 
-final case class Optimization(
+final case class Optimization[A](
     id: OptimizationId,
     status: String,
     parameters: OptimizationParameters,
-    original: Playlist,
+    original: A,
     dateInitiated: Instant,
     duration: Option[FiniteDuration] = None,
-    result: Option[Playlist] = None,
+    result: Option[A] = None,
     score: Option[BigDecimal] = None
-)
+) {
+
+  def complete(result: A, score: BigDecimal, duration: FiniteDuration): Optimization[A] =
+    copy(
+      status = "completed",
+      result = Some(result),
+      score = Some(score),
+      duration = Some(duration)
+    )
+}
+
+object Optimization {
+  def init[A](id: OptimizationId, parameters: OptimizationParameters, original: A): Optimization[A] =
+    Optimization[A](
+      id = id,
+      status = "in progress",
+      parameters = parameters,
+      original = original,
+      dateInitiated = Instant.now()
+    )
+}
