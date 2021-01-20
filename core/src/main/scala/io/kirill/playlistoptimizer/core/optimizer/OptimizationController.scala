@@ -36,7 +36,7 @@ final class OptimizationController[F[_]](
             userSessionId <- getUserSessionId(req)
             _             <- l.info(s"get playlist optimization ${optimizationId} for user ${userSessionId.value}")
             opt           <- playlistOptimizer.get(userSessionId, OptimizationId(optimizationId))
-            resp          <- Ok(OptimizationView.from(opt).asJson)
+            resp          <- Ok(OptimizationView.from(opt, PlaylistView.from).asJson)
           } yield resp
         }
       case req @ GET -> Root / "playlist-optimizations" =>
@@ -45,7 +45,7 @@ final class OptimizationController[F[_]](
             userSessionId <- getUserSessionId(req)
             _             <- l.info(s"get all playlist optimizations for user ${userSessionId.value}")
             opts          <- playlistOptimizer.getAll(userSessionId)
-            resp          <- Ok(opts.sortBy(_.dateInitiated).reverse.map(OptimizationView.from).asJson)
+            resp          <- Ok(opts.sortBy(_.dateInitiated).reverse.map(OptimizationView.from(_, PlaylistView.from)).asJson)
           } yield resp
         }
       case req @ DELETE -> Root / "playlist-optimizations" / UUIDVar(optimizationId) =>
@@ -67,31 +67,6 @@ object OptimizationController {
   )
 
   final case class PlaylistOptimizationResponse(id: OptimizationId)
-
-  final case class OptimizationView(
-      id: UUID,
-      status: String,
-      parameters: OptimizationParameters,
-      dateInitiated: Instant,
-      original: PlaylistView,
-      durationMs: Option[Long] = None,
-      result: Option[PlaylistView] = None,
-      score: Option[BigDecimal] = None
-  )
-
-  object OptimizationView {
-    def from(opt: Optimization[Playlist]): OptimizationView =
-      OptimizationView(
-        opt.id.value,
-        opt.status,
-        opt.parameters,
-        opt.dateInitiated,
-        PlaylistView.from(opt.original),
-        opt.duration.map(_.toMillis),
-        opt.result.map(PlaylistView.from),
-        opt.score
-      )
-  }
 
   def make[F[_]: Sync](playlistOptimizer: Optimizer[F, Playlist]): F[OptimizationController[F]] =
     Sync[F].delay(new OptimizationController[F](playlistOptimizer))

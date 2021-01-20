@@ -31,7 +31,7 @@ private class InmemoryPlaylistOptimizer[F[_]: Concurrent: ContextShift](
 
   override def get(uid: UserSessionId, oid: OptimizationId): F[Optimization[Playlist]] =
     state.get
-      .map(_.get(uid).fold[Option[Optimization[Playlist]]](None)(_.get(oid)))
+      .map(_.get(uid).flatMap(_.get(oid)))
       .flatMap {
         case None      => OptimizationNotFound(oid).raiseError[F, Optimization[Playlist]]
         case Some(opt) => opt.pure[F]
