@@ -33,6 +33,9 @@ final case class Optimization[A](
       score = Some(score),
       duration = Some(duration)
     )
+
+  def hasCompletedLessThan(time: FiniteDuration): Boolean =
+    duration.fold(true)(d => dateInitiated.plusNanos(d.toNanos + time.toNanos).isAfter(Instant.now))
 }
 
 object Optimization {

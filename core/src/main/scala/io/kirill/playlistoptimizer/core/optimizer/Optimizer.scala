@@ -79,10 +79,7 @@ object Optimizer {
         .repeatEval {
           state.update(_.foldLeft(Map.empty[UserSessionId, Map[OptimizationId, Optimization[Playlist]]]) {
             case (res, (uid, optsMap)) =>
-              res + (uid -> optsMap.filter {
-                case (_, opt) =>
-                  opt.duration.fold(true)(d => opt.dateInitiated.plusNanos(d.toNanos + expiresIn.toNanos).isAfter(Instant.now))
-              })
+              res + (uid -> optsMap.filter {case (_, opt) => opt.hasCompletedLessThan(expiresIn) })
           })
         }
         .metered(checkOnExpirationsEvery)
