@@ -2,9 +2,6 @@ package io.kirill.playlistoptimizer.core.optimizer
 
 import java.time.Instant
 import java.util.UUID
-
-import io.kirill.playlistoptimizer.core.playlist.Playlist
-
 import scala.concurrent.duration.FiniteDuration
 
 final case class OptimizationParameters(
@@ -39,9 +36,9 @@ final case class Optimization[A](
 }
 
 object Optimization {
-  def init[A](id: OptimizationId, parameters: OptimizationParameters, original: A): Optimization[A] =
+  def init[A](parameters: OptimizationParameters, original: A): Optimization[A] =
     Optimization[A](
-      id = id,
+      id = OptimizationId(UUID.randomUUID()),
       status = "in progress",
       parameters = parameters,
       original = original,

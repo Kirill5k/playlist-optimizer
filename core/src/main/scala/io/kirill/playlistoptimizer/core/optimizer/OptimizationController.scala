@@ -2,7 +2,6 @@ package io.kirill.playlistoptimizer.core.optimizer
 
 import java.time.Instant
 import java.util.UUID
-
 import cats.effect.{ContextShift, Sync}
 import cats.implicits._
 import io.chrisdavenport.log4cats.Logger
@@ -11,7 +10,7 @@ import io.circe.syntax._
 import io.kirill.playlistoptimizer.core.common.controllers.AppController
 import io.kirill.playlistoptimizer.core.optimizer.OptimizationController._
 import io.kirill.playlistoptimizer.core.common.json._
-import io.kirill.playlistoptimizer.core.playlist.PlaylistView
+import io.kirill.playlistoptimizer.core.playlist.{Playlist, PlaylistView}
 import org.http4s.circe._
 import org.http4s.HttpRoutes
 
@@ -81,7 +80,7 @@ object OptimizationController {
   )
 
   object OptimizationView {
-    def from(opt: Optimization): OptimizationView =
+    def from(opt: Optimization[Playlist]): OptimizationView =
       OptimizationView(
         opt.id.value,
         opt.status,
