@@ -1,7 +1,8 @@
 package io.kirill.playlistoptimizer.core.spotify
 
-import java.time.Instant
+import cats.Parallel
 
+import java.time.Instant
 import cats.effect.{Concurrent, ContextShift}
 import cats.implicits._
 import io.chrisdavenport.log4cats.Logger
@@ -31,7 +32,7 @@ final class Spotify[F[_]](
 )
 
 object Spotify {
-  def make[F[_]: Concurrent: Logger: ContextShift](
+  def make[F[_]: Concurrent: Parallel: Logger: ContextShift](
       backend: SttpBackend[F, Nothing, NothingT],
       spotifyConfig: SpotifyConfig,
       jwtConfig: JwtConfig
