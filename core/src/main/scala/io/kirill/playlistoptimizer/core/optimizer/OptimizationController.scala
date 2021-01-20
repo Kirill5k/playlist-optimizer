@@ -15,7 +15,7 @@ import org.http4s.circe._
 import org.http4s.HttpRoutes
 
 final class OptimizationController[F[_]](
-    private val playlistOptimizer: PlaylistOptimizer[F]
+    private val playlistOptimizer: Optimizer[F, Playlist]
 ) extends AppController[F] {
 
   override def routes(implicit cs: ContextShift[F], s: Sync[F], l: Logger[F]): HttpRoutes[F] =
@@ -93,6 +93,6 @@ object OptimizationController {
       )
   }
 
-  def make[F[_]: Sync](playlistOptimizer: PlaylistOptimizer[F]): F[OptimizationController[F]] =
+  def make[F[_]: Sync](playlistOptimizer: Optimizer[F, Playlist]): F[OptimizationController[F]] =
     Sync[F].delay(new OptimizationController[F](playlistOptimizer))
 }
