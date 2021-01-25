@@ -2,12 +2,15 @@ package io.kirill.playlistoptimizer.core.spotify.clients.api
 
 import cats.effect.IO
 import io.kirill.playlistoptimizer.core.ApiClientSpec
+import io.kirill.playlistoptimizer.core.RequestOps._
 import io.kirill.playlistoptimizer.core.common.errors.SpotifyApiError
 import io.kirill.playlistoptimizer.core.spotify.clients.api.SpotifyResponse._
 import sttp.client3
 import sttp.client3.{Response, SttpBackend}
 import sttp.client3.asynchttpclient.cats.AsyncHttpClientCatsBackend
 import sttp.model.{Header, Method, StatusCode}
+
+
 
 class SpotifyRestApiSpec extends ApiClientSpec {
 
@@ -16,7 +19,7 @@ class SpotifyRestApiSpec extends ApiClientSpec {
     "find track by name" in {
       implicit val testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if isAuthorized(r, "api.spotify.com", List("v1", "search")) =>
+          case r if r.hasHost("api.spotify.com") && r.hasPath("/v1/search") && r.hasBearerToken("token") =>
             Response.ok(json("spotify/api/search-track-response.json"))
           case _ => throw new RuntimeException()
         }

@@ -35,7 +35,9 @@ class SpotifyAuthApiSpec extends ApiClientSpec {
 
       val authResponse = SpotifyAuthApi.refresh[IO]("token")
 
-      authResponse.asserting(_ must be(SpotifyAuthRefreshResponse("NgA6ZcYI...ixn8bUQ", "Bearer", 3600, "user-read-private user-read-email")))
+      authResponse.asserting { res =>
+        res mustBe SpotifyAuthRefreshResponse("NgA6ZcYI...ixn8bUQ", "Bearer", 3600, "user-read-private user-read-email")
+      }
     }
 
     "return auth error when failure" in {
@@ -48,7 +50,9 @@ class SpotifyAuthApiSpec extends ApiClientSpec {
 
       val authResponse = SpotifyAuthApi.authorize[IO]("code")
 
-      authResponse.assertThrows[SpotifyApiError]
+      authResponse.attempt.map { res =>
+        res mustBe Left(SpotifyApiError("Invalid client secret"))
+      }
     }
 
   }
