@@ -2,11 +2,12 @@ package io.kirill.playlistoptimizer.core.spotify.clients.api
 
 import cats.effect.IO
 import io.kirill.playlistoptimizer.core.ApiClientSpec
+import io.kirill.playlistoptimizer.core.RequestOps._
 import io.kirill.playlistoptimizer.core.common.errors.SpotifyApiError
 import io.kirill.playlistoptimizer.core.spotify.clients.api.SpotifyResponse.{SpotifyAuthRefreshResponse, SpotifyAuthResponse}
 import sttp.client3.{Response, SttpBackend}
 import sttp.client3.asynchttpclient.cats.AsyncHttpClientCatsBackend
-import sttp.model.{Method, StatusCode}
+import sttp.model.StatusCode
 
 class SpotifyAuthApiSpec extends ApiClientSpec {
 
@@ -15,7 +16,7 @@ class SpotifyAuthApiSpec extends ApiClientSpec {
     "return auth response when success" in {
       implicit val testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if r.uri.host.contains("account.spotify.com") && r.uri.path == List("api", "token") && r.method == Method.POST && r.body.toString.contains("grant_type=authorization_code&code=code&redirect_uri=%2Fredirect") =>
+          case r if r.isGoingTo("account.spotify.com/api/token") && r.isPost && r.bodyContains("grant_type=authorization_code&code=code&redirect_uri=%2Fredirect") =>
             Response.ok(json("spotify/api/auth-response.json"))
           case _ => throw new RuntimeException()
         }
@@ -28,7 +29,7 @@ class SpotifyAuthApiSpec extends ApiClientSpec {
     "return auth refresh response when success" in {
       implicit val testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if r.uri.host.contains("account.spotify.com") && r.uri.path == List("api", "token") && r.method == Method.POST && r.body.toString.contains("refresh_token=token&grant_type=refresh_token") =>
+          case r if r.isGoingTo("account.spotify.com/api/token") && r.isPost && r.bodyContains("refresh_token=token&grant_type=refresh_token") =>
             Response.ok(json("spotify/api/auth-refresh-response.json"))
           case _ => throw new RuntimeException()
         }
@@ -43,7 +44,7 @@ class SpotifyAuthApiSpec extends ApiClientSpec {
     "return auth error when failure" in {
       implicit val testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if r.uri.host.contains("account.spotify.com") && r.uri.path == List("api", "token") && r.method == Method.POST =>
+          case r if r.isGoingTo("account.spotify.com/api/token") && r.isPost =>
             Response(json("spotify/api/auth-error.json"), StatusCode.InternalServerError)
           case _ => throw new RuntimeException()
         }

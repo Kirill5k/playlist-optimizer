@@ -43,5 +43,13 @@ object RequestOps {
 
     def hasPath(path: String): Boolean =
       req.uri.path == path.split("/").filter(_.nonEmpty).toList
+
+    def isGoingTo(url: String): Boolean = {
+      val urlParts = url.split("/")
+      hasHost(urlParts.head) && req.uri.path == urlParts.tail.filter(_.nonEmpty).toList
+    }
+
+    def bodyContains(body: String): Boolean =
+      req.body.toString.contains(body)
   }
 }

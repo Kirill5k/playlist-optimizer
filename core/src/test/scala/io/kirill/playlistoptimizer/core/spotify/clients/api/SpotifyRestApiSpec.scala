@@ -5,12 +5,9 @@ import io.kirill.playlistoptimizer.core.ApiClientSpec
 import io.kirill.playlistoptimizer.core.RequestOps._
 import io.kirill.playlistoptimizer.core.common.errors.SpotifyApiError
 import io.kirill.playlistoptimizer.core.spotify.clients.api.SpotifyResponse._
-import sttp.client3
-import sttp.client3.{Response, SttpBackend}
 import sttp.client3.asynchttpclient.cats.AsyncHttpClientCatsBackend
-import sttp.model.{Header, Method, StatusCode}
-
-
+import sttp.client3.{Response, SttpBackend}
+import sttp.model.StatusCode
 
 class SpotifyRestApiSpec extends ApiClientSpec {
 
@@ -19,7 +16,7 @@ class SpotifyRestApiSpec extends ApiClientSpec {
     "find track by name" in {
       implicit val testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if r.hasHost("api.spotify.com") && r.hasPath("/v1/search") && r.hasBearerToken("token") =>
+          case r if r.isGoingTo("api.spotify.com/v1/search") && r.hasBearerToken("token") =>
             Response.ok(json("spotify/api/search-track-response.json"))
           case _ => throw new RuntimeException()
         }
@@ -38,7 +35,7 @@ class SpotifyRestApiSpec extends ApiClientSpec {
     "return current user when success" in {
       implicit val testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if isAuthorized(r, "api.spotify.com", List("v1", "me")) =>
+          case r if r.isGoingTo("api.spotify.com/v1/me") && r.hasBearerToken("token") =>
             Response.ok(json("spotify/api/user-response.json"))
           case _ => throw new RuntimeException()
         }
@@ -51,7 +48,7 @@ class SpotifyRestApiSpec extends ApiClientSpec {
     "return audio analysis response when success" in {
       implicit val testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if isAuthorized(r, "api.spotify.com", List("v1", "audio-analysis", "track-1")) =>
+          case r if r.isGoingTo("api.spotify.com/v1/audio-analysis/track-1") && r.hasBearerToken("token") =>
             Response.ok(json("spotify/api/audio-analysis-response.json"))
           case _ => throw new RuntimeException()
         }
@@ -64,7 +61,7 @@ class SpotifyRestApiSpec extends ApiClientSpec {
     "return audio features response when success" in {
       implicit val testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if isAuthorized(r, "api.spotify.com", List("v1", "audio-features", "track-1")) =>
+          case r if r.isGoingTo("api.spotify.com/v1/audio-features/track-1") && r.hasBearerToken("token") =>
             Response.ok(json("spotify/api/audio-features-response.json"))
           case _ => throw new RuntimeException()
         }
@@ -77,7 +74,7 @@ class SpotifyRestApiSpec extends ApiClientSpec {
     "return multiple audio features response when success" in {
       implicit val testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if isAuthorized(r, "api.spotify.com", List("v1", "audio-features")) =>
+          case r if r.isGoingTo("api.spotify.com/v1/audio-features") && r.hasBearerToken("token") =>
             Response.ok(json("spotify/api/multiple-audio-features-response.json"))
           case _ => throw new RuntimeException()
         }
@@ -94,7 +91,7 @@ class SpotifyRestApiSpec extends ApiClientSpec {
     "return playlist response when success" in {
       implicit val testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if isAuthorized(r, "api.spotify.com", List("v1", "playlists", "playlist-1")) =>
+          case r if r.isGoingTo("api.spotify.com/v1/playlists/playlist-1") && r.hasBearerToken("token") =>
             Response.ok(json("spotify/api/playlist-response.json"))
           case _ => throw new RuntimeException()
         }
@@ -120,7 +117,7 @@ class SpotifyRestApiSpec extends ApiClientSpec {
     "return current user playlists response when success" in {
       implicit val testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if isAuthorized(r, "api.spotify.com", List("v1", "me", "playlists")) =>
+          case r if r.isGoingTo("api.spotify.com/v1/me/playlists") && r.hasBearerToken("token") =>
             Response.ok(json("spotify/api/playlists-response.json"))
           case _ => throw new RuntimeException()
         }
@@ -135,7 +132,8 @@ class SpotifyRestApiSpec extends ApiClientSpec {
     "return error when corrupted json" in {
       implicit val testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if isAuthorized(r, "api.spotify.com", List("v1", "me", "playlists"))  => Response.ok("""{"foo"}""")
+          case r if r.isGoingTo("api.spotify.com/v1/me/playlists") && r.hasBearerToken("token") =>
+            Response.ok("""{"foo"}""")
           case r => throw new RuntimeException(s"no mocks for ${r.uri.host}/${r.uri.path.mkString("/")}")
         }
 
@@ -149,7 +147,7 @@ class SpotifyRestApiSpec extends ApiClientSpec {
     "create playlist for a user when success" in {
       implicit val testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if isAuthorized(r, "api.spotify.com", List("v1", "users", "user-1", "playlists")) && hasBody(r, """{"name":"my-playlist","description":"new-playlist-to-be-created","public":true,"collaborative":false}""") =>
+          case r if r.isGoingTo("api.spotify.com/v1/users/user-1/playlists") && r.hasBearerToken("token") && r.isPost && r.hasBody("""{"name":"my-playlist","description":"new-playlist-to-be-created","public":true,"collaborative":false}""") =>
             Response.ok(json("spotify/api/playlist-response.json"))
           case _ => throw new RuntimeException()
         }
@@ -175,7 +173,7 @@ class SpotifyRestApiSpec extends ApiClientSpec {
     "add tracks to a playlist" in {
       implicit val testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if isAuthorized(r, "api.spotify.com", List("v1", "playlists", "playlist-1", "tracks")) && hasBody(r, """{"uris":["uri-1","uri-2","uri-3"],"position":null}""") =>
+          case r if r.isGoingTo("api.spotify.com/v1/playlists/playlist-1/tracks") && r.isPost && r.hasBearerToken("token") && r.hasBody("""{"uris":["uri-1","uri-2","uri-3"],"position":null}""") =>
             Response(json("spotify/api/operation-success-response.json"), StatusCode.Created)
           case _ => throw new RuntimeException()
         }
@@ -188,7 +186,7 @@ class SpotifyRestApiSpec extends ApiClientSpec {
     "replace tracks in a playlist" in {
       implicit val testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if isAuthorized(r, "api.spotify.com", List("v1", "playlists", "playlist-1", "tracks")) && hasBody(r, """{"uris":["uri-1","uri-2","uri-3"]}""", Method.PUT) =>
+          case r if r.isGoingTo("api.spotify.com/v1/playlists/playlist-1/tracks") && r.isPut && r.hasBearerToken("token") && r.hasBody("""{"uris":["uri-1","uri-2","uri-3"]}""") =>
             Response(json("spotify/api/operation-success-response.json"), StatusCode.Created)
           case _ => throw new RuntimeException()
         }
@@ -198,11 +196,4 @@ class SpotifyRestApiSpec extends ApiClientSpec {
       response.asserting(_ must be (()))
     }
   }
-
-  def isAuthorized(req: client3.Request[_, _], host: String, paths: Seq[String] = Nil, token: String = "token"): Boolean =
-    req.uri.host.contains(host) && (paths.isEmpty || req.uri.path == paths) &&
-      req.headers.contains(new Header("Authorization", s"Bearer $token"))
-
-  def hasBody(req: client3.Request[_, _], jsonBody: String, method: Method = Method.POST): Boolean =
-    req.method == method && req.body.toString.contains(jsonBody)
 }
