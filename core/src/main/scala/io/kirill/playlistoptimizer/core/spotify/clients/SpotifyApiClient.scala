@@ -55,10 +55,12 @@ private[spotify] class SpotifyApiClient[F[_]: Sync: Parallel: Logger](implicit
       tracks: Seq[PlaylistTrack]
   ): F[List[(PlaylistTrack, SpotifyAudioFeaturesResponse)]] = {
     val trackIds = tracks.map(_.id).distinct.toList
-    for {
-      featuresByIds <- SpotifyRestApi.getMultipleAudioFeatures(token, trackIds).map(_.audio_features.groupBy(_.id))
-      tracksAndFeatures = tracks.map(t => (t, featuresByIds(t.id).head))
-    } yield tracksAndFeatures.toList
+    SpotifyRestApi
+      .getMultipleAudioFeatures(token, trackIds)
+      .map(_.audio_features.groupBy(_.id))
+      .map { featuresByIds =>
+        tracks.map(t => (t, featuresByIds(t.id).head)).toList
+      }
   }
 
   def findTrackByName(token: String, name: String): F[Track] =
