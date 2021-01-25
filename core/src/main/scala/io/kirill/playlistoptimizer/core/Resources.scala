@@ -2,12 +2,12 @@ package io.kirill.playlistoptimizer.core
 
 import cats.effect.{Blocker, Concurrent, ContextShift, Resource}
 import cats.implicits._
-import sttp.client.asynchttpclient.cats.AsyncHttpClientCatsBackend
-import sttp.client.{NothingT, SttpBackend}
+import sttp.client3.asynchttpclient.cats.AsyncHttpClientCatsBackend
+import sttp.client3.SttpBackend
 
 final case class Resources[F[_]](
     blocker: Blocker,
-    backend: SttpBackend[F, Nothing]
+    backend: SttpBackend[F, Any]
 )
 
 object Resources {

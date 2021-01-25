@@ -11,7 +11,7 @@ import io.kirill.playlistoptimizer.core.common.config.{JwtConfig, SpotifyConfig}
 import io.kirill.playlistoptimizer.core.common.controllers.AppController
 import io.kirill.playlistoptimizer.core.common.jwt.JwtEncoder
 import io.kirill.playlistoptimizer.core.spotify.clients.{SpotifyApiClient, SpotifyAuthClient}
-import sttp.client.{NothingT, SttpBackend}
+import sttp.client3.SttpBackend
 
 final case class SpotifyAccessToken(
     accessToken: String,
@@ -33,7 +33,7 @@ final class Spotify[F[_]](
 
 object Spotify {
   def make[F[_]: Concurrent: Parallel: Logger: ContextShift](
-      backend: SttpBackend[F, Nothing],
+      backend: SttpBackend[F, Any],
       spotifyConfig: SpotifyConfig,
       jwtConfig: JwtConfig
   ): F[Spotify[F]] =

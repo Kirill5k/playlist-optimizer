@@ -16,23 +16,23 @@ import sttp.model.MediaType
 
 private[spotify] object SpotifyAuthApi {
 
-  def authorize[F[_]: Logger: Sync](code: String)(
-      implicit sc: SpotifyConfig,
-      b: SttpBackend[F, Nothing]
+  def authorize[F[_]: Logger: Sync](code: String)(implicit
+      sc: SpotifyConfig,
+      b: SttpBackend[F, Any]
   ): F[SpotifyAuthResponse] =
     Logger[F].info("sending authorization request to spotify") *>
       getToken[F, SpotifyAuthResponse](Map("grant_type" -> "authorization_code", "code" -> code, "redirect_uri" -> sc.redirectUrl))
 
-  def refresh[F[_]: Logger: Sync](refreshToken: String)(
-      implicit sc: SpotifyConfig,
-      b: SttpBackend[F, Nothing]
+  def refresh[F[_]: Logger: Sync](refreshToken: String)(implicit
+      sc: SpotifyConfig,
+      b: SttpBackend[F, Any]
   ): F[SpotifyAuthRefreshResponse] =
     Logger[F].info("sending token refresh request to spotify") *>
       getToken[F, SpotifyAuthRefreshResponse](Map("refresh_token" -> refreshToken, "grant_type" -> "refresh_token"))
 
-  private def getToken[F[_]: Logger: Sync, R <: SpotifyResponse: Decoder](requestBody: Map[String, String])(
-      implicit sc: SpotifyConfig,
-      b: SttpBackend[F, Nothing]
+  private def getToken[F[_]: Logger: Sync, R <: SpotifyResponse: Decoder](requestBody: Map[String, String])(implicit
+      sc: SpotifyConfig,
+      b: SttpBackend[F, Any]
   ): F[R] =
     Logger[F].info("send get token request to spotify") *>
       basicRequest

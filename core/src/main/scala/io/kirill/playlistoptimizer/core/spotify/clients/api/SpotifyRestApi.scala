@@ -16,47 +16,47 @@ import sttp.model.MediaType
 
 object SpotifyRestApi {
 
-  def findTrack[F[_]: Logger: Sync](authToken: String, query: String, limit: Int = 1)(
-    implicit sc: SpotifyConfig,
-    b: SttpBackend[F, Nothing]
+  def findTrack[F[_]: Logger: Sync](authToken: String, query: String, limit: Int = 1)(implicit
+      sc: SpotifyConfig,
+      b: SttpBackend[F, Any]
   ): F[SpotifySearchResponse] =
-    basicRequest
-      .auth.bearer(authToken)
+    basicRequest.auth
+      .bearer(authToken)
       .contentType(MediaType.ApplicationJson)
       .get(uri"${sc.restUrl}/v1/search?q=$query&type=track&limit=$limit")
       .response(asJsonEither[SpotifyRegularError, SpotifySearchResponse])
       .send(b)
       .flatMap(r => mapResponseBody[F, SpotifySearchResponse](r.body))
 
-  def getCurrentUser[F[_]: Logger: Sync](authToken: String)(
-      implicit sc: SpotifyConfig,
-      b: SttpBackend[F, Nothing]
+  def getCurrentUser[F[_]: Logger: Sync](authToken: String)(implicit
+      sc: SpotifyConfig,
+      b: SttpBackend[F, Any]
   ): F[SpotifyUserResponse] =
     Logger[F].info("sending get current user request") *>
-      basicRequest
-        .auth.bearer(authToken)
+      basicRequest.auth
+        .bearer(authToken)
         .contentType(MediaType.ApplicationJson)
         .get(uri"${sc.restUrl}/v1/me")
         .response(asJsonEither[SpotifyRegularError, SpotifyUserResponse])
         .send(b)
         .flatMap(r => mapResponseBody[F, SpotifyUserResponse](r.body))
 
-  def getAudioAnalysis[F[_]: Logger: Sync](authToken: String, trackId: String)(
-      implicit sc: SpotifyConfig,
-      b: SttpBackend[F, Nothing]
+  def getAudioAnalysis[F[_]: Logger: Sync](authToken: String, trackId: String)(implicit
+      sc: SpotifyConfig,
+      b: SttpBackend[F, Any]
   ): F[SpotifyAudioAnalysisResponse] =
     Logger[F].info(s"sending get audio analysis from track $trackId request") *>
-      basicRequest
-        .auth.bearer(authToken)
+      basicRequest.auth
+        .bearer(authToken)
         .contentType(MediaType.ApplicationJson)
         .get(uri"${sc.restUrl}/v1/audio-analysis/$trackId")
         .response(asJsonEither[SpotifyRegularError, SpotifyAudioAnalysisResponse])
         .send(b)
         .flatMap(r => mapResponseBody[F, SpotifyAudioAnalysisResponse](r.body))
 
-  def getAudioFeatures[F[_]: Logger: Sync](authToken: String, trackId: String)(
-      implicit sc: SpotifyConfig,
-      b: SttpBackend[F, Nothing]
+  def getAudioFeatures[F[_]: Logger: Sync](authToken: String, trackId: String)(implicit
+      sc: SpotifyConfig,
+      b: SttpBackend[F, Any]
   ): F[SpotifyAudioFeaturesResponse] =
     Logger[F].info(s"sending get audio features from track $trackId request") *>
       basicRequest.auth
@@ -67,9 +67,9 @@ object SpotifyRestApi {
         .send(b)
         .flatMap(r => mapResponseBody[F, SpotifyAudioFeaturesResponse](r.body))
 
-  def getMultipleAudioFeatures[F[_]: Logger: Sync](authToken: String, trackIds: List[String])(
-    implicit sc: SpotifyConfig,
-    b: SttpBackend[F, Nothing]
+  def getMultipleAudioFeatures[F[_]: Logger: Sync](authToken: String, trackIds: List[String])(implicit
+      sc: SpotifyConfig,
+      b: SttpBackend[F, Any]
   ): F[SpotifyMultipleAudioFeaturesResponse] =
     Logger[F].info(s"sending get audio features from tracks $trackIds request") *>
       basicRequest.auth
@@ -80,9 +80,9 @@ object SpotifyRestApi {
         .send(b)
         .flatMap(r => mapResponseBody[F, SpotifyMultipleAudioFeaturesResponse](r.body))
 
-  def getPlaylist[F[_]: Logger: Sync](authToken: String, playlistId: String)(
-      implicit sc: SpotifyConfig,
-      b: SttpBackend[F, Nothing]
+  def getPlaylist[F[_]: Logger: Sync](authToken: String, playlistId: String)(implicit
+      sc: SpotifyConfig,
+      b: SttpBackend[F, Any]
   ): F[SpotifyPlaylistResponse] =
     Logger[F].info(s"sending get playlist $playlistId request") *>
       basicRequest.auth
@@ -93,9 +93,9 @@ object SpotifyRestApi {
         .send(b)
         .flatMap(r => mapResponseBody[F, SpotifyPlaylistResponse](r.body))
 
-  def getUserPlaylists[F[_]: Logger: Sync](authToken: String)(
-      implicit sc: SpotifyConfig,
-      b: SttpBackend[F, Nothing]
+  def getUserPlaylists[F[_]: Logger: Sync](authToken: String)(implicit
+      sc: SpotifyConfig,
+      b: SttpBackend[F, Any]
   ): F[SpotifyPlaylistsResponse] =
     Logger[F].info(s"sending get current user playlists request") *>
       basicRequest.auth
@@ -111,9 +111,9 @@ object SpotifyRestApi {
       userId: String,
       playlistName: String,
       playlistDescription: Option[String]
-  )(
-      implicit sc: SpotifyConfig,
-      b: SttpBackend[F, Nothing]
+  )(implicit
+      sc: SpotifyConfig,
+      b: SttpBackend[F, Any]
   ): F[SpotifyPlaylistResponse] =
     Logger[F].info(s"sending create new playlist request $playlistName") *>
       basicRequest
@@ -131,9 +131,9 @@ object SpotifyRestApi {
       playlistId: String,
       uris: Seq[String],
       position: Option[Int] = None
-  )(
-      implicit sc: SpotifyConfig,
-      b: SttpBackend[F, Nothing]
+  )(implicit
+      sc: SpotifyConfig,
+      b: SttpBackend[F, Any]
   ): F[SpotifyOperationSuccessResponse] =
     Logger[F].info(s"sending add tracks to playlist $playlistId request") *>
       basicRequest
@@ -146,9 +146,9 @@ object SpotifyRestApi {
         .send(b)
         .flatMap(r => mapResponseBody[F, SpotifyOperationSuccessResponse](r.body))
 
-  def replaceTracksInPlaylist[F[_]: Logger: Sync](authToken: String, playlistId: String, uris: Seq[String])(
-      implicit sc: SpotifyConfig,
-      b: SttpBackend[F, Nothing]
+  def replaceTracksInPlaylist[F[_]: Logger: Sync](authToken: String, playlistId: String, uris: Seq[String])(implicit
+      sc: SpotifyConfig,
+      b: SttpBackend[F, Any]
   ): F[Unit] =
     Logger[F].info(s"sending replace tracks in playlist $playlistId request") *>
       basicRequest

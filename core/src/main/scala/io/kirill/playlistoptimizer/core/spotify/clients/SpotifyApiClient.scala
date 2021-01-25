@@ -9,11 +9,11 @@ import io.kirill.playlistoptimizer.core.common.errors.{SpotifyPlaylistNotFound, 
 import io.kirill.playlistoptimizer.core.playlist.{Playlist, PlaylistSource, Track}
 import io.kirill.playlistoptimizer.core.spotify.clients.api.SpotifyResponse.{PlaylistTrack, SpotifyAudioFeaturesResponse}
 import io.kirill.playlistoptimizer.core.spotify.clients.api.{SpotifyMapper, SpotifyRestApi}
-import sttp.client.{NothingT, SttpBackend}
+import sttp.client3.SttpBackend
 
 private[spotify] class SpotifyApiClient[F[_]: Sync: Parallel: Logger](implicit
-    val sc: SpotifyConfig,
-    val b: SttpBackend[F, Nothing]
+    private val sc: SpotifyConfig,
+    private val b: SttpBackend[F, Any]
 ) {
 
   def createPlaylist(token: String, userId: String, playlist: Playlist): F[Unit] =
@@ -74,7 +74,7 @@ private[spotify] class SpotifyApiClient[F[_]: Sync: Parallel: Logger](implicit
 private[spotify] object SpotifyApiClient {
 
   def make[F[_]: Sync: Parallel: Logger](
-      backend: SttpBackend[F, Nothing],
+      backend: SttpBackend[F, Any],
       spotifyConfig: SpotifyConfig
   ): F[SpotifyApiClient[F]] = {
     implicit val b  = backend

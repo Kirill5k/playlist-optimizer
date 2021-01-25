@@ -6,11 +6,11 @@ import io.chrisdavenport.log4cats.Logger
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
 import io.kirill.playlistoptimizer.core.spotify.SpotifyAccessToken
 import io.kirill.playlistoptimizer.core.spotify.clients.api.{SpotifyAuthApi, SpotifyRestApi}
-import sttp.client.{NothingT, SttpBackend}
+import sttp.client3.SttpBackend
 
 private[spotify] class SpotifyAuthClient[F[_]: Sync: Logger](implicit
-    val sc: SpotifyConfig,
-    val b: SttpBackend[F, Nothing]
+    private val sc: SpotifyConfig,
+    private val b: SttpBackend[F, Any]
 ) {
 
   def authorize(accessCode: String): F[SpotifyAccessToken] =
@@ -33,7 +33,7 @@ private[spotify] class SpotifyAuthClient[F[_]: Sync: Logger](implicit
 private[spotify] object SpotifyAuthClient {
 
   def make[F[_]: Sync: Logger](
-      backend: SttpBackend[F, Nothing],
+      backend: SttpBackend[F, Any],
       spotifyConfig: SpotifyConfig
   ): F[SpotifyAuthClient[F]] = {
     implicit val b  = backend
