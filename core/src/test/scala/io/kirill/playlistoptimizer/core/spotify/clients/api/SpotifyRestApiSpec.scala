@@ -24,11 +24,11 @@ class SpotifyRestApiSpec extends ApiClientSpec {
       val response = SpotifyRestApi.findTrack[IO]("token", "bicep glue")
 
       response.asserting { res =>
-        res.tracks.total must be (6)
-        res.tracks.items.size must be (1)
+        res.tracks.total mustBe 6
+        res.tracks.items must have size 1
         val track = res.tracks.items.head
-        track.uri must be ("spotify:track:2aJDlirz6v2a4HREki98cP")
-        track.id must be ("2aJDlirz6v2a4HREki98cP")
+        track.uri mustBe "spotify:track:2aJDlirz6v2a4HREki98cP"
+        track.id mustBe "2aJDlirz6v2a4HREki98cP"
       }
     }
 
@@ -42,7 +42,7 @@ class SpotifyRestApiSpec extends ApiClientSpec {
 
       val response = SpotifyRestApi.getCurrentUser[IO]("token")
 
-      response.asserting(_ must be (SpotifyUserResponse("wizzler", "JM Wizzler")))
+      response.asserting(_ mustBe SpotifyUserResponse("wizzler", "JM Wizzler"))
     }
 
     "return audio analysis response when success" in {
@@ -55,7 +55,7 @@ class SpotifyRestApiSpec extends ApiClientSpec {
 
       val response = SpotifyRestApi.getAudioAnalysis[IO]("token", "track-1")
 
-      response.asserting(_ must be (SpotifyAudioAnalysisResponse(AudioAnalysisTrack(255.34898, 98.002, 5, 0))))
+      response.asserting(_ mustBe SpotifyAudioAnalysisResponse(AudioAnalysisTrack(255.34898, 98.002, 5, 0)))
     }
 
     "return audio features response when success" in {
@@ -68,7 +68,7 @@ class SpotifyRestApiSpec extends ApiClientSpec {
 
       val response = SpotifyRestApi.getAudioFeatures[IO]("token", "track-1")
 
-      response.asserting(_ must be (SpotifyAudioFeaturesResponse("1wtxI9YhL1t4yDIwGAFljP", 7,0,535975.0,123.996, 0.807, 0.613)))
+      response.asserting(_ mustBe (SpotifyAudioFeaturesResponse("1wtxI9YhL1t4yDIwGAFljP", 7,0,535975.0,123.996, 0.807, 0.613)))
     }
 
     "return multiple audio features response when success" in {
@@ -81,11 +81,13 @@ class SpotifyRestApiSpec extends ApiClientSpec {
 
       val response = SpotifyRestApi.getMultipleAudioFeatures[IO]("token", List("track-1", "track-2"))
 
-      response.asserting(_ must be (SpotifyMultipleAudioFeaturesResponse(List(
-        SpotifyAudioFeaturesResponse("4JpKVNYnVcJ8tuMKjAj50A", 7,1,535223.0,123.99, 0.626, 0.808),
-        SpotifyAudioFeaturesResponse("2NRANZE9UCmPAS5XVbXL40", 1,1,187800.0,96.083, 0.815, 0.457),
-        SpotifyAudioFeaturesResponse("24JygzOLM0EmRQeGtFcIcG", 4,1,497493.0,115.7, 0.402, 0.281)
-      ))))
+      response.asserting { res =>
+        res mustBe SpotifyMultipleAudioFeaturesResponse(List(
+          SpotifyAudioFeaturesResponse("4JpKVNYnVcJ8tuMKjAj50A", 7,1,535223.0,123.99, 0.626, 0.808),
+          SpotifyAudioFeaturesResponse("2NRANZE9UCmPAS5XVbXL40", 1,1,187800.0,96.083, 0.815, 0.457),
+          SpotifyAudioFeaturesResponse("24JygzOLM0EmRQeGtFcIcG", 4,1,497493.0,115.7, 0.402, 0.281)
+        ))
+      }
     }
 
     "return playlist response when success" in {
@@ -98,7 +100,7 @@ class SpotifyRestApiSpec extends ApiClientSpec {
 
       val response = SpotifyRestApi.getPlaylist[IO]("token", "playlist-1")
 
-      response.asserting(_ must be (SpotifyPlaylistResponse(
+      response.asserting(_ mustBe SpotifyPlaylistResponse(
         "59ZbFPES4DQwEjBpWHzrtC",
         "Dinner with Friends",
         Some("Having friends over for dinner? Here´s the perfect playlist."),
@@ -111,7 +113,7 @@ class SpotifyRestApiSpec extends ApiClientSpec {
           "spotify:track:4i9sYtSIlR80bxje5B3rUb",
           PlaylistTrackUrls("https://open.spotify.com/track/4i9sYtSIlR80bxje5B3rUb")
         ))),105)
-      )))
+      ))
     }
 
     "return current user playlists response when success" in {
@@ -124,7 +126,7 @@ class SpotifyRestApiSpec extends ApiClientSpec {
 
       val response = SpotifyRestApi.getUserPlaylists[IO]("token")
 
-      response.asserting(_ must be (SpotifyPlaylistsResponse(List(
+      response.asserting(_ mustBe (SpotifyPlaylistsResponse(List(
         PlaylistsItem("53Y8wT46QIMz5H4WQ8O22c", "Wizzlers Big Playlist"),
         PlaylistsItem("1AVZz0mBuGbCEoNRQdYQju", "Another Playlist")),9)))
     }
@@ -154,7 +156,7 @@ class SpotifyRestApiSpec extends ApiClientSpec {
 
       val response = SpotifyRestApi.createPlaylist[IO]("token", "user-1", "my-playlist", Some("new-playlist-to-be-created"))
 
-      response.asserting(_ must be (SpotifyPlaylistResponse(
+      response.asserting(_ mustBe SpotifyPlaylistResponse(
         "59ZbFPES4DQwEjBpWHzrtC",
         "Dinner with Friends",
         Some("Having friends over for dinner? Here´s the perfect playlist."),
@@ -167,7 +169,7 @@ class SpotifyRestApiSpec extends ApiClientSpec {
           "spotify:track:4i9sYtSIlR80bxje5B3rUb",
           PlaylistTrackUrls("https://open.spotify.com/track/4i9sYtSIlR80bxje5B3rUb")
         ))),105)
-      )))
+      ))
     }
 
     "add tracks to a playlist" in {
@@ -180,7 +182,7 @@ class SpotifyRestApiSpec extends ApiClientSpec {
 
       val response = SpotifyRestApi.addTracksToPlaylist[IO]("token", "playlist-1", List("uri-1", "uri-2", "uri-3"))
 
-      response.asserting(_ must be (SpotifyOperationSuccessResponse("JbtmHBDBAYu3/bt8BOXKjzKx3i0b6LCa/wVjyl6qQ2Yf6nFXkbmzuEa+ZI/U1yF+")))
+      response.asserting(_ mustBe (SpotifyOperationSuccessResponse("JbtmHBDBAYu3/bt8BOXKjzKx3i0b6LCa/wVjyl6qQ2Yf6nFXkbmzuEa+ZI/U1yF+")))
     }
 
     "replace tracks in a playlist" in {
@@ -193,7 +195,7 @@ class SpotifyRestApiSpec extends ApiClientSpec {
 
       val response = SpotifyRestApi.replaceTracksInPlaylist[IO]("token", "playlist-1", List("uri-1", "uri-2", "uri-3"))
 
-      response.asserting(_ must be (()))
+      response.asserting(_ mustBe ())
     }
   }
 }
