@@ -5,7 +5,6 @@ import cats.implicits._
 import io.chrisdavenport.log4cats.Logger
 import io.circe.Decoder
 import io.circe.generic.auto._
-import io.circe.parser._
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
 import io.kirill.playlistoptimizer.core.common.errors.SpotifyApiError
 import io.kirill.playlistoptimizer.core.spotify.clients.api.SpotifyError.SpotifyAuthError

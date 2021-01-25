@@ -1,13 +1,12 @@
 package io.kirill.playlistoptimizer.core.spotify.clients.api
 
 import cats.effect.IO
-import io.circe.ParsingFailure
 import io.kirill.playlistoptimizer.core.ApiClientSpec
+import io.kirill.playlistoptimizer.core.common.errors.SpotifyApiError
 import io.kirill.playlistoptimizer.core.spotify.clients.api.SpotifyResponse._
-import sttp.client
-import sttp.client.Response
-import sttp.client.asynchttpclient.cats.AsyncHttpClientCatsBackend
-import sttp.client.testing.SttpBackendStub
+import sttp.client3
+import sttp.client3.{Response, SttpBackend}
+import sttp.client3.asynchttpclient.cats.AsyncHttpClientCatsBackend
 import sttp.model.{Header, Method, StatusCode}
 
 class SpotifyRestApiSpec extends ApiClientSpec {
@@ -15,7 +14,7 @@ class SpotifyRestApiSpec extends ApiClientSpec {
   "A SpotifyRestApi" - {
 
     "find track by name" in {
-      implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
+      implicit val testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
           case r if isAuthorized(r, "api.spotify.com", List("v1", "search")) =>
             Response.ok(json("spotify/api/search-track-response.json"))
@@ -34,7 +33,7 @@ class SpotifyRestApiSpec extends ApiClientSpec {
     }
 
     "return current user when success" in {
-      implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
+      implicit val testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
           case r if isAuthorized(r, "api.spotify.com", List("v1", "me")) =>
             Response.ok(json("spotify/api/user-response.json"))
@@ -47,7 +46,7 @@ class SpotifyRestApiSpec extends ApiClientSpec {
     }
 
     "return audio analysis response when success" in {
-      implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
+      implicit val testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
           case r if isAuthorized(r, "api.spotify.com", List("v1", "audio-analysis", "track-1")) =>
             Response.ok(json("spotify/api/audio-analysis-response.json"))
@@ -60,7 +59,7 @@ class SpotifyRestApiSpec extends ApiClientSpec {
     }
 
     "return audio features response when success" in {
-      implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
+      implicit val testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
           case r if isAuthorized(r, "api.spotify.com", List("v1", "audio-features", "track-1")) =>
             Response.ok(json("spotify/api/audio-features-response.json"))
@@ -73,7 +72,7 @@ class SpotifyRestApiSpec extends ApiClientSpec {
     }
 
     "return multiple audio features response when success" in {
-      implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
+      implicit val testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
           case r if isAuthorized(r, "api.spotify.com", List("v1", "audio-features")) =>
             Response.ok(json("spotify/api/multiple-audio-features-response.json"))
@@ -90,7 +89,7 @@ class SpotifyRestApiSpec extends ApiClientSpec {
     }
 
     "return playlist response when success" in {
-      implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
+      implicit val testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
           case r if isAuthorized(r, "api.spotify.com", List("v1", "playlists", "playlist-1")) =>
             Response.ok(json("spotify/api/playlist-response.json"))
@@ -116,7 +115,7 @@ class SpotifyRestApiSpec extends ApiClientSpec {
     }
 
     "return current user playlists response when success" in {
-      implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
+      implicit val testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
           case r if isAuthorized(r, "api.spotify.com", List("v1", "me", "playlists")) =>
             Response.ok(json("spotify/api/playlists-response.json"))
@@ -131,7 +130,7 @@ class SpotifyRestApiSpec extends ApiClientSpec {
     }
 
     "return error when corrupted json" in {
-      implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
+      implicit val testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
           case r if isAuthorized(r, "api.spotify.com", List("v1", "me", "playlists"))  => Response.ok("""{"foo"}""")
           case r => throw new RuntimeException(s"no mocks for ${r.uri.host}/${r.uri.path.mkString("/")}")
@@ -139,11 +138,13 @@ class SpotifyRestApiSpec extends ApiClientSpec {
 
       val response = SpotifyRestApi.getUserPlaylists[IO]("token")
 
-      response.assertThrows[ParsingFailure]
+      response.attempt.asserting { error =>
+        error mustBe Left(SpotifyApiError("error deserializing spotify response: expected : got '}' (line 1, column 7)"))
+      }
     }
 
     "create playlist for a user when success" in {
-      implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
+      implicit val testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
           case r if isAuthorized(r, "api.spotify.com", List("v1", "users", "user-1", "playlists")) && hasBody(r, """{"name":"my-playlist","description":"new-playlist-to-be-created","public":true,"collaborative":false}""") =>
             Response.ok(json("spotify/api/playlist-response.json"))
@@ -169,7 +170,7 @@ class SpotifyRestApiSpec extends ApiClientSpec {
     }
 
     "add tracks to a playlist" in {
-      implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
+      implicit val testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
           case r if isAuthorized(r, "api.spotify.com", List("v1", "playlists", "playlist-1", "tracks")) && hasBody(r, """{"uris":["uri-1","uri-2","uri-3"],"position":null}""") =>
             Response(json("spotify/api/operation-success-response.json"), StatusCode.Created)
@@ -182,7 +183,7 @@ class SpotifyRestApiSpec extends ApiClientSpec {
     }
 
     "replace tracks in a playlist" in {
-      implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
+      implicit val testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
           case r if isAuthorized(r, "api.spotify.com", List("v1", "playlists", "playlist-1", "tracks")) && hasBody(r, """{"uris":["uri-1","uri-2","uri-3"]}""", Method.PUT) =>
             Response(json("spotify/api/operation-success-response.json"), StatusCode.Created)
@@ -195,10 +196,10 @@ class SpotifyRestApiSpec extends ApiClientSpec {
     }
   }
 
-  def isAuthorized(req: client.Request[_, _], host: String, paths: Seq[String] = Nil, token: String = "token"): Boolean =
-    req.uri.host == host && (paths.isEmpty || req.uri.path == paths) &&
+  def isAuthorized(req: client3.Request[_, _], host: String, paths: Seq[String] = Nil, token: String = "token"): Boolean =
+    req.uri.host.contains(host) && (paths.isEmpty || req.uri.path == paths) &&
       req.headers.contains(new Header("Authorization", s"Bearer $token"))
 
-  def hasBody(req: client.Request[_, _], jsonBody: String, method: Method = Method.POST): Boolean =
+  def hasBody(req: client3.Request[_, _], jsonBody: String, method: Method = Method.POST): Boolean =
     req.method == method && req.body.toString.contains(jsonBody)
 }

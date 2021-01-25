@@ -7,10 +7,10 @@ import io.kirill.playlistoptimizer.core.ApiClientSpec
 import io.kirill.playlistoptimizer.core.common.errors.SpotifyTrackNotFound
 import io.kirill.playlistoptimizer.core.playlist.Key._
 import io.kirill.playlistoptimizer.core.playlist._
-import sttp.client
-import sttp.client.Response
-import sttp.client.asynchttpclient.cats.AsyncHttpClientCatsBackend
-import sttp.client.testing.SttpBackendStub
+import sttp.client3
+import sttp.client3.Response
+import sttp.client3.asynchttpclient.cats.AsyncHttpClientCatsBackend
+import sttp.client3.testing.SttpBackendStub
 import sttp.model.{Header, Method}
 
 import scala.concurrent.duration._
@@ -22,7 +22,7 @@ class SpotifyApiClientSpec extends ApiClientSpec {
   "A SpotifyClient" - {
 
     "create new playlist" in {
-      implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
+      implicit val testingBackend: SttpBackendStub[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
           case r if isAuthorized(r, "api.spotify.com", List("v1", "users", "user-1", "playlists")) && r.method == Method.POST && r.body.toString.contains("""{"name":"Mel","description":"Melodic deep house and techno songs","public":true,"collaborative":false}""") =>
             Response.ok(json("spotify/flow/create/1-new-playlist.json"))
@@ -37,7 +37,7 @@ class SpotifyApiClientSpec extends ApiClientSpec {
     }
 
     "find playlist by name" in {
-      implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
+      implicit val testingBackend: SttpBackendStub[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
           case r if isAuthorized(r, "api.spotify.com", List("v1", "me", "playlists")) => Response.ok(json("spotify/flow/find/2-users-playlists.json"))
           case r if isAuthorized(r, "api.spotify.com", List("v1", "playlists", "7npAZEYwEwV2JV7XX2n3wq")) => Response.ok(json("spotify/flow/find/3-playlist.json"))
@@ -57,7 +57,7 @@ class SpotifyApiClientSpec extends ApiClientSpec {
     }
 
     "return all playlists that belong to a user" in {
-      implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
+      implicit val testingBackend: SttpBackendStub[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
           case r if isAuthorized(r, "api.spotify.com", List("v1", "me", "playlists")) => Response.ok(json("spotify/flow/get/2-users-playlists.json"))
           case r if isAuthorized(r, "api.spotify.com", List("v1", "playlists")) => Response.ok(json(s"spotify/flow/get/3-playlist-${r.uri.path.last}.json"))
@@ -71,7 +71,7 @@ class SpotifyApiClientSpec extends ApiClientSpec {
     }
 
     "find track by name" in {
-      implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
+      implicit val testingBackend: SttpBackendStub[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
           case r if isAuthorized(r, "api.spotify.com", List("v1", "search")) => Response.ok(json("spotify/flow/search/1-search-track.json"))
           case r if isAuthorized(r, "api.spotify.com", List("v1", "audio-features")) => Response.ok(json("spotify/flow/search/2-audio-features.json"))
@@ -86,7 +86,7 @@ class SpotifyApiClientSpec extends ApiClientSpec {
     }
 
     "return track not found when search result empty" in {
-      implicit val testingBackend: SttpBackendStub[IO, Nothing] = AsyncHttpClientCatsBackend.stub[IO]
+      implicit val testingBackend: SttpBackendStub[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
           case r if isAuthorized(r, "api.spotify.com", List("v1", "search")) => Response.ok(json("spotify/flow/search/3-search-empty.json"))
           case r => throw new RuntimeException(s"no mocks for ${r.uri.host}/${r.uri.path.mkString("/")}")
@@ -98,8 +98,8 @@ class SpotifyApiClientSpec extends ApiClientSpec {
     }
   }
 
-  def isAuthorized(req: client.Request[_, _], host: String, paths: Seq[String] = Nil): Boolean =
-    req.uri.host == host && (paths.isEmpty || req.uri.path.startsWith(paths)) &&
+  def isAuthorized(req: client3.Request[_, _], host: String, paths: Seq[String] = Nil): Boolean =
+    req.uri.host.contains(host) && (paths.isEmpty || req.uri.path.startsWith(paths)) &&
       req.headers.contains(new Header("Authorization", "Bearer token-5lcpIsBqfb0Slx9fzZuCu_rM3aBDg"))
 
 }

@@ -2,7 +2,6 @@ package io.kirill.playlistoptimizer.core.spotify.clients.api
 
 import cats.implicits._
 import io.circe.generic.auto._
-import io.circe.parser._
 import SpotifyResponse._
 import SpotifyRequest._
 import SpotifyError._
@@ -157,9 +156,10 @@ object SpotifyRestApi {
         .bearer(authToken)
         .contentType(MediaType.ApplicationJson)
         .put(uri"${sc.restUrl}/v1/playlists/$playlistId/tracks")
-        .response(asJsonEither[SpotifyRegularError, Unit])
+        .response(asJsonEither[SpotifyRegularError, SpotifyOperationSuccessResponse])
         .send(b)
-        .flatMap(r => mapResponseBody[F, Unit](r.body))
+        .flatMap(r => mapResponseBody[F, SpotifyOperationSuccessResponse](r.body))
+        .void
 
   private def mapResponseBody[F[_]: Logger: Sync, R <: SpotifyResponse](
       responseBody: Either[ResponseException[SpotifyRegularError, io.circe.Error], R]
