@@ -33,7 +33,7 @@ final class Spotify[F[_]](
 
 object Spotify {
   def make[F[_]: Concurrent: Parallel: Logger: ContextShift](
-      backend: SttpBackend[F, Nothing, NothingT],
+      backend: SttpBackend[F, Nothing],
       spotifyConfig: SpotifyConfig,
       jwtConfig: JwtConfig
   ): F[Spotify[F]] =

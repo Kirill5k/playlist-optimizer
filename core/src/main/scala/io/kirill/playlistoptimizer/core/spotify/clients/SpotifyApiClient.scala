@@ -13,7 +13,7 @@ import sttp.client.{NothingT, SttpBackend}
 
 private[spotify] class SpotifyApiClient[F[_]: Sync: Parallel: Logger](implicit
     val sc: SpotifyConfig,
-    val b: SttpBackend[F, Nothing, NothingT]
+    val b: SttpBackend[F, Nothing]
 ) {
 
   def createPlaylist(token: String, userId: String, playlist: Playlist): F[Unit] =
@@ -74,7 +74,7 @@ private[spotify] class SpotifyApiClient[F[_]: Sync: Parallel: Logger](implicit
 private[spotify] object SpotifyApiClient {
 
   def make[F[_]: Sync: Parallel: Logger](
-      backend: SttpBackend[F, Nothing, NothingT],
+      backend: SttpBackend[F, Nothing],
       spotifyConfig: SpotifyConfig
   ): F[SpotifyApiClient[F]] = {
     implicit val b  = backend

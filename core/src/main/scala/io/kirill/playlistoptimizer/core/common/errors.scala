@@ -26,7 +26,7 @@ object errors {
 
   final case class JwtDecodeError(message: String) extends ForbiddenError
 
-  final case class SpotifyApiError(message: String) extends ApplicationError
+  final case class SpotifyApiError(message: String) extends InternalError
 
   final case class SpotifyPlaylistNotFound(name: String) extends NotFoundError {
     val message = s"""couldn't find playlist "$name" in Spotify for current user"""

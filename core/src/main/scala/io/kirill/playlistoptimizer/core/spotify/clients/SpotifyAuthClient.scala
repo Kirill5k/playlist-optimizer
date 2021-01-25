@@ -10,7 +10,7 @@ import sttp.client.{NothingT, SttpBackend}
 
 private[spotify] class SpotifyAuthClient[F[_]: Sync: Logger](implicit
     val sc: SpotifyConfig,
-    val b: SttpBackend[F, Nothing, NothingT]
+    val b: SttpBackend[F, Nothing]
 ) {
 
   def authorize(accessCode: String): F[SpotifyAccessToken] =
@@ -33,7 +33,7 @@ private[spotify] class SpotifyAuthClient[F[_]: Sync: Logger](implicit
 private[spotify] object SpotifyAuthClient {
 
   def make[F[_]: Sync: Logger](
-      backend: SttpBackend[F, Nothing, NothingT],
+      backend: SttpBackend[F, Nothing],
       spotifyConfig: SpotifyConfig
   ): F[SpotifyAuthClient[F]] = {
     implicit val b  = backend

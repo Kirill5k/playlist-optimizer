@@ -3,10 +3,10 @@ import sbt._
 object Dependencies {
 
   object Versions {
-    lazy val fs2        = "2.4.4"
+    lazy val fs2        = "2.5.0"
     lazy val pureConfig = "0.14.0"
     lazy val circe      = "0.13.0"
-    lazy val sttp       = "2.0.5"
+    lazy val sttp       = "3.0.0"
     lazy val http4s     = "0.21.1"
     lazy val jwt        = "4.2.0"
     lazy val logback    = "1.2.3"
@@ -32,9 +32,9 @@ object Dependencies {
     lazy val circeGenericExtras = "io.circe" %% "circe-generic-extras" % Versions.circe
     lazy val circeParser        = "io.circe" %% "circe-parser"         % Versions.circe
 
-    lazy val sttpCore        = "com.softwaremill.sttp.client" %% "core"                           % Versions.sttp
-    lazy val sttpCirce       = "com.softwaremill.sttp.client" %% "circe"                          % Versions.sttp
-    lazy val sttpCatsBackend = "com.softwaremill.sttp.client" %% "async-http-client-backend-cats" % Versions.sttp
+    lazy val sttpCore        = "com.softwaremill.sttp.client3" %% "core"                           % Versions.sttp
+    lazy val sttpCirce       = "com.softwaremill.sttp.client3" %% "circe"                          % Versions.sttp
+    lazy val sttpCatsBackend = "com.softwaremill.sttp.client3" %% "async-http-client-backend-cats" % Versions.sttp
 
     lazy val http4sCore   = "org.http4s" %% "http4s-core"         % Versions.http4s
     lazy val http4sDsl    = "org.http4s" %% "http4s-dsl"          % Versions.http4s

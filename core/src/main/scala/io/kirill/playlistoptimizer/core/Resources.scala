@@ -7,7 +7,7 @@ import sttp.client.{NothingT, SttpBackend}
 
 final case class Resources[F[_]](
     blocker: Blocker,
-    backend: SttpBackend[F, Nothing, NothingT]
+    backend: SttpBackend[F, Nothing]
 )
 
 object Resources {
