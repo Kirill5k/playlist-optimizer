@@ -1,18 +1,16 @@
 package io.kirill.playlistoptimizer.core.spotify.clients
 
-import java.time.LocalDate
-
 import cats.effect.IO
 import io.kirill.playlistoptimizer.core.ApiClientSpec
+import io.kirill.playlistoptimizer.core.RequestOps._
 import io.kirill.playlistoptimizer.core.common.errors.SpotifyTrackNotFound
 import io.kirill.playlistoptimizer.core.playlist.Key._
 import io.kirill.playlistoptimizer.core.playlist._
-import sttp.client3
 import sttp.client3.Response
 import sttp.client3.asynchttpclient.cats.AsyncHttpClientCatsBackend
 import sttp.client3.testing.SttpBackendStub
-import sttp.model.{Header, Method}
 
+import java.time.LocalDate
 import scala.concurrent.duration._
 
 class SpotifyApiClientSpec extends ApiClientSpec {
@@ -24,9 +22,9 @@ class SpotifyApiClientSpec extends ApiClientSpec {
     "create new playlist" in {
       implicit val testingBackend: SttpBackendStub[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if isAuthorized(r, "api.spotify.com", List("v1", "users", "user-1", "playlists")) && r.method == Method.POST && r.body.toString.contains("""{"name":"Mel","description":"Melodic deep house and techno songs","public":true,"collaborative":false}""") =>
+          case r if r.hasBearerToken(token) && r.isGoingTo("api.spotify.com/v1/users/user-1/playlists") && r.isPost && r.hasBody("""{"name":"Mel","description":"Melodic deep house and techno songs","public":true,"collaborative":false}""") =>
             Response.ok(json("spotify/flow/create/1-new-playlist.json"))
-          case r if isAuthorized(r, "api.spotify.com", List("v1", "playlists", "7d2D2S200NyUE5KYs80PwO", "tracks")) && r.method == Method.POST =>
+          case r if r.hasBearerToken(token) && r.isGoingTo("api.spotify.com/v1/playlists/7d2D2S200NyUE5KYs80PwO/tracks") && r.isPost =>
             Response.ok(json("spotify/flow/create/2-add-tracks.json"))
           case r => throw new RuntimeException(s"no mocks for ${r.uri.host}/${r.uri.path.mkString("/")}")
         }
@@ -39,9 +37,12 @@ class SpotifyApiClientSpec extends ApiClientSpec {
     "find playlist by name" in {
       implicit val testingBackend: SttpBackendStub[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if isAuthorized(r, "api.spotify.com", List("v1", "me", "playlists")) => Response.ok(json("spotify/flow/find/2-users-playlists.json"))
-          case r if isAuthorized(r, "api.spotify.com", List("v1", "playlists", "7npAZEYwEwV2JV7XX2n3wq")) => Response.ok(json("spotify/flow/find/3-playlist.json"))
-          case r if isAuthorized(r, "api.spotify.com", List("v1", "audio-features")) => Response.ok(json(s"spotify/flow/find/4-audio-features.json"))
+          case r if r.hasBearerToken(token) && r.isGoingTo("api.spotify.com/v1/me/playlists") && r.isGet =>
+            Response.ok(json("spotify/flow/find/2-users-playlists.json"))
+          case r if r.hasBearerToken(token) && r.isGoingTo("api.spotify.com/v1/playlists/7npAZEYwEwV2JV7XX2n3wq") && r.isGet =>
+            Response.ok(json("spotify/flow/find/3-playlist.json"))
+          case r if r.hasBearerToken(token) && r.isGoingTo("api.spotify.com/v1/audio-features") =>
+            Response.ok(json(s"spotify/flow/find/4-audio-features.json"))
           case r => throw new RuntimeException(s"no mocks for ${r.uri.host}/${r.uri.path.mkString("/")}")
         }
 
@@ -59,9 +60,12 @@ class SpotifyApiClientSpec extends ApiClientSpec {
     "return all playlists that belong to a user" in {
       implicit val testingBackend: SttpBackendStub[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if isAuthorized(r, "api.spotify.com", List("v1", "me", "playlists")) => Response.ok(json("spotify/flow/get/2-users-playlists.json"))
-          case r if isAuthorized(r, "api.spotify.com", List("v1", "playlists")) => Response.ok(json(s"spotify/flow/get/3-playlist-${r.uri.path.last}.json"))
-          case r if isAuthorized(r, "api.spotify.com", List("v1", "audio-features")) => Response.ok(json(s"spotify/flow/find/4-audio-features.json"))
+          case r if r.hasBearerToken(token) && r.isGoingTo("api.spotify.com/v1/me/playlists") && r.isGet =>
+            Response.ok(json("spotify/flow/get/2-users-playlists.json"))
+          case r if r.hasBearerToken(token) && r.isGoingTo("api.spotify.com/v1/playlists") && r.isGet =>
+            Response.ok(json(s"spotify/flow/get/3-playlist-${r.uri.path.last}.json"))
+          case r if r.hasBearerToken(token) && r.isGoingTo("api.spotify.com/v1/audio-features") && r.isGet =>
+            Response.ok(json(s"spotify/flow/find/4-audio-features.json"))
           case r => throw new RuntimeException(s"no mocks for ${r.uri.host}/${r.uri.path.mkString("/")}")
         }
 
@@ -73,22 +77,25 @@ class SpotifyApiClientSpec extends ApiClientSpec {
     "find track by name" in {
       implicit val testingBackend: SttpBackendStub[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if isAuthorized(r, "api.spotify.com", List("v1", "search")) => Response.ok(json("spotify/flow/search/1-search-track.json"))
-          case r if isAuthorized(r, "api.spotify.com", List("v1", "audio-features")) => Response.ok(json("spotify/flow/search/2-audio-features.json"))
+          case r if r.hasBearerToken(token) && r.isGoingTo("api.spotify.com/v1/search") =>
+            Response.ok(json("spotify/flow/search/1-search-track.json"))
+          case r if r.hasBearerToken(token) && r.isGoingTo("api.spotify.com/v1/audio-features") =>
+            Response.ok(json("spotify/flow/search/2-audio-features.json"))
           case r => throw new RuntimeException(s"no mocks for ${r.uri.host}/${r.uri.path.mkString("/")}")
         }
 
       val response = new SpotifyApiClient[IO]().findTrackByName(token, "bicep glue")
 
       response.asserting { t =>
-        t.song.name must be ("Glue")
+        t.song.name mustBe "Glue"
       }
     }
 
     "return track not found when search result empty" in {
       implicit val testingBackend: SttpBackendStub[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
-          case r if isAuthorized(r, "api.spotify.com", List("v1", "search")) => Response.ok(json("spotify/flow/search/3-search-empty.json"))
+          case r if r.hasBearerToken(token) && r.isGoingTo("api.spotify.com/v1/search") =>
+            Response.ok(json("spotify/flow/search/3-search-empty.json"))
           case r => throw new RuntimeException(s"no mocks for ${r.uri.host}/${r.uri.path.mkString("/")}")
         }
 
@@ -97,9 +104,4 @@ class SpotifyApiClientSpec extends ApiClientSpec {
       response.assertThrows[SpotifyTrackNotFound]
     }
   }
-
-  def isAuthorized(req: client3.Request[_, _], host: String, paths: Seq[String] = Nil): Boolean =
-    req.uri.host.contains(host) && (paths.isEmpty || req.uri.path.startsWith(paths)) &&
-      req.headers.contains(new Header("Authorization", "Bearer token-5lcpIsBqfb0Slx9fzZuCu_rM3aBDg"))
-
 }
