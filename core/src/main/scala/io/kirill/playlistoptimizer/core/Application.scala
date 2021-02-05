@@ -14,6 +14,8 @@ import org.http4s.server.Router
 import org.http4s.server.blaze.BlazeServerBuilder
 import org.http4s.syntax.kleisli._
 
+import scala.concurrent.ExecutionContext
+
 object Application extends IOApp {
 
   val config = AppConfig.load()
@@ -32,7 +34,7 @@ object Application extends IOApp {
         _         <- logger.info("starting playlist-optimizer app...")
         optimizer <- Optimizers.playlist[IO]
         spotify   <- Spotify.make(res.backend, config.spotify, config.jwt)
-        _ <- BlazeServerBuilder[IO]
+        _ <- BlazeServerBuilder[IO](ExecutionContext.global)
           .bindHttp(config.server.port, config.server.host)
           .withHttpApp(
             Router(
