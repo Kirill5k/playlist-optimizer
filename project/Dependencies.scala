@@ -7,7 +7,7 @@ object Dependencies {
     lazy val pureConfig = "0.14.0"
     lazy val circe      = "0.13.0"
     lazy val sttp       = "3.0.0"
-    lazy val http4s     = "0.21.1"
+    lazy val http4s     = "0.21.17"
     lazy val jwt        = "4.2.0"
     lazy val logback    = "1.2.3"
     lazy val log4cats   = "1.1.1"
