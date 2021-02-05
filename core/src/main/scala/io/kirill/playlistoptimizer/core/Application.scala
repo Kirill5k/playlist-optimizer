@@ -34,15 +34,14 @@ object Application extends IOApp {
         _         <- logger.info("starting playlist-optimizer app...")
         optimizer <- Optimizers.playlist[IO]
         spotify   <- Spotify.make(res.backend, config.spotify, config.jwt)
+        router = Router(
+          "api/spotify" -> spotify.playlistController.routesWithUserSession,
+          "api"         -> optimizer.optimizationController.routesWithUserSession,
+          ""            -> AppController.homeController(res.blocker).routesWithUserSession
+        ).orNotFound
         _ <- BlazeServerBuilder[IO](ExecutionContext.global)
           .bindHttp(config.server.port, config.server.host)
-          .withHttpApp(
-            Router(
-              "api/spotify" -> spotify.playlistController.routesWithUserSession,
-              "api"         -> optimizer.optimizationController.routesWithUserSession,
-              ""            -> AppController.homeController(res.blocker).routesWithUserSession
-            ).orNotFound
-          )
+          .withHttpApp(router)
           .serve
           .compile
           .drain
