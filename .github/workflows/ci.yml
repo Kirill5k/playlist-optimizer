@@ -20,14 +20,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
       - name: Install dependencies
-      - uses: borales/actions-yarn@v2.0.0
-        with:
-         cmd: --cwd frontend install
+        run: npm install --prefix frontend
       - name: Build frontend
-      - uses: borales/actions-yarn@v2.0.0
-        with:
-          cmd: --cwd frontend build
+        run: npm run build --prefix frontend
       - name: Upload frontend for the next job
         uses: actions/upload-artifact@v2
         with:
