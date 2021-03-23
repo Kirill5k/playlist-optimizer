@@ -4,7 +4,7 @@ import cats.effect._
 import io.chrisdavenport.log4cats.Logger
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import io.kirill.playlistoptimizer.core.common.config.AppConfig
-import io.kirill.playlistoptimizer.core.common.controllers.AppController
+import io.kirill.playlistoptimizer.core.common.controllers.{HomeController}
 import io.kirill.playlistoptimizer.core.optimizer.Optimizers
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.OptimizationAlgorithm
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.operators._
@@ -31,13 +31,14 @@ object Application extends IOApp {
   override def run(args: List[String]): IO[ExitCode] =
     Resources.make[IO].use { res =>
       for {
-        _         <- logger.info("starting playlist-optimizer app...")
-        optimizer <- Optimizers.playlist[IO]
-        spotify   <- Spotify.make(res.backend, config.spotify, config.jwt)
+        _              <- logger.info("starting playlist-optimizer app...")
+        homeController <- HomeController.make(res.blocker)
+        optimizer      <- Optimizers.playlist[IO]
+        spotify        <- Spotify.make(res.backend, config.spotify, config.jwt)
         router = Router(
           "api/spotify" -> spotify.playlistController.routesWithUserSession,
           "api"         -> optimizer.optimizationController.routesWithUserSession,
-          ""            -> AppController.homeController(res.blocker).routesWithUserSession
+          ""            -> homeController.routesWithUserSession
         ).orNotFound
         _ <- BlazeServerBuilder[IO](ExecutionContext.global)
           .bindHttp(config.server.port, config.server.host)
