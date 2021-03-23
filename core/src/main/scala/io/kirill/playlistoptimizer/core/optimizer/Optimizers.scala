@@ -12,10 +12,10 @@ final class Optimizers[F[_]](
 
 object Optimizers {
   def playlist[F[_]: Concurrent: Logger: ContextShift: Timer](
-      implicit alg: OptimizationAlgorithm[F, Track]
+      alg: OptimizationAlgorithm[F, Track]
   ): F[Optimizers[F]] =
     for {
-      playlistOptimizer <- Optimizer.inmemoryPlaylistOptimizer[F]()
+      playlistOptimizer <- Optimizer.inmemoryPlaylistOptimizer[F](alg)
       controller        <- OptimizationController.make(playlistOptimizer)
     } yield new Optimizers(controller)
 }

@@ -4,7 +4,6 @@ import cats.effect.concurrent.Ref
 import cats.effect.implicits._
 import cats.effect.{Concurrent, ContextShift, Timer}
 import cats.implicits._
-import fs2.Stream
 import io.kirill.playlistoptimizer.core.common.controllers.AppController.UserSessionId
 import io.kirill.playlistoptimizer.core.common.errors.OptimizationNotFound
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.OptimizationAlgorithm
@@ -22,12 +21,11 @@ trait Optimizer[F[_], A] {
 }
 
 private class InmemoryPlaylistOptimizer[F[_]: Concurrent: ContextShift](
-    private val state: Ref[F, Map[UserSessionId, Map[OptimizationId, Optimization[Playlist]]]]
-)(
-    implicit val alg: OptimizationAlgorithm[F, Track]
+    private val state: Ref[F, Map[UserSessionId, Map[OptimizationId, Optimization[Playlist]]]],
+    private val alg: OptimizationAlgorithm[F, Track]
+)(implicit
+    r: Random = new Random()
 ) extends Optimizer[F, Playlist] {
-
-  implicit val r: Random = new Random()
 
   override def get(uid: UserSessionId, oid: OptimizationId): F[Optimization[Playlist]] =
     state.get
@@ -69,26 +67,21 @@ private class InmemoryPlaylistOptimizer[F[_]: Concurrent: ContextShift](
 object Optimizer {
 
   def inmemoryPlaylistOptimizer[F[_]: Concurrent: ContextShift: Timer](
+      alg: OptimizationAlgorithm[F, Track],
       expiresIn: FiniteDuration = 24.hours,
       checkOnExpirationsEvery: FiniteDuration = 15.minutes
-  )(
-      implicit alg: OptimizationAlgorithm[F, Track]
   ): F[Optimizer[F, Playlist]] = {
-    def runExpiration(state: Ref[F, Map[UserSessionId, Map[OptimizationId, Optimization[Playlist]]]]): F[Unit] =
-      Stream
-        .repeatEval {
-          state.update(_.foldLeft(Map.empty[UserSessionId, Map[OptimizationId, Optimization[Playlist]]]) {
-            case (res, (uid, optsMap)) =>
-              res + (uid -> optsMap.filter {case (_, opt) => opt.hasCompletedLessThan(expiresIn) })
-          })
-        }
-        .metered(checkOnExpirationsEvery)
-        .compile
-        .drain
+    def runExpiration(state: Ref[F, Map[UserSessionId, Map[OptimizationId, Optimization[Playlist]]]]): F[Unit] = {
+      def expire: F[Unit] = state.update(_.foldLeft(Map.empty[UserSessionId, Map[OptimizationId, Optimization[Playlist]]]) {
+        case (res, (uid, optsMap)) =>
+          res + (uid -> optsMap.filter { case (_, opt) => opt.hasCompletedLessThan(expiresIn) })
+      })
+      Timer[F].sleep(checkOnExpirationsEvery) >> expire >> runExpiration(state)
+    }
 
     Ref
       .of[F, Map[UserSessionId, Map[OptimizationId, Optimization[Playlist]]]](Map())
       .flatTap(s => runExpiration(s).start.void)
-      .map(s => new InmemoryPlaylistOptimizer(s))
+      .map(s => new InmemoryPlaylistOptimizer(s, alg))
   }
 }
