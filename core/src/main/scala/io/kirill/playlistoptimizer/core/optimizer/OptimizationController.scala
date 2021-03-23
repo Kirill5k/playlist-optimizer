@@ -4,13 +4,11 @@ import cats.effect.Sync
 import cats.implicits._
 import io.chrisdavenport.log4cats.Logger
 import io.circe.generic.auto._
-import io.circe.syntax._
 import io.kirill.playlistoptimizer.core.common.controllers.AppController
 import io.kirill.playlistoptimizer.core.common.json._
 import io.kirill.playlistoptimizer.core.optimizer.OptimizationController._
 import io.kirill.playlistoptimizer.core.playlist.{Playlist, PlaylistView}
 import org.http4s.HttpRoutes
-import org.http4s.circe._
 
 final class OptimizationController[F[_]](
     private val playlistOptimizer: Optimizer[F, Playlist]
@@ -28,7 +26,7 @@ final class OptimizationController[F[_]](
             requestBody    <- req.as[PlaylistOptimizationRequest]
             _              <- logger.info(s"optimize playlist ${requestBody.playlist.name} for user ${userSessionId.value}")
             optimizationId <- playlistOptimizer.optimize(userSessionId, requestBody.playlist.toDomain, requestBody.optimizationParameters)
-            resp           <- Created(PlaylistOptimizationResponse(optimizationId).asJson)
+            resp           <- Created(PlaylistOptimizationResponse(optimizationId))
           } yield resp
         }
       case req @ GET -> Root / "playlist-optimizations" / UUIDVar(optimizationId) =>
@@ -37,7 +35,7 @@ final class OptimizationController[F[_]](
             userSessionId <- F.fromEither(getUserSessionIdFromCookie(req))
             _             <- logger.info(s"get playlist optimization ${optimizationId} for user ${userSessionId.value}")
             opt           <- playlistOptimizer.get(userSessionId, OptimizationId(optimizationId))
-            resp          <- Ok(OptimizationView.from(opt, PlaylistView.from).asJson)
+            resp          <- Ok(OptimizationView.from(opt, PlaylistView.from))
           } yield resp
         }
       case req @ GET -> Root / "playlist-optimizations" =>
@@ -46,7 +44,7 @@ final class OptimizationController[F[_]](
             userSessionId <- F.fromEither(getUserSessionIdFromCookie(req))
             _             <- logger.info(s"get all playlist optimizations for user ${userSessionId.value}")
             opts          <- playlistOptimizer.getAll(userSessionId)
-            resp          <- Ok(opts.sortBy(_.dateInitiated).reverse.map(OptimizationView.from(_, PlaylistView.from)).asJson)
+            resp          <- Ok(opts.sortBy(_.dateInitiated).reverse.map(OptimizationView.from(_, PlaylistView.from)))
           } yield resp
         }
       case req @ DELETE -> Root / "playlist-optimizations" / UUIDVar(optimizationId) =>

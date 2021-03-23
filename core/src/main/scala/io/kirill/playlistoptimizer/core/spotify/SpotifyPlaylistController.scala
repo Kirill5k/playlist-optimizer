@@ -4,14 +4,12 @@ import cats.effect._
 import cats.implicits._
 import io.chrisdavenport.log4cats.Logger
 import io.circe.generic.auto._
-import io.circe.syntax._
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
 import io.kirill.playlistoptimizer.core.common.controllers.AppController
 import io.kirill.playlistoptimizer.core.common.errors.{MissingRequiredQueryParam, MissingSpotifySessionCookie}
 import io.kirill.playlistoptimizer.core.common.json._
 import io.kirill.playlistoptimizer.core.common.jwt.JwtEncoder
 import io.kirill.playlistoptimizer.core.playlist._
-import org.http4s.circe._
 import org.http4s.dsl.io.{OptionalQueryParamDecoderMatcher, QueryParamDecoderMatcher}
 import org.http4s.headers.Location
 import org.http4s.{HttpRoutes, Request, RequestCookie, ResponseCookie, Uri}
@@ -73,7 +71,7 @@ final class SpotifyPlaylistController[F[_]: Sync](
             accessToken   <- jwtEncoder.decode(spotifyCookie.content)
             track         <- playlistService.findTrackByName(accessToken, query)
             jwt           <- jwtEncoder.encode(track._2)
-            res           <- Ok(TrackView.from(track._1).asJson)
+            res           <- Ok(TrackView.from(track._1))
           } yield res.addCookie(newSessionCookie(jwt))
         }
       case req @ GET -> Root / "playlists" =>
@@ -85,7 +83,7 @@ final class SpotifyPlaylistController[F[_]: Sync](
             playlists     <- playlistService.getAll(accessToken)
             views = playlists._1.map(PlaylistView.from)
             jwt <- jwtEncoder.encode(playlists._2)
-            res <- Ok(views.asJson)
+            res <- Ok(views)
           } yield res.addCookie(newSessionCookie(jwt))
         }
       case req @ POST -> Root / "playlists" =>
