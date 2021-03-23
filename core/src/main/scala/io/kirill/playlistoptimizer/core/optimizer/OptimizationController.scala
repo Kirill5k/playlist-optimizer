@@ -14,16 +14,19 @@ import org.http4s.circe._
 
 final class OptimizationController[F[_]](
     private val playlistOptimizer: Optimizer[F, Playlist]
+)(implicit
+    F: Sync[F],
+    logger: Logger[F]
 ) extends AppController[F] {
 
-  override def routes(implicit F: Sync[F], L: Logger[F]): HttpRoutes[F] =
+  override def routes: HttpRoutes[F] =
     HttpRoutes.of[F] {
       case req @ POST -> Root / "playlist-optimizations" =>
         withErrorHandling {
           for {
-            userSessionId  <- getUserSessionId(req)
+            userSessionId  <- F.fromEither(getUserSessionIdFromCookie(req))
             requestBody    <- req.as[PlaylistOptimizationRequest]
-            _              <- L.info(s"optimize playlist ${requestBody.playlist.name} for user ${userSessionId.value}")
+            _              <- logger.info(s"optimize playlist ${requestBody.playlist.name} for user ${userSessionId.value}")
             optimizationId <- playlistOptimizer.optimize(userSessionId, requestBody.playlist.toDomain, requestBody.optimizationParameters)
             resp           <- Created(PlaylistOptimizationResponse(optimizationId).asJson)
           } yield resp
@@ -31,8 +34,8 @@ final class OptimizationController[F[_]](
       case req @ GET -> Root / "playlist-optimizations" / UUIDVar(optimizationId) =>
         withErrorHandling {
           for {
-            userSessionId <- getUserSessionId(req)
-            _             <- L.info(s"get playlist optimization ${optimizationId} for user ${userSessionId.value}")
+            userSessionId <- F.fromEither(getUserSessionIdFromCookie(req))
+            _             <- logger.info(s"get playlist optimization ${optimizationId} for user ${userSessionId.value}")
             opt           <- playlistOptimizer.get(userSessionId, OptimizationId(optimizationId))
             resp          <- Ok(OptimizationView.from(opt, PlaylistView.from).asJson)
           } yield resp
@@ -40,8 +43,8 @@ final class OptimizationController[F[_]](
       case req @ GET -> Root / "playlist-optimizations" =>
         withErrorHandling {
           for {
-            userSessionId <- getUserSessionId(req)
-            _             <- L.info(s"get all playlist optimizations for user ${userSessionId.value}")
+            userSessionId <- F.fromEither(getUserSessionIdFromCookie(req))
+            _             <- logger.info(s"get all playlist optimizations for user ${userSessionId.value}")
             opts          <- playlistOptimizer.getAll(userSessionId)
             resp          <- Ok(opts.sortBy(_.dateInitiated).reverse.map(OptimizationView.from(_, PlaylistView.from)).asJson)
           } yield resp
@@ -49,8 +52,8 @@ final class OptimizationController[F[_]](
       case req @ DELETE -> Root / "playlist-optimizations" / UUIDVar(optimizationId) =>
         withErrorHandling {
           for {
-            userSessionId <- getUserSessionId(req)
-            _             <- L.info(s"delete optimization $optimizationId for user ${userSessionId.value}")
+            userSessionId <- F.fromEither(getUserSessionIdFromCookie(req))
+            _             <- logger.info(s"delete optimization $optimizationId for user ${userSessionId.value}")
             _             <- playlistOptimizer.delete(userSessionId, OptimizationId(optimizationId))
             resp          <- NoContent()
           } yield resp
@@ -66,6 +69,6 @@ object OptimizationController {
 
   final case class PlaylistOptimizationResponse(id: OptimizationId)
 
-  def make[F[_]: Sync](playlistOptimizer: Optimizer[F, Playlist]): F[OptimizationController[F]] =
+  def make[F[_]: Sync: Logger](playlistOptimizer: Optimizer[F, Playlist]): F[OptimizationController[F]] =
     Sync[F].delay(new OptimizationController[F](playlistOptimizer))
 }
