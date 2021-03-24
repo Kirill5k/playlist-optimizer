@@ -22,18 +22,18 @@ object Application extends IOApp {
 
   implicit val logger: Logger[IO] = Slf4jLogger.getLogger[IO]
 
-  implicit val c: Crossover[Track]                   = Crossover.bestKeySequenceTrackCrossover
-  implicit val m: Mutator[Track]                     = Mutator.neighbourSwapMutator[Track]
-  implicit val s: Selector[Track]                    = Selector.rouletteWheelSelector[Track]
-  implicit val el: Elitism[Track]                    = Elitism.elitism[Track]
-  implicit val alg: OptimizationAlgorithm[IO, Track] = OptimizationAlgorithm.geneticAlgorithm[IO, Track]
+  implicit val c: Crossover[Track]          = Crossover.bestKeySequenceTrackCrossover
+  implicit val m: Mutator[Track]            = Mutator.neighbourSwapMutator[Track]
+  implicit val s: Selector[Track]           = Selector.rouletteWheelSelector[Track]
+  implicit val el: Elitism[Track]           = Elitism.elitism[Track]
+  val alg: OptimizationAlgorithm[IO, Track] = OptimizationAlgorithm.geneticAlgorithm[IO, Track]
 
   override def run(args: List[String]): IO[ExitCode] =
     Resources.make[IO].use { res =>
       for {
         _              <- logger.info("starting playlist-optimizer app...")
         homeController <- HomeController.make(res.blocker)
-        optimizer      <- Optimizers.playlist[IO]
+        optimizer      <- Optimizers.playlist[IO](alg)
         spotify        <- Spotify.make(res.backend, config.spotify, config.jwt)
         router = Router(
           "api/spotify" -> spotify.playlistController.routesWithUserSession,

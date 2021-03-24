@@ -29,10 +29,10 @@ class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
   "A InmemoryPlaylistOptimizer" - {
 
     "initiate optimization of a playlist" in {
-      implicit val alg = mockAlg(IO.sleep(10.seconds) *> IO.pure((optimizedTracks, 25.0)))
+      val alg = mockAlg(IO.sleep(10.seconds) *> IO.pure((optimizedTracks, 25.0)))
 
       val result = for {
-        optimizer <- Optimizer.inmemoryPlaylistOptimizer[IO]()
+        optimizer <- Optimizer.inmemoryPlaylistOptimizer[IO](alg)
         id        <- optimizer.optimize(userSessionId, playlist, parameters)
       } yield id
 
@@ -40,10 +40,10 @@ class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     }
 
     "return error when optimization id is not recognized" in {
-      implicit val alg = mockAlg(???)
+      val alg = mockAlg(???)
 
       val result = for {
-        optimizer <- Optimizer.inmemoryPlaylistOptimizer[IO]()
+        optimizer <- Optimizer.inmemoryPlaylistOptimizer[IO](alg)
         res       <- optimizer.get(userSessionId, optimizationId)
       } yield res
 
@@ -51,10 +51,10 @@ class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     }
 
     "return error when user id is not recognized" in {
-      implicit val alg = mockAlg(IO.sleep(2.seconds) *> IO.pure((optimizedTracks, 25.0)))
+      val alg = mockAlg(IO.sleep(2.seconds) *> IO.pure((optimizedTracks, 25.0)))
 
       val result = for {
-        optimizer <- Optimizer.inmemoryPlaylistOptimizer[IO]()
+        optimizer <- Optimizer.inmemoryPlaylistOptimizer[IO](alg)
         id        <- optimizer.optimize(userSessionId, playlist, parameters)
         res       <- optimizer.get(UserSessionId("foo"), id)
       } yield res
@@ -63,10 +63,10 @@ class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     }
 
     "return incomplete optimization result after if it has not completed" in {
-      implicit val alg = mockAlg(IO.sleep(2.seconds) *> IO.pure((optimizedTracks, 25.0)))
+      val alg = mockAlg(IO.sleep(2.seconds) *> IO.pure((optimizedTracks, 25.0)))
 
       val result = for {
-        optimizer <- Optimizer.inmemoryPlaylistOptimizer[IO]()
+        optimizer <- Optimizer.inmemoryPlaylistOptimizer[IO](alg)
         id        <- optimizer.optimize(userSessionId, playlist, parameters)
         res       <- optimizer.get(userSessionId, id)
       } yield res
@@ -80,9 +80,9 @@ class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     }
 
     "return optimization result after it has completed" in {
-      implicit val alg = mockAlg(IO.sleep(2.seconds) *> IO.pure((optimizedTracks, 25.0)))
+      val alg = mockAlg(IO.sleep(2.seconds) *> IO.pure((optimizedTracks, 25.0)))
       val result = for {
-        optimizer <- Optimizer.inmemoryPlaylistOptimizer[IO]()
+        optimizer <- Optimizer.inmemoryPlaylistOptimizer[IO](alg)
         id        <- optimizer.optimize(userSessionId, playlist, parameters)
         _         <- IO.sleep(3.seconds)
         res       <- optimizer.get(userSessionId, id)
@@ -97,10 +97,10 @@ class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     }
 
     "return all optimizations" in {
-      implicit val alg = mockAlg(IO.sleep(2.seconds) *> IO.pure((optimizedTracks, 25.0)))
+      val alg = mockAlg(IO.sleep(2.seconds) *> IO.pure((optimizedTracks, 25.0)))
 
       val result = for {
-        optimizer <- Optimizer.inmemoryPlaylistOptimizer[IO]()
+        optimizer <- Optimizer.inmemoryPlaylistOptimizer[IO](alg)
         _         <- optimizer.optimize(userSessionId, playlist, parameters)
         _         <- optimizer.optimize(userSessionId, playlist, parameters)
         res       <- optimizer.getAll(userSessionId)
@@ -112,10 +112,10 @@ class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     }
 
     "delete optimization" in {
-      implicit val alg = mockAlg(IO.sleep(2.seconds) *> IO.pure((optimizedTracks, 25.0)))
+      val alg = mockAlg(IO.sleep(2.seconds) *> IO.pure((optimizedTracks, 25.0)))
 
       val result = for {
-        optimizer <- Optimizer.inmemoryPlaylistOptimizer[IO]()
+        optimizer <- Optimizer.inmemoryPlaylistOptimizer[IO](alg)
         id        <- optimizer.optimize(userSessionId, playlist, parameters)
         _         <- optimizer.delete(userSessionId, id)
         res       <- optimizer.getAll(userSessionId)
@@ -125,10 +125,10 @@ class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     }
 
     "return error if deleted optimization does not exist" in {
-      implicit val alg = mockAlg(???)
+      val alg = mockAlg(???)
 
       val result = for {
-        optimizer <- Optimizer.inmemoryPlaylistOptimizer[IO]()
+        optimizer <- Optimizer.inmemoryPlaylistOptimizer[IO](alg)
         _         <- optimizer.delete(userSessionId, optimizationId)
         res       <- optimizer.getAll(userSessionId)
       } yield res
@@ -137,10 +137,10 @@ class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     }
 
     "return error if user id does not match" in {
-      implicit val alg = mockAlg(IO.sleep(2.seconds) *> IO.pure((optimizedTracks, 25.0)))
+      val alg = mockAlg(IO.sleep(2.seconds) *> IO.pure((optimizedTracks, 25.0)))
 
       val result = for {
-        optimizer <- Optimizer.inmemoryPlaylistOptimizer[IO]()
+        optimizer <- Optimizer.inmemoryPlaylistOptimizer[IO](alg)
         id        <- optimizer.optimize(userSessionId, playlist, parameters)
         res       <- optimizer.delete(UserSessionId("foo"), id)
       } yield res
@@ -149,10 +149,10 @@ class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     }
 
     "expired old optimizations" in {
-      implicit val alg = mockAlg(IO.pure((optimizedTracks, 25.0)))
+      val alg = mockAlg(IO.pure((optimizedTracks, 25.0)))
 
       val result = for {
-        optimizer <- Optimizer.inmemoryPlaylistOptimizer[IO](5.seconds, 1.second)
+        optimizer <- Optimizer.inmemoryPlaylistOptimizer[IO](alg, 5.seconds, 1.second)
         _         <- optimizer.optimize(userSessionId, playlist, parameters)
         _         <- IO.sleep(4.seconds)
         _         <- optimizer.optimize(userSessionId, playlist, parameters)
