@@ -1,6 +1,6 @@
 package io.kirill.playlistoptimizer.core.optimizer
 
-import cats.effect.{Concurrent, ContextShift, Timer}
+import cats.effect.{Concurrent, Timer}
 import cats.implicits._
 import io.chrisdavenport.log4cats.Logger
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.OptimizationAlgorithm
@@ -11,7 +11,7 @@ final class Optimizers[F[_]](
 )
 
 object Optimizers {
-  def playlist[F[_]: Concurrent: Logger: ContextShift: Timer](
+  def playlist[F[_]: Concurrent: Logger: Timer](
       alg: OptimizationAlgorithm[F, Track]
   ): F[Optimizers[F]] =
     for {

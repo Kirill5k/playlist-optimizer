@@ -2,11 +2,10 @@ package io.kirill.playlistoptimizer.core.spotify
 
 import cats.effect.Sync
 import cats.implicits._
-import io.chrisdavenport.log4cats.Logger
 import io.kirill.playlistoptimizer.core.playlist.{Playlist, Track}
 import io.kirill.playlistoptimizer.core.spotify.clients.{SpotifyApiClient, SpotifyAuthClient}
 
-class SpotifyPlaylistService[F[_]: Sync: Logger](
+class SpotifyPlaylistService[F[_]: Sync](
     private val authClient: SpotifyAuthClient[F],
     private val apiClient: SpotifyApiClient[F]
 ) {
@@ -46,7 +45,7 @@ class SpotifyPlaylistService[F[_]: Sync: Logger](
 }
 
 object SpotifyPlaylistService {
-  def make[F[_]: Sync: Logger](
+  def make[F[_]: Sync](
       authClient: SpotifyAuthClient[F],
       apiClient: SpotifyApiClient[F]
   ): F[SpotifyPlaylistService[F]] =

@@ -8,6 +8,8 @@ import io.kirill.playlistoptimizer.core.common.errors.{InvalidJwtEncryptionAlgor
 import pdi.jwt.algorithms.{JwtAsymmetricAlgorithm, JwtHmacAlgorithm}
 import pdi.jwt.{JwtAlgorithm, JwtCirce}
 
+import scala.util.Failure
+
 object jwt {
 
   sealed trait JwtEncoder[F[_], A] {
@@ -25,6 +27,8 @@ object jwt {
         (t: String) => JwtCirce.decodeJson(t, secret, List(a.asInstanceOf[JwtHmacAlgorithm]))
       case a if JwtAlgorithm.allAsymmetric().contains(a) =>
         (t: String) => JwtCirce.decodeJson(t, secret, List(a.asInstanceOf[JwtAsymmetricAlgorithm]))
+      case a =>
+        (_: String) => Failure(InvalidJwtEncryptionAlgorithm(a))
     }
 
     override def encode(token: A): F[String] =

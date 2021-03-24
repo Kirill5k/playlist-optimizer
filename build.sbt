@@ -2,7 +2,7 @@ import com.typesafe.sbt.packager.docker._
 
 ThisBuild / organization := "io.github.kirill5k"
 ThisBuild / version := "1.0"
-ThisBuild / scalaVersion := "2.13.3"
+ThisBuild / scalaVersion := "2.13.5"
 
 lazy val noPublish = Seq(
   publish := {},

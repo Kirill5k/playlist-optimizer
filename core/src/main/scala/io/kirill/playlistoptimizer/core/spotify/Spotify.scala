@@ -1,9 +1,7 @@
 package io.kirill.playlistoptimizer.core.spotify
 
 import cats.Parallel
-
-import java.time.Instant
-import cats.effect.{Concurrent, ContextShift}
+import cats.effect.Concurrent
 import cats.implicits._
 import io.chrisdavenport.log4cats.Logger
 import io.circe.generic.auto._
@@ -12,6 +10,8 @@ import io.kirill.playlistoptimizer.core.common.controllers.AppController
 import io.kirill.playlistoptimizer.core.common.jwt.JwtEncoder
 import io.kirill.playlistoptimizer.core.spotify.clients.{SpotifyApiClient, SpotifyAuthClient}
 import sttp.client3.SttpBackend
+
+import java.time.Instant
 
 final case class SpotifyAccessToken(
     accessToken: String,
@@ -32,7 +32,7 @@ final class Spotify[F[_]](
 )
 
 object Spotify {
-  def make[F[_]: Concurrent: Parallel: Logger: ContextShift](
+  def make[F[_]: Concurrent: Parallel: Logger](
       backend: SttpBackend[F, Any],
       spotifyConfig: SpotifyConfig,
       jwtConfig: JwtConfig

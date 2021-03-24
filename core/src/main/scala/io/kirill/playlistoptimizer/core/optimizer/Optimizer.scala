@@ -2,7 +2,7 @@ package io.kirill.playlistoptimizer.core.optimizer
 
 import cats.effect.concurrent.Ref
 import cats.effect.implicits._
-import cats.effect.{Concurrent, ContextShift, Timer}
+import cats.effect.{Concurrent, Timer}
 import cats.implicits._
 import io.kirill.playlistoptimizer.core.common.controllers.AppController.UserSessionId
 import io.kirill.playlistoptimizer.core.common.errors.OptimizationNotFound
@@ -20,7 +20,7 @@ trait Optimizer[F[_], A] {
   def delete(uid: UserSessionId, id: OptimizationId): F[Unit]
 }
 
-private class InmemoryPlaylistOptimizer[F[_]: Concurrent: ContextShift](
+private class InmemoryPlaylistOptimizer[F[_]: Concurrent](
     private val state: Ref[F, Map[UserSessionId, Map[OptimizationId, Optimization[Playlist]]]],
     private val alg: OptimizationAlgorithm[F, Track]
 )(implicit
@@ -66,7 +66,7 @@ private class InmemoryPlaylistOptimizer[F[_]: Concurrent: ContextShift](
 
 object Optimizer {
 
-  def inmemoryPlaylistOptimizer[F[_]: Concurrent: ContextShift: Timer](
+  def inmemoryPlaylistOptimizer[F[_]: Concurrent: Timer](
       alg: OptimizationAlgorithm[F, Track],
       expiresIn: FiniteDuration = 24.hours,
       checkOnExpirationsEvery: FiniteDuration = 15.minutes
