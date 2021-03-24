@@ -8,20 +8,18 @@ import io.kirill.playlistoptimizer.core.optimizer.algorithms.operators._
 
 import scala.util.Random
 
-class GeneticAlgorithm[F[_]: Concurrent, A](
-    implicit val crossover: Crossover[A],
-    val mutator: Mutator[A],
-    val evaluator: Evaluator[A],
-    val selector: Selector[A],
-    val elitism: Elitism[A]
+final class GeneticAlgorithm[F[_]: Concurrent, A](
+    private val crossover: Crossover[A],
+    private val mutator: Mutator[A],
+    private val evaluator: Evaluator[A],
+    private val selector: Selector[A],
+    private val elitism: Elitism[A]
 ) extends OptimizationAlgorithm[F, A] {
 
   override def optimizeSeq(
-    items: IndexedSeq[A],
-    params: OptimizationParameters
-  )(
-      implicit rand: Random
-  ): F[(IndexedSeq[A], BigDecimal)] = {
+      items: IndexedSeq[A],
+      params: OptimizationParameters
+  )(implicit rand: Random): F[(IndexedSeq[A], BigDecimal)] = {
     val initialPopulation = List.fill(params.populationSize)(if (params.shuffle) rand.shuffle(items) else items)
     Stream
       .range[F](0, params.maxGen)
@@ -40,12 +38,11 @@ class GeneticAlgorithm[F[_]: Concurrent, A](
     val elites = Stream.evalSeq(Sync[F].delay(elitism.select(fitpop, params.elitismRatio)))
     val newPopulation = Stream
       .evalSeq(Sync[F].delay(selector.selectPairs(fitpop, params.populationSize)))
-      .map {
-        case (p1, p2) =>
-          val prob = params.crossoverProbability
-          val c1 = Stream.eval(Sync[F].delay(crossover.cross(p1, p2, prob)))
-          val c2 = Stream.eval(Sync[F].delay(crossover.cross(p2, p1, prob)))
-          c1 ++ c2
+      .map { case (p1, p2) =>
+        val prob = params.crossoverProbability
+        val c1   = Stream.eval(Sync[F].delay(crossover.cross(p1, p2, prob)))
+        val c2   = Stream.eval(Sync[F].delay(crossover.cross(p2, p1, prob)))
+        c1 ++ c2
       }
       .parJoinUnbounded
       .evalMap(ind => Sync[F].delay(mutator.mutate(ind, params.mutationProbability)))

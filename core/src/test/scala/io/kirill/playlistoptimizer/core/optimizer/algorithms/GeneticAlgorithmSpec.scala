@@ -18,16 +18,19 @@ class GeneticAlgorithmSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers 
   "A GeneticAlgorithm" - {
 
     "should optimize a seq of tracks" in {
-      implicit val c: Crossover[Track] = Crossover.bestKeySequenceTrackCrossover
-      implicit val m: Mutator[Track] = Mutator.randomSwapMutator[Track]
-      implicit val s: Selector[Track] = Selector.rouletteWheelSelector[Track]
-      implicit val e: Elitism[Track] = Elitism.elitism[Track]
+      val alg = OptimizationAlgorithm.geneticAlgorithm[IO, Track](
+        Crossover.bestKeySequenceTrackCrossover,
+        Mutator.randomSwapMutator[Track],
+        Evaluator.harmonicSeqBasedTracksEvaluator,
+        Selector.rouletteWheelSelector[Track],
+        Elitism.elitism[Track]
+      )
 
       val start = Instant.now
 
-      val songs = PlaylistBuilder.playlist.tracks
+      val songs  = PlaylistBuilder.playlist.tracks
       val params = OptimizationParameters(200, 250, 0.75, 0.05, 0.2, true)
-      val alg = OptimizationAlgorithm.geneticAlgorithm[IO, Track]
+
       val optimizedSongsResult = alg.optimizeSeq(songs, params)
 
       optimizedSongsResult.asserting { case (tracks, score) =>
@@ -36,7 +39,7 @@ class GeneticAlgorithmSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers 
         println(s"total time taken: ${end.getEpochSecond - start.getEpochSecond}s")
 
         tracks must contain theSameElementsAs songs
-        tracks must not contain theSameElementsInOrderAs (songs)
+        tracks must not contain theSameElementsInOrderAs(songs)
         score must be < Evaluator.harmonicSeqBasedTracksEvaluator.evaluateIndividual(songs).value / 20
       }
     }

@@ -10,13 +10,19 @@ trait OptimizationAlgorithm[F[_], A] {
   def optimizeSeq(
       items: IndexedSeq[A],
       parameters: OptimizationParameters
-  )(
-      implicit rand: Random
+  )(implicit
+      rand: Random
   ): F[(IndexedSeq[A], BigDecimal)]
 }
 
 object OptimizationAlgorithm {
 
-  def geneticAlgorithm[F[_]: Concurrent, A: Crossover: Mutator: Evaluator: Selector: Elitism]: OptimizationAlgorithm[F, A] =
-    new GeneticAlgorithm[F, A]()
+  def geneticAlgorithm[F[_]: Concurrent, A](
+      crossover: Crossover[A],
+      mutator: Mutator[A],
+      evaluator: Evaluator[A],
+      selector: Selector[A],
+      elitism: Elitism[A]
+  ): OptimizationAlgorithm[F, A] =
+    new GeneticAlgorithm[F, A](crossover, mutator, evaluator, selector, elitism)
 }

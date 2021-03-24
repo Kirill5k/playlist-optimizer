@@ -4,7 +4,7 @@ import cats.effect._
 import io.chrisdavenport.log4cats.Logger
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import io.kirill.playlistoptimizer.core.common.config.AppConfig
-import io.kirill.playlistoptimizer.core.common.controllers.{HomeController}
+import io.kirill.playlistoptimizer.core.common.controllers.HomeController
 import io.kirill.playlistoptimizer.core.optimizer.Optimizers
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.OptimizationAlgorithm
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.operators._
@@ -18,15 +18,18 @@ import scala.concurrent.ExecutionContext
 
 object Application extends IOApp {
 
-  val config = AppConfig.load()
-
   implicit val logger: Logger[IO] = Slf4jLogger.getLogger[IO]
 
-  implicit val c: Crossover[Track]          = Crossover.bestKeySequenceTrackCrossover
-  implicit val m: Mutator[Track]            = Mutator.neighbourSwapMutator[Track]
-  implicit val s: Selector[Track]           = Selector.rouletteWheelSelector[Track]
-  implicit val el: Elitism[Track]           = Elitism.elitism[Track]
-  val alg: OptimizationAlgorithm[IO, Track] = OptimizationAlgorithm.geneticAlgorithm[IO, Track]
+  val config = AppConfig.load()
+
+  val alg: OptimizationAlgorithm[IO, Track] =
+    OptimizationAlgorithm.geneticAlgorithm[IO, Track](
+      Crossover.bestKeySequenceTrackCrossover,
+      Mutator.neighbourSwapMutator[Track],
+      Evaluator.harmonicSeqBasedTracksEvaluator,
+      Selector.rouletteWheelSelector[Track],
+      Elitism.elitism[Track]
+    )
 
   override def run(args: List[String]): IO[ExitCode] =
     Resources.make[IO].use { res =>
