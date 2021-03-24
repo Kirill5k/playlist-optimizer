@@ -2,8 +2,8 @@ package io.kirill.playlistoptimizer.core
 
 import cats.effect.IO
 import cats.effect.testing.scalatest.AsyncIOSpec
-import io.chrisdavenport.log4cats.Logger
-import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
+import org.typelevel.log4cats.Logger
+import org.typelevel.log4cats.slf4j.Slf4jLogger
 import io.kirill.playlistoptimizer.core.common.SpotifyConfigBuilder
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
 import org.scalatest.freespec.AsyncFreeSpec

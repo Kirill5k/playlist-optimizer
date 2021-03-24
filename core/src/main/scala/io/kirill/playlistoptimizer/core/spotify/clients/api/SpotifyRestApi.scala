@@ -6,7 +6,7 @@ import SpotifyResponse._
 import SpotifyRequest._
 import SpotifyError._
 import cats.effect.Sync
-import io.chrisdavenport.log4cats.Logger
+import org.typelevel.log4cats.Logger
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
 import io.kirill.playlistoptimizer.core.common.errors.SpotifyApiError
 import sttp.client3._

@@ -1,8 +1,8 @@
 package io.kirill.playlistoptimizer.core
 
 import cats.effect._
-import io.chrisdavenport.log4cats.Logger
-import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
+import org.typelevel.log4cats.Logger
+import org.typelevel.log4cats.slf4j.Slf4jLogger
 import io.kirill.playlistoptimizer.core.common.config.AppConfig
 import io.kirill.playlistoptimizer.core.common.controllers.HomeController
 import io.kirill.playlistoptimizer.core.optimizer.Optimizers

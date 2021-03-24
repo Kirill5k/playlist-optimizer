@@ -2,7 +2,7 @@ package io.kirill.playlistoptimizer.core.optimizer
 
 import cats.effect.{Concurrent, Timer}
 import cats.implicits._
-import io.chrisdavenport.log4cats.Logger
+import org.typelevel.log4cats.Logger
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.OptimizationAlgorithm
 import io.kirill.playlistoptimizer.core.playlist.Track
 

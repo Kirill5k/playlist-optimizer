@@ -7,13 +7,13 @@ object Dependencies {
     lazy val pureConfig = "0.14.0"
     lazy val circe      = "0.13.0"
     lazy val sttp       = "3.0.0"
-    lazy val http4s     = "0.21.17"
+    lazy val http4s     = "0.21.20"
     lazy val jwt        = "4.2.0"
     lazy val logback    = "1.2.3"
-    lazy val log4cats   = "1.1.1"
+    lazy val log4cats   = "1.2.0"
 
     lazy val mockito    = "1.10.3"
-    lazy val scalatest  = "3.2.0"
+    lazy val scalatest  = "3.2.6"
     lazy val scalameter = "0.19"
   }
 
@@ -22,7 +22,7 @@ object Dependencies {
     lazy val pureconfigCats = "com.github.pureconfig" %% "pureconfig-cats-effect" % Versions.pureConfig
 
     lazy val logback  = "ch.qos.logback"    % "logback-classic" % Versions.log4cats
-    lazy val log4cats = "io.chrisdavenport" %% "log4cats-slf4j" % Versions.log4cats
+    lazy val log4cats = "org.typelevel" %% "log4cats-slf4j" % Versions.log4cats
 
     lazy val fs2 = "co.fs2" %% "fs2-core" % Versions.fs2
 

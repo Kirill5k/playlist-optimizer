@@ -3,7 +3,7 @@ package io.kirill.playlistoptimizer.core.spotify.clients
 import cats.Parallel
 import cats.effect.Sync
 import cats.implicits._
-import io.chrisdavenport.log4cats.Logger
+import org.typelevel.log4cats.Logger
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
 import io.kirill.playlistoptimizer.core.common.errors.{SpotifyPlaylistNotFound, SpotifyTrackNotFound}
 import io.kirill.playlistoptimizer.core.playlist.{Playlist, PlaylistSource, Track}

@@ -2,7 +2,7 @@ package io.kirill.playlistoptimizer.core.spotify.clients.api
 
 import cats.effect.Sync
 import cats.implicits._
-import io.chrisdavenport.log4cats.Logger
+import org.typelevel.log4cats.Logger
 import io.circe.Decoder
 import io.circe.generic.auto._
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
