@@ -12,14 +12,12 @@ trait Selector[A] {
   )(implicit r: Random): Seq[(IndexedSeq[A], IndexedSeq[A])]
 }
 
-final class FitnessBasedSelector[A] extends Selector[A] {
+final private class FitnessBasedSelector[A] extends Selector[A] {
 
   override def selectPairs(
       population: Seq[(IndexedSeq[A], Fitness)],
       populationLimit: Int
-  )(
-      implicit r: Random
-  ): Seq[(IndexedSeq[A], IndexedSeq[A])] =
+  )(implicit r: Random): Seq[(IndexedSeq[A], IndexedSeq[A])] =
     population
       .sortBy(_._2.value)
       .map(_._1)
@@ -27,19 +25,15 @@ final class FitnessBasedSelector[A] extends Selector[A] {
       .pairs
 }
 
-final class RouletteWheelSelector[A] extends Selector[A] {
+final private class RouletteWheelSelector[A] extends Selector[A] {
 
   override def selectPairs(
       population: Seq[(IndexedSeq[A], Fitness)],
       populationLimit: Int
-  )(
-      implicit r: Random
-  ): Seq[(IndexedSeq[A], IndexedSeq[A])] = {
+  )(implicit r: Random): Seq[(IndexedSeq[A], IndexedSeq[A])] = {
     val popByFitness = population
       .sortBy(_._2.value)
-      .map {
-        case (i, f) => (i, 100 / f.value)
-      }
+      .map { case (i, f) => (i, 100 / f.value) }
 
     @tailrec
     def go(newPop: List[IndexedSeq[A]], remPop: Seq[(IndexedSeq[A], BigDecimal)]): List[IndexedSeq[A]] =
@@ -53,9 +47,7 @@ final class RouletteWheelSelector[A] extends Selector[A] {
 
   private def pickOne(
       popByFitness: Seq[(IndexedSeq[A], BigDecimal)]
-  )(
-      implicit r: Random
-  ): (IndexedSeq[A], Seq[(IndexedSeq[A], BigDecimal)]) = {
+  )(implicit r: Random): (IndexedSeq[A], Seq[(IndexedSeq[A], BigDecimal)]) = {
     val fTotal = popByFitness.map(_._2).sum
 
     var remFitness = BigDecimal(1.0)
@@ -63,11 +55,10 @@ final class RouletteWheelSelector[A] extends Selector[A] {
     val n = r.nextDouble()
     val i = LazyList
       .from(popByFitness)
-      .map {
-        case (i, f) =>
-          val res = (i, remFitness)
-          remFitness -= f / fTotal
-          res
+      .map { case (i, f) =>
+        val res = (i, remFitness)
+        remFitness -= f / fTotal
+        res
       }
       .indexWhere(_._2 < n, 0) - 1
 

@@ -20,7 +20,7 @@ object Application extends IOApp {
 
   implicit val logger: Logger[IO] = Slf4jLogger.getLogger[IO]
 
-  val config = AppConfig.load()
+  val config: AppConfig = AppConfig.load()
 
   val alg: OptimizationAlgorithm[IO, Track] =
     OptimizationAlgorithm.geneticAlgorithm[IO, Track](
