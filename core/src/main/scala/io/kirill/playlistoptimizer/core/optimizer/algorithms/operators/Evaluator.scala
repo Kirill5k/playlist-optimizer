@@ -10,7 +10,7 @@ trait Evaluator[A] {
   def evaluatePopulation(population: Seq[IndexedSeq[A]]): Seq[(IndexedSeq[A], Fitness)] =
     population.map(ind => (ind, evaluateIndividual(ind)))
 
-  private def calcFitness(individual: IndexedSeq[A])(calculation: (A, A) => Double): Fitness = {
+  protected def calcFitness(individual: IndexedSeq[A])(calculation: (A, A) => Double): Fitness = {
     val score = individual.toList.tail
       .foldLeft((0d, individual.head)) { case ((acc, prev), curr) =>
         (acc + calculation(prev, curr), curr)
