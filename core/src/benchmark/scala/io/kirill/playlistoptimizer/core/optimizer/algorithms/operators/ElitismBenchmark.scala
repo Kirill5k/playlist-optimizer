@@ -8,7 +8,7 @@ object ElitismBenchmark extends Benchmark  {
   val populations: Gen[Seq[(IndexedSeq[Int], Fitness)]] = evaluatedPopulationGen()
 
   performance of "elitism" in {
-    val elitism = Elitism.elitism[Int]
+    val elitism = Elitism.simple[Int]
 
     measure method "select" in {
       val ctx = Context(exec.benchRuns -> 10000, exec.independentSamples -> 50)

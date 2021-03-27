@@ -22,7 +22,7 @@ object GeneticAlgorithmBenchmark extends Benchmark {
       Mutator.randomSwapMutator[Track],
       Evaluator.harmonicSeqBasedTracksEvaluator,
       Selector.fitnessBasedSelector[Track],
-      Elitism.elitism[Track]
+      Elitism.simple[Track]
     )
 
     measure method "optimizeSeq" in {

@@ -17,7 +17,7 @@ class ElitismSpec extends AnyWordSpec with Matchers {
         (Vector(6), Fitness(20.0))
       )
 
-      val elitism = Elitism.elitism[Int]
+      val elitism = Elitism.simple[Int]
 
       val result = elitism.select(population, 0.35)
 

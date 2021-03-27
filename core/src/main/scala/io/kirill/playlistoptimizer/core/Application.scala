@@ -23,12 +23,12 @@ object Application extends IOApp {
   val config = AppConfig.load()
 
   val alg = OptimizationAlgorithm.geneticAlgorithm[IO, Track](
-      Crossover.bestKeySequenceTrackCrossover,
-      Mutator.neighbourSwapMutator[Track],
-      Evaluator.harmonicSeqBasedTracksEvaluator,
-      Selector.rouletteWheelSelector[Track],
-      Elitism.elitism[Track]
-    )
+    Crossover.bestKeySequenceTrackCrossover,
+    Mutator.neighbourSwapMutator[Track],
+    Evaluator.harmonicSeqBasedTracksEvaluator,
+    Selector.rouletteWheelSelector[Track],
+    Elitism.simple[Track]
+  )
 
   override def run(args: List[String]): IO[ExitCode] =
     Resources.make[IO].use { res =>
@@ -37,14 +37,15 @@ object Application extends IOApp {
         homeController <- HomeController.make(res.blocker)
         optimizer      <- Optimizers.playlist[IO](alg)
         spotify        <- Spotify.make(res.backend, config.spotify, config.jwt)
-        router = Router(
-          "api/spotify" -> spotify.playlistController.routesWithUserSession,
-          "api"         -> optimizer.optimizationController.routesWithUserSession,
-          ""            -> homeController.routesWithUserSession
-        ).orNotFound
         _ <- BlazeServerBuilder[IO](ExecutionContext.global)
           .bindHttp(config.server.port, config.server.host)
-          .withHttpApp(router)
+          .withHttpApp(
+            Router(
+              "api/spotify" -> spotify.playlistController.routesWithUserSession,
+              "api"         -> optimizer.optimizationController.routesWithUserSession,
+              ""            -> homeController.routesWithUserSession
+            ).orNotFound
+          )
           .serve
           .compile
           .drain

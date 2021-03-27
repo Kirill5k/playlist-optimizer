@@ -23,7 +23,7 @@ class GeneticAlgorithmSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers 
         Mutator.randomSwapMutator[Track],
         Evaluator.harmonicSeqBasedTracksEvaluator,
         Selector.rouletteWheelSelector[Track],
-        Elitism.elitism[Track]
+        Elitism.simple[Track]
       )
 
       val start = Instant.now
