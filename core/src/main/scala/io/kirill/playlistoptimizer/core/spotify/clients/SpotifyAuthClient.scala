@@ -8,10 +8,15 @@ import io.kirill.playlistoptimizer.core.spotify.SpotifyAccessToken
 import io.kirill.playlistoptimizer.core.spotify.clients.api.{SpotifyAuthApi, SpotifyRestApi}
 import sttp.client3.SttpBackend
 
-private[spotify] class SpotifyAuthClient[F[_]: Sync: Logger](implicit
+trait SpotifyAuthClient[F[_]] {
+  def authorize(accessCode: String): F[SpotifyAccessToken]
+  def refresh(accessToken: SpotifyAccessToken): F[SpotifyAccessToken]
+}
+
+private[spotify] final class LiveSpotifyAuthClient[F[_]: Sync: Logger](implicit
     private val sc: SpotifyConfig,
     private val b: SttpBackend[F, Any]
-) {
+) extends SpotifyAuthClient[F] {
 
   def authorize(accessCode: String): F[SpotifyAccessToken] =
     for {
@@ -38,6 +43,6 @@ private[spotify] object SpotifyAuthClient {
   ): F[SpotifyAuthClient[F]] = {
     implicit val b  = backend
     implicit val sc = spotifyConfig
-    Sync[F].delay(new SpotifyAuthClient[F]())
+    Sync[F].delay(new LiveSpotifyAuthClient[F]())
   }
 }

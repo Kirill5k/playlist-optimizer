@@ -1,7 +1,6 @@
 package io.kirill.playlistoptimizer.core.spotify.clients
 
-import cats.Parallel
-import cats.effect.Sync
+import cats.effect.{Concurrent, Sync}
 import cats.implicits._
 import org.typelevel.log4cats.Logger
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
@@ -10,11 +9,19 @@ import io.kirill.playlistoptimizer.core.playlist.{Playlist, PlaylistSource, Trac
 import io.kirill.playlistoptimizer.core.spotify.clients.api.SpotifyResponse.{PlaylistTrack, SpotifyAudioFeaturesResponse}
 import io.kirill.playlistoptimizer.core.spotify.clients.api.{SpotifyMapper, SpotifyRestApi}
 import sttp.client3.SttpBackend
+import fs2.Stream
 
-private[spotify] class SpotifyApiClient[F[_]: Sync: Parallel: Logger](implicit
+trait SpotifyRestClient[F[_]] {
+  def createPlaylist(token: String, userId: String, playlist: Playlist): F[Unit]
+  def getAllPlaylists(token: String): F[List[Playlist]]
+  def findPlaylistByName(token: String, name: String): F[Playlist]
+  def findTrackByName(token: String, name: String): F[Track]
+}
+
+final private[spotify] class LiveSpotifyRestClient[F[_]: Concurrent: Logger](implicit
     private val sc: SpotifyConfig,
     private val b: SttpBackend[F, Any]
-) {
+) extends SpotifyRestClient[F] {
 
   def createPlaylist(token: String, userId: String, playlist: Playlist): F[Unit] =
     SpotifyRestApi
@@ -27,12 +34,17 @@ private[spotify] class SpotifyApiClient[F[_]: Sync: Parallel: Logger](implicit
       .void
 
   def getAllPlaylists(token: String): F[List[Playlist]] =
-    SpotifyRestApi
-      .getUserPlaylists(token)
-      .flatMap(_.items.parTraverse(p => findById(token, p.id)))
+    Stream
+      .evalSeq(SpotifyRestApi.getUserPlaylists(token).map(_.items))
+      .parEvalMap(Int.MaxValue)(pl => findById(token, pl.id))
+      .compile
+      .toList
 
   def findPlaylistByName(token: String, name: String): F[Playlist] =
-    getPlaylistId(token, name)
+    SpotifyRestApi
+      .getUserPlaylists(token)
+      .map(_.items.find(_.name.equalsIgnoreCase(name)))
+      .flatMap(pl => Sync[F].fromOption(pl.map(_.id), SpotifyPlaylistNotFound(name)))
       .flatMap(id => findById(token, id))
 
   private def findById(token: String, id: String): F[Playlist] =
@@ -42,13 +54,6 @@ private[spotify] class SpotifyApiClient[F[_]: Sync: Parallel: Logger](implicit
       tracksDetails <- getTrackDetails(token, playListTracks)
       tracks = tracksDetails.map(details => SpotifyMapper.toDomain(details._1, details._2)).toVector
     } yield Playlist(playlist.name, playlist.description, tracks, PlaylistSource.Spotify)
-
-  private def getPlaylistId(token: String, name: String): F[String] =
-    SpotifyRestApi
-      .getUserPlaylists(token)
-      .map(_.items.find(_.name.equalsIgnoreCase(name)))
-      .flatMap(pl => Sync[F].fromOption(pl, SpotifyPlaylistNotFound(name)))
-      .map(_.id)
 
   private def getTrackDetails(
       token: String,
@@ -71,14 +76,14 @@ private[spotify] class SpotifyApiClient[F[_]: Sync: Parallel: Logger](implicit
     } yield SpotifyMapper.toDomain(track, features)
 }
 
-private[spotify] object SpotifyApiClient {
+private[spotify] object SpotifyRestClient {
 
-  def make[F[_]: Sync: Parallel: Logger](
+  def make[F[_]: Concurrent: Logger](
       backend: SttpBackend[F, Any],
       spotifyConfig: SpotifyConfig
-  ): F[SpotifyApiClient[F]] = {
+  ): F[SpotifyRestClient[F]] = {
     implicit val b  = backend
     implicit val sc = spotifyConfig
-    Sync[F].delay(new SpotifyApiClient[F]())
+    Sync[F].delay(new LiveSpotifyRestClient[F]())
   }
 }

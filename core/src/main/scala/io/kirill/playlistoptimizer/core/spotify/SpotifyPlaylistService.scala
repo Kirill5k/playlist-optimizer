@@ -3,7 +3,7 @@ package io.kirill.playlistoptimizer.core.spotify
 import cats.effect.{Concurrent, Sync}
 import cats.implicits._
 import io.kirill.playlistoptimizer.core.playlist.{Playlist, Track}
-import io.kirill.playlistoptimizer.core.spotify.clients.{SpotifyApiClient, SpotifyAuthClient}
+import io.kirill.playlistoptimizer.core.spotify.clients.{SpotifyRestClient, SpotifyAuthClient}
 import fs2.Stream
 
 trait SpotifyPlaylistService[F[_]] {
@@ -17,7 +17,7 @@ trait SpotifyPlaylistService[F[_]] {
 
 private final class LiveSpotifyPlaylistService[F[_]: Concurrent](
     private val authClient: SpotifyAuthClient[F],
-    private val apiClient: SpotifyApiClient[F]
+    private val apiClient: SpotifyRestClient[F]
 ) extends SpotifyPlaylistService[F] {
 
   def authenticate(accessCode: String): F[SpotifyAccessToken] =
@@ -47,7 +47,7 @@ private final class LiveSpotifyPlaylistService[F[_]: Concurrent](
       tracks <- Stream
         .emits(names)
         .covary[F]
-        .parEvalMap(Int.MaxValue)(n => apiClient.findTrackByName(token.accessToken, n))
+        .parEvalMap(Int.MaxValue)(name => apiClient.findTrackByName(token.accessToken, name))
         .compile
         .toList
     } yield (tracks, token)
@@ -62,7 +62,7 @@ private final class LiveSpotifyPlaylistService[F[_]: Concurrent](
 object SpotifyPlaylistService {
   def make[F[_]: Concurrent](
       authClient: SpotifyAuthClient[F],
-      apiClient: SpotifyApiClient[F]
+      apiClient: SpotifyRestClient[F]
   ): F[SpotifyPlaylistService[F]] =
     Sync[F].delay(new LiveSpotifyPlaylistService(authClient, apiClient))
 }

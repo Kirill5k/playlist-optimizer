@@ -13,11 +13,11 @@ import sttp.client3.testing.SttpBackendStub
 import java.time.LocalDate
 import scala.concurrent.duration._
 
-class SpotifyApiClientSpec extends ApiClientSpec {
+class SpotifyRestClientSpec extends ApiClientSpec {
 
   val token = "token-5lcpIsBqfb0Slx9fzZuCu_rM3aBDg"
 
-  "A SpotifyClient" - {
+  "A SpotifyRestClient" - {
 
     "create new playlist" in {
       implicit val testingBackend: SttpBackendStub[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
@@ -29,7 +29,7 @@ class SpotifyApiClientSpec extends ApiClientSpec {
           case r => throw new RuntimeException(s"no mocks for ${r.uri.host}/${r.uri.path.mkString("/")}")
         }
 
-      val response = new SpotifyApiClient[IO]().createPlaylist(token, "user-1", PlaylistBuilder.playlist)
+      val response = new LiveSpotifyRestClient[IO]().createPlaylist(token, "user-1", PlaylistBuilder.playlist)
 
       response.asserting(_ must be (()))
     }
@@ -46,7 +46,7 @@ class SpotifyApiClientSpec extends ApiClientSpec {
           case r => throw new RuntimeException(s"no mocks for ${r.uri.host}/${r.uri.path.mkString("/")}")
         }
 
-      val response = new SpotifyApiClient[IO]().findPlaylistByName(token, "mel")
+      val response = new LiveSpotifyRestClient[IO]().findPlaylistByName(token, "mel")
 
       response.asserting { pl =>
         pl.name must be("Mel")
@@ -69,7 +69,7 @@ class SpotifyApiClientSpec extends ApiClientSpec {
           case r => throw new RuntimeException(s"no mocks for ${r.uri.host}/${r.uri.path.mkString("/")}")
         }
 
-      val response = new SpotifyApiClient[IO]().getAllPlaylists(token)
+      val response = new LiveSpotifyRestClient[IO]().getAllPlaylists(token)
 
       response.asserting(_.map(_.name) must be (List("Mel 1", "Mel 2")))
     }
@@ -84,7 +84,7 @@ class SpotifyApiClientSpec extends ApiClientSpec {
           case r => throw new RuntimeException(s"no mocks for ${r.uri.host}/${r.uri.path.mkString("/")}")
         }
 
-      val response = new SpotifyApiClient[IO]().findTrackByName(token, "bicep glue")
+      val response = new LiveSpotifyRestClient[IO]().findTrackByName(token, "bicep glue")
 
       response.asserting { t =>
         t.song.name mustBe "Glue"
@@ -99,7 +99,7 @@ class SpotifyApiClientSpec extends ApiClientSpec {
           case r => throw new RuntimeException(s"no mocks for ${r.uri.host}/${r.uri.path.mkString("/")}")
         }
 
-      val response = new SpotifyApiClient[IO]().findTrackByName(token, "bicep glue")
+      val response = new LiveSpotifyRestClient[IO]().findTrackByName(token, "bicep glue")
 
       response.assertThrows[SpotifyTrackNotFound]
     }

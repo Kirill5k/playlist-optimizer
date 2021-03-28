@@ -23,7 +23,7 @@ class SpotifyAuthClientSpec extends ApiClientSpec {
             throw new RuntimeException(s"no mocks for ${r.uri.host.get}/${r.uri.path.mkString("/")}")
         }
 
-      val client = new SpotifyAuthClient[IO]()
+      val client = new LiveSpotifyAuthClient[IO]()
 
       client
         .authorize("code")
@@ -42,7 +42,7 @@ class SpotifyAuthClientSpec extends ApiClientSpec {
         }
 
       val accessToken = SpotifyAccessToken("expired-token", "code", "user-id", 0)
-      val client = new SpotifyAuthClient[IO]()
+      val client = new LiveSpotifyAuthClient[IO]()
 
 
       client
