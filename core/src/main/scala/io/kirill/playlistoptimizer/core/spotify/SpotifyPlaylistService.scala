@@ -6,10 +6,19 @@ import io.kirill.playlistoptimizer.core.playlist.{Playlist, Track}
 import io.kirill.playlistoptimizer.core.spotify.clients.{SpotifyApiClient, SpotifyAuthClient}
 import fs2.Stream
 
-class SpotifyPlaylistService[F[_]: Concurrent](
+trait SpotifyPlaylistService[F[_]] {
+  def save(accessToken: SpotifyAccessToken, playlist: Playlist): F[SpotifyAccessToken]
+  def authenticate(accessCode: String): F[SpotifyAccessToken]
+  def getAll(accessToken: SpotifyAccessToken): F[(Seq[Playlist], SpotifyAccessToken)]
+  def findByName(accessToken: SpotifyAccessToken, name: String): F[(Playlist, SpotifyAccessToken)]
+  def findTracksByNames(accessToken: SpotifyAccessToken, names: List[String]): F[(List[Track], SpotifyAccessToken)]
+  def findTrackByName(accessToken: SpotifyAccessToken, name: String): F[(Track, SpotifyAccessToken)]
+}
+
+private final class LiveSpotifyPlaylistService[F[_]: Concurrent](
     private val authClient: SpotifyAuthClient[F],
     private val apiClient: SpotifyApiClient[F]
-) {
+) extends SpotifyPlaylistService[F] {
 
   def authenticate(accessCode: String): F[SpotifyAccessToken] =
     authClient.authorize(accessCode)
@@ -55,5 +64,5 @@ object SpotifyPlaylistService {
       authClient: SpotifyAuthClient[F],
       apiClient: SpotifyApiClient[F]
   ): F[SpotifyPlaylistService[F]] =
-    Sync[F].delay(new SpotifyPlaylistService(authClient, apiClient))
+    Sync[F].delay(new LiveSpotifyPlaylistService(authClient, apiClient))
 }
