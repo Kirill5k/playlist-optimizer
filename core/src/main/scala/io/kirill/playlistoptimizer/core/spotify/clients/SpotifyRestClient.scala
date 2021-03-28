@@ -70,7 +70,7 @@ final private[spotify] class LiveSpotifyRestClient[F[_]: Concurrent: Logger](imp
 
   def findTrackByName(token: String, name: String): F[Track] =
     for {
-      searchResult <- SpotifyRestApi.findTrack(token, name)
+      searchResult <- SpotifyRestApi.findTrack(token, SpotifyMapper.sanitiseTrackSearchQuery(name))
       track        <- Sync[F].fromOption(searchResult.tracks.items.headOption, SpotifyTrackNotFound(name))
       features     <- SpotifyRestApi.getAudioFeatures(token, track.id)
     } yield SpotifyMapper.toDomain(track, features)

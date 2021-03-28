@@ -15,12 +15,12 @@ object SpotifyMapper {
   implicit class PlaylistTrackSyntax(private val track: SpotifyResponse.PlaylistTrack) extends AnyVal {
     def toSongDetails: SongDetails =
       SongDetails(
-        track.name,
-        track.artists.map(_.name),
-        Some(track.album.name).filter(_.nonEmpty),
-        track.album.release_date_precision.filter(_ == "day").flatMap(_ => track.album.release_date.map(LocalDate.parse)),
-        Some(track.album.album_type),
-        track.album.images.maxByOption(_.height).map(_.url)
+        name = track.name,
+        artists = track.artists.map(_.name),
+        releaseName = Some(track.album.name).filter(_.nonEmpty),
+        releaseDate = track.album.release_date_precision.filter(_ == "day").flatMap(_ => track.album.release_date.map(LocalDate.parse)),
+        releaseType = Some(track.album.album_type),
+        artwork = track.album.images.maxByOption(_.height).map(_.url)
       )
 
     def toSourceDetails: SourceDetails =
@@ -37,4 +37,12 @@ object SpotifyMapper {
         features.energy
       )
   }
+
+  def sanitiseTrackSearchQuery(name: String): String =
+    name
+      .replaceAll("[-]", "")
+      .replaceAll("[():]", "")
+      .replaceAll("(?i)(original mix|remix)", "")
+      .replaceAll(" +", " ")
+      .trim
 }
