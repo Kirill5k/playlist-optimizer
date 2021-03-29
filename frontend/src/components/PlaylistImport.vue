@@ -10,7 +10,7 @@
     </b-button>
 
     <b-modal
-      size="sm"
+      size="lg"
       ref="playlist-import-modal"
       title="New playlist"
       @hidden="reset"
@@ -74,6 +74,7 @@
             required
             trim
             :state="areValidTracks"
+            @drop="addTrack"
           />
 
           <b-form-invalid-feedback size="sm" :state="areValidTracks">
@@ -143,6 +144,14 @@ export default {
       if (this.tracks === null) {
         this.tracks = ''
       }
+    },
+    addTrack (event) {
+      event.preventDefault()
+      const files = event.dataTransfer.items
+        ? Array.from(event.dataTransfer.items).filter(f => f.kind === 'file').map(f => f.getAsFile())
+        : Array.from(event.dataTransfer.files)
+      const fileNames = files.map(f => f.name)
+      console.log(fileNames)
     }
   }
 }
