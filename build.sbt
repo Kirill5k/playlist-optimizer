@@ -17,7 +17,16 @@ lazy val docker = Seq(
   maintainer := "immotional@aol.com",
   dockerBaseImage := "adoptopenjdk/openjdk16-openj9:x86_64-alpine-jre-16_36_openj9-0.25.0",
   dockerUpdateLatest := true,
-  makeBatScripts := List()
+  Docker / maintainer := "kirill5k",
+  dockerRepository := Some("us.gcr.io"),
+  makeBatScripts := List(),
+  dockerCommands := {
+    val commands         = dockerCommands.value
+    val (stage0, stage1) = commands.span(_ != DockerStageBreak)
+    val (before, after)  = stage1.splitAt(4)
+    val installBash      = Cmd("RUN", "apk update && apk upgrade && apk add bash")
+    stage0 ++ before ++ List(installBash) ++ after
+  }
 )
 
 lazy val Benchmark = config("benchmark") extend Test
@@ -38,21 +47,10 @@ lazy val core = (project in file("core"))
     name := "playlist-optimizer-core",
     moduleName := "playlist-optimizer-core",
     libraryDependencies ++= Dependencies.core ++ Dependencies.test,
+    Docker / packageName := "playlist-optimizer/core",
     testFrameworks += new TestFramework("org.scalameter.ScalaMeterFramework"),
     logBuffered := false,
-    Benchmark / parallelExecution := false,
-    dockerCommands := {
-      val commands         = dockerCommands.value
-      val (stage0, stage1) = commands.span(_ != DockerStageBreak)
-      val (before, after) = stage1.splitAt(5)
-      val copyFrontend = Seq(
-        Cmd("WORKDIR", "/"),
-        Cmd("RUN", "mkdir", "-p", "/static"),
-        Cmd("COPY", "frontend/", "/static/")
-      )
-
-      stage0 ++ before ++ copyFrontend ++ after
-    }
+    Benchmark / parallelExecution := false
   )
 
 lazy val frontend = (project in file("frontend"))
