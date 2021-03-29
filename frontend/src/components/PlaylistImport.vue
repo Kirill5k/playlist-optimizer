@@ -74,7 +74,7 @@
             required
             trim
             :state="areValidTracks"
-            @drop="dropFile"
+            @drop.prevent="dropFiles"
           />
 
           <b-form-invalid-feedback size="sm" :state="areValidTracks">
@@ -145,8 +145,7 @@ export default {
         this.tracks = ''
       }
     },
-    dropFile (event) {
-      event.preventDefault()
+    dropFiles (event) {
       const files = event.dataTransfer.items
         ? Array.from(event.dataTransfer.items).filter(f => f.kind === 'file').map(f => f.getAsFile())
         : Array.from(event.dataTransfer.files)
