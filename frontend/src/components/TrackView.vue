@@ -1,13 +1,16 @@
 <template>
   <div class="track-view m-2">
     <b-card
-      :title="fullName"
-      :sub-title="release"
       :img-src="track.artwork"
       :img-alt="fullName"
       img-width="180"
       img-left
+      bg-variant="dark"
+      text-variant="white"
+      border-variant="dark"
     >
+      <b-card-title class="track-view__title">{{fullName}}</b-card-title>
+      <b-card-sub-title class="mb-2">{{release}}</b-card-sub-title>
       <b-card-text class="mb-0 mt-3">Duration {{ duration }}</b-card-text>
       <b-card-text class="mb-0">Key {{ track.key }}, mode {{ track.mode }}</b-card-text>
       <b-card-text>Tempo {{ bpm }}, energy {{ track.energy }}, danceability {{ track.danceability }}</b-card-text>
@@ -18,7 +21,7 @@
 </template>
 
 <script>
-import { BCard, BCardText, BLink } from 'bootstrap-vue'
+import { BCard, BCardText, BLink, BCardTitle, BCardSubTitle } from 'bootstrap-vue'
 
 export default {
   name: 'TrackView',
@@ -26,7 +29,7 @@ export default {
     track: Object
   },
   components: {
-    BCard, BCardText, BLink
+    BCard, BCardText, BLink, BCardTitle, BCardSubTitle
   },
   computed: {
     duration () {
@@ -67,5 +70,9 @@ export default {
   justify-content: center;
   flex-direction: column;
   font-size: 12px;
+
+  &__title {
+    color: #ffffff;
+  }
 }
 </style>

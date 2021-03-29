@@ -2,6 +2,9 @@
   <div class="optimizations-view">
     <b-card
       no-body
+      bg-variant="dark"
+      text-variant="white"
+      border-variant="light"
       class="mt-1 w-100"
       v-for="(optimization, index) in optimizations"
       :key="index"
@@ -10,6 +13,7 @@
         header-tag="header"
         header-bg-variant="dark"
         header-text-variant="white"
+        header-border-variant="light"
         class="p-1 optimizations-view__header"
         role="tab"
       >
@@ -42,7 +46,12 @@
             <playlist-view v-if="optimization.result" :playlist="optimization.result" class="w-50"/>
           </div>
           <div v-if="optimization.result" class="optimizations-view__controls">
-            <b-button v-if="!displayPlaylistSaveForm"  variant="primary" size="sm" @click="showSavePlaylistForm(optimization.result.name)">
+            <b-button
+              v-if="!displayPlaylistSaveForm"
+              variant="light"
+              size="sm"
+              @click="showSavePlaylistForm(optimization.result.name)"
+            >
               Save optimized playlist
             </b-button>
             <b-form v-else inline @submit.prevent="savePlaylist(optimization.result)">

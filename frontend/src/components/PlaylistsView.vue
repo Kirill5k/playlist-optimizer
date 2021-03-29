@@ -2,12 +2,16 @@
   <div class="playlists-view">
     <b-card
       no-body
+      bg-variant="dark"
+      text-variant="white"
+      border-variant="light"
       class="mt-1 w-100"
       v-for="(playlist, index) in playlists"
       :key="index"
     >
       <b-card-header
         header-bg-variant="dark"
+        header-border-variant="light"
         header-text-variant="white"
         header-tag="header"
         class="p-1 playlists-view__header"
@@ -30,14 +34,19 @@
             {{ duration(playlist) }}
           </b-card-text>
           <playlist-view :playlist="playlist"/>
-          <b-button size="sm" variant="info" v-b-toggle="'playlist-params'+index.toString()" class="mb-1">
+          <b-button
+            size="sm"
+            variant="light"
+            v-b-toggle="'playlist-params'+index.toString()"
+            class="mb-1"
+          >
             Optimize
           </b-button>
           <b-collapse :id="'playlist-params'+index.toString()">
             <b-card
-              border-variant="info"
               class="mt-1"
-              bg-variant="light"
+              border-variant="light"
+              bg-variant="dark"
               body-class="pt-3 pb-3"
             >
               <div class="d-flex justify-content-start">
