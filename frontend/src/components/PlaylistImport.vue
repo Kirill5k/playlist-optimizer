@@ -74,7 +74,7 @@
             required
             trim
             :state="areValidTracks"
-            @drop="addTrack"
+            @drop="dropFile"
           />
 
           <b-form-invalid-feedback size="sm" :state="areValidTracks">
@@ -145,13 +145,16 @@ export default {
         this.tracks = ''
       }
     },
-    addTrack (event) {
+    dropFile (event) {
       event.preventDefault()
       const files = event.dataTransfer.items
         ? Array.from(event.dataTransfer.items).filter(f => f.kind === 'file').map(f => f.getAsFile())
         : Array.from(event.dataTransfer.files)
-      const fileNames = files.map(f => f.name)
-      console.log(fileNames)
+      const fileNames = files.map(f => f.name.replace(/\.[0-9a-z]{1,5}$/i, ''))
+      const currentTracks = this.tracks && this.tracks.length > 0
+        ? this.tracks.endsWith('\n') ? this.tracks : `${this.tracks}\n`
+        : ''
+      this.tracks = currentTracks + fileNames.join('\n')
     }
   }
 }
