@@ -72,7 +72,7 @@ export default {
   font-size: 12px;
 
   &__title {
-    color: #ffffff;
+    color: #ffffff
   }
 }
 </style>
