@@ -42,6 +42,14 @@
           >
             Optimize
           </b-button>
+          <b-button
+            size="sm"
+            variant="light"
+            class="mb-1 float-right"
+            @click="copyToClipboard(playlist)"
+          >
+            <b-icon icon="clipboard-check" aria-label="Copy to clipboard"/>
+          </b-button>
           <b-collapse :id="'playlist-params'+index.toString()">
             <b-card
               class="mt-1"
@@ -173,7 +181,7 @@
 </template>
 
 <script>
-import { BCard, BCardHeader, BCollapse, BCardBody, BButton, BCardText, BFormGroup, BFormInput, BFormCheckbox } from 'bootstrap-vue'
+import { BCard, BCardHeader, BCollapse, BCardBody, BButton, BCardText, BFormGroup, BFormInput, BFormCheckbox, BIcon } from 'bootstrap-vue'
 import PlaylistView from '@/components/PlaylistView.vue'
 
 const DEFAULT_OPTIMIZATION_PARAMS = {
@@ -188,7 +196,17 @@ const DEFAULT_OPTIMIZATION_PARAMS = {
 export default {
   name: 'PlaylistsView',
   components: {
-    PlaylistView, BCard, BCardHeader, BCollapse, BCardBody, BButton, BCardText, BFormGroup, BFormInput, BFormCheckbox
+    PlaylistView,
+    BCard,
+    BCardHeader,
+    BCollapse,
+    BCardBody,
+    BButton,
+    BCardText,
+    BFormGroup,
+    BFormInput,
+    BFormCheckbox,
+    BIcon
   },
   props: {
     playlists: Array
@@ -213,6 +231,12 @@ export default {
     },
     optimizePlaylist (playlist) {
       this.$emit('optimize', { playlist, optimizationParameters: this.optimizationParams })
+    },
+    copyToClipboard (playlist) {
+      const tracks = playlist.tracks
+        .map((t, i) => `${i + 1}. ${t.artists.join(', ')} - ${t.name}`)
+        .join('\n')
+      navigator.clipboard.writeText(tracks)
     }
   }
 }
