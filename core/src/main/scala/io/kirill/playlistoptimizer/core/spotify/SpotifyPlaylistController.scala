@@ -5,9 +5,8 @@ import cats.implicits._
 import org.typelevel.log4cats.Logger
 import io.circe.generic.auto._
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
-import io.kirill.playlistoptimizer.core.common.controllers.AppController
+import io.kirill.playlistoptimizer.core.common.controllers.Controller
 import io.kirill.playlistoptimizer.core.common.errors.{MissingRequiredQueryParam, MissingSpotifySessionCookie}
-import io.kirill.playlistoptimizer.core.common.json._
 import io.kirill.playlistoptimizer.core.common.jwt.JwtEncoder
 import io.kirill.playlistoptimizer.core.playlist._
 import org.http4s.dsl.io.{OptionalQueryParamDecoderMatcher, QueryParamDecoderMatcher}
@@ -20,7 +19,7 @@ final class SpotifyPlaylistController[F[_]: Sync](
     val spotifyConfig: SpotifyConfig
 )(implicit
   logger: Logger[F]
-) extends AppController[F] {
+) extends Controller[F] {
   import SpotifyPlaylistController._
 
   private val authorizationParams = Map(
@@ -137,6 +136,6 @@ object SpotifyPlaylistController {
       jwtEncoder: JwtEncoder[F, SpotifyAccessToken],
       spotifyService: SpotifyPlaylistService[F],
       spotifyConfig: SpotifyConfig
-  ): F[AppController[F]] =
+  ): F[Controller[F]] =
     Sync[F].delay(new SpotifyPlaylistController[F](jwtEncoder, spotifyService, spotifyConfig))
 }

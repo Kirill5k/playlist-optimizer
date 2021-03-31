@@ -5,7 +5,7 @@ import java.util.UUID
 import cats.effect.IO
 import cats.effect.testing.scalatest.AsyncIOSpec
 import cats.implicits._
-import io.kirill.playlistoptimizer.core.common.controllers.AppController.UserSessionId
+import io.kirill.playlistoptimizer.core.common.controllers.Controller.UserSessionId
 import io.kirill.playlistoptimizer.core.common.errors.OptimizationNotFound
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.OptimizationAlgorithm
 import io.kirill.playlistoptimizer.core.playlist.{PlaylistBuilder, Track}

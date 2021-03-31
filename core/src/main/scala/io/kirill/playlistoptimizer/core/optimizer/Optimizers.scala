@@ -2,12 +2,13 @@ package io.kirill.playlistoptimizer.core.optimizer
 
 import cats.effect.{Concurrent, Timer}
 import cats.implicits._
+import io.kirill.playlistoptimizer.core.common.controllers.Controller
 import org.typelevel.log4cats.Logger
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.OptimizationAlgorithm
 import io.kirill.playlistoptimizer.core.playlist.Track
 
-final class Optimizers[F[_]](
-    val optimizationController: OptimizationController[F]
+final case class Optimizers[F[_]](
+    controller: Controller[F]
 )
 
 object Optimizers {
@@ -17,5 +18,5 @@ object Optimizers {
     for {
       playlistOptimizer <- Optimizer.inmemoryPlaylistOptimizer[F](alg)
       controller        <- OptimizationController.make(playlistOptimizer)
-    } yield new Optimizers(controller)
+    } yield Optimizers(controller)
 }

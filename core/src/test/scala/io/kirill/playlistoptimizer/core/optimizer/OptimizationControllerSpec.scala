@@ -7,7 +7,7 @@ import cats.effect._
 import io.circe.generic.auto._
 import io.circe.literal._
 import io.kirill.playlistoptimizer.core.ControllerSpec
-import io.kirill.playlistoptimizer.core.common.controllers.AppController
+import io.kirill.playlistoptimizer.core.common.controllers.Controller
 import io.kirill.playlistoptimizer.core.common.errors.OptimizationNotFound
 import io.kirill.playlistoptimizer.core.common.json._
 import io.kirill.playlistoptimizer.core.playlist.{Playlist, PlaylistBuilder}
@@ -18,7 +18,7 @@ import org.mockito.ArgumentCaptor
 
 
 class OptimizationControllerSpec extends ControllerSpec {
-  import AppController._
+  import Controller._
 
   val playlist = PlaylistBuilder.playlist
   val shortenedPlaylist = playlist.copy(tracks = Vector(playlist.tracks.head))

@@ -4,8 +4,7 @@ import cats.effect.Sync
 import cats.implicits._
 import org.typelevel.log4cats.Logger
 import io.circe.generic.auto._
-import io.kirill.playlistoptimizer.core.common.controllers.AppController
-import io.kirill.playlistoptimizer.core.common.json._
+import io.kirill.playlistoptimizer.core.common.controllers.Controller
 import io.kirill.playlistoptimizer.core.optimizer.OptimizationController._
 import io.kirill.playlistoptimizer.core.playlist.{Playlist, PlaylistView}
 import org.http4s.HttpRoutes
@@ -15,7 +14,7 @@ final class OptimizationController[F[_]](
 )(implicit
     F: Sync[F],
     logger: Logger[F]
-) extends AppController[F] {
+) extends Controller[F] {
 
   override def routes: HttpRoutes[F] =
     HttpRoutes.of[F] {

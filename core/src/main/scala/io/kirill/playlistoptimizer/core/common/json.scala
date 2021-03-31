@@ -11,12 +11,12 @@ import org.http4s.{EntityDecoder, EntityEncoder}
 
 import scala.util.Try
 
-object json extends JsonCodecs {
-  implicit def deriveEntityEncoder[F[_], A: Encoder]: EntityEncoder[F, A]       = jsonEncoderOf[F, A]
-  implicit def deriveEntityDecoder[F[_]: Sync, A: Decoder]: EntityDecoder[F, A] = jsonOf[F, A]
-}
+object json extends JsonCodecs
 
 trait JsonCodecs {
+
+  implicit def deriveEntityEncoder[F[_], A: Encoder]: EntityEncoder[F, A]       = jsonEncoderOf[F, A]
+  implicit def deriveEntityDecoder[F[_]: Sync, A: Decoder]: EntityDecoder[F, A] = jsonOf[F, A]
 
   implicit val oidEncoder: Encoder[OptimizationId] = deriveUnwrappedEncoder
   implicit val oidDecoder: Decoder[OptimizationId] = deriveUnwrappedDecoder

@@ -4,7 +4,7 @@ import cats.effect.concurrent.Ref
 import cats.effect.implicits._
 import cats.effect.{Concurrent, Timer}
 import cats.implicits._
-import io.kirill.playlistoptimizer.core.common.controllers.AppController.UserSessionId
+import io.kirill.playlistoptimizer.core.common.controllers.Controller.UserSessionId
 import io.kirill.playlistoptimizer.core.common.errors.OptimizationNotFound
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.OptimizationAlgorithm
 import io.kirill.playlistoptimizer.core.playlist.{Playlist, Track}

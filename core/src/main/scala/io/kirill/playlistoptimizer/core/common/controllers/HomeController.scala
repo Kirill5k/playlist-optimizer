@@ -4,7 +4,7 @@ import cats.effect._
 import org.http4s.{HttpRoutes, StaticFile}
 import java.io.File
 
-private[controllers] class HomeController[F[_]: ContextShift: Sync](blocker: Blocker) extends AppController[F] {
+private[controllers] class HomeController[F[_]: ContextShift: Sync](blocker: Blocker) extends Controller[F] {
 
   private val expectedFiles = List(".txt", ".ico", ".svg", ".png", ".json", ".js", ".css", ".map", ".html", ".webm")
 
@@ -20,7 +20,7 @@ private[controllers] class HomeController[F[_]: ContextShift: Sync](blocker: Blo
 
 object HomeController {
 
-  def make[F[_]: ContextShift: Sync](blocker: Blocker): F[AppController[F]] =
+  def make[F[_]: ContextShift: Sync](blocker: Blocker): F[Controller[F]] =
     Sync[F].delay(new HomeController[F](blocker))
 }
 

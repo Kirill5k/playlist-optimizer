@@ -9,13 +9,14 @@ import cats.implicits._
 import org.typelevel.log4cats.Logger
 import io.circe.generic.auto._
 import io.circe.syntax._
+import io.kirill.playlistoptimizer.core.common.JsonCodecs
 import io.kirill.playlistoptimizer.core.common.errors.{MissingUserSessionCookie, _}
 import org.http4s.{HttpRoutes, MessageFailure, Request, RequestCookie, Response, ResponseCookie}
 import org.http4s.dsl.Http4sDsl
 import org.http4s.circe._
 
-trait AppController[F[_]] extends Http4sDsl[F] {
-  import AppController._
+trait Controller[F[_]] extends Http4sDsl[F] with JsonCodecs {
+  import Controller._
 
   def routesWithUserSession(implicit F: Functor[F]): HttpRoutes[F] =
     userSessionMiddleware(routes)
@@ -66,7 +67,7 @@ trait AppController[F[_]] extends Http4sDsl[F] {
     }
 }
 
-object AppController {
+object Controller {
   val UserSessionCookie = "user-session"
 
   final case class ErrorResponse(message: String)

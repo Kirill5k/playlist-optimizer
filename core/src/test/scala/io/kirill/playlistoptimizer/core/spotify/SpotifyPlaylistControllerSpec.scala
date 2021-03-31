@@ -9,7 +9,7 @@ import io.circe.literal._
 import io.kirill.playlistoptimizer.core.ControllerSpec
 import io.kirill.playlistoptimizer.core.common.SpotifyConfigBuilder
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
-import io.kirill.playlistoptimizer.core.common.controllers.AppController.ErrorResponse
+import io.kirill.playlistoptimizer.core.common.controllers.Controller.ErrorResponse
 import io.kirill.playlistoptimizer.core.common.errors.{AuthenticationRequiredError, JwtDecodeError}
 import io.kirill.playlistoptimizer.core.common.json._
 import io.kirill.playlistoptimizer.core.common.jwt.JwtEncoder

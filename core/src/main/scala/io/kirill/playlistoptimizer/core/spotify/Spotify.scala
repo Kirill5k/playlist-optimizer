@@ -5,7 +5,7 @@ import cats.implicits._
 import org.typelevel.log4cats.Logger
 import io.circe.generic.auto._
 import io.kirill.playlistoptimizer.core.common.config.{JwtConfig, SpotifyConfig}
-import io.kirill.playlistoptimizer.core.common.controllers.AppController
+import io.kirill.playlistoptimizer.core.common.controllers.Controller
 import io.kirill.playlistoptimizer.core.common.jwt.JwtEncoder
 import io.kirill.playlistoptimizer.core.spotify.clients.{SpotifyRestClient, SpotifyAuthClient}
 import sttp.client3.SttpBackend
@@ -27,7 +27,7 @@ object SpotifyAccessToken {
 }
 
 final class Spotify[F[_]](
-    val playlistController: AppController[F]
+    val playlistController: Controller[F]
 )
 
 object Spotify {
