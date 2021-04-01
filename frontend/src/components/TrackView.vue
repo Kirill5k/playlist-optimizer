@@ -49,9 +49,10 @@ export default {
       return `${this.artists} - ${this.track.name}`
     },
     release () {
-      if (this.track.releaseName && this.track.releaseDate) {
-        const date = this.track.releaseDate.split('-').reverse().join('/')
-        return `${this.track.releaseName} (${this.track.releaseType}), ${date}`
+      if (this.track.release.name && this.track.release.date) {
+        const date = this.track.release.date.split('-').reverse().join('/')
+        const uid = this.track.release.uid ? ` - ${this.track.release.uid}` : ''
+        return `${this.track.release.name} (${this.track.release.kind}), ${date}${uid}`
       } else {
         return ''
       }
