@@ -24,15 +24,16 @@ class SpotifyMapperSpec extends AnyWordSpec with Matchers with Inspectors {
       Some("2012-10-10"),
       Some("day"),
       List(
-        PlaylistTrackAlbumImage("https://i.scdn.co/image/47421900e7534789603de84c03a40a826c058e45", 640, 640),
-        PlaylistTrackAlbumImage("https://i.scdn.co/image/0d447b6faae870f890dc5780cc58d9afdbc36a1d", 300, 300),
-        PlaylistTrackAlbumImage("https://i.scdn.co/image/d926b3e5f435ef3ac0874b1ff1571cf675b3ef3b", 64, 64)
+        AlbumImage("https://i.scdn.co/image/47421900e7534789603de84c03a40a826c058e45", 640, 640),
+        AlbumImage("https://i.scdn.co/image/0d447b6faae870f890dc5780cc58d9afdbc36a1d", 300, 300),
+        AlbumImage("https://i.scdn.co/image/d926b3e5f435ef3ac0874b1ff1571cf675b3ef3b", 64, 64)
       )
     ),
     List(PlaylistTrackArtist("2wY79sveU1sp5g7SokKOiI", "Sam Smith"), PlaylistTrackArtist("2wY79sveU1ABCg7SokKOiI", "Bruno Mars")),
     45.0,
     "spotify:track:track-id",
-    PlaylistTrackUrls("http://spotify.com/tracks/track-id")
+    ExternalUrls("http://spotify.com/tracks/track-id"),
+    ExternalIds(Some("ID1"))
   )
 
   val audioFeatures = SpotifyAudioFeaturesResponse("1wtxI9YhL1t4yDIwGAFljP", 5, 0, 255348.98, 98.002, 0.613, 0.807)

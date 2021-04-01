@@ -107,11 +107,12 @@ class SpotifyRestApiSpec extends ApiClientSpec {
         PlaylistTracks(Vector(PlaylistItem(PlaylistTrack(
           "4i9sYtSIlR80bxje5B3rUb",
           "I'm Not The Only One - Radio Edit",
-          PlaylistTrackAlbum("5GWoXPsTQylMuaZ84PC563", "single", "I'm Not The Only One", Some("2012-10-10"), Some("day"), List(PlaylistTrackAlbumImage("https://i.scdn.co/image/47421900e7534789603de84c03a40a826c058e45",640,640), PlaylistTrackAlbumImage("https://i.scdn.co/image/0d447b6faae870f890dc5780cc58d9afdbc36a1d",300,300), PlaylistTrackAlbumImage("https://i.scdn.co/image/d926b3e5f435ef3ac0874b1ff1571cf675b3ef3b",64,64))),
+          PlaylistTrackAlbum("5GWoXPsTQylMuaZ84PC563", "single", "I'm Not The Only One", Some("2012-10-10"), Some("day"), List(AlbumImage("https://i.scdn.co/image/47421900e7534789603de84c03a40a826c058e45",640,640), AlbumImage("https://i.scdn.co/image/0d447b6faae870f890dc5780cc58d9afdbc36a1d",300,300), AlbumImage("https://i.scdn.co/image/d926b3e5f435ef3ac0874b1ff1571cf675b3ef3b",64,64))),
           List(PlaylistTrackArtist("2wY79sveU1sp5g7SokKOiI", "Sam Smith")),
           45.0,
           "spotify:track:4i9sYtSIlR80bxje5B3rUb",
-          PlaylistTrackUrls("https://open.spotify.com/track/4i9sYtSIlR80bxje5B3rUb")
+          ExternalUrls("https://open.spotify.com/track/4i9sYtSIlR80bxje5B3rUb"),
+          ExternalIds(Some("GBUM71403920"))
         ))),105)
       ))
     }
@@ -163,11 +164,12 @@ class SpotifyRestApiSpec extends ApiClientSpec {
         PlaylistTracks(Vector(PlaylistItem(PlaylistTrack(
           "4i9sYtSIlR80bxje5B3rUb",
           "I'm Not The Only One - Radio Edit",
-          PlaylistTrackAlbum("5GWoXPsTQylMuaZ84PC563", "single", "I'm Not The Only One", Some("2012-10-10"), Some("day"), List(PlaylistTrackAlbumImage("https://i.scdn.co/image/47421900e7534789603de84c03a40a826c058e45",640,640), PlaylistTrackAlbumImage("https://i.scdn.co/image/0d447b6faae870f890dc5780cc58d9afdbc36a1d",300,300), PlaylistTrackAlbumImage("https://i.scdn.co/image/d926b3e5f435ef3ac0874b1ff1571cf675b3ef3b",64,64))),
+          PlaylistTrackAlbum("5GWoXPsTQylMuaZ84PC563", "single", "I'm Not The Only One", Some("2012-10-10"), Some("day"), List(AlbumImage("https://i.scdn.co/image/47421900e7534789603de84c03a40a826c058e45",640,640), AlbumImage("https://i.scdn.co/image/0d447b6faae870f890dc5780cc58d9afdbc36a1d",300,300), AlbumImage("https://i.scdn.co/image/d926b3e5f435ef3ac0874b1ff1571cf675b3ef3b",64,64))),
           List(PlaylistTrackArtist("2wY79sveU1sp5g7SokKOiI", "Sam Smith")),
           45.0,
           "spotify:track:4i9sYtSIlR80bxje5B3rUb",
-          PlaylistTrackUrls("https://open.spotify.com/track/4i9sYtSIlR80bxje5B3rUb")
+          ExternalUrls("https://open.spotify.com/track/4i9sYtSIlR80bxje5B3rUb"),
+          ExternalIds(Some("GBUM71403920"))
         ))),105)
       ))
     }

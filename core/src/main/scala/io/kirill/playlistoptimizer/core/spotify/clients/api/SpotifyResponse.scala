@@ -3,6 +3,10 @@ package io.kirill.playlistoptimizer.core.spotify.clients.api
 sealed trait SpotifyResponse
 
 object SpotifyResponse {
+  final case class ExternalUrls(spotify: String)
+  final case class ExternalIds(isrc: Option[String])
+  final case class AlbumImage(url: String, height: Int, width: Int)
+
   final case class SpotifyAuthResponse(
       access_token: String,
       token_type: String,
@@ -22,16 +26,16 @@ object SpotifyResponse {
   final case class SpotifyPlaylistsResponse(items: List[PlaylistsItem], total: Int) extends SpotifyResponse
 
   final case class PlaylistTrackArtist(id: String, name: String)
-  final case class PlaylistTrackAlbumImage(url: String, height: Int, width: Int)
+
   final case class PlaylistTrackAlbum(
       id: String,
       album_type: String,
       name: String,
       release_date: Option[String],
       release_date_precision: Option[String],
-      images: List[PlaylistTrackAlbumImage]
+      images: List[AlbumImage]
   )
-  final case class PlaylistTrackUrls(spotify: String)
+
   final case class PlaylistTrack(
       id: String,
       name: String,
@@ -39,7 +43,8 @@ object SpotifyResponse {
       artists: List[PlaylistTrackArtist],
       popularity: Double,
       uri: String,
-      external_urls: PlaylistTrackUrls
+      external_urls: ExternalUrls,
+      external_ids: ExternalIds
   )
   final case class PlaylistItem(track: PlaylistTrack)
   final case class PlaylistTracks(items: IndexedSeq[PlaylistItem], total: Int)
