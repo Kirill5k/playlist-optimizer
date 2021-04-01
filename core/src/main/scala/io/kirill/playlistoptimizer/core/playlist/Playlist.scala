@@ -16,12 +16,17 @@ object PlaylistSource {
   }
 }
 
+final case class Release(
+    name: String,
+    kind: String,
+    date: Option[LocalDate],
+    uid: Option[String]
+)
+
 final case class SongDetails(
     name: String,
     artists: List[String],
-    releaseName: Option[String],
-    releaseDate: Option[LocalDate],
-    releaseType: Option[String],
+    release: Release,
     artwork: Option[String]
 )
 

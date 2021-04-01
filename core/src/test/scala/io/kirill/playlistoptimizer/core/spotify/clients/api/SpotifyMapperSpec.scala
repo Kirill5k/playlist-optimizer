@@ -4,7 +4,7 @@ import java.time.LocalDate
 import java.util.concurrent.TimeUnit
 import io.kirill.playlistoptimizer.core.common.errors.{InvalidKey, InvalidMode}
 import io.kirill.playlistoptimizer.core.playlist.Key.GMinor
-import io.kirill.playlistoptimizer.core.playlist.{AudioDetails, SongDetails, SourceDetails, Track}
+import io.kirill.playlistoptimizer.core.playlist.{AudioDetails, Release, SongDetails, SourceDetails, Track}
 import io.kirill.playlistoptimizer.core.spotify.clients.api.SpotifyResponse._
 import org.scalatest.Inspectors
 import org.scalatest.matchers.must.Matchers
@@ -47,9 +47,12 @@ class SpotifyMapperSpec extends AnyWordSpec with Matchers with Inspectors {
         SongDetails(
           "I'm Not The Only One - Radio Edit",
           List("Sam Smith", "Bruno Mars"),
-          Some("I'm Not The Only One"),
-          Some(LocalDate.of(2012, 10, 10)),
-          Some("Single"),
+          Release(
+            "I'm Not The Only One",
+            "Single",
+            Some(LocalDate.of(2012, 10, 10)),
+            Some("ID1")
+          ),
           Some("https://i.scdn.co/image/47421900e7534789603de84c03a40a826c058e45")
         ),
         AudioDetails(98.002, FiniteDuration(255348, TimeUnit.MILLISECONDS), GMinor, 0.807, 0.613),

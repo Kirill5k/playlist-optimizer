@@ -31,9 +31,12 @@ trait ControllerSpec extends AnyWordSpec with MockitoSugar with ArgumentMatchers
               "artists" : [
                 "Bicep"
               ],
-              "releaseName" : "Bicep",
-              "releaseDate" : "2017-09-01",
-              "releaseType" : "album",
+              "release" : {
+                "name": "Awesome mix",
+                "date": "2020-03-17",
+                "kind": "compilation",
+                "uid": null
+              },
               "artwork": null,
               "tempo" : 129.983,
               "duration" : 269.15,

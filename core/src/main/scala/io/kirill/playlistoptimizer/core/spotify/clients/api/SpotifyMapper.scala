@@ -17,9 +17,12 @@ object SpotifyMapper {
       SongDetails(
         name = track.name,
         artists = track.artists.map(_.name),
-        releaseName = Some(track.album.name).filter(_.nonEmpty),
-        releaseDate = track.album.release_date_precision.filter(_ == "day").flatMap(_ => track.album.release_date.map(LocalDate.parse)),
-        releaseType = Some(track.album.album_type),
+        release = Release(
+          name = track.album.name,
+          kind = track.album.album_type,
+          date = track.album.release_date_precision.filter(_ == "day").flatMap(_ => track.album.release_date.map(LocalDate.parse)),
+          uid = track.external_ids.isrc
+        ),
         artwork = track.album.images.maxByOption(_.height).map(_.url)
       )
 

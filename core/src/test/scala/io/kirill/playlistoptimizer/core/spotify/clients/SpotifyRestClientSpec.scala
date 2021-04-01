@@ -52,7 +52,7 @@ class SpotifyRestClientSpec extends ApiClientSpec {
         pl.name must be("Mel")
         pl.description must be(Some("Melodic deep house and techno songs"))
         pl.tracks must have size 46
-        pl.tracks.head must be(Track(SongDetails("Glue", List("Bicep"), Some("Bicep"), Some(LocalDate.of(2017, 9, 1)), Some("album"), Some("https://i.scdn.co/image/ab67616d0000b273d4322a9004288009f6da2975")), AudioDetails(129.983, 269150.milliseconds, CMinor, 0.853,0.798),SourceDetails("spotify:track:2aJDlirz6v2a4HREki98cP", Some("https://open.spotify.com/track/2aJDlirz6v2a4HREki98cP"))))
+        pl.tracks.head must be(Track(SongDetails("Glue", List("Bicep"), Release("Bicep", "album", Some(LocalDate.of(2017, 9, 1)), Some("GBCFB1700229")), Some("https://i.scdn.co/image/ab67616d0000b273d4322a9004288009f6da2975")), AudioDetails(129.983, 269150.milliseconds, CMinor, 0.853,0.798),SourceDetails("spotify:track:2aJDlirz6v2a4HREki98cP", Some("https://open.spotify.com/track/2aJDlirz6v2a4HREki98cP"))))
         pl.source must be(PlaylistSource.Spotify)
       }
     }

@@ -1,6 +1,6 @@
 package io.kirill.playlistoptimizer.core.spotify
 
-import java.time.{Instant, LocalDate}
+import java.time.{Instant}
 import java.util.UUID
 
 import cats.effect.IO
@@ -134,7 +134,7 @@ class SpotifyPlaylistControllerSpec extends ControllerSpec {
       val request = Request[IO](uri = uri"/tracks?name=track-name").addCookie(sessionCookie)
       val response: IO[Response[IO]] = controller.routes.orNotFound.run(request)
 
-      val expected = TrackView("Glue", List("Bicep"), Some("Bicep"), Some(LocalDate.of(2017, 9, 1)), Some("album"), None, 129.983, 269.15, 5, 0, 0.613,0.807, "spotify:track:2aJDlirz6v2a4HREki98cP", Some("https://open.spotify.com/track/2aJDlirz6v2a4HREki98cP"))
+      val expected = TrackView("Glue", List("Bicep"), PlaylistBuilder.defaultRelease, None, 129.983, 269.15, 5, 0, 0.613,0.807, "spotify:track:2aJDlirz6v2a4HREki98cP", Some("https://open.spotify.com/track/2aJDlirz6v2a4HREki98cP"))
 
       verifyResponse[TrackView](response, Status.Ok, Some(expected), cookies = Map("spotify-session" -> sessionCookie.content))
       verify(jwtEncoder).decode(sessionCookie.content)
@@ -166,7 +166,7 @@ class SpotifyPlaylistControllerSpec extends ControllerSpec {
       val expected = List(PlaylistView(
         "Mel",
         Some("Melodic deep house and techno songs"),
-        List(TrackView("Glue", List("Bicep"), Some("Bicep"), Some(LocalDate.of(2017, 9, 1)), Some("album"), None, 129.983, 269.15, 5, 0, 0.613,0.807, "spotify:track:2aJDlirz6v2a4HREki98cP", Some("https://open.spotify.com/track/2aJDlirz6v2a4HREki98cP"))),
+        List(TrackView("Glue", List("Bicep"), PlaylistBuilder.defaultRelease, None, 129.983, 269.15, 5, 0, 0.613,0.807, "spotify:track:2aJDlirz6v2a4HREki98cP", Some("https://open.spotify.com/track/2aJDlirz6v2a4HREki98cP"))),
         "Spotify"
       ))
 

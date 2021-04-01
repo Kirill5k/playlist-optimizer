@@ -1,15 +1,12 @@
 package io.kirill.playlistoptimizer.core.playlist
 
-import java.time.LocalDate
 import java.util.concurrent.TimeUnit
 import scala.concurrent.duration._
 
 final case class TrackView(
     name: String,
     artists: List[String],
-    releaseName: Option[String],
-    releaseDate: Option[LocalDate],
-    releaseType: Option[String],
+    release: Release,
     artwork: Option[String],
     tempo: Double,
     duration: Double,
@@ -22,7 +19,7 @@ final case class TrackView(
 ) {
   def toDomain: Track =
     Track(
-      SongDetails(name, artists, releaseName, releaseDate, releaseType, artwork),
+      SongDetails(name, artists, release, artwork),
       AudioDetails(tempo, duration.seconds, Key(key, mode), danceability, energy),
       SourceDetails(uri, url)
     )
@@ -31,16 +28,14 @@ final case class TrackView(
 object TrackView {
   def from(track: Track): TrackView = track match {
     case Track(
-        SongDetails(name, artists, releaseName, releaseDate, releaseType, artwork),
+        SongDetails(name, artists, release, artwork),
         AudioDetails(tempo, duration, key, danceability, energy),
         SourceDetails(uri, url)
         ) =>
       TrackView(
         name,
         artists,
-        releaseName,
-        releaseDate,
-        releaseType,
+        release,
         artwork,
         tempo,
         duration.toUnit(TimeUnit.SECONDS),
