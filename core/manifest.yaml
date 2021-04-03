@@ -40,6 +40,8 @@ spec:
           envFrom:
             - secretRef:
                 name: "playlist-optimizer-secret"
+            - configMapRef:
+                name: "playlist-optimizer-config"
           resources:
             requests:
               memory: "256Mi"
