@@ -3,11 +3,10 @@ import sbt._
 object Dependencies {
 
   object Versions {
-    lazy val fs2        = "2.5.3"
     lazy val pureConfig = "0.14.1"
     lazy val circe      = "0.13.0"
-    lazy val sttp       = "3.2.0"
-    lazy val http4s     = "0.21.20"
+    lazy val sttp       = "3.2.3"
+    lazy val http4s     = "0.21.21"
     lazy val jwt        = "4.2.0"
     lazy val logback    = "1.2.3"
     lazy val log4cats   = "1.2.1"
@@ -23,8 +22,6 @@ object Dependencies {
 
     lazy val logback  = "ch.qos.logback" % "logback-classic" % Versions.log4cats
     lazy val log4cats = "org.typelevel" %% "log4cats-slf4j"  % Versions.log4cats
-
-    lazy val fs2 = "co.fs2" %% "fs2-core" % Versions.fs2
 
     lazy val circeCore          = "io.circe" %% "circe-core"           % Versions.circe
     lazy val circeLiteral       = "io.circe" %% "circe-literal"        % Versions.circe
@@ -56,7 +53,6 @@ object Dependencies {
     Libraries.pureconfigCore,
     Libraries.logback,
     Libraries.log4cats,
-    Libraries.fs2,
     Libraries.circeCore,
     Libraries.circeLiteral,
     Libraries.circeGeneric,
