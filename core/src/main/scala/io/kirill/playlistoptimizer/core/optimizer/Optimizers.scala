@@ -7,16 +7,18 @@ import org.typelevel.log4cats.Logger
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.OptimizationAlgorithm
 import io.kirill.playlistoptimizer.core.playlist.Track
 
-final case class Optimizers[F[_]](
-    controller: Controller[F]
-)
+trait Optimizers[F[_]] {
+  def controller: Controller[F]
+}
 
 object Optimizers {
   def playlist[F[_]: Concurrent: Logger: Timer](
       alg: OptimizationAlgorithm[F, Track]
   ): F[Optimizers[F]] =
     for {
-      playlistOptimizer <- Optimizer.inmemoryPlaylistOptimizer[F](alg)
-      controller        <- OptimizationController.make(playlistOptimizer)
-    } yield Optimizers(controller)
+      playlistOptimizer      <- Optimizer.inmemoryPlaylistOptimizer[F](alg)
+      optimizationController <- OptimizationController.make(playlistOptimizer)
+    } yield new Optimizers[F] {
+      def controller: Controller[F] = optimizationController
+    }
 }

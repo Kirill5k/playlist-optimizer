@@ -7,7 +7,7 @@ import io.circe.generic.auto._
 import io.kirill.playlistoptimizer.core.common.config.{JwtConfig, SpotifyConfig}
 import io.kirill.playlistoptimizer.core.common.controllers.Controller
 import io.kirill.playlistoptimizer.core.common.jwt.JwtEncoder
-import io.kirill.playlistoptimizer.core.spotify.clients.{SpotifyRestClient, SpotifyAuthClient}
+import io.kirill.playlistoptimizer.core.spotify.clients.{SpotifyAuthClient, SpotifyRestClient}
 import sttp.client3.SttpBackend
 
 import java.time.Instant
@@ -26,9 +26,9 @@ object SpotifyAccessToken {
     SpotifyAccessToken(accessToken, refreshToken, userId, Instant.now().plusSeconds(expiresIn.toLong - 60L))
 }
 
-final class Spotify[F[_]](
-    val playlistController: Controller[F]
-)
+trait Spotify[F[_]] {
+  def playlistController: Controller[F]
+}
 
 object Spotify {
   def make[F[_]: Concurrent: Logger](
@@ -37,10 +37,12 @@ object Spotify {
       jwtConfig: JwtConfig
   ): F[Spotify[F]] =
     for {
-      authClient <- SpotifyAuthClient.make(backend, spotifyConfig)
-      apiClient  <- SpotifyRestClient.make(backend, spotifyConfig)
-      service    <- SpotifyPlaylistService.make(authClient, apiClient)
-      jwtEncoder <- JwtEncoder.circeJwtEncoder[F, SpotifyAccessToken](jwtConfig)
-      controller <- SpotifyPlaylistController.make(jwtEncoder, service, spotifyConfig)
-    } yield new Spotify(controller)
+      authClient        <- SpotifyAuthClient.make(backend, spotifyConfig)
+      apiClient         <- SpotifyRestClient.make(backend, spotifyConfig)
+      service           <- SpotifyPlaylistService.make(authClient, apiClient)
+      jwtEncoder        <- JwtEncoder.circeJwtEncoder[F, SpotifyAccessToken](jwtConfig)
+      spotifyController <- SpotifyPlaylistController.make(jwtEncoder, service, spotifyConfig)
+    } yield new Spotify[F] {
+      def playlistController: Controller[F] = spotifyController
+    }
 }
