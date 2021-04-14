@@ -12,7 +12,7 @@ jobs:
       - name: Setup Cloud SDK
         uses: google-github-actions/setup-gcloud@v0.2.0
         with:
-          project_id: crypto-tracker-2020
+          project_id: playlist-optimizer
           service_account_key: ${{ secrets.GCP_SA_KEY }}
           export_default_credentials: true
 
