@@ -1,0 +1,31 @@
+name: Build and push container images
+on: [workflow_dispatch]
+
+jobs:
+
+  build-image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0.2.0
+        with:
+          project_id: crypto-tracker-2020
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+
+      - name: Authorize Docker push
+        run: gcloud auth configure-docker
+
+      - uses: olafurpg/setup-scala@v10
+        with:
+          java-version: adopt@1.15
+      - name: Build and push Core Docker image
+        run: sbt docker:publish
+
+      - name: Build and push Frontend Docker image
+        run: |-
+          docker build -t us.gcr.io/playlist-optimizer/frontend:latest -t us.gcr.io/playlist-optimizer/frontend:${GITHUB_SHA::8} frontend/
+          docker push -a us.gcr.io/playlist-optimizer/frontend
