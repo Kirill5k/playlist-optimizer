@@ -1,9 +1,10 @@
 package io.kirill.playlistoptimizer.core.spotify
 
-import cats.effect.{Concurrent, Sync}
+import cats.Monad
+import cats.effect.{Concurrent}
 import cats.implicits._
 import io.kirill.playlistoptimizer.core.playlist.{Playlist, Track}
-import io.kirill.playlistoptimizer.core.spotify.clients.{SpotifyRestClient, SpotifyAuthClient}
+import io.kirill.playlistoptimizer.core.spotify.clients.{SpotifyAuthClient, SpotifyRestClient}
 import fs2.Stream
 
 trait SpotifyPlaylistService[F[_]] {
@@ -64,5 +65,5 @@ object SpotifyPlaylistService {
       authClient: SpotifyAuthClient[F],
       apiClient: SpotifyRestClient[F]
   ): F[SpotifyPlaylistService[F]] =
-    Sync[F].delay(new LiveSpotifyPlaylistService(authClient, apiClient))
+    Monad[F].pure(new LiveSpotifyPlaylistService(authClient, apiClient))
 }

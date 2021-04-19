@@ -1,6 +1,6 @@
 package io.kirill.playlistoptimizer.core.common
 
-import cats.effect.{Blocker, ContextShift, Sync}
+import cats.effect.Sync
 import pureconfig._
 import pureconfig.generic.auto._
 import pureconfig.module.catseffect.syntax._
@@ -36,8 +36,8 @@ object config {
     def load(): AppConfig =
       ConfigSource.default.loadOrThrow[AppConfig]
 
-    def loadF[F[_]: Sync: ContextShift](blocker: Blocker): F[AppConfig] =
-      ConfigSource.default.loadF[F, AppConfig](blocker)
+    def loadF[F[_]: Sync]: F[AppConfig] =
+      ConfigSource.default.loadF[F, AppConfig]()
   }
 
 }

@@ -1,7 +1,6 @@
 package io.kirill.playlistoptimizer.core.optimizer.algorithms
 
-import cats.Parallel
-import cats.effect.Concurrent
+import cats.effect.kernel.Async
 import io.kirill.playlistoptimizer.core.optimizer.OptimizationParameters
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.operators._
 
@@ -18,7 +17,7 @@ trait OptimizationAlgorithm[F[_], A] {
 
 object OptimizationAlgorithm {
 
-  def geneticAlgorithm[F[_]: Concurrent: Parallel, A](
+  def geneticAlgorithm[F[_]: Async, A](
       crossover: Crossover[A],
       mutator: Mutator[A],
       evaluator: Evaluator[A],

@@ -3,13 +3,13 @@ import sbt._
 object Dependencies {
 
   object Versions {
-    lazy val pureConfig = "0.14.1"
+    lazy val pureConfig = "0.15.0"
     lazy val circe      = "0.13.0"
-    lazy val sttp       = "3.2.3"
-    lazy val http4s     = "0.21.21"
+    lazy val sttp       = "3.3.0-RC2"
+    lazy val http4s     = "1.0.0-M21"
     lazy val jwt        = "4.2.0"
     lazy val logback    = "1.2.3"
-    lazy val log4cats   = "1.2.1"
+    lazy val log4cats   = "2.0.1"
 
     lazy val mockito    = "1.16.32"
     lazy val scalatest  = "3.2.6"
@@ -20,7 +20,7 @@ object Dependencies {
     lazy val pureconfigCore = "com.github.pureconfig" %% "pureconfig"             % Versions.pureConfig
     lazy val pureconfigCats = "com.github.pureconfig" %% "pureconfig-cats-effect" % Versions.pureConfig
 
-    lazy val logback  = "ch.qos.logback" % "logback-classic" % Versions.log4cats
+    lazy val logback  = "ch.qos.logback" % "logback-classic" % Versions.logback
     lazy val log4cats = "org.typelevel" %% "log4cats-slf4j"  % Versions.log4cats
 
     lazy val circeCore          = "io.circe" %% "circe-core"           % Versions.circe
@@ -45,7 +45,7 @@ object Dependencies {
     lazy val mockitoScalatest = "org.mockito"       %% "mockito-scala-scalatest"       % Versions.mockito
     lazy val scalatest        = "org.scalatest"     %% "scalatest"                     % Versions.scalatest
     lazy val scalameter       = "com.storm-enroute" %% "scalameter"                    % Versions.scalameter
-    lazy val catsEffectTest   = "com.codecommit"    %% "cats-effect-testing-scalatest" % "0.4.0"
+    lazy val catsEffectTest   = "org.typelevel"    %% "cats-effect-testing-scalatest" % "1.0.0"
   }
 
   lazy val core = Seq(

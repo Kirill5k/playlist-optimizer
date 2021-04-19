@@ -1,5 +1,6 @@
 package io.kirill.playlistoptimizer.core.spotify
 
+import cats.Monad
 import cats.effect._
 import cats.implicits._
 import org.typelevel.log4cats.Logger
@@ -13,7 +14,7 @@ import org.http4s.dsl.io.{OptionalQueryParamDecoderMatcher, QueryParamDecoderMat
 import org.http4s.headers.Location
 import org.http4s.{HttpRoutes, Request, RequestCookie, ResponseCookie, Uri}
 
-final class SpotifyPlaylistController[F[_]: Sync](
+final class SpotifyPlaylistController[F[_]: Async](
     val jwtEncoder: JwtEncoder[F, SpotifyAccessToken],
     val playlistService: SpotifyPlaylistService[F],
     val spotifyConfig: SpotifyConfig
@@ -132,10 +133,10 @@ object SpotifyPlaylistController {
       tracks: List[String]
   )
 
-  def make[F[_]: Sync: Logger](
+  def make[F[_]: Async: Logger](
       jwtEncoder: JwtEncoder[F, SpotifyAccessToken],
       spotifyService: SpotifyPlaylistService[F],
       spotifyConfig: SpotifyConfig
   ): F[Controller[F]] =
-    Sync[F].delay(new SpotifyPlaylistController[F](jwtEncoder, spotifyService, spotifyConfig))
+    Monad[F].pure(new SpotifyPlaylistController[F](jwtEncoder, spotifyService, spotifyConfig))
 }

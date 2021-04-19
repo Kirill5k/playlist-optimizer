@@ -1,13 +1,13 @@
 package io.kirill.playlistoptimizer.core.spotify
 
-import cats.effect.Concurrent
+import cats.effect.kernel.Async
 import cats.implicits._
-import org.typelevel.log4cats.Logger
 import io.circe.generic.auto._
 import io.kirill.playlistoptimizer.core.common.config.{JwtConfig, SpotifyConfig}
 import io.kirill.playlistoptimizer.core.common.controllers.Controller
 import io.kirill.playlistoptimizer.core.common.jwt.JwtEncoder
 import io.kirill.playlistoptimizer.core.spotify.clients.{SpotifyAuthClient, SpotifyRestClient}
+import org.typelevel.log4cats.Logger
 import sttp.client3.SttpBackend
 
 import java.time.Instant
@@ -31,7 +31,7 @@ trait Spotify[F[_]] {
 }
 
 object Spotify {
-  def make[F[_]: Concurrent: Logger](
+  def make[F[_]: Async: Logger](
       backend: SttpBackend[F, Any],
       spotifyConfig: SpotifyConfig,
       jwtConfig: JwtConfig

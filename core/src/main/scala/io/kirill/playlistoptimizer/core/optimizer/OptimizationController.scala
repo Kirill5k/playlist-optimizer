@@ -1,18 +1,19 @@
 package io.kirill.playlistoptimizer.core.optimizer
 
-import cats.effect.Sync
+import cats.Monad
+import cats.effect.kernel.Async
 import cats.implicits._
-import org.typelevel.log4cats.Logger
 import io.circe.generic.auto._
 import io.kirill.playlistoptimizer.core.common.controllers.Controller
 import io.kirill.playlistoptimizer.core.optimizer.OptimizationController._
 import io.kirill.playlistoptimizer.core.playlist.{Playlist, PlaylistView}
 import org.http4s.HttpRoutes
+import org.typelevel.log4cats.Logger
 
 final class OptimizationController[F[_]](
     private val playlistOptimizer: Optimizer[F, Playlist]
 )(implicit
-    F: Sync[F],
+    F: Async[F],
     logger: Logger[F]
 ) extends Controller[F] {
 
@@ -66,6 +67,6 @@ object OptimizationController {
 
   final case class PlaylistOptimizationResponse(id: OptimizationId)
 
-  def make[F[_]: Sync: Logger](playlistOptimizer: Optimizer[F, Playlist]): F[OptimizationController[F]] =
-    Sync[F].delay(new OptimizationController[F](playlistOptimizer))
+  def make[F[_]: Async: Logger](playlistOptimizer: Optimizer[F, Playlist]): F[OptimizationController[F]] =
+    Monad[F].pure(new OptimizationController[F](playlistOptimizer))
 }

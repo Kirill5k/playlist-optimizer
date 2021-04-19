@@ -1,16 +1,15 @@
 package io.kirill.playlistoptimizer.core.optimizer.algorithms
 
 import cats.effect.IO
+import cats.effect.unsafe.IORuntime
 import io.kirill.playlistoptimizer.core.Benchmark
 import io.kirill.playlistoptimizer.core.optimizer.OptimizationParameters
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.operators.{Crossover, Elitism, Evaluator, Mutator, Selector}
 import io.kirill.playlistoptimizer.core.playlist.Track
 import org.scalameter.api._
 
-import scala.concurrent.ExecutionContext
-
 object GeneticAlgorithmBenchmark extends Benchmark {
-  implicit val cs = IO.contextShift(ExecutionContext.global)
+  implicit val rt = IORuntime.global
 
   val playlists = playlistGen(500, 500, 50)
 

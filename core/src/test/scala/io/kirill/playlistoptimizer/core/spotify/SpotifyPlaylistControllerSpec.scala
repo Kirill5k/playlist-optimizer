@@ -1,6 +1,6 @@
 package io.kirill.playlistoptimizer.core.spotify
 
-import java.time.{Instant}
+import java.time.Instant
 import java.util.UUID
 
 import cats.effect.IO
@@ -16,7 +16,6 @@ import io.kirill.playlistoptimizer.core.common.jwt.JwtEncoder
 import io.kirill.playlistoptimizer.core.optimizer.{Optimization, OptimizationId, OptimizationParameters}
 import io.kirill.playlistoptimizer.core.playlist._
 import org.http4s._
-import org.http4s.circe._
 import org.http4s.implicits._
 import org.mockito.ArgumentCaptor
 
@@ -226,17 +225,12 @@ class SpotifyPlaylistControllerSpec extends ControllerSpec {
       when(jwtEncoder.encode(accessToken)).thenReturn(IO.pure(sessionCookie.content))
 
       val importPlaylistRequest =
-        json"""
-        {
-          "name" : "New Imported playlist",
-          "description" : "Imported playlist with songs",
-          "tracks" : [
-            "bicep - glue",
-            "bicep - ayaya",
-            "bicep - oval"
-          ]
-        }
-      """
+        """
+        |{
+        |"name": "New Imported playlist",
+        |"description": "Imported playlist with songs",
+        |"tracks": ["bicep - glue", "bicep - ayaya", "bicep - oval"]
+        |}""".stripMargin
 
       val request = Request[IO](uri = uri"/playlists/import", method = Method.POST).withEntity(importPlaylistRequest).addCookie(sessionCookie)
       val response: IO[Response[IO]] = controller.routes.orNotFound.run(request)

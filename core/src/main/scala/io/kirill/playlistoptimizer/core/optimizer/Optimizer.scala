@@ -1,8 +1,7 @@
 package io.kirill.playlistoptimizer.core.optimizer
 
-import cats.effect.concurrent.Ref
 import cats.effect.implicits._
-import cats.effect.{Concurrent, Timer}
+import cats.effect.{Concurrent, Ref, Temporal}
 import cats.implicits._
 import io.kirill.playlistoptimizer.core.common.controllers.Controller.UserSessionId
 import io.kirill.playlistoptimizer.core.common.errors.OptimizationNotFound
@@ -66,7 +65,7 @@ private class InmemoryPlaylistOptimizer[F[_]: Concurrent](
 
 object Optimizer {
 
-  def inmemoryPlaylistOptimizer[F[_]: Concurrent: Timer](
+  def inmemoryPlaylistOptimizer[F[_]: Temporal](
       alg: OptimizationAlgorithm[F, Track],
       expiresIn: FiniteDuration = 24.hours,
       checkOnExpirationsEvery: FiniteDuration = 15.minutes
@@ -76,7 +75,7 @@ object Optimizer {
         case (res, (uid, optsMap)) =>
           res + (uid -> optsMap.filter { case (_, opt) => opt.hasCompletedLessThan(expiresIn) })
       })
-      Timer[F].sleep(checkOnExpirationsEvery) >> expire >> runExpiration(state)
+      Temporal[F].sleep(checkOnExpirationsEvery) >> expire >> runExpiration(state)
     }
 
     Ref

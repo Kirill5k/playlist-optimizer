@@ -1,8 +1,7 @@
 package io.kirill.playlistoptimizer.core.common
 
 import java.time.Instant
-
-import cats.effect.Sync
+import cats.effect.{Concurrent}
 import io.circe.generic.extras.semiauto._
 import io.circe.{Decoder, Encoder}
 import io.kirill.playlistoptimizer.core.optimizer.OptimizationId
@@ -16,7 +15,7 @@ object json extends JsonCodecs
 trait JsonCodecs {
 
   implicit def deriveEntityEncoder[F[_], A: Encoder]: EntityEncoder[F, A]       = jsonEncoderOf[F, A]
-  implicit def deriveEntityDecoder[F[_]: Sync, A: Decoder]: EntityDecoder[F, A] = jsonOf[F, A]
+  implicit def deriveEntityDecoder[F[_]: Concurrent, A: Decoder]: EntityDecoder[F, A] = jsonOf[F, A]
 
   implicit val oidEncoder: Encoder[OptimizationId] = deriveUnwrappedEncoder
   implicit val oidDecoder: Decoder[OptimizationId] = deriveUnwrappedDecoder
