@@ -2,15 +2,16 @@ package io.kirill.playlistoptimizer.core.optimizer
 
 import java.time.Instant
 import java.util.UUID
-
 import cats.effect._
 import io.circe.generic.auto._
 import io.circe.literal._
+import io.circe.syntax._
+import org.http4s.circe.CirceEntityCodec._
 import io.kirill.playlistoptimizer.core.ControllerSpec
 import io.kirill.playlistoptimizer.core.common.controllers.Controller
 import io.kirill.playlistoptimizer.core.common.errors.OptimizationNotFound
-import io.kirill.playlistoptimizer.core.common.json._
-import io.kirill.playlistoptimizer.core.playlist.{Playlist, PlaylistBuilder}
+import io.kirill.playlistoptimizer.core.optimizer.OptimizationController.PlaylistOptimizationRequest
+import io.kirill.playlistoptimizer.core.playlist.{Playlist, PlaylistBuilder, PlaylistView}
 import org.http4s._
 import org.http4s.implicits._
 import org.mockito.ArgumentCaptor
@@ -39,28 +40,14 @@ class OptimizationControllerSpec extends ControllerSpec {
       when(playlistOptimizerMock.optimize(eqTo(userSessionId), playlistCaptor.capture(), parametersCaptor.capture()))
         .thenReturn(IO.pure(optimizationId))
 
-      val requestBody =
-        s"""
-        |{
-        |"playlist": $shortenedPlaylistJson,
-        |"optimizationParameters": {
-          |"populationSize": 100,
-          |"maxGen": 1000,
-          |"crossoverProbability": 0.5,
-          |"mutationProbability": 0.2,
-          |"elitismRatio": 0.1,
-          |"shuffle": true
-        |}}""".stripMargin
+      val requestBody = PlaylistOptimizationRequest(PlaylistView.from(shortenedPlaylist), optimizationParameters).asJson
 
       val request = Request[IO](uri = uri"/playlist-optimizations", method = Method.POST)
         .withEntity(requestBody)
         .addCookie(userSessionCookie)
       val response: IO[Response[IO]] = playlistController.routesWithUserSession.orNotFound.run(request)
 
-      val expected =
-        s"""
-          |{"id": "${optimizationId.value}"}
-          |""".stripMargin
+      val expected = s"""{"id": "${optimizationId.value}"}"""
 
       verifyJsonResponse(response, Status.Created, Some(expected), Map("user-session" -> "user-session-id"))
       playlistCaptor.getValue must be(shortenedPlaylist)
@@ -156,7 +143,7 @@ class OptimizationControllerSpec extends ControllerSpec {
     "set new user session cookie if none present" in {
       when(playlistOptimizerMock.delete(any[UserSessionId], eqTo(optimizationId))).thenReturn(IO.unit)
 
-      val request                    = Request[IO](uri = uri"/playlist-optimizations/607995e0-8e3a-11ea-bc55-0242ac130003", method = Method.DELETE)
+      val request = Request[IO](uri = uri"/playlist-optimizations/607995e0-8e3a-11ea-bc55-0242ac130003", method = Method.DELETE)
       val response: IO[Response[IO]] = playlistController.routesWithUserSession.orNotFound.run(request)
 
       val executedResponse = response.unsafeRunSync()

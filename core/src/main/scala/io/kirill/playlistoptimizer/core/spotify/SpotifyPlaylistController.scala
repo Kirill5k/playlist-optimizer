@@ -12,6 +12,7 @@ import io.kirill.playlistoptimizer.core.common.jwt.JwtEncoder
 import io.kirill.playlistoptimizer.core.playlist._
 import org.http4s.dsl.io.{OptionalQueryParamDecoderMatcher, QueryParamDecoderMatcher}
 import org.http4s.headers.Location
+import org.http4s.circe.CirceEntityCodec._
 import org.http4s.{HttpRoutes, Request, RequestCookie, ResponseCookie, Uri}
 
 final class SpotifyPlaylistController[F[_]: Async](

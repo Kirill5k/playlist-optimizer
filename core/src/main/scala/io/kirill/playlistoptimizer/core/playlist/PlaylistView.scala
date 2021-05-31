@@ -52,7 +52,7 @@ object TrackView {
 final case class PlaylistView(
     name: String,
     description: Option[String],
-    tracks: Seq[TrackView],
+    tracks: List[TrackView],
     source: String
 ) {
   def toDomain: Playlist = Playlist(name, description, tracks.map(_.toDomain).toVector, PlaylistSource(source))
@@ -63,7 +63,7 @@ object PlaylistView {
     PlaylistView(
       playlist.name,
       playlist.description,
-      playlist.tracks.map(TrackView.from),
+      playlist.tracks.map(TrackView.from).toList,
       playlist.source.toString
     )
 }

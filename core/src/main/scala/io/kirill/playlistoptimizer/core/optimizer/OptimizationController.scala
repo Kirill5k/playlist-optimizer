@@ -8,6 +8,7 @@ import io.kirill.playlistoptimizer.core.common.controllers.Controller
 import io.kirill.playlistoptimizer.core.optimizer.OptimizationController._
 import io.kirill.playlistoptimizer.core.playlist.{Playlist, PlaylistView}
 import org.http4s.HttpRoutes
+import org.http4s.circe.CirceEntityCodec._
 import org.typelevel.log4cats.Logger
 
 final class OptimizationController[F[_]](

@@ -35,7 +35,8 @@ trait ControllerSpec extends AnyWordSpec with MockitoSugar with ArgumentMatchers
     |"energy": 0.807,
     |"uri": "spotify:track:2aJDlirz6v2a4HREki98cP",
     |"url": "https://open.spotify.com/track/2aJDlirz6v2a4HREki98cP"
-    |}]}""".stripMargin.replaceAll("\n", "")
+    |}]
+    |}""".stripMargin
 
   def verifyResponse[A](
       actual: IO[Response[IO]],
