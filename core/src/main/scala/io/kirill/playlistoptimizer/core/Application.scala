@@ -11,7 +11,7 @@ import io.kirill.playlistoptimizer.core.optimizer.algorithms.operators._
 import io.kirill.playlistoptimizer.core.playlist.Track
 import io.kirill.playlistoptimizer.core.spotify.Spotify
 import org.http4s.server.Router
-import org.http4s.server.blaze.BlazeServerBuilder
+import org.http4s.blaze.server.BlazeServerBuilder
 import org.http4s.syntax.kleisli._
 
 import scala.concurrent.ExecutionContext
