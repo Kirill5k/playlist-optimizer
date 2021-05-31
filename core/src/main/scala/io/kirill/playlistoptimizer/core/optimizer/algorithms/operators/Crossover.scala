@@ -6,11 +6,11 @@ import io.kirill.playlistoptimizer.core.utils.collections._
 import scala.util.Random
 
 sealed trait Crossover[A] {
-  def cross(p1: IndexedSeq[A], p2: IndexedSeq[A])(implicit r: Random): IndexedSeq[A]
+  def cross(par1: IndexedSeq[A], par2: IndexedSeq[A])(implicit r: Random): IndexedSeq[A]
 
-  def cross(p1: IndexedSeq[A], p2: IndexedSeq[A], crossoverProbability: Double)(implicit r: Random): IndexedSeq[A] = {
+  def cross(par1: IndexedSeq[A], par2: IndexedSeq[A], crossoverProbability: Double)(implicit r: Random): IndexedSeq[A] = {
     val n = r.nextDouble()
-    if (n < crossoverProbability) cross(p1, p2) else p1
+    if (n < crossoverProbability) cross(par1, par2) else par1
   }
 }
 
@@ -28,11 +28,11 @@ object Crossover {
       go(i, 1)
     }
 
-    override def cross(p1: IndexedSeq[Track], p2: IndexedSeq[Track])(implicit r: Random): IndexedSeq[Track] = {
+    override def cross(par1: IndexedSeq[Track], par2: IndexedSeq[Track])(implicit r: Random): IndexedSeq[Track] = {
       var i                = 0
       var bestStreakLength = 0
       var bestStreakPos    = 0
-      val tracks           = p1.toArray
+      val tracks           = par1.toArray
       while (i < tracks.length && bestStreakPos + bestStreakLength < tracks.length) {
         val newStreakLength = getStreakLength(i, tracks)
         if (newStreakLength > bestStreakLength) {
@@ -42,12 +42,12 @@ object Crossover {
         i += 1
       }
 
-      val bestSeq = p1.slice(bestStreakPos, bestStreakPos + bestStreakLength)
+      val bestSeq = par1.slice(bestStreakPos, bestStreakPos + bestStreakLength)
 
-      val sliceSize     = p1.size / 2
+      val sliceSize     = par1.size / 2
       val slicedBestSeq = if (bestStreakLength <= sliceSize) bestSeq else cut(bestSeq, sliceSize)
 
-      val (left, right) = p2.splitAt(bestStreakPos + slicedBestSeq.size / 2)
+      val (left, right) = par2.splitAt(bestStreakPos + slicedBestSeq.size / 2)
       val bestSeqGenes = slicedBestSeq.toSet
       left.filterNot(bestSeqGenes.contains) ++ slicedBestSeq ++ right.filterNot(bestSeqGenes.contains)
     }
@@ -59,13 +59,13 @@ object Crossover {
   }
 
   implicit def threeWaySplitCrossover[A]: Crossover[A] = new Crossover[A] {
-    override def cross(p1: IndexedSeq[A], p2: IndexedSeq[A])(implicit r: Random): IndexedSeq[A] = {
-      val middle             = p1.size / 2
+    override def cross(par1: IndexedSeq[A], par2: IndexedSeq[A])(implicit r: Random): IndexedSeq[A] = {
+      val middle             = par1.size / 2
       val point1: Int        = r.nextInt(middle)
       val point2: Int        = r.nextInt(middle) + middle
-      val (left, mid, right) = p1.splitInThree(point1, point2)
+      val (left, mid, right) = par1.splitInThree(point1, point2)
       val midGenes = mid.toSet
-      left ++ p2.filter(midGenes.contains) ++ right
+      left ++ par2.filter(midGenes.contains) ++ right
     }
   }
 }

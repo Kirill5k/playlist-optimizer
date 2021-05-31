@@ -5,18 +5,18 @@ import io.kirill.playlistoptimizer.core.playlist.{Key, Track}
 final case class Fitness(value: BigDecimal) extends AnyVal
 
 sealed trait FitnessCalculation[A] {
-  def evaluate(ind1: A, ind2: A): Double
+  def evaluate(gene1: A, gene2: A): Double
 }
 
 object HarmonicSeqBasedTracksFitnessCalculation extends FitnessCalculation[Track] {
-  override def evaluate(ind1: Track, ind2: Track): Double =
-    math.pow(Key.distance(ind1.audio.key, ind2.audio.key).toDouble, 2.0)
+  override def evaluate(gene1: Track, gene2: Track): Double =
+    math.pow(Key.distance(gene1.audio.key, gene2.audio.key).toDouble, 2.0)
 }
 
 object EnergyFlowBasedTracksFitnessCalculation extends FitnessCalculation[Track] {
-  override def evaluate(ind1: Track, ind2: Track): Double = {
-    val energy       = math.abs(ind1.audio.energy * 1000 - ind2.audio.energy * 1000)
-    val danceability = math.abs(ind1.audio.danceability * 1000 - ind2.audio.danceability * 1000)
+  override def evaluate(gene1: Track, gene2: Track): Double = {
+    val energy       = math.abs(gene1.audio.energy * 1000 - gene2.audio.energy * 1000)
+    val danceability = math.abs(gene1.audio.danceability * 1000 - gene2.audio.danceability * 1000)
     (energy + danceability) / 10
   }
 }
