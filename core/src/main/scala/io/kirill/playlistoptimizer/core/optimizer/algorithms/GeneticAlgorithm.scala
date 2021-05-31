@@ -42,10 +42,10 @@ final class GeneticAlgorithm[F[_], A](
       prob = params.crossoverProbability
       crossed <- F
         .parTraverseN(Int.MaxValue)(pairs.toList) { case (p1, p2) =>
-          (
+          List(
             F.delay(crossover.cross(p1, p2, prob)),
             F.delay(crossover.cross(p2, p1, prob))
-          ).mapN((c1, c2) => List(c1, c2))
+          ).sequence
         }
         .map(_.flatten)
       mutated <- F.parTraverseN(Int.MaxValue)(crossed)(i => F.delay(mutator.mutate(i, params.mutationProbability)))
