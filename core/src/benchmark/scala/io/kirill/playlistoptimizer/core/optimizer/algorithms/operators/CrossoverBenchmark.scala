@@ -2,6 +2,7 @@ package io.kirill.playlistoptimizer.core.optimizer.algorithms.operators
 
 import io.kirill.playlistoptimizer.core.Benchmark
 import io.kirill.playlistoptimizer.core.playlist.{Playlist, Track}
+import org.scalameter.KeyValue
 import org.scalameter.api._
 
 object CrossoverBenchmark extends Benchmark {
@@ -12,7 +13,7 @@ object CrossoverBenchmark extends Benchmark {
     val crossover = Crossover.threeWaySplitCrossover[Track]
 
     measure method "cross" in {
-      val ctx = Context(exec.benchRuns -> 2500, exec.independentSamples -> 50)
+      val ctx = Context(KeyValue(exec.benchRuns -> 2500), KeyValue(exec.independentSamples -> 50))
       using(playlists).config(ctx).in { pl =>
         val _ = crossover.cross(pl.tracks, rand.shuffle(pl.tracks))
       }
@@ -23,7 +24,7 @@ object CrossoverBenchmark extends Benchmark {
     val crossover = Crossover.bestKeySequenceTrackCrossover
 
     measure method "cross" in {
-      val ctx = Context(exec.benchRuns -> 2500, exec.independentSamples -> 50)
+      val ctx = Context(KeyValue(exec.benchRuns -> 2500), KeyValue(exec.independentSamples -> 50))
       using(playlists).config(ctx).in { pl =>
         val _ = crossover.cross(pl.tracks, rand.shuffle(pl.tracks))
       }
