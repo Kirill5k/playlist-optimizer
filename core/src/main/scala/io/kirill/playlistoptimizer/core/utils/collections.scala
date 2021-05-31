@@ -18,10 +18,5 @@ object collections {
         (l, m, r)
       }
     }
-
-    def swap(pos1: Int, pos2: Int): IndexedSeq[A] =
-      if (pos1 >= seq.size || pos2 >= seq.size) throw new IllegalArgumentException("pos cannot be greater than size")
-      else if (pos1 == pos2) seq
-      else seq.updated(pos1, seq(pos2)).updated(pos2, seq(pos1))
   }
 }

@@ -38,21 +38,5 @@ class CollectionOpsSpec extends AnyWordSpec with Matchers with Inspectors {
       val result = List(1, 2, 3, 4, 5, 6, 7, 8).pairs
       result must be (List((1, 2), (3, 4), (5, 6), (7, 8)))
     }
-
-    "swap elements in indexed seq" in {
-      val result = Vector(1, 2, 3, 4, 5, 6, 7).swap(2, 5)
-      result must contain theSameElementsInOrderAs (Vector(1, 2, 6, 4, 5, 3, 7))
-    }
-
-    "return same vector when pos1 == pos2" in {
-      val result = Vector(1, 2, 3, 4, 5, 6, 7).swap(2, 2)
-      result must contain theSameElementsInOrderAs (Vector(1, 2, 3, 4, 5, 6, 7))
-    }
-
-    "throw exception when pos is greater than size" in {
-      the [IllegalArgumentException] thrownBy {
-        Vector(1, 2, 3, 4, 5, 6, 7).swap(2, 10)
-      } must have message "pos cannot be greater than size"
-    }
   }
 }
