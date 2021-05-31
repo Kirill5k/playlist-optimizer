@@ -2,7 +2,7 @@ import com.typesafe.sbt.packager.docker._
 
 ThisBuild / organization := "io.github.kirill5k"
 ThisBuild / version := scala.sys.process.Process("git rev-parse HEAD").!!.trim.slice(0, 7)
-ThisBuild / scalaVersion := "2.13.5"
+ThisBuild / scalaVersion := "2.13.6"
 
 lazy val noPublish = Seq(
   publish := {},
