@@ -35,21 +35,22 @@ final private class RouletteWheelSelector[A] extends Selector[A] {
       .sortBy(_._2.value)
       .map { case (i, f) => (i, 100 / f.value) }
 
+    val fTotal = popByFitness.map(_._2).sum
+
     @tailrec
-    def go(newPop: List[IndexedSeq[A]], remPop: Seq[(IndexedSeq[A], BigDecimal)]): List[IndexedSeq[A]] =
+    def go(newPop: List[IndexedSeq[A]], remPop: Seq[(IndexedSeq[A], BigDecimal)], f: BigDecimal): List[IndexedSeq[A]] =
       if (remPop.isEmpty || newPop.size >= populationLimit) newPop
       else {
-        val (pickedInd, remaining) = pickOne(remPop)
-        go(pickedInd :: newPop, remaining)
+        val ((pickedInd, indFitness), remaining) = pickOne(remPop, f)
+        go(pickedInd :: newPop, remaining, f - indFitness)
       }
-    go(List(), popByFitness).reverse.pairs
+    go(List(), popByFitness, fTotal).reverse.pairs
   }
 
   private def pickOne(
-      popByFitness: Seq[(IndexedSeq[A], BigDecimal)]
-  )(implicit r: Random): (IndexedSeq[A], Seq[(IndexedSeq[A], BigDecimal)]) = {
-    val fTotal = popByFitness.map(_._2).sum
-
+      popByFitness: Seq[(IndexedSeq[A], BigDecimal)],
+      fTotal: BigDecimal
+  )(implicit r: Random): ((IndexedSeq[A], BigDecimal), Seq[(IndexedSeq[A], BigDecimal)]) = {
     var remFitness = BigDecimal(1.0)
 
     val n = r.nextDouble()
@@ -63,11 +64,11 @@ final private class RouletteWheelSelector[A] extends Selector[A] {
       .indexWhere(_._2 < n, 0) - 1
 
     if (i >= 0) {
-      val ind    = popByFitness(i)._1
+      val ind    = popByFitness(i)
       val remPop = popByFitness.take(i) ++ popByFitness.drop(i + 1)
       (ind, remPop)
     } else {
-      (popByFitness.head._1, popByFitness.tail)
+      (popByFitness.head, popByFitness.tail)
     }
   }
 }
