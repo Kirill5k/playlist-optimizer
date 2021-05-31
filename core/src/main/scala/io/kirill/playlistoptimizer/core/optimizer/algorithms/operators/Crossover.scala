@@ -5,7 +5,6 @@ import io.kirill.playlistoptimizer.core.utils.collections._
 
 import scala.util.Random
 
-
 sealed trait Crossover[A] {
   def cross(p1: IndexedSeq[A], p2: IndexedSeq[A])(implicit r: Random): IndexedSeq[A]
 
@@ -18,50 +17,55 @@ sealed trait Crossover[A] {
 object Crossover {
   implicit def bestKeySequenceTrackCrossover: Crossover[Track] = new Crossover[Track] {
 
-    override def cross(p1: IndexedSeq[Track], p2: IndexedSeq[Track])(implicit r: Random): IndexedSeq[Track] = {
-      val (bestSeq, seqIndex) = p1.tails.take(p1.size).zipWithIndex.foldLeft[(IndexedSeq[Track], Int)]((Vector(), -1)) {
-        case ((currentBest, bestIndex), (tail, index)) =>
-          if (currentBest.size >= tail.size) (currentBest, bestIndex)
-          else {
-            val newBest = getStreak(tail)
-            if (newBest.size > currentBest.size) (newBest, index)
-            else (currentBest, bestIndex)
-          }
-      }
-
-      val sliceSize = p1.size / 2
-      val slicedBestSeq = if (bestSeq.size <= sliceSize) bestSeq else cut(bestSeq, sliceSize)
-
-      val (left, right) = p2.splitAt(seqIndex + slicedBestSeq.size/2)
-      left.filterNot(slicedBestSeq.contains) ++ slicedBestSeq ++ right.filterNot(slicedBestSeq.contains)
+    private def getStreakLength(i: Int, tracks: Array[Track]): Int = {
+      @scala.annotation.tailrec
+      def go(currentPos: Int, length: Int): Int =
+        if (currentPos + 1 >= tracks.length) length
+        else {
+          val distance = Key.distance(tracks(currentPos).audio.key, tracks(currentPos + 1).audio.key)
+          if (distance <= 1) go(currentPos + 1, length + 1) else length
+        }
+      go(i, 1)
     }
 
-    private def getStreak(ts: IndexedSeq[Track]): IndexedSeq[Track] = {
-      @scala.annotation.tailrec
-      def go(combo: IndexedSeq[Track], remaining: IndexedSeq[Track], previous: Track): IndexedSeq[Track] = {
-        val newCombo = combo :+ previous
-        if (remaining.isEmpty) newCombo
-        else {
-          val distance = Key.distance(previous.audio.key, remaining.head.audio.key)
-          if (distance <= 1) go(newCombo, remaining.tail, remaining.head) else newCombo
+    override def cross(p1: IndexedSeq[Track], p2: IndexedSeq[Track])(implicit r: Random): IndexedSeq[Track] = {
+      var i                = 0
+      var bestStreakLength = 0
+      var bestStreakPos    = 0
+      val tracks           = p1.toArray
+      while (i < tracks.length && bestStreakPos + bestStreakLength < tracks.length) {
+        val newStreakLength = getStreakLength(i, tracks)
+        if (newStreakLength > bestStreakLength) {
+          bestStreakLength = newStreakLength
+          bestStreakPos = i
         }
+        i += 1
       }
-      go(Vector(), ts.tail, ts.head)
+
+      val bestSeq = p1.slice(bestStreakPos, bestStreakPos + bestStreakLength)
+
+      val sliceSize     = p1.size / 2
+      val slicedBestSeq = if (bestStreakLength <= sliceSize) bestSeq else cut(bestSeq, sliceSize)
+
+      val (left, right) = p2.splitAt(bestStreakPos + slicedBestSeq.size / 2)
+      val bestSeqGenes = slicedBestSeq.toSet
+      left.filterNot(bestSeqGenes.contains) ++ slicedBestSeq ++ right.filterNot(bestSeqGenes.contains)
     }
 
     private def cut(ts: IndexedSeq[Track], sliceSize: Int)(implicit r: Random): IndexedSeq[Track] = {
       val slicePoint = r.nextInt(sliceSize / 2)
-      ts.slice(slicePoint, slicePoint+sliceSize)
+      ts.slice(slicePoint, slicePoint + sliceSize)
     }
   }
 
   implicit def threeWaySplitCrossover[A]: Crossover[A] = new Crossover[A] {
     override def cross(p1: IndexedSeq[A], p2: IndexedSeq[A])(implicit r: Random): IndexedSeq[A] = {
-      val middle = p1.size / 2
-      val point1: Int = r.nextInt(middle)
-      val point2: Int = r.nextInt(middle) + middle
+      val middle             = p1.size / 2
+      val point1: Int        = r.nextInt(middle)
+      val point2: Int        = r.nextInt(middle) + middle
       val (left, mid, right) = p1.splitInThree(point1, point2)
-      left ++ p2.filter(mid.contains) ++ right
+      val midGenes = mid.toSet
+      left ++ p2.filter(midGenes.contains) ++ right
     }
   }
 }
