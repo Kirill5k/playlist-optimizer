@@ -6,9 +6,10 @@ import fs2.Stream
 import io.kirill.playlistoptimizer.core.optimizer.OptimizationParameters
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.operators._
 
+import scala.reflect.ClassTag
 import scala.util.Random
 
-final class GeneticAlgorithm[F[_], A](
+final class GeneticAlgorithm[F[_], A: ClassTag](
     private val crossover: Crossover[A],
     private val mutator: Mutator[A],
     private val evaluator: Evaluator[A],
@@ -22,21 +23,28 @@ final class GeneticAlgorithm[F[_], A](
       optimizable: Optimizable[A],
       params: OptimizationParameters
   )(implicit rand: Random): F[(IndexedSeq[A], BigDecimal)] = {
-    val items: IndexedSeq[A] = optimizable.repr.toVector
-    val initialPopulation = List.fill(params.populationSize)(if (params.shuffle) rand.shuffle(items) else items)
     Stream
       .range[F, Int](0, params.maxGen)
-      .evalScan(initialPopulation)((currPop, _) => singleGeneration(currPop, params))
+      .evalScan(initializePopulation(optimizable, params))((currPop, _) => singleGeneration(currPop, params))
       .compile
       .lastOrError
       .map(evaluator.evaluatePopulation)
-      .map(_.map(p => (p._1, p._2.value)).minBy(_._2))
+      .map(_.minBy(_._2.value))
+      .map { case (res, f) => (res.toVector, f.value) }
+  }
+
+  private def initializePopulation(
+      optimizable: Optimizable[A],
+      params: OptimizationParameters
+  )(implicit rand: Random): List[Array[A]] = {
+    val indGen = () => if (params.shuffle) rand.shuffle(optimizable.repr.toVector).toArray else optimizable.repr
+    List.fill(params.populationSize)(indGen())
   }
 
   private def singleGeneration(
-      population: List[IndexedSeq[A]],
+      population: List[Array[A]],
       params: OptimizationParameters
-  )(implicit rand: Random): F[List[IndexedSeq[A]]] =
+  )(implicit rand: Random): F[List[Array[A]]] =
     for {
       fitpop <- F.delay(evaluator.evaluatePopulation(population))
       elites <- F.delay(elitism.select(fitpop, params.elitismRatio))

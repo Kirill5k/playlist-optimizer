@@ -10,7 +10,7 @@ import scala.util.Random
 
 class MutatorSpec extends AnyWordSpec with Matchers {
 
-  val tracks = Vector(
+  val tracks = Array(
     track("song 1", BMajor),
     track("song 2", EMajor),
     track("song 3", EMajor),

@@ -18,7 +18,7 @@ object MutatorBenchmark extends Benchmark {
     measure method "mutate" in {
       val ctx = Context(KeyValue(exec.benchRuns -> 2500), KeyValue(exec.independentSamples -> 50))
       using(playlistsVsMutation).config(ctx).in { case (pl, mutationFactor) =>
-        val _ = mutator.mutate(pl.tracks, mutationFactor)
+        val _ = mutator.mutate(pl.repr, mutationFactor)
       }
     }
   }
@@ -29,7 +29,7 @@ object MutatorBenchmark extends Benchmark {
     measure method "mutate" in {
       val ctx = Context(KeyValue(exec.benchRuns -> 10000), KeyValue(exec.independentSamples -> 100))
       using(playlistsVsMutation).config(ctx).in { case (pl, mutationFactor) =>
-        val _ = mutator.mutate(pl.tracks, mutationFactor)
+        val _ = mutator.mutate(pl.repr, mutationFactor)
       }
     }
   }

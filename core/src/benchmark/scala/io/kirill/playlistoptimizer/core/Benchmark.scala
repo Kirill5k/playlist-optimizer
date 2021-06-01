@@ -46,7 +46,7 @@ trait Benchmark extends Bench[Double] {
       startSize: Int = 50,
       endSize: Int = 1000,
       sizeStep: Int = 50
-  ): Gen[Seq[(IndexedSeq[Int], Fitness)]] =
+  ): Gen[Seq[(Array[Int], Fitness)]] =
     Gen.range("populationSize")(startSize, endSize, sizeStep)
-      .map(ps => List.fill(ps)((Vector(0), Fitness(rand.nextDouble()))))
+      .map(ps => List.fill(ps)((Array.empty[Int], Fitness(rand.nextDouble()))))
 }

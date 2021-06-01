@@ -15,7 +15,7 @@ object EvaluatorBenchmark extends Benchmark  {
     measure method "evaluate" in {
       val ctx = Context(KeyValue(exec.benchRuns -> 25000), KeyValue(exec.independentSamples -> 100))
       using(playlists).config(ctx).in { pl =>
-        val _ = evaluator.evaluateIndividual(pl.tracks)
+        val _ = evaluator.evaluateIndividual(pl.repr)
       }
     }
   }

@@ -4,6 +4,7 @@ import cats.effect.kernel.Async
 import io.kirill.playlistoptimizer.core.optimizer.OptimizationParameters
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.operators._
 
+import scala.reflect.ClassTag
 import scala.util.Random
 
 trait Optimizable[A] {
@@ -21,7 +22,7 @@ trait OptimizationAlgorithm[F[_], A] {
 
 object OptimizationAlgorithm {
 
-  def geneticAlgorithm[F[_]: Async, A](
+  def geneticAlgorithm[F[_]: Async, A: ClassTag](
       crossover: Crossover[A],
       mutator: Mutator[A],
       evaluator: Evaluator[A],

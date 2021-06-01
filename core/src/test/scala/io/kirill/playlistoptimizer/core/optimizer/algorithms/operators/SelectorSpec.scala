@@ -12,19 +12,19 @@ class SelectorSpec extends AnyWordSpec with Matchers {
       implicit val r = new Random(42)
 
       val population = List(
-        (Vector(1), Fitness(4.0)),
-        (Vector(2), Fitness(2.0)),
-        (Vector(3), Fitness(5.0)),
-        (Vector(4), Fitness(10.0)),
-        (Vector(5), Fitness(1.0)),
-        (Vector(6), Fitness(20.0))
+        (Array(1), Fitness(4.0)),
+        (Array(2), Fitness(2.0)),
+        (Array(3), Fitness(5.0)),
+        (Array(4), Fitness(10.0)),
+        (Array(5), Fitness(1.0)),
+        (Array(6), Fitness(20.0))
       )
 
       val selector = Selector.fitnessBasedSelector[Int]
 
       val newPopulation = selector.selectPairs(population, 4)
 
-      newPopulation must be (List((Vector(5), Vector(2)), (Vector(1), Vector(3))))
+      newPopulation.map { case (i1, i2) => (i1.head, i2.head) } mustBe List((5, 2), (1, 3))
     }
   }
 
@@ -34,19 +34,19 @@ class SelectorSpec extends AnyWordSpec with Matchers {
       implicit val r = new Random(42)
 
       val population = List(
-        (Vector(1), Fitness(4.0)),
-        (Vector(2), Fitness(2.0)),
-        (Vector(3), Fitness(5.0)),
-        (Vector(4), Fitness(10.0)),
-        (Vector(5), Fitness(1.0)),
-        (Vector(6), Fitness(20.0))
+        (Array(1), Fitness(4.0)),
+        (Array(2), Fitness(2.0)),
+        (Array(3), Fitness(5.0)),
+        (Array(4), Fitness(10.0)),
+        (Array(5), Fitness(1.0)),
+        (Array(6), Fitness(20.0))
       )
 
       val selector = Selector.rouletteWheelSelector[Int]
 
       val newPopulation = selector.selectPairs(population, 4)
 
-      newPopulation must be (List((Vector(5), Vector(2)), (Vector(3), Vector(4))))
+      newPopulation.map { case (i1, i2) => (i1.head, i2.head) } mustBe List((5, 2), (3, 4))
     }
   }
 }

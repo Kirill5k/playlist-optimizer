@@ -6,7 +6,7 @@ import org.scalameter.api._
 
 object ElitismBenchmark extends Benchmark  {
 
-  val populations: Gen[Seq[(IndexedSeq[Int], Fitness)]] = evaluatedPopulationGen()
+  val populations: Gen[Seq[(Array[Int], Fitness)]] = evaluatedPopulationGen()
 
   performance of "elitism" in {
     val elitism = Elitism.simple[Int]

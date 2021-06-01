@@ -7,17 +7,17 @@ import scala.util.Random
 
 trait Selector[A] {
   def selectPairs(
-      population: Seq[(IndexedSeq[A], Fitness)],
+      population: Seq[(Array[A], Fitness)],
       populationLimit: Int
-  )(implicit r: Random): Seq[(IndexedSeq[A], IndexedSeq[A])]
+  )(implicit r: Random): Seq[(Array[A], Array[A])]
 }
 
 final private class FitnessBasedSelector[A] extends Selector[A] {
 
   override def selectPairs(
-      population: Seq[(IndexedSeq[A], Fitness)],
+      population: Seq[(Array[A], Fitness)],
       populationLimit: Int
-  )(implicit r: Random): Seq[(IndexedSeq[A], IndexedSeq[A])] =
+  )(implicit r: Random): Seq[(Array[A], Array[A])] =
     population
       .sortBy(_._2.value)
       .map(_._1)
@@ -28,9 +28,9 @@ final private class FitnessBasedSelector[A] extends Selector[A] {
 final private class RouletteWheelSelector[A] extends Selector[A] {
 
   override def selectPairs(
-      population: Seq[(IndexedSeq[A], Fitness)],
+      population: Seq[(Array[A], Fitness)],
       populationLimit: Int
-  )(implicit r: Random): Seq[(IndexedSeq[A], IndexedSeq[A])] = {
+  )(implicit r: Random): Seq[(Array[A], Array[A])] = {
     val popByFitness = population
       .sortBy(_._2.value)
       .map { case (i, f) => (i, 100 / f.value) }
@@ -38,7 +38,7 @@ final private class RouletteWheelSelector[A] extends Selector[A] {
     val fTotal = popByFitness.map(_._2).sum
 
     @tailrec
-    def go(newPop: List[IndexedSeq[A]], remPop: Seq[(IndexedSeq[A], BigDecimal)], f: BigDecimal): List[IndexedSeq[A]] =
+    def go(newPop: List[Array[A]], remPop: Seq[(Array[A], BigDecimal)], f: BigDecimal): List[Array[A]] =
       if (remPop.isEmpty || newPop.size >= populationLimit) newPop
       else {
         val ((pickedInd, indFitness), remaining) = pickOne(remPop, f)
@@ -48,9 +48,9 @@ final private class RouletteWheelSelector[A] extends Selector[A] {
   }
 
   private def pickOne(
-      popByFitness: Seq[(IndexedSeq[A], BigDecimal)],
+      popByFitness: Seq[(Array[A], BigDecimal)],
       fTotal: BigDecimal
-  )(implicit r: Random): ((IndexedSeq[A], BigDecimal), Seq[(IndexedSeq[A], BigDecimal)]) = {
+  )(implicit r: Random): ((Array[A], BigDecimal), Seq[(Array[A], BigDecimal)]) = {
     var remFitness = BigDecimal(1.0)
 
     val n = r.nextDouble()

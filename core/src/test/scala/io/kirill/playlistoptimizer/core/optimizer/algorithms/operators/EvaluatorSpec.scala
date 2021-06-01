@@ -79,9 +79,9 @@ class EvaluatorSpec extends AnyWordSpec with Matchers with Inspectors {
       keys: List[Key] = Nil,
       energies: List[Double] = Nil,
       danceabilities: List[Double] = Nil
-  ): IndexedSeq[Track] = {
+  ): Array[Track] = {
     keys.zipAll(energies, EMajor, 0.5).zipAll(danceabilities, (EMajor, 0.5), 0.5).zipWithIndex.map {
       case (((key, en), dance), i) => track(s"song $i", key = key, energy = en, danceability = dance)
-    }.toVector
+    }.toArray
   }
 }

@@ -9,19 +9,19 @@ class ElitismSpec extends AnyWordSpec with Matchers {
 
     "select proportion of fittest individuals" in {
       val population = List(
-        (Vector(1), Fitness(4.0)),
-        (Vector(2), Fitness(2.0)),
-        (Vector(3), Fitness(5.0)),
-        (Vector(4), Fitness(10.0)),
-        (Vector(5), Fitness(1.0)),
-        (Vector(6), Fitness(20.0))
+        (Array(1), Fitness(4.0)),
+        (Array(2), Fitness(2.0)),
+        (Array(3), Fitness(5.0)),
+        (Array(4), Fitness(10.0)),
+        (Array(5), Fitness(1.0)),
+        (Array(6), Fitness(20.0))
       )
 
       val elitism = Elitism.simple[Int]
 
       val result = elitism.select(population, 0.35)
 
-      result must be (List(Vector(5), Vector(2)))
+      result.map(_.head) mustBe List(5, 2)
     }
   }
 }

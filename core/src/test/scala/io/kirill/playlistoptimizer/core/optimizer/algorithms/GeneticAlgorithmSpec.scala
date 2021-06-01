@@ -40,7 +40,7 @@ class GeneticAlgorithmSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers 
 
         tracks must contain theSameElementsAs playlist.tracks
         tracks must not contain theSameElementsInOrderAs(playlist.tracks)
-        score must be < Evaluator.harmonicSeqBasedTracksEvaluator.evaluateIndividual(playlist.tracks).value / 20
+        score must be < Evaluator.harmonicSeqBasedTracksEvaluator.evaluateIndividual(playlist.repr).value / 20
       }
     }
   }

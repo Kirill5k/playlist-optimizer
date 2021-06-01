@@ -1,34 +1,33 @@
 package io.kirill.playlistoptimizer.core.optimizer.algorithms.operators
 
-import scala.reflect.ClassTag
 import scala.util.Random
 
 trait Mutator[A] {
-  def mutate(ind: IndexedSeq[A], mutationProbability: Double)(implicit r: Random): IndexedSeq[A]
+  def mutate(ind: Array[A], mutationProbability: Double)(implicit r: Random): Array[A]
 }
 
 object Mutator {
-  def randomSwapMutator[A: ClassTag]: Mutator[A] = new Mutator[A] {
-    override def mutate(ind: IndexedSeq[A], mutationFactor: Double)(implicit r: Random): IndexedSeq[A] = {
-      val swaps = math.round(ind.size * mutationFactor / 2.0).toInt
-      val result = ind.toArray[A]
+  def randomSwapMutator[A]: Mutator[A] = new Mutator[A] {
+    override def mutate(ind: Array[A], mutationFactor: Double)(implicit r: Random): Array[A] = {
+      val swaps = math.round(ind.length * mutationFactor / 2.0).toInt
+      val result = ind.clone()
       var i = 0
       while (i < swaps) {
-        val p1 = r.nextInt(ind.size)
-        val p2 = r.nextInt(ind.size)
+        val p1 = r.nextInt(ind.length)
+        val p2 = r.nextInt(ind.length)
         val ind1 = result(p1)
         result(p1) = result(p2)
         result(p2) = ind1
         i += 1
       }
 
-      result.toVector
+      result
     }
   }
 
-  def neighbourSwapMutator[A: ClassTag]: Mutator[A] = new Mutator[A] {
-    override def mutate(ind: IndexedSeq[A], mutationFactor: Double)(implicit r: Random): IndexedSeq[A] = {
-      val result = ind.toArray[A]
+  def neighbourSwapMutator[A]: Mutator[A] = new Mutator[A] {
+    override def mutate(ind: Array[A], mutationFactor: Double)(implicit r: Random): Array[A] = {
+      val result = ind.clone()
       var i = 0
       while (i < result.length - 1) {
         if (r.nextDouble() < mutationFactor) {
@@ -40,7 +39,7 @@ object Mutator {
         i += 1
       }
 
-      result.toVector
+      result
     }
   }
 

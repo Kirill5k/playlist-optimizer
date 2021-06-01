@@ -22,12 +22,12 @@ object EnergyFlowBasedTracksFitnessCalculation extends FitnessCalculation[Track]
 }
 
 trait Evaluator[A] {
-  def evaluateIndividual(individual: IndexedSeq[A]): Fitness
+  def evaluateIndividual(individual: Array[A]): Fitness
 
-  def evaluatePopulation(population: Seq[IndexedSeq[A]]): Seq[(IndexedSeq[A], Fitness)] =
+  def evaluatePopulation(population: Seq[Array[A]]): Seq[(Array[A], Fitness)] =
     population.map(ind => (ind, evaluateIndividual(ind)))
 
-  protected def calcFitness(individual: IndexedSeq[A])(calculation: FitnessCalculation[A]): Fitness = {
+  protected def calcFitness(individual: Array[A])(calculation: FitnessCalculation[A]): Fitness = {
     var i = 0
     var score = 0d
     while (i < individual.length - 1) {
@@ -40,12 +40,12 @@ trait Evaluator[A] {
 
 object Evaluator {
   implicit def harmonicSeqBasedTracksEvaluator: Evaluator[Track] = new Evaluator[Track] {
-    override def evaluateIndividual(tracks: IndexedSeq[Track]): Fitness =
+    override def evaluateIndividual(tracks: Array[Track]): Fitness =
       calcFitness(tracks)(HarmonicSeqBasedTracksFitnessCalculation)
   }
 
   def energyFlowBasedTracksEvaluator: Evaluator[Track] = new Evaluator[Track] {
-    override def evaluateIndividual(individual: IndexedSeq[Track]): Fitness =
+    override def evaluateIndividual(individual: Array[Track]): Fitness =
       calcFitness(individual)(EnergyFlowBasedTracksFitnessCalculation)
   }
 }

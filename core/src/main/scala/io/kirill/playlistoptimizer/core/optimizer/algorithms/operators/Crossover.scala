@@ -3,12 +3,13 @@ package io.kirill.playlistoptimizer.core.optimizer.algorithms.operators
 import io.kirill.playlistoptimizer.core.playlist.{Key, Track}
 import io.kirill.playlistoptimizer.core.utils.collections._
 
+import scala.reflect.ClassTag
 import scala.util.Random
 
 sealed trait Crossover[A] {
-  def cross(par1: IndexedSeq[A], par2: IndexedSeq[A])(implicit r: Random): IndexedSeq[A]
+  def cross(par1: Array[A], par2: Array[A])(implicit r: Random): Array[A]
 
-  def cross(par1: IndexedSeq[A], par2: IndexedSeq[A], crossoverProbability: Double)(implicit r: Random): IndexedSeq[A] = {
+  def cross(par1: Array[A], par2: Array[A], crossoverProbability: Double)(implicit r: Random): Array[A] = {
     val n = r.nextDouble()
     if (n < crossoverProbability) cross(par1, par2) else par1
   }
@@ -28,13 +29,12 @@ object Crossover {
       go(i, 1)
     }
 
-    override def cross(par1: IndexedSeq[Track], par2: IndexedSeq[Track])(implicit r: Random): IndexedSeq[Track] = {
+    override def cross(par1: Array[Track], par2: Array[Track])(implicit r: Random): Array[Track] = {
       var i                = 0
       var bestStreakLength = 0
       var bestStreakPos    = 0
-      val tracks           = par1.toArray
-      while (i < tracks.length && bestStreakPos + bestStreakLength < tracks.length) {
-        val newStreakLength = getStreakLength(i, tracks)
+      while (i < par1.length && bestStreakPos + bestStreakLength < par1.length) {
+        val newStreakLength = getStreakLength(i, par1)
         if (newStreakLength > bestStreakLength) {
           bestStreakLength = newStreakLength
           bestStreakPos = i
@@ -44,28 +44,28 @@ object Crossover {
 
       val bestSeq = par1.slice(bestStreakPos, bestStreakPos + bestStreakLength)
 
-      val sliceSize     = par1.size / 2
+      val sliceSize     = par1.length / 2
       val slicedBestSeq = if (bestStreakLength <= sliceSize) bestSeq else cut(bestSeq, sliceSize)
 
-      val (left, right) = par2.splitAt(bestStreakPos + slicedBestSeq.size / 2)
+      val (left, right) = par2.splitAt(bestStreakPos + slicedBestSeq.length / 2)
       val bestSeqGenes = slicedBestSeq.toSet
       left.filterNot(bestSeqGenes.contains) ++ slicedBestSeq ++ right.filterNot(bestSeqGenes.contains)
     }
 
-    private def cut(ts: IndexedSeq[Track], sliceSize: Int)(implicit r: Random): IndexedSeq[Track] = {
+    private def cut(ts: Array[Track], sliceSize: Int)(implicit r: Random): Array[Track] = {
       val slicePoint = r.nextInt(sliceSize / 2)
       ts.slice(slicePoint, slicePoint + sliceSize)
     }
   }
 
-  implicit def threeWaySplitCrossover[A]: Crossover[A] = new Crossover[A] {
-    override def cross(par1: IndexedSeq[A], par2: IndexedSeq[A])(implicit r: Random): IndexedSeq[A] = {
+  implicit def threeWaySplitCrossover[A: ClassTag]: Crossover[A] = new Crossover[A] {
+    override def cross(par1: Array[A], par2: Array[A])(implicit r: Random): Array[A] = {
       val middle             = par1.size / 2
       val point1: Int        = r.nextInt(middle)
       val point2: Int        = r.nextInt(middle) + middle
-      val (left, mid, right) = par1.splitInThree(point1, point2)
+      val (left, mid, right) = par1.toVector.splitInThree(point1, point2)
       val midGenes = mid.toSet
-      left ++ par2.filter(midGenes.contains) ++ right
+      (left ++ par2.filter(midGenes.contains) ++ right).toArray
     }
   }
 }

@@ -15,7 +15,7 @@ object CrossoverBenchmark extends Benchmark {
     measure method "cross" in {
       val ctx = Context(KeyValue(exec.benchRuns -> 10000), KeyValue(exec.independentSamples -> 100))
       using(playlists).config(ctx).in { pl =>
-        val _ = crossover.cross(pl.tracks, rand.shuffle(pl.tracks))
+        val _ = crossover.cross(pl.repr, rand.shuffle(pl.tracks).toArray)
       }
     }
   }
@@ -26,7 +26,7 @@ object CrossoverBenchmark extends Benchmark {
     measure method "cross" in {
       val ctx = Context(KeyValue(exec.benchRuns -> 10000), KeyValue(exec.independentSamples -> 100))
       using(playlists).config(ctx).in { pl =>
-        val _ = crossover.cross(pl.tracks, rand.shuffle(pl.tracks))
+        val _ = crossover.cross(pl.repr, rand.shuffle(pl.tracks).toArray)
       }
     }
   }
