@@ -40,7 +40,7 @@ private class InmemoryPlaylistOptimizer[F[_]: Concurrent](
   override def optimize(uid: UserSessionId, playlist: Playlist, parameters: OptimizationParameters): F[OptimizationId] =
     for {
       oid <- save(uid, Optimization.init[Playlist](parameters, playlist))
-      process = alg.optimizeSeq(playlist.tracks, parameters).flatMap(res => complete(uid, oid, res._1, res._2))
+      process = alg.optimize(playlist, parameters).flatMap(res => complete(uid, oid, res._1, res._2))
       _ <- process.start.void
     } yield oid
 

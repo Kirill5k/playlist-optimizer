@@ -14,13 +14,15 @@ final class GeneticAlgorithm[F[_], A](
     private val evaluator: Evaluator[A],
     private val selector: Selector[A],
     private val elitism: Elitism[A]
-)(implicit F: Async[F])
-    extends OptimizationAlgorithm[F, A] {
+)(implicit
+    F: Async[F]
+) extends OptimizationAlgorithm[F, A] {
 
-  override def optimizeSeq(
-      items: IndexedSeq[A],
+  override def optimize(
+      optimizable: Optimizable[A],
       params: OptimizationParameters
   )(implicit rand: Random): F[(IndexedSeq[A], BigDecimal)] = {
+    val items: IndexedSeq[A] = optimizable.repr.toVector
     val initialPopulation = List.fill(params.populationSize)(if (params.shuffle) rand.shuffle(items) else items)
     Stream
       .range[F, Int](0, params.maxGen)

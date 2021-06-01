@@ -28,7 +28,7 @@ object GeneticAlgorithmBenchmark extends Benchmark {
     measure method "optimizeSeq" in {
       val ctx = Context(KeyValue(exec.benchRuns -> 250), KeyValue(exec.independentSamples -> 10))
       using(playlists).config(ctx).in { pl =>
-        val _ = algorithm.optimizeSeq(pl.tracks, params).unsafeRunSync()
+        val _ = algorithm.optimize(pl.tracks, params).unsafeRunSync()
       }
     }
   }

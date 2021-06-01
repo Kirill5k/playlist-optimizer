@@ -1,13 +1,12 @@
 package io.kirill.playlistoptimizer.core.optimizer
 
 import java.util.UUID
-
 import cats.effect.IO
 import cats.effect.testing.scalatest.AsyncIOSpec
 import cats.implicits._
 import io.kirill.playlistoptimizer.core.common.controllers.Controller.UserSessionId
 import io.kirill.playlistoptimizer.core.common.errors.OptimizationNotFound
-import io.kirill.playlistoptimizer.core.optimizer.algorithms.OptimizationAlgorithm
+import io.kirill.playlistoptimizer.core.optimizer.algorithms.{Optimizable, OptimizationAlgorithm}
 import io.kirill.playlistoptimizer.core.playlist.{PlaylistBuilder, Track}
 import org.scalatest.freespec.AsyncFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -167,8 +166,8 @@ class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
 
     def mockAlg(returnResult: => IO[(IndexedSeq[Track], BigDecimal)]) =
       new OptimizationAlgorithm[IO, Track] {
-        override def optimizeSeq(
-            items: IndexedSeq[Track],
+        override def optimize(
+            optimizable: Optimizable[Track],
             parameters: OptimizationParameters
         )(implicit r: Random): IO[(IndexedSeq[Track], BigDecimal)] =
           returnResult

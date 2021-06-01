@@ -11,8 +11,8 @@ trait Optimizable[A] {
 }
 
 trait OptimizationAlgorithm[F[_], A] {
-  def optimizeSeq(
-      items: IndexedSeq[A],
+  def optimize(
+      optimizable: Optimizable[A],
       parameters: OptimizationParameters
   )(implicit
       rand: Random
