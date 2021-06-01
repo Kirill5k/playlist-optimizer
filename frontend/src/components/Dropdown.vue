@@ -14,7 +14,7 @@
       class="p-1 dropdown__header"
       role="tab"
     >
-      <p v-b-toggle="'dropdown'+id" class="mb-0 p-1 w-100">
+      <p v-b-toggle="'dropdown'+id" class="mb-0 p-1 w-100 d-inline-flex">
         <slot name="header"></slot>
       </p>
     </b-card-header>
