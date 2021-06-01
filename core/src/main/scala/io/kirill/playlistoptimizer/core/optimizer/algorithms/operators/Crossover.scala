@@ -60,7 +60,7 @@ object Crossover {
 
   implicit def threeWaySplitCrossover[A: ClassTag]: Crossover[A] = new Crossover[A] {
     override def cross(par1: Array[A], par2: Array[A])(implicit r: Random): Array[A] = {
-      val middle             = par1.size / 2
+      val middle             = par1.length / 2
       val point1: Int        = r.nextInt(middle)
       val point2: Int        = r.nextInt(middle) + middle
       val (left, mid, right) = par1.toVector.splitInThree(point1, point2)
