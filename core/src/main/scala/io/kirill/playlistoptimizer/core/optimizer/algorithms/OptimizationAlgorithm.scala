@@ -6,6 +6,10 @@ import io.kirill.playlistoptimizer.core.optimizer.algorithms.operators._
 
 import scala.util.Random
 
+trait Optimizable[A] {
+  def repr: Array[A]
+}
+
 trait OptimizationAlgorithm[F[_], A] {
   def optimizeSeq(
       items: IndexedSeq[A],
