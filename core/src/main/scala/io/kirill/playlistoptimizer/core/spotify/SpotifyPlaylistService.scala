@@ -1,7 +1,7 @@
 package io.kirill.playlistoptimizer.core.spotify
 
 import cats.Monad
-import cats.effect.{Concurrent}
+import cats.effect.Concurrent
 import cats.implicits._
 import io.kirill.playlistoptimizer.core.playlist.{Playlist, Track}
 import io.kirill.playlistoptimizer.core.spotify.clients.{SpotifyAuthClient, SpotifyRestClient}

@@ -4,7 +4,7 @@ import cats.effect.IO
 import io.kirill.playlistoptimizer.core.ApiClientSpec
 import io.kirill.playlistoptimizer.core.RequestOps._
 import io.kirill.playlistoptimizer.core.common.errors.SpotifyApiError
-import io.kirill.playlistoptimizer.core.spotify.clients.api.SpotifyResponse._
+import io.kirill.playlistoptimizer.core.spotify.clients.api.responses._
 import sttp.client3.asynchttpclient.cats.AsyncHttpClientCatsBackend
 import sttp.client3.{Response, SttpBackend}
 import sttp.model.StatusCode

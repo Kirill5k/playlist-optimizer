@@ -16,11 +16,11 @@ object errors {
   sealed trait ForbiddenError extends ApplicationError
   sealed trait InternalError extends ApplicationError
 
-  final case object MissingSpotifySessionCookie extends ForbiddenError {
+  case object MissingSpotifySessionCookie extends ForbiddenError {
     val message = "missing spotify session cookie"
   }
 
-  final case object MissingUserSessionCookie extends ApplicationError {
+  case object MissingUserSessionCookie extends ApplicationError {
     val message = "missing user session cookie"
   }
 

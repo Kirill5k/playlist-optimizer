@@ -7,8 +7,8 @@ import io.circe.Decoder
 import io.circe.generic.auto._
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
 import io.kirill.playlistoptimizer.core.common.errors.SpotifyApiError
-import io.kirill.playlistoptimizer.core.spotify.clients.api.SpotifyError.SpotifyAuthError
-import io.kirill.playlistoptimizer.core.spotify.clients.api.SpotifyResponse.{SpotifyAuthRefreshResponse, SpotifyAuthResponse}
+import io.kirill.playlistoptimizer.core.spotify.clients.api.errors.SpotifyAuthError
+import io.kirill.playlistoptimizer.core.spotify.clients.api.responses.{SpotifyAuthRefreshResponse, SpotifyAuthResponse}
 import sttp.client3._
 import sttp.client3.circe._
 import sttp.model.MediaType
@@ -29,7 +29,9 @@ private[spotify] object SpotifyAuthApi {
     Logger[F].info("sending token refresh request to spotify") *>
       getToken[F, SpotifyAuthRefreshResponse](Map("refresh_token" -> refreshToken, "grant_type" -> "refresh_token"))
 
-  private def getToken[F[_]: Logger: Sync, R <: SpotifyResponse: Decoder](requestBody: Map[String, String])(implicit
+  private def getToken[F[_]: Logger: Sync, R: Decoder](
+      requestBody: Map[String, String]
+  )(implicit
       sc: SpotifyConfig,
       b: SttpBackend[F, Any]
   ): F[R] =
@@ -44,7 +46,7 @@ private[spotify] object SpotifyAuthApi {
         .send(b)
         .flatMap(r => mapResponseBody[F, R](r.body))
 
-  private def mapResponseBody[F[_]: Logger: Sync, R <: SpotifyResponse](
+  private def mapResponseBody[F[_]: Logger: Sync, R](
       responseBody: Either[ResponseException[SpotifyAuthError, io.circe.Error], R]
   ): F[R] =
     responseBody match {

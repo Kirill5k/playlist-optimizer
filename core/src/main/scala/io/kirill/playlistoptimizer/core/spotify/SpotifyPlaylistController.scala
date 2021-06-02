@@ -10,19 +10,23 @@ import io.kirill.playlistoptimizer.core.common.controllers.Controller
 import io.kirill.playlistoptimizer.core.common.errors.{MissingRequiredQueryParam, MissingSpotifySessionCookie}
 import io.kirill.playlistoptimizer.core.common.jwt.JwtEncoder
 import io.kirill.playlistoptimizer.core.playlist._
-import org.http4s.dsl.io.{OptionalQueryParamDecoderMatcher, QueryParamDecoderMatcher}
+import io.kirill.playlistoptimizer.core.spotify.SpotifyPlaylistController.ImportPlaylistRequest
 import org.http4s.headers.Location
 import org.http4s.circe.CirceEntityCodec._
 import org.http4s.{HttpRoutes, Request, RequestCookie, ResponseCookie, Uri}
 
 final class SpotifyPlaylistController[F[_]: Async](
-    val jwtEncoder: JwtEncoder[F, SpotifyAccessToken],
-    val playlistService: SpotifyPlaylistService[F],
-    val spotifyConfig: SpotifyConfig
+    private val jwtEncoder: JwtEncoder[F, SpotifyAccessToken],
+    private val playlistService: SpotifyPlaylistService[F],
+    private val spotifyConfig: SpotifyConfig
 )(implicit
   logger: Logger[F]
 ) extends Controller[F] {
-  import SpotifyPlaylistController._
+
+  val SpotifySessionCookie = "spotify-session"
+
+  object CodeQueryParamMatcher  extends QueryParamDecoderMatcher[String]("code")
+  object TrackQueryParamMatcher extends OptionalQueryParamDecoderMatcher[String]("name")
 
   private val authorizationParams = Map(
     "response_type" -> "code",
@@ -123,10 +127,6 @@ final class SpotifyPlaylistController[F[_]: Async](
 }
 
 object SpotifyPlaylistController {
-  val SpotifySessionCookie = "spotify-session"
-
-  object CodeQueryParamMatcher  extends QueryParamDecoderMatcher[String]("code")
-  object TrackQueryParamMatcher extends OptionalQueryParamDecoderMatcher[String]("name")
 
   final case class ImportPlaylistRequest(
       name: String,

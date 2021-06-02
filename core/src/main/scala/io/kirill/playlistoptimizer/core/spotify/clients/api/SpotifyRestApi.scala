@@ -2,9 +2,9 @@ package io.kirill.playlistoptimizer.core.spotify.clients.api
 
 import cats.implicits._
 import io.circe.generic.auto._
-import SpotifyResponse._
-import SpotifyRequest._
-import SpotifyError._
+import responses._
+import requests._
+import errors._
 import cats.effect.Sync
 import org.typelevel.log4cats.Logger
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
@@ -15,7 +15,11 @@ import sttp.model.MediaType
 
 object SpotifyRestApi {
 
-  def findTrack[F[_]: Logger: Sync](authToken: String, query: String, limit: Int = 1)(implicit
+  def findTrack[F[_]: Logger: Sync](
+      authToken: String,
+      query: String,
+      limit: Int = 1
+  )(implicit
       sc: SpotifyConfig,
       b: SttpBackend[F, Any]
   ): F[SpotifySearchResponse] =
@@ -145,7 +149,11 @@ object SpotifyRestApi {
         .send(b)
         .flatMap(r => mapResponseBody[F, SpotifyOperationSuccessResponse](r.body))
 
-  def replaceTracksInPlaylist[F[_]: Logger: Sync](authToken: String, playlistId: String, uris: Seq[String])(implicit
+  def replaceTracksInPlaylist[F[_]: Logger: Sync](
+      authToken: String,
+      playlistId: String,
+      uris: List[String]
+  )(implicit
       sc: SpotifyConfig,
       b: SttpBackend[F, Any]
   ): F[Unit] =
@@ -161,7 +169,7 @@ object SpotifyRestApi {
         .flatMap(r => mapResponseBody[F, SpotifyOperationSuccessResponse](r.body))
         .void
 
-  private def mapResponseBody[F[_]: Logger: Sync, R <: SpotifyResponse](
+  private def mapResponseBody[F[_]: Logger: Sync, R](
       responseBody: Either[ResponseException[SpotifyRegularError, io.circe.Error], R]
   ): F[R] =
     responseBody match {

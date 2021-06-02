@@ -1,6 +1,6 @@
 package io.kirill.playlistoptimizer.core.optimizer.algorithms
 
-import cats.effect.kernel.Async
+import cats.effect.Async
 import io.kirill.playlistoptimizer.core.optimizer.OptimizationParameters
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.operators._
 

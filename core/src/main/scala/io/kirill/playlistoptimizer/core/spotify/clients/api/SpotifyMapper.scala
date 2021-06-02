@@ -9,10 +9,10 @@ import scala.concurrent.duration.FiniteDuration
 
 object SpotifyMapper {
 
-  def toDomain(song: SpotifyResponse.PlaylistTrack, audio: SpotifyResponse.SpotifyAudioFeaturesResponse): Track =
+  def toDomain(song: responses.PlaylistTrack, audio: responses.SpotifyAudioFeaturesResponse): Track =
     Track(song.toSongDetails, audio.toDomain, song.toSourceDetails)
 
-  implicit class PlaylistTrackSyntax(private val track: SpotifyResponse.PlaylistTrack) extends AnyVal {
+  implicit class PlaylistTrackSyntax(private val track: responses.PlaylistTrack) extends AnyVal {
     def toSongDetails: SongDetails =
       SongDetails(
         name = track.name,
@@ -30,7 +30,7 @@ object SpotifyMapper {
       SourceDetails(track.uri, Some(track.external_urls.spotify))
   }
 
-  implicit class AudioFeaturesSyntax(private val features: SpotifyResponse.SpotifyAudioFeaturesResponse) extends AnyVal {
+  implicit class AudioFeaturesSyntax(private val features: responses.SpotifyAudioFeaturesResponse) extends AnyVal {
     def toDomain: AudioDetails =
       AudioDetails(
         features.tempo,

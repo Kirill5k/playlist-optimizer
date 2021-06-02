@@ -7,7 +7,7 @@ import scala.concurrent.duration.FiniteDuration
 
 sealed trait PlaylistSource
 object PlaylistSource {
-  final case object Spotify extends PlaylistSource
+  case object Spotify extends PlaylistSource
 
   def apply(source: String): PlaylistSource = source.toLowerCase match {
     case "spotify" => Spotify

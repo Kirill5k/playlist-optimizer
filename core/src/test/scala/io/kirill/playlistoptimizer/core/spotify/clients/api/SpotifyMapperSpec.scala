@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit
 import io.kirill.playlistoptimizer.core.common.errors.{InvalidKey, InvalidMode}
 import io.kirill.playlistoptimizer.core.playlist.Key.GMinor
 import io.kirill.playlistoptimizer.core.playlist.{AudioDetails, Release, SongDetails, SourceDetails, Track}
-import io.kirill.playlistoptimizer.core.spotify.clients.api.SpotifyResponse._
+import io.kirill.playlistoptimizer.core.spotify.clients.api.responses._
 import org.scalatest.Inspectors
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec

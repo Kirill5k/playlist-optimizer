@@ -1,6 +1,6 @@
 package io.kirill.playlistoptimizer.core.spotify
 
-import cats.effect.kernel.Async
+import cats.effect.Async
 import cats.implicits._
 import io.circe.generic.auto._
 import io.kirill.playlistoptimizer.core.common.config.{JwtConfig, SpotifyConfig}

@@ -1,14 +1,13 @@
 package io.kirill.playlistoptimizer.core.spotify.clients
 
 import cats.Monad
-import cats.effect.Sync
-import cats.effect.kernel.Async
+import cats.effect.{Sync, Async}
 import cats.implicits._
 import fs2.Stream
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
 import io.kirill.playlistoptimizer.core.common.errors.{SpotifyPlaylistNotFound, SpotifyTrackNotFound}
 import io.kirill.playlistoptimizer.core.playlist.{Playlist, PlaylistSource, Track}
-import io.kirill.playlistoptimizer.core.spotify.clients.api.SpotifyResponse.{PlaylistTrack, SpotifyAudioFeaturesResponse}
+import io.kirill.playlistoptimizer.core.spotify.clients.api.responses.{PlaylistTrack, SpotifyAudioFeaturesResponse}
 import io.kirill.playlistoptimizer.core.spotify.clients.api.{SpotifyMapper, SpotifyRestApi}
 import org.typelevel.log4cats.Logger
 import sttp.client3.SttpBackend

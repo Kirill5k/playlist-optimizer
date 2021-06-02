@@ -1,7 +1,7 @@
 package io.kirill.playlistoptimizer.core.optimizer
 
 import cats.Monad
-import cats.effect.kernel.Async
+import cats.effect.Async
 import cats.implicits._
 import io.circe.generic.auto._
 import io.kirill.playlistoptimizer.core.common.controllers.Controller
