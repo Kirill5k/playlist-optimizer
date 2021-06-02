@@ -20,8 +20,8 @@ final private class FitnessBasedSelector[A] extends Selector[A] {
   )(implicit r: Random): Seq[(Array[A], Array[A])] =
     population
       .sortBy(_._2.value)
-      .map(_._1)
       .take(populationLimit)
+      .map(_._1)
       .pairs
 }
 
