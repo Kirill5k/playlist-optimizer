@@ -19,25 +19,28 @@ final class GeneticAlgorithm[F[_], A: ClassTag](
     F: Async[F]
 ) extends OptimizationAlgorithm[F, A] {
 
-  override def optimize(
-      optimizable: Optimizable[A],
+  override def optimize[T](
+      target: T,
       params: OptimizationParameters
-  )(implicit rand: Random): F[(Optimizable[A], BigDecimal)] = {
+  )(implicit
+    optimizable: Optimizable[T, A],
+    rand: Random
+  ): F[(T, BigDecimal)] = {
     Stream
       .range[F, Int](0, params.maxGen)
-      .evalScan(initializePopulation(optimizable, params))((currPop, _) => singleGeneration(currPop, params))
+      .evalScan(initializePopulation(optimizable.repr(target), params))((currPop, _) => singleGeneration(currPop, params))
       .compile
       .lastOrError
       .map(evaluator.evaluatePopulation)
       .map(_.minBy(_._2.value))
-      .map { case (res, f) => (optimizable.update(res), f.value) }
+      .map { case (res, f) => (optimizable.update(target)(res), f.value) }
   }
 
   private def initializePopulation(
-      optimizable: Optimizable[A],
+      repr: Array[A],
       params: OptimizationParameters
   )(implicit rand: Random): List[Array[A]] = {
-    val indGen = () => if (params.shuffle) rand.shuffle(optimizable.repr.toVector).toArray else optimizable.repr
+    val indGen = () => if (params.shuffle) rand.shuffle(repr.toVector).toArray else repr
     List.fill(params.populationSize)(indGen())
   }
 

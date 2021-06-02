@@ -6,47 +6,48 @@ import cats.implicits._
 import io.kirill.playlistoptimizer.core.common.controllers.Controller.UserSessionId
 import io.kirill.playlistoptimizer.core.common.errors.OptimizationNotFound
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.{Optimizable, OptimizationAlgorithm}
-import io.kirill.playlistoptimizer.core.playlist.Track
+import io.kirill.playlistoptimizer.core.playlist.{Playlist, Track}
 
 import scala.concurrent.duration._
 import scala.util.Random
 
-trait Optimizer[F[_], A] {
-  def optimize(uid: UserSessionId, target: Optimizable[A], parameters: OptimizationParameters): F[OptimizationId]
-  def get(uid: UserSessionId, id: OptimizationId): F[Optimization[A]]
-  def getAll(uid: UserSessionId): F[List[Optimization[A]]]
+trait Optimizer[F[_], T, A] {
+  def optimize(uid: UserSessionId, target: T, parameters: OptimizationParameters): F[OptimizationId]
+  def get(uid: UserSessionId, id: OptimizationId): F[Optimization[T]]
+  def getAll(uid: UserSessionId): F[List[Optimization[T]]]
   def delete(uid: UserSessionId, id: OptimizationId): F[Unit]
 }
 
-private class InmemoryOptimizer[F[_]: Concurrent, A](
-    private val state: Ref[F, Map[UserSessionId, Map[OptimizationId, Optimization[A]]]],
+private class InmemoryOptimizer[F[_]: Concurrent, T, A](
+    private val state: Ref[F, Map[UserSessionId, Map[OptimizationId, Optimization[T]]]],
     private val alg: OptimizationAlgorithm[F, A]
 )(implicit
+    optimizable: Optimizable[T, A],
     r: Random = new Random()
-) extends Optimizer[F, A] {
+) extends Optimizer[F, T, A] {
 
-  override def get(uid: UserSessionId, oid: OptimizationId): F[Optimization[A]] =
+  override def get(uid: UserSessionId, oid: OptimizationId): F[Optimization[T]] =
     state.get
       .map(_.get(uid).flatMap(_.get(oid)))
       .flatMap {
-        case None      => OptimizationNotFound(oid).raiseError[F, Optimization[A]]
+        case None      => OptimizationNotFound(oid).raiseError[F, Optimization[T]]
         case Some(opt) => opt.pure[F]
       }
 
-  override def getAll(uid: UserSessionId): F[List[Optimization[A]]] =
-    state.get.map(_.get(uid).fold(List.empty[Optimization[A]])(_.values.toList))
+  override def getAll(uid: UserSessionId): F[List[Optimization[T]]] =
+    state.get.map(_.get(uid).fold(List.empty[Optimization[T]])(_.values.toList))
 
-  override def optimize(uid: UserSessionId, optimizable: Optimizable[A], parameters: OptimizationParameters): F[OptimizationId] =
+  override def optimize(uid: UserSessionId, target: T, parameters: OptimizationParameters): F[OptimizationId] =
     for {
-      oid <- save(uid, Optimization.init[A](parameters, optimizable))
-      process = alg.optimize(optimizable, parameters).flatMap(res => complete(uid, oid, res._1, res._2))
+      oid <- save(uid, Optimization.init[T](parameters, target))
+      process = alg.optimize(target, parameters).flatMap(res => complete(uid, oid, res._1, res._2))
       _ <- process.start.void
     } yield oid
 
-  private def complete(uid: UserSessionId, id: OptimizationId, result: Optimizable[A], score: BigDecimal): F[Unit] =
+  private def complete(uid: UserSessionId, id: OptimizationId, result: T, score: BigDecimal): F[Unit] =
     get(uid, id).flatMap(opt => save(uid, opt.complete(result, score))).void
 
-  private def save(uid: UserSessionId, opt: Optimization[A]): F[OptimizationId] =
+  private def save(uid: UserSessionId, opt: Optimization[T]): F[OptimizationId] =
     state.update(s => s + (uid -> (s.getOrElse(uid, Map.empty) + (opt.id -> opt)))) *>
       opt.id.pure[F]
 
@@ -63,9 +64,9 @@ object Optimizer {
       alg: OptimizationAlgorithm[F, Track],
       expiresIn: FiniteDuration = 24.hours,
       checkOnExpirationsEvery: FiniteDuration = 15.minutes
-  ): F[Optimizer[F, Track]] = {
-    def runExpiration(state: Ref[F, Map[UserSessionId, Map[OptimizationId, Optimization[Track]]]]): F[Unit] = {
-      def expire: F[Unit] = state.update(_.foldLeft(Map.empty[UserSessionId, Map[OptimizationId, Optimization[Track]]]) {
+  ): F[Optimizer[F, Playlist, Track]] = {
+    def runExpiration(state: Ref[F, Map[UserSessionId, Map[OptimizationId, Optimization[Playlist]]]]): F[Unit] = {
+      def expire: F[Unit] = state.update(_.foldLeft(Map.empty[UserSessionId, Map[OptimizationId, Optimization[Playlist]]]) {
         case (res, (uid, optsMap)) =>
           res + (uid -> optsMap.filter { case (_, opt) => opt.hasCompletedLessThan(expiresIn) })
       })
@@ -73,8 +74,8 @@ object Optimizer {
     }
 
     Ref
-      .of[F, Map[UserSessionId, Map[OptimizationId, Optimization[Track]]]](Map.empty)
+      .of[F, Map[UserSessionId, Map[OptimizationId, Optimization[Playlist]]]](Map.empty)
       .flatTap(s => runExpiration(s).start.void)
-      .map(s => new InmemoryOptimizer[F, Track](s, alg))
+      .map(s => new InmemoryOptimizer[F, Playlist, Track](s, alg))
   }
 }

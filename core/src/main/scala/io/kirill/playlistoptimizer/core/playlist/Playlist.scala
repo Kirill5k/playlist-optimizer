@@ -2,7 +2,6 @@ package io.kirill.playlistoptimizer.core.playlist
 
 import java.time.LocalDate
 import io.kirill.playlistoptimizer.core.common.errors.UnexpectedPlaylistSource
-import io.kirill.playlistoptimizer.core.optimizer.algorithms.Optimizable
 
 import scala.concurrent.duration.FiniteDuration
 
@@ -54,12 +53,4 @@ final case class Playlist(
     description: Option[String],
     tracks: IndexedSeq[Track],
     source: PlaylistSource
-) extends Optimizable[Track] {
-  override val repr: Array[Track] = tracks.toArray[Track]
-
-  override def update(optimizedRepr: Array[Track]): Playlist =
-    copy(
-      name = s"$name optimized",
-      tracks = optimizedRepr.toVector
-    )
-}
+)

@@ -7,18 +7,14 @@ import io.kirill.playlistoptimizer.core.optimizer.algorithms.operators._
 import scala.reflect.ClassTag
 import scala.util.Random
 
-trait Optimizable[A] {
-  def repr: Array[A]
-  def update(optimizedRepr: Array[A]): Optimizable[A]
-}
-
 trait OptimizationAlgorithm[F[_], A] {
-  def optimize(
-      optimizable: Optimizable[A],
+  def optimize[T](
+      target: T,
       parameters: OptimizationParameters
   )(implicit
+      optimizable: Optimizable[T, A],
       rand: Random
-  ): F[(Optimizable[A], BigDecimal)]
+  ): F[(T, BigDecimal)]
 }
 
 object OptimizationAlgorithm {

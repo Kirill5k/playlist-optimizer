@@ -1,7 +1,5 @@
 package io.kirill.playlistoptimizer.core.optimizer
 
-import io.kirill.playlistoptimizer.core.optimizer.algorithms.Optimizable
-
 import java.time.Instant
 import java.util.UUID
 import scala.concurrent.duration._
@@ -21,14 +19,14 @@ final case class Optimization[A](
     id: OptimizationId,
     status: String,
     parameters: OptimizationParameters,
-    original: Optimizable[A],
+    original: A,
     dateInitiated: Instant,
     duration: Option[FiniteDuration] = None,
-    result: Option[Optimizable[A]] = None,
+    result: Option[A] = None,
     score: Option[BigDecimal] = None
 ) {
 
-  def complete(result: Optimizable[A], score: BigDecimal): Optimization[A] =
+  def complete(result: A, score: BigDecimal): Optimization[A] =
     copy(
       status = "completed",
       result = Some(result),
@@ -41,7 +39,7 @@ final case class Optimization[A](
 }
 
 object Optimization {
-  def init[A](parameters: OptimizationParameters, original: Optimizable[A]): Optimization[A] =
+  def init[A](parameters: OptimizationParameters, original: A): Optimization[A] =
     Optimization[A](
       id = OptimizationId(UUID.randomUUID()),
       status = "in progress",

@@ -31,7 +31,7 @@ class OptimizationControllerSpec extends ControllerSpec {
   val userSessionId     = UserSessionId("user-session-id")
 
   "A PlaylistController" should {
-    val playlistOptimizerMock = mock[Optimizer[IO, Track]]
+    val playlistOptimizerMock = mock[Optimizer[IO, Playlist, Track]]
     val playlistController    = new OptimizationController[IO](playlistOptimizerMock)
 
     "initiate optimization of a playlist" in {

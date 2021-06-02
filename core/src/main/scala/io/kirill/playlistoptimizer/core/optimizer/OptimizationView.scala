@@ -1,7 +1,5 @@
 package io.kirill.playlistoptimizer.core.optimizer
 
-import io.kirill.playlistoptimizer.core.optimizer.algorithms.Optimizable
-
 import java.time.Instant
 import java.util.UUID
 
@@ -17,7 +15,7 @@ final case class OptimizationView[V](
 )
 
 object OptimizationView {
-  def from[A, V](opt: Optimization[A], mapper: Optimizable[A] => V): OptimizationView[V] =
+  def from[A, V](opt: Optimization[A], mapper: A => V): OptimizationView[V] =
     OptimizationView(
       opt.id.value,
       opt.status,
