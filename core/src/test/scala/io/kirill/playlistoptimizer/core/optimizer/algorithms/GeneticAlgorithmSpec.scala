@@ -6,6 +6,7 @@ import cats.effect.IO
 import cats.effect.testing.scalatest.AsyncIOSpec
 import io.kirill.playlistoptimizer.core.optimizer.OptimizationParameters
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.operators._
+import io.kirill.playlistoptimizer.core.optimizer.algorithms.Optimizable._
 import io.kirill.playlistoptimizer.core.playlist.{PlaylistBuilder, Track}
 import org.scalatest.freespec.AsyncFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -40,9 +41,7 @@ class GeneticAlgorithmSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers 
 
         result.tracks must contain theSameElementsAs playlist.tracks
         result.tracks must not contain theSameElementsInOrderAs(playlist.tracks)
-        score must be < Evaluator.harmonicSeqBasedTracksEvaluator
-          .evaluateIndividual(Optimizable.playlistOptimizable.repr(playlist))
-          .value / 20
+        score must be < Evaluator.harmonicSeqBasedTracksEvaluator.evaluateIndividual(playlist.repr).value / 20
       }
     }
   }

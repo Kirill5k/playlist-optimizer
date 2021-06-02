@@ -5,6 +5,7 @@ import cats.implicits._
 import fs2.Stream
 import io.kirill.playlistoptimizer.core.optimizer.OptimizationParameters
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.operators._
+import io.kirill.playlistoptimizer.core.optimizer.algorithms.Optimizable._
 
 import scala.reflect.ClassTag
 import scala.util.Random
@@ -28,7 +29,7 @@ final class GeneticAlgorithm[F[_], A: ClassTag](
   ): F[(T, BigDecimal)] = {
     Stream
       .range[F, Int](0, params.maxGen)
-      .evalScan(initializePopulation(optimizable.repr(target), params))((currPop, _) => singleGeneration(currPop, params))
+      .evalScan(initializePopulation(target.repr, params))((currPop, _) => singleGeneration(currPop, params))
       .compile
       .lastOrError
       .map(evaluator.evaluatePopulation)

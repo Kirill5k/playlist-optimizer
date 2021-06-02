@@ -16,4 +16,9 @@ object Optimizable {
         tracks = optimizedRepr.toVector
       )
   }
+
+  implicit final class OptimizableSyntax[T, A](private val target: T) extends AnyVal {
+    def repr(implicit optimizable: Optimizable[T, A]): Array[A] =
+      optimizable.repr(target)
+  }
 }
