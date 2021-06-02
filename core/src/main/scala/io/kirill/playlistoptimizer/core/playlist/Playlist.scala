@@ -56,4 +56,10 @@ final case class Playlist(
     source: PlaylistSource
 ) extends Optimizable[Track] {
   override val repr: Array[Track] = tracks.toArray[Track]
+
+  override def update(optimizedRepr: Array[Track]): Playlist =
+    copy(
+      name = s"$name optimized",
+      tracks = optimizedRepr.toVector
+    )
 }

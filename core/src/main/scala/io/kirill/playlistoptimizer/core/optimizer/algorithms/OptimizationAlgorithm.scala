@@ -9,6 +9,7 @@ import scala.util.Random
 
 trait Optimizable[A] {
   def repr: Array[A]
+  def update(optimizedRepr: Array[A]): Optimizable[A]
 }
 
 trait OptimizationAlgorithm[F[_], A] {
@@ -17,7 +18,7 @@ trait OptimizationAlgorithm[F[_], A] {
       parameters: OptimizationParameters
   )(implicit
       rand: Random
-  ): F[(IndexedSeq[A], BigDecimal)]
+  ): F[(Array[A], BigDecimal)]
 }
 
 object OptimizationAlgorithm {

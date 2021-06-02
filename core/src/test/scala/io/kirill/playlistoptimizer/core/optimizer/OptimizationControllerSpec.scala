@@ -10,7 +10,7 @@ import io.kirill.playlistoptimizer.core.ControllerSpec
 import io.kirill.playlistoptimizer.core.common.controllers.Controller
 import io.kirill.playlistoptimizer.core.common.errors.OptimizationNotFound
 import io.kirill.playlistoptimizer.core.optimizer.OptimizationController.PlaylistOptimizationRequest
-import io.kirill.playlistoptimizer.core.playlist.{Playlist, PlaylistBuilder, PlaylistView}
+import io.kirill.playlistoptimizer.core.playlist.{Playlist, PlaylistBuilder, PlaylistView, Track}
 import org.http4s._
 import org.http4s.implicits._
 import org.http4s.circe.CirceEntityCodec._
@@ -31,7 +31,7 @@ class OptimizationControllerSpec extends ControllerSpec {
   val userSessionId     = UserSessionId("user-session-id")
 
   "A PlaylistController" should {
-    val playlistOptimizerMock = mock[Optimizer[IO, Playlist]]
+    val playlistOptimizerMock = mock[Optimizer[IO, Track]]
     val playlistController    = new OptimizationController[IO](playlistOptimizerMock)
 
     "initiate optimization of a playlist" in {

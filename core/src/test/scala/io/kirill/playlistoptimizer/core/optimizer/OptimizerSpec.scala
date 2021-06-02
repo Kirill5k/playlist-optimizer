@@ -18,7 +18,7 @@ class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
   implicit val random = new Random(1)
 
   val playlist        = PlaylistBuilder.playlist
-  val optimizedTracks = random.shuffle(playlist.tracks)
+  val optimizedTracks = random.shuffle(playlist.tracks).toArray
 
   val optimizationId = OptimizationId(UUID.randomUUID())
   val parameters     = OptimizationParameters(100, 1000, 0.5, 0.2, 0.1, true)
@@ -90,7 +90,7 @@ class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
       result.asserting { optimization =>
         optimization.status must be("completed")
         optimization.original must be(playlist)
-        optimization.result must be(Some(playlist.copy(tracks = optimizedTracks, name = s"Mel optimized")))
+        optimization.result must be(Some(playlist.update(optimizedTracks)))
         optimization.score must be(Some(25.0))
       }
     }
@@ -164,12 +164,12 @@ class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
       }
     }
 
-    def mockAlg(returnResult: => IO[(IndexedSeq[Track], BigDecimal)]) =
+    def mockAlg(returnResult: => IO[(Array[Track], BigDecimal)]) =
       new OptimizationAlgorithm[IO, Track] {
         override def optimize(
             optimizable: Optimizable[Track],
             parameters: OptimizationParameters
-        )(implicit r: Random): IO[(IndexedSeq[Track], BigDecimal)] =
+        )(implicit r: Random): IO[(Array[Track], BigDecimal)] =
           returnResult
       }
   }

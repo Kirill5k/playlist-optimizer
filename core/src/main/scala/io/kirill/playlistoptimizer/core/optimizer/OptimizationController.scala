@@ -6,13 +6,16 @@ import cats.implicits._
 import io.circe.generic.auto._
 import io.kirill.playlistoptimizer.core.common.controllers.Controller
 import io.kirill.playlistoptimizer.core.optimizer.OptimizationController._
-import io.kirill.playlistoptimizer.core.playlist.{Playlist, PlaylistView}
+import io.kirill.playlistoptimizer.core.optimizer.algorithms.Optimizable
+import io.kirill.playlistoptimizer.core.playlist.{Playlist, PlaylistView, Track}
 import org.http4s.HttpRoutes
 import org.http4s.circe.CirceEntityCodec._
 import org.typelevel.log4cats.Logger
 
+import java.time.Instant
+
 final class OptimizationController[F[_]](
-    private val playlistOptimizer: Optimizer[F, Playlist]
+    private val optimizer: Optimizer[F, Track]
 )(implicit
     F: Async[F],
     logger: Logger[F]
@@ -26,7 +29,7 @@ final class OptimizationController[F[_]](
             userSessionId  <- F.fromEither(getUserSessionIdFromCookie(req))
             requestBody    <- req.as[PlaylistOptimizationRequest]
             _              <- logger.info(s"optimize playlist ${requestBody.playlist.name} for user ${userSessionId.value}")
-            optimizationId <- playlistOptimizer.optimize(userSessionId, requestBody.playlist.toDomain, requestBody.optimizationParameters)
+            optimizationId <- optimizer.optimize(userSessionId, requestBody.playlist.toDomain, requestBody.optimizationParameters)
             resp           <- Created(PlaylistOptimizationResponse(optimizationId))
           } yield resp
         }
@@ -34,9 +37,9 @@ final class OptimizationController[F[_]](
         withErrorHandling {
           for {
             userSessionId <- F.fromEither(getUserSessionIdFromCookie(req))
-            _             <- logger.info(s"get playlist optimization ${optimizationId} for user ${userSessionId.value}")
-            opt           <- playlistOptimizer.get(userSessionId, OptimizationId(optimizationId))
-            resp          <- Ok(OptimizationView.from(opt, PlaylistView.from))
+            _             <- logger.info(s"get playlist optimization $optimizationId for user ${userSessionId.value}")
+            opt           <- optimizer.get(userSessionId, OptimizationId(optimizationId))
+            resp          <- Ok(OptimizationView.from(opt, playlistViewMapper))
           } yield resp
         }
       case req @ GET -> Root / "playlist-optimizations" =>
@@ -44,8 +47,9 @@ final class OptimizationController[F[_]](
           for {
             userSessionId <- F.fromEither(getUserSessionIdFromCookie(req))
             _             <- logger.info(s"get all playlist optimizations for user ${userSessionId.value}")
-            opts          <- playlistOptimizer.getAll(userSessionId)
-            resp          <- Ok(opts.sortBy(_.dateInitiated).reverse.map(OptimizationView.from(_, PlaylistView.from)))
+            opts          <- optimizer.getAll(userSessionId)
+            sortedOpts = opts.sortBy(_.dateInitiated)(Ordering[Instant].reverse)
+            resp <- Ok(sortedOpts.map(OptimizationView.from(_, playlistViewMapper)))
           } yield resp
         }
       case req @ DELETE -> Root / "playlist-optimizations" / UUIDVar(optimizationId) =>
@@ -53,11 +57,14 @@ final class OptimizationController[F[_]](
           for {
             userSessionId <- F.fromEither(getUserSessionIdFromCookie(req))
             _             <- logger.info(s"delete optimization $optimizationId for user ${userSessionId.value}")
-            _             <- playlistOptimizer.delete(userSessionId, OptimizationId(optimizationId))
+            _             <- optimizer.delete(userSessionId, OptimizationId(optimizationId))
             resp          <- NoContent()
           } yield resp
         }
     }
+
+  private def playlistViewMapper(opt: Optimizable[Track]): PlaylistView =
+    PlaylistView.from(opt.asInstanceOf[Playlist])
 }
 
 object OptimizationController {
@@ -68,6 +75,6 @@ object OptimizationController {
 
   final case class PlaylistOptimizationResponse(id: OptimizationId)
 
-  def make[F[_]: Async: Logger](playlistOptimizer: Optimizer[F, Playlist]): F[OptimizationController[F]] =
+  def make[F[_]: Async: Logger](playlistOptimizer: Optimizer[F, Track]): F[OptimizationController[F]] =
     Monad[F].pure(new OptimizationController[F](playlistOptimizer))
 }
