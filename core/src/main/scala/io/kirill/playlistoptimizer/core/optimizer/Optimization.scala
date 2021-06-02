@@ -28,10 +28,10 @@ final case class Optimization[A](
     score: Option[BigDecimal] = None
 ) {
 
-  def complete(result: Array[A], score: BigDecimal): Optimization[A] =
+  def complete(result: Optimizable[A], score: BigDecimal): Optimization[A] =
     copy(
       status = "completed",
-      result = Some(original.update(result)),
+      result = Some(result),
       score = Some(score),
       duration = Some((Instant.now().toEpochMilli - dateInitiated.toEpochMilli).millis)
     )

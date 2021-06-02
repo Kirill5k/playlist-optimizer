@@ -22,7 +22,7 @@ final class GeneticAlgorithm[F[_], A: ClassTag](
   override def optimize(
       optimizable: Optimizable[A],
       params: OptimizationParameters
-  )(implicit rand: Random): F[(Array[A], BigDecimal)] = {
+  )(implicit rand: Random): F[(Optimizable[A], BigDecimal)] = {
     Stream
       .range[F, Int](0, params.maxGen)
       .evalScan(initializePopulation(optimizable, params))((currPop, _) => singleGeneration(currPop, params))
@@ -30,7 +30,7 @@ final class GeneticAlgorithm[F[_], A: ClassTag](
       .lastOrError
       .map(evaluator.evaluatePopulation)
       .map(_.minBy(_._2.value))
-      .map { case (res, f) => (res, f.value) }
+      .map { case (res, f) => (optimizable.update(res), f.value) }
   }
 
   private def initializePopulation(

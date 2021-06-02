@@ -31,15 +31,15 @@ class GeneticAlgorithmSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers 
       val playlist  = PlaylistBuilder.playlist
       val params = OptimizationParameters(200, 250, 0.75, 0.05, 0.2, true)
 
-      val optimizedSongsResult = alg.optimize(playlist, params)
+      val optimizedPlaylist = alg.optimize(playlist, params)
 
-      optimizedSongsResult.asserting { case (tracks, score) =>
+      optimizedPlaylist.asserting { case (result, score) =>
         val end = Instant.now()
 
         println(s"total time taken: ${end.getEpochSecond - start.getEpochSecond}s")
 
-        tracks must contain theSameElementsAs playlist.tracks
-        tracks must not contain theSameElementsInOrderAs(playlist.tracks)
+        result.repr must contain theSameElementsAs playlist.tracks
+        result.repr must not contain theSameElementsInOrderAs(playlist.tracks)
         score must be < Evaluator.harmonicSeqBasedTracksEvaluator.evaluateIndividual(playlist.repr).value / 20
       }
     }

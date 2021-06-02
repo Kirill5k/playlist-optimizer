@@ -43,7 +43,7 @@ private class InmemoryOptimizer[F[_]: Concurrent, A](
       _ <- process.start.void
     } yield oid
 
-  private def complete(uid: UserSessionId, id: OptimizationId, result: Array[A], score: BigDecimal): F[Unit] =
+  private def complete(uid: UserSessionId, id: OptimizationId, result: Optimizable[A], score: BigDecimal): F[Unit] =
     get(uid, id).flatMap(opt => save(uid, opt.complete(result, score))).void
 
   private def save(uid: UserSessionId, opt: Optimization[A]): F[OptimizationId] =

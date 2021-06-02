@@ -18,7 +18,7 @@ trait OptimizationAlgorithm[F[_], A] {
       parameters: OptimizationParameters
   )(implicit
       rand: Random
-  ): F[(Array[A], BigDecimal)]
+  ): F[(Optimizable[A], BigDecimal)]
 }
 
 object OptimizationAlgorithm {

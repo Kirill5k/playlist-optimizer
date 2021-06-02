@@ -28,7 +28,7 @@ class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
   "A InmemoryPlaylistOptimizer" - {
 
     "initiate optimization of a playlist" in {
-      val alg = mockAlg(IO.sleep(10.seconds) *> IO.pure((optimizedTracks, 25.0)))
+      val alg = mockAlg(IO.sleep(10.seconds) *> IO.pure((playlist.update(optimizedTracks), 25.0)))
 
       val result = for {
         optimizer <- Optimizer.inmemoryPlaylistOptimizer[IO](alg)
@@ -50,7 +50,7 @@ class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     }
 
     "return error when user id is not recognized" in {
-      val alg = mockAlg(IO.sleep(2.seconds) *> IO.pure((optimizedTracks, 25.0)))
+      val alg = mockAlg(IO.sleep(2.seconds) *> IO.pure((playlist.update(optimizedTracks), 25.0)))
 
       val result = for {
         optimizer <- Optimizer.inmemoryPlaylistOptimizer[IO](alg)
@@ -62,7 +62,7 @@ class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     }
 
     "return incomplete optimization result after if it has not completed" in {
-      val alg = mockAlg(IO.sleep(2.seconds) *> IO.pure((optimizedTracks, 25.0)))
+      val alg = mockAlg(IO.sleep(2.seconds) *> IO.pure((playlist.update(optimizedTracks), 25.0)))
 
       val result = for {
         optimizer <- Optimizer.inmemoryPlaylistOptimizer[IO](alg)
@@ -79,7 +79,7 @@ class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     }
 
     "return optimization result after it has completed" in {
-      val alg = mockAlg(IO.sleep(2.seconds) *> IO.pure((optimizedTracks, 25.0)))
+      val alg = mockAlg(IO.sleep(2.seconds) *> IO.pure((playlist.update(optimizedTracks), 25.0)))
       val result = for {
         optimizer <- Optimizer.inmemoryPlaylistOptimizer[IO](alg)
         id        <- optimizer.optimize(userSessionId, playlist, parameters)
@@ -96,7 +96,7 @@ class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     }
 
     "return all optimizations" in {
-      val alg = mockAlg(IO.sleep(2.seconds) *> IO.pure((optimizedTracks, 25.0)))
+      val alg = mockAlg(IO.sleep(2.seconds) *> IO.pure((playlist.update(optimizedTracks), 25.0)))
 
       val result = for {
         optimizer <- Optimizer.inmemoryPlaylistOptimizer[IO](alg)
@@ -111,7 +111,7 @@ class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     }
 
     "delete optimization" in {
-      val alg = mockAlg(IO.sleep(2.seconds) *> IO.pure((optimizedTracks, 25.0)))
+      val alg = mockAlg(IO.sleep(2.seconds) *> IO.pure((playlist.update(optimizedTracks), 25.0)))
 
       val result = for {
         optimizer <- Optimizer.inmemoryPlaylistOptimizer[IO](alg)
@@ -136,7 +136,7 @@ class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     }
 
     "return error if user id does not match" in {
-      val alg = mockAlg(IO.sleep(2.seconds) *> IO.pure((optimizedTracks, 25.0)))
+      val alg = mockAlg(IO.sleep(2.seconds) *> IO.pure((playlist.update(optimizedTracks), 25.0)))
 
       val result = for {
         optimizer <- Optimizer.inmemoryPlaylistOptimizer[IO](alg)
@@ -148,7 +148,7 @@ class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     }
 
     "expired old optimizations" in {
-      val alg = mockAlg(IO.pure((optimizedTracks, 25.0)))
+      val alg = mockAlg(IO.pure((playlist.update(optimizedTracks), 25.0)))
 
       val result = for {
         optimizer <- Optimizer.inmemoryPlaylistOptimizer[IO](alg, 5.seconds, 1.second)
@@ -164,12 +164,12 @@ class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
       }
     }
 
-    def mockAlg(returnResult: => IO[(Array[Track], BigDecimal)]) =
+    def mockAlg(returnResult: => IO[(Optimizable[Track], BigDecimal)]): OptimizationAlgorithm[IO, Track] =
       new OptimizationAlgorithm[IO, Track] {
         override def optimize(
             optimizable: Optimizable[Track],
             parameters: OptimizationParameters
-        )(implicit r: Random): IO[(Array[Track], BigDecimal)] =
+        )(implicit r: Random): IO[(Optimizable[Track], BigDecimal)] =
           returnResult
       }
   }
