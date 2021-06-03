@@ -1,9 +1,7 @@
 package io.kirill.playlistoptimizer.core.common
 
-import cats.effect.Sync
 import pureconfig._
 import pureconfig.generic.auto._
-import pureconfig.module.catseffect.syntax._
 
 object config {
 
@@ -35,9 +33,6 @@ object config {
   object AppConfig {
     def load(): AppConfig =
       ConfigSource.default.loadOrThrow[AppConfig]
-
-    def loadF[F[_]: Sync]: F[AppConfig] =
-      ConfigSource.default.loadF[F, AppConfig]()
   }
 
 }

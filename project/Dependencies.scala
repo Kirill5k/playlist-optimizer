@@ -11,15 +11,14 @@ object Dependencies {
     val logback    = "1.2.3"
     val log4cats   = "2.1.1"
 
-    val mockito    = "1.16.37"
-    val scalatest  = "3.2.9"
-    val scalameter = "0.21"
+    val mockito           = "1.16.37"
+    val scalatest         = "3.2.9"
+    val scalameter        = "0.21"
     val catsEffectTesting = "1.1.1"
   }
 
   private object Libraries {
-    val pureconfigCore = "com.github.pureconfig" %% "pureconfig"             % Versions.pureConfig
-    val pureconfigCats = "com.github.pureconfig" %% "pureconfig-cats-effect" % Versions.pureConfig
+    val pureconfigCore = "com.github.pureconfig" %% "pureconfig" % Versions.pureConfig
 
     val logback  = "ch.qos.logback" % "logback-classic" % Versions.logback
     val log4cats = "org.typelevel" %% "log4cats-slf4j"  % Versions.log4cats
@@ -46,11 +45,10 @@ object Dependencies {
     val mockitoScalatest = "org.mockito"       %% "mockito-scala-scalatest"       % Versions.mockito
     val scalatest        = "org.scalatest"     %% "scalatest"                     % Versions.scalatest
     val scalameter       = "com.storm-enroute" %% "scalameter"                    % Versions.scalameter
-    val catsEffectTest   = "org.typelevel"    %% "cats-effect-testing-scalatest" % Versions.catsEffectTesting
+    val catsEffectTest   = "org.typelevel"     %% "cats-effect-testing-scalatest" % Versions.catsEffectTesting
   }
 
   lazy val core = Seq(
-    Libraries.pureconfigCats,
     Libraries.pureconfigCore,
     Libraries.logback,
     Libraries.log4cats,

@@ -41,7 +41,7 @@ object jwt {
   }
 
   object JwtEncoder {
-    def circeJwtEncoder[F[_], A: Codec](config: JwtConfig)(implicit
+    def circeJwtEncoder[F[_], A: Encoder: Decoder](config: JwtConfig)(implicit
         F: Sync[F]
     ): F[JwtEncoder[F, A]] =
       JwtAlgorithm.fromString(config.alg.toUpperCase) match {
