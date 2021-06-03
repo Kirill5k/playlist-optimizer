@@ -8,15 +8,15 @@ import cats.effect._
 import cats.implicits._
 import org.typelevel.log4cats.Logger
 import io.circe.generic.auto._
-import io.circe.syntax._
 import io.kirill.playlistoptimizer.core.common.JsonCodecs
-import io.kirill.playlistoptimizer.core.common.errors.{MissingUserSessionCookie, _}
+import io.kirill.playlistoptimizer.core.common.controllers.Controller.{ErrorResponse, UserSessionId}
+import io.kirill.playlistoptimizer.core.common.errors._
 import org.http4s.{HttpRoutes, MessageFailure, Request, RequestCookie, Response, ResponseCookie}
 import org.http4s.dsl.Http4sDsl
-import org.http4s.circe._
+import org.http4s.circe.CirceEntityCodec._
 
 trait Controller[F[_]] extends Http4sDsl[F] with JsonCodecs {
-  import Controller._
+  val UserSessionCookie = "user-session"
 
   def routesWithUserSession(implicit F: Functor[F]): HttpRoutes[F] =
     userSessionMiddleware(routes)
@@ -32,19 +32,19 @@ trait Controller[F[_]] extends Http4sDsl[F] with JsonCodecs {
     response.handleErrorWith {
       case error: ForbiddenError =>
         logger.error(s"forbidden error: ${error.message}") *>
-          Forbidden(ErrorResponse(error.message).asJson)
+          Forbidden(ErrorResponse(error.message))
       case error: NotFoundError =>
         logger.error(s"not found error: ${error.message}") *>
-          NotFound(ErrorResponse(error.message).asJson)
+          NotFound(ErrorResponse(error.message))
       case error: BadRequestError =>
         logger.error(s"bad request error: ${error.message}") *>
-          BadRequest(ErrorResponse(error.message).asJson)
+          BadRequest(ErrorResponse(error.message))
       case error: MessageFailure =>
         logger.error(error)(s"error parsing json: ${error.getMessage()}") *>
-          BadRequest(ErrorResponse(error.getMessage()).asJson)
+          BadRequest(ErrorResponse(error.getMessage()))
       case error =>
         logger.error(error)(s"unexpected error: ${error.getMessage}") *>
-          InternalServerError(ErrorResponse(error.getMessage).asJson)
+          InternalServerError(ErrorResponse(error.getMessage))
     }
 
   protected def getCookie(req: Request[F], name: String): Option[RequestCookie] =
@@ -56,7 +56,7 @@ trait Controller[F[_]] extends Http4sDsl[F] with JsonCodecs {
       .toRight(MissingUserSessionCookie)
 
   private def userSessionMiddleware(httpRoutes: HttpRoutes[F])(implicit F: Functor[F]): HttpRoutes[F] =
-    Kleisli { req: Request[F] =>
+    Kleisli { (req: Request[F]) =>
       val res =
         if (req.cookies.exists(_.name == UserSessionCookie)) httpRoutes(req)
         else httpRoutes(req.addCookie(RequestCookie(UserSessionCookie, UUID.randomUUID().toString)))
@@ -68,7 +68,6 @@ trait Controller[F[_]] extends Http4sDsl[F] with JsonCodecs {
 }
 
 object Controller {
-  val UserSessionCookie = "user-session"
 
   final case class ErrorResponse(message: String)
 

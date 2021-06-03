@@ -8,12 +8,11 @@ import io.kirill.playlistoptimizer.core.health.HealthController.AppStatus
 import org.http4s.HttpRoutes
 import org.http4s.circe.CirceEntityCodec._
 
-class HealthController[F[_]: Sync] extends Controller[F] {
+final class HealthController[F[_]: Sync] extends Controller[F] {
 
   override def routes: HttpRoutes[F] =
     HttpRoutes.of[F] {
-      case GET -> Root / "health" / "status" =>
-        Ok(AppStatus(true))
+      case GET -> Root / "health" / "status" => Ok(AppStatus(true))
     }
 }
 

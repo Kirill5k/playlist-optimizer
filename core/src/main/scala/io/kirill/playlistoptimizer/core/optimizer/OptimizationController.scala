@@ -64,6 +64,7 @@ final class OptimizationController[F[_]](
 }
 
 object OptimizationController {
+
   final case class PlaylistOptimizationRequest(
       playlist: PlaylistView,
       optimizationParameters: OptimizationParameters

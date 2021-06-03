@@ -12,14 +12,16 @@ import scala.util.Failure
 
 object jwt {
 
-  sealed trait JwtEncoder[F[_], A] {
+  trait JwtEncoder[F[_], A] {
     def encode(token: A): F[String]
     def decode(token: String): F[A]
   }
 
-  private final class CirceJwtEncoder[F[_]: Sync, A: Encoder: Decoder](
+  final private class CirceJwtEncoder[F[_], A: Encoder: Decoder](
       private val secret: String,
       private val alg: JwtAlgorithm
+  )(implicit
+      F: Sync[F]
   ) extends JwtEncoder[F, A] {
 
     private val decodeFunc = alg match {
@@ -32,19 +34,21 @@ object jwt {
     }
 
     override def encode(token: A): F[String] =
-      Sync[F].delay(JwtCirce.encode(token.asJson, secret, alg))
+      F.delay(JwtCirce.encode(token.asJson, secret, alg))
 
     override def decode(token: String): F[A] =
-      Sync[F].fromEither(decodeFunc(token).toEither.flatMap(_.as[A]).left.map(e => JwtDecodeError(e.getMessage)))
+      F.fromEither(decodeFunc(token).toEither.flatMap(_.as[A]).left.map(e => JwtDecodeError(e.getMessage)))
   }
 
   object JwtEncoder {
-    def circeJwtEncoder[F[_]: Sync, A: Encoder: Decoder](config: JwtConfig): F[JwtEncoder[F, A]] =
+    def circeJwtEncoder[F[_], A: Codec](config: JwtConfig)(implicit
+        F: Sync[F]
+    ): F[JwtEncoder[F, A]] =
       JwtAlgorithm.fromString(config.alg.toUpperCase) match {
         case alg if JwtAlgorithm.allHmac().contains(alg) | JwtAlgorithm.allAsymmetric().contains(alg) =>
-          Sync[F].delay(new CirceJwtEncoder(config.secret, alg))
+          F.pure(new CirceJwtEncoder(config.secret, alg))
         case alg =>
-          Sync[F].raiseError(InvalidJwtEncryptionAlgorithm(alg))
+          F.raiseError(InvalidJwtEncryptionAlgorithm(alg))
       }
 
   }
