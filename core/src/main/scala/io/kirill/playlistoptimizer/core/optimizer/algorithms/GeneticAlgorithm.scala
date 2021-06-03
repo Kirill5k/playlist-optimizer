@@ -24,9 +24,9 @@ final class GeneticAlgorithm[F[_], A: ClassTag](
       target: T,
       params: OptimizationParameters
   )(implicit
-    optimizable: Optimizable[T, A],
-    rand: Random
-  ): F[(T, BigDecimal)] = {
+      optimizable: Optimizable[T, A],
+      rand: Random
+  ): F[(T, BigDecimal)] =
     Stream
       .range[F, Int](0, params.maxGen)
       .evalScan(initializePopulation(target.repr, params))((currPop, _) => singleGeneration(currPop, params))
@@ -35,15 +35,12 @@ final class GeneticAlgorithm[F[_], A: ClassTag](
       .map(evaluator.evaluatePopulation)
       .map(_.minBy(_._2.value))
       .map { case (res, f) => (optimizable.update(target)(res), f.value) }
-  }
 
   private def initializePopulation(
       repr: Array[A],
       params: OptimizationParameters
-  )(implicit rand: Random): List[Array[A]] = {
-    val indGen = () => if (params.shuffle) rand.shuffle(repr.toVector).toArray else repr
-    List.fill(params.populationSize)(indGen())
-  }
+  )(implicit rand: Random): List[Array[A]] =
+    List.fill(params.populationSize)(if (params.shuffle) rand.shuffle(repr.toVector).toArray else repr)
 
   private def singleGeneration(
       population: List[Array[A]],
