@@ -49,8 +49,8 @@ class OptimizationControllerSpec extends ControllerSpec {
       val expected = s"""{"id": "${optimizationId.value}"}"""
 
       verifyJsonResponse(response, Status.Created, Some(expected), Map("user-session" -> "user-session-id"))
-      playlistCaptor.getValue must be(shortenedPlaylist)
-      parametersCaptor.getValue must be(optimizationParameters)
+      playlistCaptor.getValue mustBe shortenedPlaylist
+      parametersCaptor.getValue mustBe optimizationParameters
     }
 
     "get playlist optimization by id" in {
