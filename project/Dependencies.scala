@@ -5,7 +5,7 @@ object Dependencies {
   private object Versions {
     val pureConfig = "0.15.0"
     val circe      = "0.14.1"
-    val sttp       = "3.3.5"
+    val sttp       = "3.3.6"
     val http4s     = "1.0.0-M23"
     val jwt        = "5.0.0"
     val logback    = "1.2.3"
