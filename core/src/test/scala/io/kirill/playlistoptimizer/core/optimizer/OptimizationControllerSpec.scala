@@ -4,7 +4,6 @@ import java.time.Instant
 import java.util.UUID
 import cats.effect._
 import io.circe.generic.auto._
-import io.circe.literal._
 import io.circe.syntax._
 import io.kirill.playlistoptimizer.core.ControllerSpec
 import io.kirill.playlistoptimizer.core.common.controllers.Controller
@@ -148,7 +147,7 @@ class OptimizationControllerSpec extends ControllerSpec {
 
       val executedResponse = response.unsafeRunSync()
 
-      executedResponse.status must be(Status.NoContent)
+      executedResponse.status mustBe Status.NoContent
       executedResponse.cookies.map(_.name) must contain("user-session")
     }
   }

@@ -24,9 +24,7 @@ object Dependencies {
     val log4cats = "org.typelevel" %% "log4cats-slf4j"  % Versions.log4cats
 
     val circeCore          = "io.circe" %% "circe-core"           % Versions.circe
-    val circeLiteral       = "io.circe" %% "circe-literal"        % Versions.circe
     val circeGeneric       = "io.circe" %% "circe-generic"        % Versions.circe
-    val circeGenericExtras = "io.circe" %% "circe-generic-extras" % Versions.circe
     val circeParser        = "io.circe" %% "circe-parser"         % Versions.circe
 
     val sttpCore        = "com.softwaremill.sttp.client3" %% "core"                           % Versions.sttp
@@ -53,9 +51,7 @@ object Dependencies {
     Libraries.logback,
     Libraries.log4cats,
     Libraries.circeCore,
-    Libraries.circeLiteral,
     Libraries.circeGeneric,
-    Libraries.circeGenericExtras,
     Libraries.circeParser,
     Libraries.sttpCore,
     Libraries.sttpCirce,
