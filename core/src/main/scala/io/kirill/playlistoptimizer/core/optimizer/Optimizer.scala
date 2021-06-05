@@ -71,7 +71,7 @@ object Optimizer {
     def runExpiration(state: Ref[F, Map[UserSessionId, Map[OptimizationId, Optimization[Playlist]]]]): F[Unit] = {
       def expire: F[Unit] = state.update(_.foldLeft(Map.empty[UserSessionId, Map[OptimizationId, Optimization[Playlist]]]) {
         case (res, (uid, optsMap)) =>
-          res + (uid -> optsMap.filter { case (_, opt) => opt.hasCompletedLessThan(expiresIn) })
+          res + (uid -> optsMap.filter { case (_, opt) => !opt.isExpired(expiresIn) })
       })
       Temporal[F].sleep(checkOnExpirationsEvery) >> expire >> runExpiration(state)
     }

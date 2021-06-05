@@ -34,8 +34,8 @@ final case class Optimization[A](
       duration = Some((Instant.now().toEpochMilli - dateInitiated.toEpochMilli).millis)
     )
 
-  def hasCompletedLessThan(time: FiniteDuration): Boolean =
-    duration.fold(true)(d => dateInitiated.plusNanos(d.toNanos + time.toNanos).isAfter(Instant.now))
+  def isExpired(expirationTime: FiniteDuration): Boolean =
+    duration.fold(false)(d => dateInitiated.plusNanos(d.toNanos + expirationTime.toNanos).isBefore(Instant.now))
 }
 
 object Optimization {
