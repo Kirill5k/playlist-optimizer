@@ -10,7 +10,8 @@ import scala.util.Random
 trait OptimizationAlgorithm[F[_], A] {
   def optimize[T](
       target: T,
-      parameters: OptimizationParameters
+      parameters: OptimizationParameters,
+      updateProgress: BigDecimal => F[Unit]
   )(implicit
       optimizable: Optimizable[T, A],
       rand: Random

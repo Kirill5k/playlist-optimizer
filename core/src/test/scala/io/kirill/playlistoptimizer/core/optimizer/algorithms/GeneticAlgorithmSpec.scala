@@ -32,7 +32,7 @@ class GeneticAlgorithmSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers 
       val playlist = PlaylistBuilder.playlist
       val params   = OptimizationParameters(200, 250, 0.75, 0.05, 0.2, true)
 
-      val optimizedPlaylist = alg.optimize(playlist, params)
+      val optimizedPlaylist = alg.optimize(playlist, params, _ => IO.unit)
 
       optimizedPlaylist.asserting { case (result, score) =>
         val end = Instant.now()

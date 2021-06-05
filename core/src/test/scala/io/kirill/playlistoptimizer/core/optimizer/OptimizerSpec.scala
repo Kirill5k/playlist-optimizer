@@ -73,9 +73,9 @@ class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
 
       result.asserting { optimization =>
         optimization.progress mustBe BigDecimal(0)
-        optimization.original mustBe (playlist)
-        optimization.result mustBe (None)
-        optimization.score mustBe (None)
+        optimization.original mustBe playlist
+        optimization.result mustBe None
+        optimization.score mustBe None
       }
     }
 
@@ -90,7 +90,7 @@ class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
 
       result.asserting { optimization =>
         optimization.progress mustBe BigDecimal(100)
-        optimization.original mustBe (playlist)
+        optimization.original mustBe playlist
         optimization.result mustBe (Some(plOpt.update(playlist)(optimizedTracks)))
         optimization.score mustBe (Some(25.0))
       }
@@ -107,7 +107,7 @@ class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
       } yield res
 
       result.asserting { optimizations =>
-        optimizations.size mustBe (2)
+        optimizations.size mustBe 2
       }
     }
 
@@ -121,7 +121,7 @@ class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
         res       <- optimizer.getAll(userSessionId)
       } yield res
 
-      result.asserting(_ mustBe (Nil))
+      result.asserting(_ mustBe Nil)
     }
 
     "return error if deleted optimization does not exist" in {
@@ -161,7 +161,7 @@ class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
       } yield res
 
       result.asserting { optimizations =>
-        optimizations.size mustBe (1)
+        optimizations.size mustBe 1
       }
     }
 
@@ -169,10 +169,11 @@ class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
       new OptimizationAlgorithm[IO, Track] {
         override def optimize[T](
             target: T,
-            parameters: OptimizationParameters
+            parameters: OptimizationParameters,
+            updateProgress: BigDecimal => IO[Unit]
         )(implicit
-          optimizable: Optimizable[T, Track],
-          r: Random
+            optimizable: Optimizable[T, Track],
+            r: Random
         ): IO[(T, BigDecimal)] =
           returnResult.map { case (res, score) => (res.asInstanceOf[T], score) }
       }

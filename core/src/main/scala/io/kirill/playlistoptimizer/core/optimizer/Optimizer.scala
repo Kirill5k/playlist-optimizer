@@ -40,12 +40,15 @@ private class InmemoryOptimizer[F[_]: Concurrent, T, A](
   override def optimize(uid: UserSessionId, target: T, parameters: OptimizationParameters): F[OptimizationId] =
     for {
       oid <- save(uid, Optimization.init[T](parameters, target))
-      process = alg.optimize(target, parameters).flatMap(res => complete(uid, oid, res._1, res._2))
+      process = alg.optimize(target, parameters, p => updateProgress(uid, oid, p)).flatMap(res => complete(uid, oid, res))
       _ <- process.start.void
     } yield oid
 
-  private def complete(uid: UserSessionId, id: OptimizationId, result: T, score: BigDecimal): F[Unit] =
-    get(uid, id).flatMap(opt => save(uid, opt.complete(result, score))).void
+  private def updateProgress(uid: UserSessionId, id: OptimizationId, progress: BigDecimal): F[Unit] =
+    get(uid, id).flatMap(opt => save(uid, opt.copy(progress = progress))).void
+
+  private def complete(uid: UserSessionId, id: OptimizationId, result: (T, BigDecimal)): F[Unit] =
+    get(uid, id).flatMap(opt => save(uid, opt.complete(result._1, result._2))).void
 
   private def save(uid: UserSessionId, opt: Optimization[T]): F[OptimizationId] =
     state.update(s => s + (uid -> (s.getOrElse(uid, Map.empty) + (opt.id -> opt)))) *>

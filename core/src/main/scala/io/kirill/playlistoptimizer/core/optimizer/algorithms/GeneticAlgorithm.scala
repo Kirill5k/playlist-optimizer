@@ -22,7 +22,8 @@ final class GeneticAlgorithm[F[_], A: ClassTag](
 
   override def optimize[T](
       target: T,
-      params: OptimizationParameters
+      params: OptimizationParameters,
+      updateProgress: BigDecimal => F[Unit]
   )(implicit
       optimizable: Optimizable[T, A],
       rand: Random
@@ -31,7 +32,7 @@ final class GeneticAlgorithm[F[_], A: ClassTag](
       .range[F, Int](0, params.maxGen)
       .map(i => i.toDouble * 100 / params.maxGen)
       .evalScan(initializePopulation(target.repr, params)) { (currPop, i) =>
-        F.delay(if (i * 10 % 10 == 0) println(i) else ()) *> singleGeneration(currPop, params)
+        (if (i * 10 % 10 == 0) updateProgress(i) else F.unit) *> singleGeneration(currPop, params)
       }
       .compile
       .lastOrError
