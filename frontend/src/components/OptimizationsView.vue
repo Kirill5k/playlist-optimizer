@@ -8,9 +8,9 @@
       <template slot="header">
         <p v-b-toggle="'optimization'+index.toString()" class="mb-0 p-1 w-100">
           <strong>{{ optimization.original.name }}</strong> playlist optimization
-          <b-badge :variant="optimizationStatusVariant(optimization.status)" class="ml-2">{{ optimization.status }}</b-badge>
+          <b-badge :variant="optimizationStatusVariant(optimization.progress)" class="ml-2">{{ optimization.progress }}%</b-badge>
         </p>
-        <b-spinner v-if="optimization.status === 'in progress'" small class="mt-2 mr-3" label="Loading..."></b-spinner>
+        <b-spinner v-if="optimization.progress < 100" small class="mt-2 mr-3" label="Loading..."></b-spinner>
       </template>
       <b-card-body slot="body" class="optimizations-view__body">
         <b-card-text class="mb-0">
@@ -109,13 +109,11 @@ export default {
     }
   },
   methods: {
-    optimizationStatusVariant (status) {
-      switch (status) {
-        case 'completed':
-          return 'success'
-        default:
-          return 'secondary'
-      }
+    optimizationStatusVariant (progress) {
+      if (progress < 100)
+        return 'secondary'
+      else
+        return 'success'
     },
     showSavePlaylistForm (newPlaylistName) {
       this.displayPlaylistSaveForm = true

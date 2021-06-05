@@ -72,10 +72,10 @@ class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
       } yield res
 
       result.asserting { optimization =>
-        optimization.status must be("in progress")
-        optimization.original must be(playlist)
-        optimization.result must be(None)
-        optimization.score must be(None)
+        optimization.progress mustBe BigDecimal(0)
+        optimization.original mustBe (playlist)
+        optimization.result mustBe (None)
+        optimization.score mustBe (None)
       }
     }
 
@@ -89,10 +89,10 @@ class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
       } yield res
 
       result.asserting { optimization =>
-        optimization.status must be("completed")
-        optimization.original must be(playlist)
-        optimization.result must be(Some(plOpt.update(playlist)(optimizedTracks)))
-        optimization.score must be(Some(25.0))
+        optimization.progress mustBe BigDecimal(100)
+        optimization.original mustBe (playlist)
+        optimization.result mustBe (Some(plOpt.update(playlist)(optimizedTracks)))
+        optimization.score mustBe (Some(25.0))
       }
     }
 
@@ -107,7 +107,7 @@ class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
       } yield res
 
       result.asserting { optimizations =>
-        optimizations.size must be(2)
+        optimizations.size mustBe (2)
       }
     }
 
@@ -121,7 +121,7 @@ class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
         res       <- optimizer.getAll(userSessionId)
       } yield res
 
-      result.asserting(_ must be(Nil))
+      result.asserting(_ mustBe (Nil))
     }
 
     "return error if deleted optimization does not exist" in {
@@ -161,7 +161,7 @@ class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
       } yield res
 
       result.asserting { optimizations =>
-        optimizations.size must be(1)
+        optimizations.size mustBe (1)
       }
     }
 

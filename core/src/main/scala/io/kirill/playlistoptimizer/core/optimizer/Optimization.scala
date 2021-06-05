@@ -17,7 +17,7 @@ final case class OptimizationId(value: UUID) extends AnyVal
 
 final case class Optimization[A](
     id: OptimizationId,
-    status: String,
+    progress: BigDecimal,
     parameters: OptimizationParameters,
     original: A,
     dateInitiated: Instant,
@@ -28,7 +28,7 @@ final case class Optimization[A](
 
   def complete(result: A, score: BigDecimal): Optimization[A] =
     copy(
-      status = "completed",
+      progress = BigDecimal(100),
       result = Some(result),
       score = Some(score),
       duration = Some((Instant.now().toEpochMilli - dateInitiated.toEpochMilli).millis)
@@ -42,7 +42,7 @@ object Optimization {
   def init[A](parameters: OptimizationParameters, original: A): Optimization[A] =
     Optimization[A](
       id = OptimizationId(UUID.randomUUID()),
-      status = "in progress",
+      progress = BigDecimal(0),
       parameters = parameters,
       original = original,
       dateInitiated = Instant.now()

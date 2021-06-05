@@ -5,7 +5,7 @@ import java.util.UUID
 
 final case class OptimizationView[V](
     id: UUID,
-    status: String,
+    progress: BigDecimal,
     parameters: OptimizationParameters,
     dateInitiated: Instant,
     original: V,
@@ -18,7 +18,7 @@ object OptimizationView {
   def from[A, V](opt: Optimization[A], mapper: A => V): OptimizationView[V] =
     OptimizationView(
       opt.id.value,
-      opt.status,
+      opt.progress,
       opt.parameters,
       opt.dateInitiated,
       mapper(opt.original),

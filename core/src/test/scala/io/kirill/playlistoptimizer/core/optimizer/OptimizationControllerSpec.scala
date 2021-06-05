@@ -24,7 +24,7 @@ class OptimizationControllerSpec extends ControllerSpec {
   val optimizationId         = OptimizationId(UUID.fromString("607995e0-8e3a-11ea-bc55-0242ac130003"))
   val optimizationParameters = OptimizationParameters(100, 1000, 0.5, 0.2, 0.1, true)
   val optimization =
-    Optimization(optimizationId, "in progress", optimizationParameters, shortenedPlaylist, Instant.parse("2020-01-01T00:00:00Z"))
+    Optimization(optimizationId, BigDecimal(0), optimizationParameters, shortenedPlaylist, Instant.parse("2020-01-01T00:00:00Z"))
 
   val userSessionCookie = RequestCookie("user-session", "user-session-id")
   val userSessionId     = UserSessionId("user-session-id")
@@ -64,7 +64,7 @@ class OptimizationControllerSpec extends ControllerSpec {
         s"""
            |{
            |"id": "607995e0-8e3a-11ea-bc55-0242ac130003",
-           |"status": "in progress",
+           |"progress": 0,
            |"parameters": { "populationSize": 100, "maxGen": 1000, "crossoverProbability": 0.5, "mutationProbability": 0.2, "elitismRatio": 0.1, "shuffle": true},
            |"dateInitiated": "2020-01-01T00:00:00Z",
            |"original": $shortenedPlaylistJson,
@@ -87,7 +87,7 @@ class OptimizationControllerSpec extends ControllerSpec {
         s"""
            |[{
            |"id": "607995e0-8e3a-11ea-bc55-0242ac130003",
-           |"status": "in progress",
+           |"progress": 0,
            |"parameters": { "populationSize": 100, "maxGen": 1000, "crossoverProbability": 0.5, "mutationProbability": 0.2, "elitismRatio": 0.1, "shuffle": true},
            |"dateInitiated": "2020-01-01T00:00:00Z",
            |"original": $shortenedPlaylistJson,
