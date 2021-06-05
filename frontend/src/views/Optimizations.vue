@@ -28,7 +28,7 @@ export default {
   },
   watch: {
     optimizations (newOpts) {
-      const inProgress = newOpts.some(opt => opt.status === 'in progress')
+      const inProgress = newOpts.some(opt => opt.progress < 100)
       if (inProgress) {
         setTimeout(() => this.$store.dispatch('getOptimizations'), 2000)
       }

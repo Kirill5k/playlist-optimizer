@@ -110,10 +110,11 @@ export default {
   },
   methods: {
     optimizationStatusVariant (progress) {
-      if (progress < 100)
+      if (progress < 100) {
         return 'secondary'
-      else
+      } else {
         return 'success'
+      }
     },
     showSavePlaylistForm (newPlaylistName) {
       this.displayPlaylistSaveForm = true
