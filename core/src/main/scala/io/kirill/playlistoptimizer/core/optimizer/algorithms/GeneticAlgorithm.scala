@@ -29,7 +29,10 @@ final class GeneticAlgorithm[F[_], A: ClassTag](
   ): F[(T, BigDecimal)] =
     Stream
       .range[F, Int](0, params.maxGen)
-      .evalScan(initializePopulation(target.repr, params))((currPop, _) => singleGeneration(currPop, params))
+      .map(i => i.toDouble * 100 / params.maxGen)
+      .evalScan(initializePopulation(target.repr, params)) { (currPop, i) =>
+        F.delay(if (i * 10 % 10 == 0) println(i) else ()) *> singleGeneration(currPop, params)
+      }
       .compile
       .lastOrError
       .map(evaluator.evaluatePopulation)
