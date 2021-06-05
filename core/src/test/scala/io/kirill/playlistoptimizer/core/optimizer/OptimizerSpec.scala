@@ -29,7 +29,7 @@ class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     implicit val plOpt = Optimizable.playlistOptimizable
 
     "initiate optimization of a playlist" in {
-      val alg = mockAlg(IO.sleep(10.seconds) *> IO.pure((plOpt.update(playlist)(optimizedTracks), 25.0)))
+      val alg = mockAlg(10.seconds)(IO.pure((plOpt.update(playlist)(optimizedTracks), 25.0)))
 
       val result = for {
         optimizer <- Optimizer.inmemoryPlaylistOptimizer[IO](alg)
@@ -40,7 +40,7 @@ class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     }
 
     "return error when optimization id is not recognized" in {
-      val alg = mockAlg(???)
+      val alg = mockAlg(0.seconds)(???)
 
       val result = for {
         optimizer <- Optimizer.inmemoryPlaylistOptimizer[IO](alg)
@@ -51,7 +51,7 @@ class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     }
 
     "return error when user id is not recognized" in {
-      val alg = mockAlg(IO.sleep(2.seconds) *> IO.pure((plOpt.update(playlist)(optimizedTracks), 25.0)))
+      val alg = mockAlg(2.seconds)(IO.pure((plOpt.update(playlist)(optimizedTracks), 25.0)))
 
       val result = for {
         optimizer <- Optimizer.inmemoryPlaylistOptimizer[IO](alg)
@@ -63,16 +63,17 @@ class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     }
 
     "return incomplete optimization result after if it has not completed" in {
-      val alg = mockAlg(IO.sleep(2.seconds) *> IO.pure((plOpt.update(playlist)(optimizedTracks), 25.0)))
+      val alg = mockAlg(5.seconds)(IO.pure((plOpt.update(playlist)(optimizedTracks), 25.0)))
 
       val result = for {
         optimizer <- Optimizer.inmemoryPlaylistOptimizer[IO](alg)
         id        <- optimizer.optimize(userSessionId, playlist, parameters)
+        _         <- IO.sleep(2.seconds)
         res       <- optimizer.get(userSessionId, id)
       } yield res
 
       result.asserting { optimization =>
-        optimization.progress mustBe BigDecimal(0)
+        optimization.progress mustBe BigDecimal(20)
         optimization.original mustBe playlist
         optimization.result mustBe None
         optimization.score mustBe None
@@ -80,7 +81,7 @@ class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     }
 
     "return optimization result after it has completed" in {
-      val alg = mockAlg(IO.sleep(2.seconds) *> IO.pure((plOpt.update(playlist)(optimizedTracks), 25.0)))
+      val alg = mockAlg(2.seconds)(IO.pure((plOpt.update(playlist)(optimizedTracks), 25.0)))
       val result = for {
         optimizer <- Optimizer.inmemoryPlaylistOptimizer[IO](alg)
         id        <- optimizer.optimize(userSessionId, playlist, parameters)
@@ -97,7 +98,7 @@ class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     }
 
     "return all optimizations" in {
-      val alg = mockAlg(IO.sleep(2.seconds) *> IO.pure((plOpt.update(playlist)(optimizedTracks), 25.0)))
+      val alg = mockAlg(2.seconds)(IO.pure((plOpt.update(playlist)(optimizedTracks), 25.0)))
 
       val result = for {
         optimizer <- Optimizer.inmemoryPlaylistOptimizer[IO](alg)
@@ -112,7 +113,7 @@ class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     }
 
     "delete optimization" in {
-      val alg = mockAlg(IO.sleep(2.seconds) *> IO.pure((plOpt.update(playlist)(optimizedTracks), 25.0)))
+      val alg = mockAlg(2.seconds)(IO.pure((plOpt.update(playlist)(optimizedTracks), 25.0)))
 
       val result = for {
         optimizer <- Optimizer.inmemoryPlaylistOptimizer[IO](alg)
@@ -125,7 +126,7 @@ class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     }
 
     "return error if deleted optimization does not exist" in {
-      val alg = mockAlg(???)
+      val alg = mockAlg(0.seconds)(???)
 
       val result = for {
         optimizer <- Optimizer.inmemoryPlaylistOptimizer[IO](alg)
@@ -137,7 +138,7 @@ class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     }
 
     "return error if user id does not match" in {
-      val alg = mockAlg(IO.sleep(2.seconds) *> IO.pure((plOpt.update(playlist)(optimizedTracks), 25.0)))
+      val alg = mockAlg(2.seconds)(IO.pure((plOpt.update(playlist)(optimizedTracks), 25.0)))
 
       val result = for {
         optimizer <- Optimizer.inmemoryPlaylistOptimizer[IO](alg)
@@ -149,7 +150,7 @@ class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     }
 
     "expired old optimizations" in {
-      val alg = mockAlg(IO.pure((plOpt.update(playlist)(optimizedTracks), 25.0)))
+      val alg = mockAlg(0.seconds)(IO.pure((plOpt.update(playlist)(optimizedTracks), 25.0)))
 
       val result = for {
         optimizer <- Optimizer.inmemoryPlaylistOptimizer[IO](alg, 5.seconds, 1.second)
@@ -165,7 +166,7 @@ class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
       }
     }
 
-    def mockAlg(returnResult: => IO[(Playlist, BigDecimal)]): OptimizationAlgorithm[IO, Track] =
+    def mockAlg(duration: FiniteDuration)(returnResult: => IO[(Playlist, BigDecimal)]): OptimizationAlgorithm[IO, Track] =
       new OptimizationAlgorithm[IO, Track] {
         override def optimize[T](
             target: T,
@@ -175,7 +176,10 @@ class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
             optimizable: Optimizable[T, Track],
             r: Random
         ): IO[(T, BigDecimal)] =
-          returnResult.map { case (res, score) => (res.asInstanceOf[T], score) }
+          (0 until duration.toSeconds.toInt).toList
+            .map(i => i.toDouble * 100 / duration.toSeconds)
+            .traverse(p => updateProgress(BigDecimal(p)) *> IO.sleep(1.second))
+            .flatMap(_ => returnResult.map { case (res, score) => (res.asInstanceOf[T], score) })
       }
   }
 }
