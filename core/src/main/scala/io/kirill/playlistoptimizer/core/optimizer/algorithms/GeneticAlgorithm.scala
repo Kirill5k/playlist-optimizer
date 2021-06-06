@@ -43,13 +43,13 @@ final class GeneticAlgorithm[F[_], A: ClassTag](
   private def initializePopulation(
       repr: Array[A],
       params: OptimizationParameters
-  )(implicit rand: Random): List[Array[A]] =
-    List.fill(params.populationSize)(if (params.shuffle) rand.shuffle(repr.toVector).toArray else repr)
+  )(implicit rand: Random): Vector[Array[A]] =
+    Vector.fill(params.populationSize)(if (params.shuffle) rand.shuffle(repr.toVector).toArray else repr)
 
   private def singleGeneration(
-      population: List[Array[A]],
+      population: Vector[Array[A]],
       params: OptimizationParameters
-  )(implicit rand: Random): F[List[Array[A]]] =
+  )(implicit rand: Random): F[Vector[Array[A]]] =
     for {
       fitpop <- F.delay(evaluator.evaluatePopulation(population))
       elites <- F.delay(elitism.select(fitpop, params.elitismRatio))
