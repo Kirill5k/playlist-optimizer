@@ -55,7 +55,7 @@ final class GeneticAlgorithm[F[_], A: ClassTag](
       elites <- F.delay(elitism.select(fitpop, params.elitismRatio))
       pairs  <- F.delay(selector.selectPairs(fitpop, params.populationSize))
       crossed <- F
-        .parTraverseN(Int.MaxValue)(pairs.toList) { case (p1, p2) =>
+        .parTraverseN(Int.MaxValue)(pairs.toVector) { case (p1, p2) =>
           List(
             F.delay(crossover.cross(p1, p2, params.crossoverProbability)),
             F.delay(crossover.cross(p2, p1, params.crossoverProbability))
