@@ -47,7 +47,7 @@ object Dependencies {
   }
 
   lazy val core = Seq(
-    Libraries.pureconfigCore.cross(CrossVersion.for3Use2_13),
+    Libraries.pureconfigCore,
     Libraries.logback,
     Libraries.log4cats,
     Libraries.circeCore,
