@@ -1,6 +1,6 @@
 package io.kirill.playlistoptimizer.core.utils
 
-import common._
+import common.*
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 

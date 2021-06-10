@@ -1,10 +1,10 @@
 package io.kirill.playlistoptimizer.core.optimizer.algorithms.operators
 
 import io.kirill.playlistoptimizer.core.Benchmark
-import io.kirill.playlistoptimizer.core.optimizer.algorithms.Optimizable._
+import io.kirill.playlistoptimizer.core.optimizer.algorithms.Optimizable.*
 import io.kirill.playlistoptimizer.core.playlist.{Playlist, Track}
 import org.scalameter.KeyValue
-import org.scalameter.api._
+import org.scalameter.api.*
 
 object CrossoverBenchmark extends Benchmark {
 

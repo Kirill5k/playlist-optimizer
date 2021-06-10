@@ -7,7 +7,7 @@ import io.kirill.playlistoptimizer.core.optimizer.OptimizationParameters
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.operators.{Crossover, Elitism, Evaluator, Mutator, Selector}
 import io.kirill.playlistoptimizer.core.playlist.Track
 import org.scalameter.KeyValue
-import org.scalameter.api._
+import org.scalameter.api.*
 
 object GeneticAlgorithmBenchmark extends Benchmark {
   implicit val rt = IORuntime.global

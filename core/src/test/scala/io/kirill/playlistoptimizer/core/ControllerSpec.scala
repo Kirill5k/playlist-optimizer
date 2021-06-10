@@ -4,8 +4,8 @@ import cats.effect.IO
 import cats.effect.unsafe.IORuntime
 import org.typelevel.log4cats.Logger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
-import io.circe.parser._
-import org.http4s.circe._
+import io.circe.parser.*
+import org.http4s.circe.*
 import org.http4s.{Response, Status, _}
 import org.mockito.{ArgumentMatchersSugar, MockitoSugar}
 import org.scalatest.Assertion

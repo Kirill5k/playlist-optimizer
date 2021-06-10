@@ -1,14 +1,14 @@
 package io.kirill.playlistoptimizer.core.optimizer
 
-import cats.effect.implicits._
+import cats.effect.implicits.*
 import cats.effect.{Concurrent, Ref, Temporal}
-import cats.implicits._
+import cats.implicits.*
 import io.kirill.playlistoptimizer.core.common.controllers.Controller.UserSessionId
 import io.kirill.playlistoptimizer.core.common.errors.OptimizationNotFound
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.{Optimizable, OptimizationAlgorithm}
 import io.kirill.playlistoptimizer.core.playlist.{Playlist, Track}
 
-import scala.concurrent.duration._
+import scala.concurrent.duration.*
 import scala.util.Random
 
 trait Optimizer[F[_], T, A] {

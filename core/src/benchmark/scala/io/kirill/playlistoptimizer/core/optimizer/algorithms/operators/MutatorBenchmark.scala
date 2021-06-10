@@ -2,9 +2,9 @@ package io.kirill.playlistoptimizer.core.optimizer.algorithms.operators
 
 import io.kirill.playlistoptimizer.core.Benchmark
 import io.kirill.playlistoptimizer.core.playlist.{Playlist, Track}
-import io.kirill.playlistoptimizer.core.optimizer.algorithms.Optimizable._
+import io.kirill.playlistoptimizer.core.optimizer.algorithms.Optimizable.*
 import org.scalameter.{Context, KeyValue}
-import org.scalameter.api._
+import org.scalameter.api.*
 
 object MutatorBenchmark extends Benchmark {
 

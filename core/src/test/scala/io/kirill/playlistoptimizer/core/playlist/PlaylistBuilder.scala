@@ -1,9 +1,9 @@
 package io.kirill.playlistoptimizer.core.playlist
 
-import io.kirill.playlistoptimizer.core.playlist.Key._
+import io.kirill.playlistoptimizer.core.playlist.Key.*
 
 import java.time.LocalDate
-import scala.concurrent.duration._
+import scala.concurrent.duration.*
 import scala.language.postfixOps
 
 object PlaylistBuilder {

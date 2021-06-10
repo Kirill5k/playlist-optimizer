@@ -4,16 +4,16 @@ import cats.Functor
 
 import java.util.UUID
 import cats.data.Kleisli
-import cats.effect._
-import cats.implicits._
+import cats.effect.*
+import cats.implicits.*
 import org.typelevel.log4cats.Logger
-import io.circe.generic.auto._
+import io.circe.generic.auto.*
 import io.kirill.playlistoptimizer.core.common.JsonCodecs
 import io.kirill.playlistoptimizer.core.common.controllers.Controller.{ErrorResponse, UserSessionId}
-import io.kirill.playlistoptimizer.core.common.errors._
+import io.kirill.playlistoptimizer.core.common.errors.*
 import org.http4s.{HttpRoutes, MessageFailure, Request, RequestCookie, Response, ResponseCookie}
 import org.http4s.dsl.Http4sDsl
-import org.http4s.circe.CirceEntityCodec._
+import org.http4s.circe.CirceEntityCodec.*
 
 trait Controller[F[_]] extends Http4sDsl[F] with JsonCodecs {
   val UserSessionCookie = "user-session"

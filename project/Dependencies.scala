@@ -3,7 +3,7 @@ import sbt._
 object Dependencies {
 
   private object Versions {
-    val pureConfig = "0.15.0"
+    val pureConfig = "0.16.0"
     val circe      = "0.14.1"
     val sttp       = "3.3.6"
     val http4s     = "1.0.0-M23"
@@ -47,7 +47,7 @@ object Dependencies {
   }
 
   lazy val core = Seq(
-    Libraries.pureconfigCore,
+    Libraries.pureconfigCore.cross(CrossVersion.for3Use2_13),
     Libraries.logback,
     Libraries.log4cats,
     Libraries.circeCore,
@@ -61,14 +61,14 @@ object Dependencies {
     Libraries.http4sServer,
     Libraries.http4sBlaze,
     Libraries.http4sCirce,
-    Libraries.jwtCirce
+    Libraries.jwtCirce.cross(CrossVersion.for3Use2_13)
   )
 
   lazy val test = Seq(
-    Libraries.mockitoCore      % Test,
-    Libraries.mockitoScalatest % Test,
+    Libraries.mockitoCore.cross(CrossVersion.for3Use2_13)      % Test,
+    Libraries.mockitoScalatest.cross(CrossVersion.for3Use2_13) % Test,
     Libraries.scalatest        % Test,
-    Libraries.scalameter       % Test,
+    Libraries.scalameter.cross(CrossVersion.for3Use2_13)       % Test,
     Libraries.catsEffectTest   % Test
   )
 }

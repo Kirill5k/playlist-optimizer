@@ -2,11 +2,11 @@ package io.kirill.playlistoptimizer.core.health
 
 import cats.Monad
 import cats.effect.Sync
-import io.circe.generic.auto._
+import io.circe.generic.auto.*
 import io.kirill.playlistoptimizer.core.common.controllers.Controller
 import io.kirill.playlistoptimizer.core.health.HealthController.AppStatus
 import org.http4s.HttpRoutes
-import org.http4s.circe.CirceEntityCodec._
+import org.http4s.circe.CirceEntityCodec.*
 
 final class HealthController[F[_]: Sync] extends Controller[F] {
 

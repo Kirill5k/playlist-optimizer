@@ -1,7 +1,7 @@
 package io.kirill.playlistoptimizer.core.playlist
 
 import java.util.concurrent.TimeUnit
-import scala.concurrent.duration._
+import scala.concurrent.duration.*
 
 final case class TrackView(
     name: String,

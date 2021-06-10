@@ -1,7 +1,7 @@
 package io.kirill.playlistoptimizer.core.spotify.clients
 
 import cats.effect.Sync
-import cats.implicits._
+import cats.implicits.*
 import org.typelevel.log4cats.Logger
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
 import io.kirill.playlistoptimizer.core.spotify.SpotifyAccessToken

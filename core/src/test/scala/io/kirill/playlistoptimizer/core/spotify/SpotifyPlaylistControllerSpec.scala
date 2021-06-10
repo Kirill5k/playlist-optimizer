@@ -3,8 +3,8 @@ package io.kirill.playlistoptimizer.core.spotify
 import java.time.Instant
 import java.util.UUID
 import cats.effect.IO
-import io.circe.generic.auto._
-import io.circe.syntax._
+import io.circe.generic.auto.*
+import io.circe.syntax.*
 import io.kirill.playlistoptimizer.core.ControllerSpec
 import io.kirill.playlistoptimizer.core.common.SpotifyConfigBuilder
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
@@ -12,11 +12,11 @@ import io.kirill.playlistoptimizer.core.common.controllers.Controller.ErrorRespo
 import io.kirill.playlistoptimizer.core.common.errors.{AuthenticationRequiredError, JwtDecodeError}
 import io.kirill.playlistoptimizer.core.common.jwt.JwtEncoder
 import io.kirill.playlistoptimizer.core.optimizer.{Optimization, OptimizationId, OptimizationParameters}
-import io.kirill.playlistoptimizer.core.playlist._
+import io.kirill.playlistoptimizer.core.playlist.*
 import io.kirill.playlistoptimizer.core.spotify.SpotifyPlaylistController.ImportPlaylistRequest
-import org.http4s._
-import org.http4s.implicits._
-import org.http4s.circe.CirceEntityCodec._
+import org.http4s.*
+import org.http4s.implicits.*
+import org.http4s.circe.CirceEntityCodec.*
 import org.mockito.ArgumentCaptor
 
 class SpotifyPlaylistControllerSpec extends ControllerSpec {

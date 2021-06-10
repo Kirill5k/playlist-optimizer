@@ -1,7 +1,7 @@
 package io.kirill.playlistoptimizer.core.common
 
-import pureconfig._
-import pureconfig.generic.auto._
+import pureconfig.*
+import pureconfig.generic.auto.*
 
 object config {
 
@@ -18,7 +18,7 @@ object config {
       redirectUrl: String,
       homepageUrl: String
   )
-
+  
   final case class JwtConfig(
       alg: String,
       secret: String
@@ -31,8 +31,8 @@ object config {
   )
 
   object AppConfig {
-    def load(): AppConfig =
-      ConfigSource.default.loadOrThrow[AppConfig]
+    def load(): AppConfig = ConfigSource.default.loadOrThrow[AppConfig]
+
   }
 
 }

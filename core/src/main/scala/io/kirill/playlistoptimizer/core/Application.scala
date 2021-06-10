@@ -1,18 +1,18 @@
 package io.kirill.playlistoptimizer.core
 
-import cats.effect._
+import cats.effect.*
 import org.typelevel.log4cats.Logger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
 import io.kirill.playlistoptimizer.core.common.config.AppConfig
 import io.kirill.playlistoptimizer.core.health.Health
 import io.kirill.playlistoptimizer.core.optimizer.Optimizers
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.OptimizationAlgorithm
-import io.kirill.playlistoptimizer.core.optimizer.algorithms.operators._
+import io.kirill.playlistoptimizer.core.optimizer.algorithms.operators.*
 import io.kirill.playlistoptimizer.core.playlist.Track
 import io.kirill.playlistoptimizer.core.spotify.Spotify
 import org.http4s.server.Router
 import org.http4s.blaze.server.BlazeServerBuilder
-import org.http4s.syntax.kleisli._
+import org.http4s.syntax.kleisli.*
 
 import scala.concurrent.ExecutionContext
 

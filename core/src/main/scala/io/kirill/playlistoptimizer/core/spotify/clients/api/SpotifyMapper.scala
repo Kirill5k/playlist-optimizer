@@ -3,7 +3,7 @@ package io.kirill.playlistoptimizer.core.spotify.clients.api
 import java.time.LocalDate
 import java.util.concurrent.TimeUnit
 
-import io.kirill.playlistoptimizer.core.playlist._
+import io.kirill.playlistoptimizer.core.playlist.*
 
 import scala.concurrent.duration.FiniteDuration
 
