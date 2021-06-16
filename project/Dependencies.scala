@@ -18,7 +18,7 @@ object Dependencies {
   }
 
   private object Libraries {
-    val pureconfigCore = "com.github.pureconfig" %% "pureconfig" % Versions.pureConfig
+    val pureconfigCore = "com.github.pureconfig" %% "pureconfig-core" % Versions.pureConfig
 
     val logback  = "ch.qos.logback" % "logback-classic" % Versions.logback
     val log4cats = "org.typelevel" %% "log4cats-slf4j"  % Versions.log4cats
