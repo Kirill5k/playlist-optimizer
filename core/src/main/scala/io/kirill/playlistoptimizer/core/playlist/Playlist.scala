@@ -1,5 +1,7 @@
 package io.kirill.playlistoptimizer.core.playlist
 
+import io.circe.Codec
+
 import java.time.LocalDate
 import io.kirill.playlistoptimizer.core.common.errors.UnexpectedPlaylistSource
 
@@ -20,7 +22,7 @@ final case class Release(
     kind: String,
     date: Option[LocalDate],
     uid: Option[String]
-)
+) derives Codec.AsObject
 
 final case class SongDetails(
     name: String,

@@ -1,5 +1,7 @@
 package io.kirill.playlistoptimizer.core.optimizer
 
+import io.circe.Codec
+
 import java.time.Instant
 import java.util.UUID
 import scala.concurrent.duration.*
@@ -11,7 +13,7 @@ final case class OptimizationParameters(
     mutationProbability: Double,
     elitismRatio: Double,
     shuffle: Boolean
-)
+) derives Codec.AsObject
 
 final case class OptimizationId(value: UUID) extends AnyVal
 
