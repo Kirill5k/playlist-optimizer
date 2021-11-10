@@ -20,8 +20,6 @@ object Application extends IOApp {
 
   implicit val logger: Logger[IO] = Slf4jLogger.getLogger[IO]
 
-  val config = AppConfig.load()
-
   val alg = OptimizationAlgorithm.geneticAlgorithm[IO, Track](
     Crossover.bestKeySequenceTrackCrossover,
     Mutator.neighbourSwapMutator[Track],
@@ -33,11 +31,12 @@ object Application extends IOApp {
   override def run(args: List[String]): IO[ExitCode] =
     Resources.make[IO].use { res =>
       for {
+        config    <- AppConfig.load[IO]
         _         <- logger.info("starting playlist-optimizer app...")
         health    <- Health.make[IO]
         optimizer <- Optimizers.playlist[IO](alg)
         spotify   <- Spotify.make(res.backend, config.spotify, config.jwt)
-        _ <- BlazeServerBuilder[IO](ExecutionContext.global)
+        _ <- BlazeServerBuilder[IO](runtime.compute)
           .bindHttp(config.server.port, config.server.host)
           .withHttpApp(
             Router(
