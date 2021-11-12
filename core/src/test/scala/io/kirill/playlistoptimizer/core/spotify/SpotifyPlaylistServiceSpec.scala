@@ -13,7 +13,7 @@ import sttp.client3.SttpBackend
 import sttp.client3.asynchttpclient.cats.AsyncHttpClientCatsBackend
 
 
-class SpotifyPlaylistServiceSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers with MockitoSugar {
+class SpotifyPlaylistServiceSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers with MockitoMatchers {
 
   implicit val logger: Logger[IO] = Slf4jLogger.getLogger[IO]
   implicit val sc: SpotifyConfig = SpotifyConfigBuilder.testConfig
