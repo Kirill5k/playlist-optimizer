@@ -57,12 +57,10 @@ trait Controller[F[_]] extends Http4sDsl[F] with JsonCodecs {
 
   private def userSessionMiddleware(httpRoutes: HttpRoutes[F])(implicit F: Functor[F]): HttpRoutes[F] =
     Kleisli { (req: Request[F]) =>
-      val res =
-        if (req.cookies.exists(_.name == UserSessionCookie)) httpRoutes(req)
-        else httpRoutes(req.addCookie(RequestCookie(UserSessionCookie, UUID.randomUUID().toString)))
+      val sessionId = req.cookies.find(_.name == UserSessionCookie).fold(UUID.randomUUID().toString)(_.content)
+      val res = httpRoutes(req.addCookie(RequestCookie(UserSessionCookie, sessionId)))
       res.map { r =>
-        val userSessionId = req.cookies.find(_.name == UserSessionCookie).fold(UUID.randomUUID().toString)(_.content)
-        r.addCookie(ResponseCookie(UserSessionCookie, userSessionId, httpOnly = true))
+        r.addCookie(ResponseCookie(UserSessionCookie, sessionId, httpOnly = true))
       }
     }
 }
