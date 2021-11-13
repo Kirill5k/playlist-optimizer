@@ -7,18 +7,16 @@ import org.typelevel.log4cats.Logger
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.OptimizationAlgorithm
 import io.kirill.playlistoptimizer.core.playlist.Track
 
-trait Optimizers[F[_]] {
+trait Optimizers[F[_]]:
   def controller: Controller[F]
-}
 
-object Optimizers {
-  def playlist[F[_]: Async: Logger](
-      alg: OptimizationAlgorithm[F, Track]
-  ): F[Optimizers[F]] =
-    for {
-      playlistOptimizer      <- Optimizer.inmemoryPlaylistOptimizer[F](alg)
-      optimizationController <- OptimizationController.make(playlistOptimizer)
-    } yield new Optimizers[F] {
-      def controller: Controller[F] = optimizationController
-    }
-}
+object Optimizers:
+  def playlist[F[_]: Async: Logger](alg: OptimizationAlgorithm[F, Track]): F[Optimizers[F]] =
+    Optimizer
+      .inmemoryPlaylistOptimizer[F](alg)
+      .flatMap(OptimizationController.make)
+      .map { optimizationController =>
+        new Optimizers[F] {
+          def controller: Controller[F] = optimizationController
+        }
+      }

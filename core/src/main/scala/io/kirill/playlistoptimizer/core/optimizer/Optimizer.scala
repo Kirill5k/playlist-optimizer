@@ -55,10 +55,10 @@ private class InmemoryOptimizer[F[_]: Concurrent, T, A](
       opt.id.pure[F]
 
   override def delete(uid: UserSessionId, id: OptimizationId): F[Unit] =
-    state.get.flatMap {
-      case s if s.get(uid).exists(_.contains(id)) => state.update(curr => curr + (uid -> curr(uid).removed(id)))
-      case _                                      => OptimizationNotFound(id).raiseError[F, Unit]
-    }
+    state.modify {
+      case s if s.get(uid).exists(_.contains(id)) => (s + (uid -> s(uid).removed(id)), ().pure[F])
+      case s                                      => (s, OptimizationNotFound(id).raiseError[F, Unit])
+    }.flatten
 }
 
 object Optimizer {

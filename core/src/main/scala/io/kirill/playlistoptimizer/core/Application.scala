@@ -12,11 +12,10 @@ import io.kirill.playlistoptimizer.core.playlist.Track
 import io.kirill.playlistoptimizer.core.spotify.Spotify
 import org.http4s.server.Router
 import org.http4s.blaze.server.BlazeServerBuilder
-import org.http4s.syntax.kleisli.*
 
 import scala.concurrent.ExecutionContext
 
-object Application extends IOApp {
+object Application extends IOApp.Simple {
 
   implicit val logger: Logger[IO] = Slf4jLogger.getLogger[IO]
 
@@ -28,7 +27,7 @@ object Application extends IOApp {
     Elitism.simple[Track]
   )
 
-  override def run(args: List[String]): IO[ExitCode] =
+  override val run: IO[Unit] =
     Resources.make[IO].use { res =>
       for {
         config    <- AppConfig.load[IO]
@@ -49,6 +48,6 @@ object Application extends IOApp {
           .serve
           .compile
           .drain
-      } yield ExitCode.Success
+      } yield ()
     }
 }
