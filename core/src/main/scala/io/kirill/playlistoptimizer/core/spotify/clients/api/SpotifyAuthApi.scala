@@ -49,7 +49,7 @@ private[spotify] object SpotifyAuthApi {
   private def mapResponseBody[F[_]: Logger: Sync, R](
       responseBody: Either[ResponseException[SpotifyAuthError, io.circe.Error], R]
   ): F[R] =
-    responseBody match {
+    responseBody match
       case Right(success) => success.pure[F]
       case Left(DeserializationException(body, error)) =>
         Logger[F].error(s"error deserializing spotify response: ${error.getMessage}\n$body") *>
@@ -57,5 +57,4 @@ private[spotify] object SpotifyAuthApi {
       case Left(HttpError(spotifyError, code)) =>
         Logger[F].error(s"http error sending auth request to spotify: $code - ${spotifyError.error_description}") *>
           SpotifyApiError(spotifyError.error_description).raiseError[F, R]
-    }
 }

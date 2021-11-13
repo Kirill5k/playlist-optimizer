@@ -23,14 +23,13 @@ object jwt {
       F: Sync[F]
   ) extends JwtEncoder[F, A] {
 
-    private val decodeFunc = alg match {
+    private val decodeFunc = alg match
       case a if JwtAlgorithm.allHmac().contains(a) =>
         (t: String) => JwtCirce.decodeJson(t, secret, List(a.asInstanceOf[JwtHmacAlgorithm]))
       case a if JwtAlgorithm.allAsymmetric().contains(a) =>
         (t: String) => JwtCirce.decodeJson(t, secret, List(a.asInstanceOf[JwtAsymmetricAlgorithm]))
       case a =>
         (_: String) => Failure(InvalidJwtEncryptionAlgorithm(a))
-    }
 
     override def encode(token: A): F[String] =
       F.delay(JwtCirce.encode(token.asJson, secret, alg))
@@ -43,11 +42,10 @@ object jwt {
     def circeJwtEncoder[F[_], A: Encoder: Decoder](config: JwtConfig)(implicit
         F: Sync[F]
     ): F[JwtEncoder[F, A]] =
-      JwtAlgorithm.fromString(config.alg.toUpperCase) match {
+      JwtAlgorithm.fromString(config.alg.toUpperCase) match
         case alg if JwtAlgorithm.allHmac().contains(alg) | JwtAlgorithm.allAsymmetric().contains(alg) =>
           F.pure(new CirceJwtEncoder(config.secret, alg))
         case alg =>
           F.raiseError(InvalidJwtEncryptionAlgorithm(alg))
-      }
 
 }

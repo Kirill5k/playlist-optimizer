@@ -46,13 +46,10 @@ trait ControllerSpec extends AnyWordSpec with MockitoMatchers with Matchers {
     val actualResp = actual.unsafeRunSync()
 
     actualResp.status must be(expectedStatus)
-    actualResp.cookies.map(c =>
-      (c.name -> c.content)
-    ) must contain allElementsOf cookies
-    expectedBody match {
+    actualResp.cookies.map(c => (c.name -> c.content)) must contain allElementsOf cookies
+    expectedBody match
       case Some(expected) => actualResp.as[A].unsafeRunSync() must be(expected)
-      case None => actualResp.body.compile.toVector.unsafeRunSync() mustBe empty
-    }
+      case None           => actualResp.body.compile.toVector.unsafeRunSync() mustBe empty
   }
 
   def verifyJsonResponse(
@@ -64,15 +61,9 @@ trait ControllerSpec extends AnyWordSpec with MockitoMatchers with Matchers {
     val actualResp = actual.unsafeRunSync()
 
     actualResp.status must be(expectedStatus)
-    actualResp.cookies.map(c =>
-      c.name -> c.content
-    ) must contain allElementsOf cookies
-    expectedBody match {
-      case Some(expected) =>
-        actualResp.asJson.unsafeRunSync() must be(
-          parse(expected).getOrElse(throw new RuntimeException)
-        )
-      case None => actualResp.body.compile.toVector.unsafeRunSync() mustBe empty
-    }
+    actualResp.cookies.map(c => c.name -> c.content) must contain allElementsOf cookies
+    expectedBody match
+      case Some(expected) => actualResp.asJson.unsafeRunSync() must be(parse(expected).getOrElse(throw new RuntimeException))
+      case None           => actualResp.body.compile.toVector.unsafeRunSync() mustBe empty
   }
 }

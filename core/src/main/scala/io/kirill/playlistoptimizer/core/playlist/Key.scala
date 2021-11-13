@@ -37,15 +37,14 @@ enum Key(val number: Int, val name: String, val mode: Mode, val abbreviation: St
   case EMajor extends Key(12, "E Major", Mode.Major, "E")
 
 object Key:
-  def distance(key1: Key, key2: Key): Int = (key1, key2) match {
+  inline def distance(key1: Key, key2: Key): Int = (key1, key2) match
     case (k1, k2) if k1 == k2 => 0
     case (k1, k2) =>
-      (k1.number, k2.number, k1.mode, k2.mode) match {
+      (k1.number, k2.number, k1.mode, k2.mode) match
         case (n1, n2, _, _) if n1 == n2                => 1
         case (n1, n2, m1, m2) if math.abs(n1 - n2) > 6 => math.min(n1, n2) + 12 - math.max(n1, n2) + (m1 != m2).toInt
         case (n1, n2, m1, m2)                          => math.abs(n1 - n2) + (m1 != m2).toInt
-      }
-  }
+
 
   def apply(keyNumber: Int, modeNumber: Int): Key =
     apply(keyNumber, Mode(modeNumber))

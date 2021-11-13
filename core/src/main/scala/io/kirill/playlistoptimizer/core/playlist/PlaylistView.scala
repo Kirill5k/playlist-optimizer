@@ -27,27 +27,22 @@ final case class TrackView(
 }
 
 object TrackView {
-  def from(track: Track): TrackView = track match {
-    case Track(
-        SongDetails(name, artists, release, artwork),
-        AudioDetails(tempo, duration, key, danceability, energy),
-        SourceDetails(uri, url)
-        ) =>
+  def from(track: Track): TrackView = track match
+    case Track(song, audio, source) =>
       TrackView(
-        name,
-        artists,
-        release,
-        artwork,
-        tempo,
-        duration.toUnit(TimeUnit.SECONDS),
-        key.number,
-        key.mode.number,
-        danceability,
-        energy,
-        uri,
-        url
+        song.name,
+        song.artists,
+        song.release,
+        song.artwork,
+        audio.tempo,
+        audio.duration.toUnit(TimeUnit.SECONDS),
+        audio.key.number,
+        audio.key.mode.number,
+        audio.danceability,
+        audio.energy,
+        source.uri,
+        source.url
       )
-  }
 }
 
 final case class PlaylistView(

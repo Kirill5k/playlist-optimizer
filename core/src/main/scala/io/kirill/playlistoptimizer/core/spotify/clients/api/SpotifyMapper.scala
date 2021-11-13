@@ -12,7 +12,7 @@ object SpotifyMapper {
   def toDomain(song: responses.PlaylistTrack, audio: responses.SpotifyAudioFeaturesResponse): Track =
     Track(song.toSongDetails, audio.toDomain, song.toSourceDetails)
 
-  implicit class PlaylistTrackSyntax(private val track: responses.PlaylistTrack) extends AnyVal {
+  extension (track: responses.PlaylistTrack)
     def toSongDetails: SongDetails =
       SongDetails(
         name = track.name,
@@ -28,9 +28,8 @@ object SpotifyMapper {
 
     def toSourceDetails: SourceDetails =
       SourceDetails(track.uri, Some(track.external_urls.spotify))
-  }
 
-  implicit class AudioFeaturesSyntax(private val features: responses.SpotifyAudioFeaturesResponse) extends AnyVal {
+  extension (features: responses.SpotifyAudioFeaturesResponse)
     def toDomain: AudioDetails =
       AudioDetails(
         features.tempo,
@@ -39,7 +38,6 @@ object SpotifyMapper {
         features.danceability,
         features.energy
       )
-  }
 
   def sanitiseTrackSearchQuery(name: String): String =
     name
