@@ -4,6 +4,14 @@ import java.time.Instant
 import java.util.UUID
 import scala.concurrent.duration.*
 
+opaque type OptimizationId = UUID
+
+object OptimizationId:
+  def gen: OptimizationId = UUID.randomUUID()
+  def apply(id: UUID): OptimizationId = id
+  extension (id: OptimizationId)
+    def value: UUID = id
+
 final case class OptimizationParameters(
     populationSize: Int,
     maxGen: Int,
@@ -12,8 +20,6 @@ final case class OptimizationParameters(
     elitismRatio: Double,
     shuffle: Boolean
 )
-
-final case class OptimizationId(value: UUID) extends AnyVal
 
 final case class Optimization[A](
     id: OptimizationId,
@@ -41,7 +47,7 @@ final case class Optimization[A](
 object Optimization {
   def init[A](parameters: OptimizationParameters, original: A): Optimization[A] =
     Optimization[A](
-      id = OptimizationId(UUID.randomUUID()),
+      id = OptimizationId.gen,
       progress = BigDecimal(0),
       parameters = parameters,
       original = original,

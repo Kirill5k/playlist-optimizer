@@ -2,9 +2,8 @@ package io.kirill.playlistoptimizer.core.optimizer.algorithms.operators
 
 import scala.util.Random
 
-trait Mutator[A] {
+trait Mutator[A]:
   def mutate(ind: Array[A], mutationProbability: Double)(using r: Random): Array[A]
-}
 
 object Mutator {
   def randomSwapMutator[A]: Mutator[A] = new Mutator[A] {

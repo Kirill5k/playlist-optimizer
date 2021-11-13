@@ -4,9 +4,8 @@ import io.kirill.playlistoptimizer.core.playlist.{Key, Track}
 
 final case class Fitness(value: BigDecimal) extends AnyVal
 
-sealed trait FitnessCalculation[A] {
+sealed trait FitnessCalculation[A]:
   def evaluate(gene1: A, gene2: A): Double
-}
 
 object HarmonicSeqBasedTracksFitnessCalculation extends FitnessCalculation[Track] {
   override def evaluate(gene1: Track, gene2: Track): Double =
