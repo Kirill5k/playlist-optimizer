@@ -24,7 +24,7 @@ final class GeneticAlgorithm[F[_], A: ClassTag](
       target: T,
       params: OptimizationParameters,
       updateProgress: BigDecimal => F[Unit]
-  )(implicit
+  )(using
       optimizable: Optimizable[T, A],
       rand: Random
   ): F[(T, BigDecimal)] =
@@ -43,13 +43,13 @@ final class GeneticAlgorithm[F[_], A: ClassTag](
   private def initializePopulation(
       repr: Array[A],
       params: OptimizationParameters
-  )(implicit rand: Random): Vector[Array[A]] =
+  )(using rand: Random): Vector[Array[A]] =
     Vector.fill(params.populationSize)(if (params.shuffle) rand.shuffle(repr.toVector).toArray else repr)
 
   private def singleGeneration(
       population: Vector[Array[A]],
       params: OptimizationParameters
-  )(implicit rand: Random): F[Vector[Array[A]]] =
+  )(using rand: Random): F[Vector[Array[A]]] =
     for {
       fitpop <- F.delay(evaluator.evaluatePopulation(population))
       elites <- F.delay(elitism.select(fitpop, params.elitismRatio))

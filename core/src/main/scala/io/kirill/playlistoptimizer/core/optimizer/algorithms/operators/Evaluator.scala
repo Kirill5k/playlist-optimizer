@@ -39,12 +39,12 @@ trait Evaluator[A] {
 }
 
 object Evaluator {
-  implicit def harmonicSeqBasedTracksEvaluator: Evaluator[Track] = new Evaluator[Track] {
+  val harmonicSeqBasedTracksEvaluator: Evaluator[Track] = new Evaluator[Track] {
     override def evaluateIndividual(tracks: Array[Track]): Fitness =
       calcFitness(tracks)(HarmonicSeqBasedTracksFitnessCalculation)
   }
 
-  def energyFlowBasedTracksEvaluator: Evaluator[Track] = new Evaluator[Track] {
+  val energyFlowBasedTracksEvaluator: Evaluator[Track] = new Evaluator[Track] {
     override def evaluateIndividual(individual: Array[Track]): Fitness =
       calcFitness(individual)(EnergyFlowBasedTracksFitnessCalculation)
   }

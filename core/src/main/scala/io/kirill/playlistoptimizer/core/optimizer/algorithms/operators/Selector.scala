@@ -5,19 +5,15 @@ import io.kirill.playlistoptimizer.core.utils.collections.*
 import scala.annotation.tailrec
 import scala.util.Random
 
-trait Selector[A] {
-  def selectPairs(
-      population: Seq[(Array[A], Fitness)],
-      populationLimit: Int
-  )(implicit r: Random): Seq[(Array[A], Array[A])]
-}
+trait Selector[A]:
+  def selectPairs(population: Seq[(Array[A], Fitness)], populationLimit: Int)(using r: Random): Seq[(Array[A], Array[A])]
 
 final private class FitnessBasedSelector[A] extends Selector[A] {
 
   override def selectPairs(
       population: Seq[(Array[A], Fitness)],
       populationLimit: Int
-  )(implicit r: Random): Seq[(Array[A], Array[A])] =
+  )(using r: Random): Seq[(Array[A], Array[A])] =
     population
       .sortBy(_._2.value)
       .take(populationLimit)
@@ -30,7 +26,7 @@ final private class RouletteWheelSelector[A] extends Selector[A] {
   override def selectPairs(
       population: Seq[(Array[A], Fitness)],
       populationLimit: Int
-  )(implicit r: Random): Seq[(Array[A], Array[A])] = {
+  )(using r: Random): Seq[(Array[A], Array[A])] = {
     val popByFitness = population
       .sortBy(_._2.value)
       .map { case (i, f) => (i, 100 / f.value) }
@@ -50,7 +46,7 @@ final private class RouletteWheelSelector[A] extends Selector[A] {
   private def pickOne(
       popByFitness: Seq[(Array[A], BigDecimal)],
       fTotal: BigDecimal
-  )(implicit r: Random): ((Array[A], BigDecimal), Seq[(Array[A], BigDecimal)]) = {
+  )(using r: Random): ((Array[A], BigDecimal), Seq[(Array[A], BigDecimal)]) = {
     var remFitness = BigDecimal(1.0)
 
     val n = r.nextDouble()

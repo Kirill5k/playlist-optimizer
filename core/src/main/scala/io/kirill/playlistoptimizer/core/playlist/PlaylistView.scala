@@ -57,7 +57,7 @@ final case class PlaylistView(
     source: String
 ) derives Encoder.AsObject {
   def toDomain: Playlist =
-    Playlist(name, description, tracks.map(_.toDomain).toVector, PlaylistSource(source))
+    Playlist(name, description, tracks.map(_.toDomain).toVector, PlaylistSource.valueOf(source))
 }
 
 object PlaylistView {

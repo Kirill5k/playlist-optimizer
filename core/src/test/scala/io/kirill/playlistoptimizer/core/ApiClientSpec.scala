@@ -22,7 +22,7 @@ trait ApiClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
 
 object RequestOps {
 
-  implicit final class RequestSyntax(private val req: client3.Request[?, ?]) extends AnyVal {
+  extension (req: client3.Request[?, ?])
     def isPost: Boolean =
       req.method == Method.POST
 
@@ -51,5 +51,4 @@ object RequestOps {
 
     def bodyContains(body: String): Boolean =
       req.body.toString.contains(body)
-  }
 }

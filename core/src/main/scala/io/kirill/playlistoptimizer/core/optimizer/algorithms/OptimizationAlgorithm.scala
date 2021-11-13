@@ -12,7 +12,7 @@ trait OptimizationAlgorithm[F[_], A] {
       target: T,
       parameters: OptimizationParameters,
       updateProgress: BigDecimal => F[Unit]
-  )(implicit
+  )(using
       optimizable: Optimizable[T, A],
       rand: Random
   ): F[(T, BigDecimal)]

@@ -6,16 +6,16 @@ import scala.reflect.ClassTag
 import scala.util.Random
 
 sealed trait Crossover[A] {
-  def cross(par1: Array[A], par2: Array[A])(implicit r: Random): Array[A]
+  def cross(par1: Array[A], par2: Array[A])(using r: Random): Array[A]
 
-  def cross(par1: Array[A], par2: Array[A], crossoverProbability: Double)(implicit r: Random): Array[A] = {
+  def cross(par1: Array[A], par2: Array[A], crossoverProbability: Double)(using r: Random): Array[A] = {
     val n = r.nextDouble()
     if (n < crossoverProbability) cross(par1, par2) else par1
   }
 }
 
 object Crossover {
-  implicit def bestKeySequenceTrackCrossover: Crossover[Track] = new Crossover[Track] {
+  val bestKeySequenceTrackCrossover: Crossover[Track] = new Crossover[Track] {
 
     private def getStreakLength(i: Int, tracks: Array[Track]): Int = {
       @scala.annotation.tailrec
@@ -28,7 +28,7 @@ object Crossover {
       go(i, 1)
     }
 
-    override def cross(par1: Array[Track], par2: Array[Track])(implicit r: Random): Array[Track] = {
+    override def cross(par1: Array[Track], par2: Array[Track])(using r: Random): Array[Track] = {
       var i                = 0
       var bestStreakLength = 0
       var bestStreakPos    = 0
@@ -51,14 +51,14 @@ object Crossover {
       left.filterNot(bestSeqGenes.contains) ++ slicedBestSeq ++ right.filterNot(bestSeqGenes.contains)
     }
 
-    private def cut(ts: Array[Track], sliceSize: Int)(implicit r: Random): Array[Track] = {
+    private def cut(ts: Array[Track], sliceSize: Int)(using r: Random): Array[Track] = {
       val slicePoint = r.nextInt(sliceSize / 2)
       ts.slice(slicePoint, slicePoint + sliceSize)
     }
   }
 
-  implicit def threeWaySplitCrossover[A: ClassTag]: Crossover[A] = new Crossover[A] {
-    override def cross(par1: Array[A], par2: Array[A])(implicit r: Random): Array[A] = {
+  def threeWaySplitCrossover[A: ClassTag]: Crossover[A] = new Crossover[A] {
+    override def cross(par1: Array[A], par2: Array[A])(using r: Random): Array[A] = {
       val middle             = par1.length / 2
       val point1: Int        = r.nextInt(middle)
       val point2: Int        = r.nextInt(middle) + middle

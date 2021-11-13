@@ -5,15 +5,8 @@ import io.kirill.playlistoptimizer.core.common.errors.UnexpectedPlaylistSource
 
 import scala.concurrent.duration.FiniteDuration
 
-sealed trait PlaylistSource
-object PlaylistSource {
-  case object Spotify extends PlaylistSource
-
-  def apply(source: String): PlaylistSource = source.toLowerCase match {
-    case "spotify" => Spotify
-    case _         => throw UnexpectedPlaylistSource(source)
-  }
-}
+enum PlaylistSource:
+  case Spotify
 
 final case class Release(
     name: String,

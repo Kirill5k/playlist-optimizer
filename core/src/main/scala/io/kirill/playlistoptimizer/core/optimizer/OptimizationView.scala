@@ -15,7 +15,7 @@ final case class OptimizationView[V](
     score: Option[BigDecimal] = None
 ) derives Encoder.AsObject
 
-object OptimizationView {
+object OptimizationView:
   def from[A, V](opt: Optimization[A], mapper: A => V): OptimizationView[V] =
     OptimizationView(
       opt.id.value,
@@ -27,4 +27,3 @@ object OptimizationView {
       opt.result.map(mapper),
       opt.score
     )
-}

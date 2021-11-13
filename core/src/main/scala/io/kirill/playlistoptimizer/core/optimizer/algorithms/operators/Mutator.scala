@@ -3,12 +3,12 @@ package io.kirill.playlistoptimizer.core.optimizer.algorithms.operators
 import scala.util.Random
 
 trait Mutator[A] {
-  def mutate(ind: Array[A], mutationProbability: Double)(implicit r: Random): Array[A]
+  def mutate(ind: Array[A], mutationProbability: Double)(using r: Random): Array[A]
 }
 
 object Mutator {
   def randomSwapMutator[A]: Mutator[A] = new Mutator[A] {
-    override def mutate(ind: Array[A], mutationFactor: Double)(implicit r: Random): Array[A] = {
+    override def mutate(ind: Array[A], mutationFactor: Double)(using r: Random): Array[A] = {
       val swaps = math.round(ind.length * mutationFactor / 2.0).toInt
       val result = ind.clone()
       var i = 0
@@ -26,7 +26,7 @@ object Mutator {
   }
 
   def neighbourSwapMutator[A]: Mutator[A] = new Mutator[A] {
-    override def mutate(ind: Array[A], mutationFactor: Double)(implicit r: Random): Array[A] = {
+    override def mutate(ind: Array[A], mutationFactor: Double)(using r: Random): Array[A] = {
       val result = ind.clone()
       var i = 0
       while (i < result.length - 1) {
