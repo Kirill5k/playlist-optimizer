@@ -26,7 +26,7 @@ object Crossover {
       go(i, 1)
     }
 
-    override inline def cross(par1: Array[Track], par2: Array[Track])(using r: Random): Array[Track] = {
+    override def cross(par1: Array[Track], par2: Array[Track])(using r: Random): Array[Track] = {
       var i                = 0
       var bestStreakLength = 0
       var bestStreakPos    = 0
@@ -56,7 +56,7 @@ object Crossover {
   }
 
   def threeWaySplitCrossover[A: ClassTag]: Crossover[A] = new Crossover[A] {
-    override inline def cross(par1: Array[A], par2: Array[A])(using r: Random): Array[A] = {
+    override def cross(par1: Array[A], par2: Array[A])(using r: Random): Array[A] = {
       val middle             = par1.length / 2
       val point1: Int        = r.nextInt(middle)
       val point2: Int        = r.nextInt(middle) + middle

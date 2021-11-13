@@ -21,7 +21,7 @@ final private class FitnessBasedSelector[A] extends Selector[A] {
 }
 
 final private class RouletteWheelSelector[A] extends Selector[A] {
-  override inline def selectPairs(
+  override def selectPairs(
       population: Seq[(Array[A], Fitness)],
       populationLimit: Int
   )(using r: Random): Seq[(Array[A], Array[A])] = {
