@@ -7,10 +7,12 @@ import scala.concurrent.duration.*
 opaque type OptimizationId = UUID
 
 object OptimizationId:
-  def gen: OptimizationId = UUID.randomUUID()
-  def apply(id: UUID): OptimizationId = id
+  def gen: OptimizationId                    = UUID.randomUUID()
+  def fromString(id: String): OptimizationId = UUID.fromString(id)
+  def apply(id: UUID): OptimizationId        = id
   extension (id: OptimizationId)
-    def value: UUID = id
+    def value: UUID      = id
+    def toString: String = super.toString
 
 final case class OptimizationParameters(
     populationSize: Int,

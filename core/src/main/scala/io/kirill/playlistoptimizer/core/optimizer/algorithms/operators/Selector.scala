@@ -38,7 +38,7 @@ final private class RouletteWheelSelector[A] extends Selector[A] {
         val ((pickedInd, indFitness), remaining) = pickOne(remPop, f)
         go(pickedInd :: newPop, remaining, f - indFitness)
       }
-    go(List(), popByFitness, fTotal).reverse.pairs
+    go(Nil, popByFitness, fTotal).reverse.pairs
   }
 
   private def pickOne(

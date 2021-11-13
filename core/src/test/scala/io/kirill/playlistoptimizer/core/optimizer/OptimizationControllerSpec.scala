@@ -22,7 +22,7 @@ class OptimizationControllerSpec extends ControllerSpec with OptionValues {
   val playlist          = PlaylistBuilder.playlist
   val shortenedPlaylist = playlist.copy(tracks = Vector(playlist.tracks.head))
 
-  val optimizationId         = OptimizationId(UUID.fromString("607995e0-8e3a-11ea-bc55-0242ac130003"))
+  val optimizationId         = OptimizationId.fromString("607995e0-8e3a-11ea-bc55-0242ac130003")
   val optimizationParameters = OptimizationParameters(100, 1000, 0.5, 0.2, 0.1, true)
   val optimization =
     Optimization(optimizationId, BigDecimal(0), optimizationParameters, shortenedPlaylist, Instant.parse("2020-01-01T00:00:00Z"))
@@ -45,7 +45,7 @@ class OptimizationControllerSpec extends ControllerSpec with OptionValues {
         .addCookie(userSessionCookie)
       val response = playlistController.routesWithUserSession.orNotFound.run(request)
 
-      val expected = s"""{"id": "${optimizationId.value}"}"""
+      val expected = s"""{"id": "$optimizationId"}"""
 
       verifyJsonResponse(response, Status.Created, Some(expected), Map("user-session" -> "user-session-id"))
       verify(playlistOptimizer).optimize(userSessionId, shortenedPlaylist, optimizationParameters)

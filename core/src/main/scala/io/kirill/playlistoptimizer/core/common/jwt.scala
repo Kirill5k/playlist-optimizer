@@ -12,10 +12,9 @@ import scala.util.Failure
 
 object jwt {
 
-  trait JwtEncoder[F[_], A] {
+  trait JwtEncoder[F[_], A]:
     def encode(token: A): F[String]
     def decode(token: String): F[A]
-  }
 
   final private class CirceJwtEncoder[F[_], A: Encoder: Decoder](
       private val secret: String,
@@ -40,7 +39,7 @@ object jwt {
       F.fromEither(decodeFunc(token).toEither.flatMap(_.as[A]).left.map(e => JwtDecodeError(e.getMessage)))
   }
 
-  object JwtEncoder {
+  object JwtEncoder:
     def circeJwtEncoder[F[_], A: Encoder: Decoder](config: JwtConfig)(implicit
         F: Sync[F]
     ): F[JwtEncoder[F, A]] =
@@ -51,5 +50,4 @@ object jwt {
           F.raiseError(InvalidJwtEncryptionAlgorithm(alg))
       }
 
-  }
 }
