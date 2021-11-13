@@ -14,7 +14,7 @@ final private class FitnessBasedSelector[A] extends Selector[A] {
       populationLimit: Int
   )(using r: Random): Seq[(Array[A], Array[A])] =
     population
-      .sortBy(_._2.value)
+      .sortBy(_._2)
       .take(populationLimit)
       .map(_._1)
       .pairs
@@ -26,7 +26,7 @@ final private class RouletteWheelSelector[A] extends Selector[A] {
       populationLimit: Int
   )(using r: Random): Seq[(Array[A], Array[A])] = {
     val popByFitness = population
-      .sortBy(_._2.value)
+      .sortBy(_._2)
       .map { case (i, f) => (i, 100 / f.value) }
 
     val fTotal = popByFitness.map(_._2).sum

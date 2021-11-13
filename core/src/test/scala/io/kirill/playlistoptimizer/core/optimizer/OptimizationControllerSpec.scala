@@ -167,10 +167,6 @@ class OptimizationControllerSpec extends ControllerSpec with OptionValues {
 
       executedResponse.status mustBe Status.NoContent
       val sessionCookie = executedResponse.cookies.find(_.name == "user-session").value
-      println(sessionCookie)
-      println(sessionCookie)
-      println(sessionCookie)
-      println(sessionCookie)
       verify(playlistOptimizer).delete(UserSessionId(sessionCookie.content), optimizationId)
     }
   }

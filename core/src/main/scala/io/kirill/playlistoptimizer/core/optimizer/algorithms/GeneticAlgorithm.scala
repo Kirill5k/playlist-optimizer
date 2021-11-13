@@ -37,7 +37,7 @@ final class GeneticAlgorithm[F[_], A: ClassTag](
       .compile
       .lastOrError
       .map(evaluator.evaluatePopulation)
-      .map(_.minBy(_._2.value))
+      .map(_.minBy(_._2))
       .map { case (res, f) => (optimizable.update(target)(res), f.value) }
 
   private def initializePopulation(

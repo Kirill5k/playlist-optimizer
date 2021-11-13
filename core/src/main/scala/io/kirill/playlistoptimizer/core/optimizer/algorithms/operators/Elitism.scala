@@ -7,6 +7,6 @@ object Elitism:
   def simple[A]: Elitism[A] = new Elitism[A] {
     override def select(population: Seq[(Array[A], Fitness)], elitismRatio: Double): Seq[Array[A]] = {
       val n = math.round(population.size * elitismRatio)
-      population.sortBy(_._2.value).take(n.toInt).map(_._1)
+      population.sortBy(_._2).take(n.toInt).map(_._1)
     }
   }
