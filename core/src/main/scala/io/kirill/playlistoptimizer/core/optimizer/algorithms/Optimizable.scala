@@ -8,8 +8,8 @@ trait Optimizable[T, I]:
 
 object Optimizable:
   given playlistOptimizable: Optimizable[Playlist, Track] with
-    override def repr(target: Playlist): Array[Track] = target.tracks.toArray[Track]
-    override def update(target: Playlist)(optimizedRepr: Array[Track]): Playlist =
+    override inline def repr(target: Playlist): Array[Track] = target.tracks.toArray[Track]
+    override inline def update(target: Playlist)(optimizedRepr: Array[Track]): Playlist =
       target.copy(name = s"${target.name} optimized", tracks = optimizedRepr.toVector)
 
   extension [T, A](target: T)

@@ -17,11 +17,11 @@ sealed trait FitnessCalculation[A]:
   def evaluate(gene1: A, gene2: A): Double
 
 object HarmonicSeqBasedTracksFitnessCalculation extends FitnessCalculation[Track]:
-  override def evaluate(gene1: Track, gene2: Track): Double =
+  override inline def evaluate(gene1: Track, gene2: Track): Double =
     math.pow(Key.distance(gene1.audio.key, gene2.audio.key).toDouble, 2.0)
 
 object EnergyFlowBasedTracksFitnessCalculation extends FitnessCalculation[Track]:
-  override def evaluate(gene1: Track, gene2: Track): Double = {
+  override inline def evaluate(gene1: Track, gene2: Track): Double = {
     val energy       = math.abs(gene1.audio.energy * 1000 - gene2.audio.energy * 1000)
     val danceability = math.abs(gene1.audio.danceability * 1000 - gene2.audio.danceability * 1000)
     (energy + danceability) / 10
@@ -46,11 +46,11 @@ trait Evaluator[A] {
 
 object Evaluator:
   val harmonicSeqBasedTracksEvaluator: Evaluator[Track] = new Evaluator[Track] {
-    override def evaluateIndividual(tracks: Array[Track]): Fitness =
+    override inline def evaluateIndividual(tracks: Array[Track]): Fitness =
       calcFitness(tracks)(HarmonicSeqBasedTracksFitnessCalculation)
   }
 
   val energyFlowBasedTracksEvaluator: Evaluator[Track] = new Evaluator[Track] {
-    override def evaluateIndividual(individual: Array[Track]): Fitness =
+    override inline def evaluateIndividual(individual: Array[Track]): Fitness =
       calcFitness(individual)(EnergyFlowBasedTracksFitnessCalculation)
   }
