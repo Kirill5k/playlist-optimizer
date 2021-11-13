@@ -18,10 +18,14 @@ import org.http4s.circe.CirceEntityCodec.*
 trait Controller[F[_]] extends Http4sDsl[F] with JsonCodecs {
   val UserSessionCookie = "user-session"
 
-  def routesWithUserSession(implicit F: Functor[F]): HttpRoutes[F] =
-    userSessionMiddleware(routes)
-
   def routes: HttpRoutes[F]
+
+  def routesWithUserSession(implicit F: Functor[F]): HttpRoutes[F] =
+    Kleisli { (req: Request[F]) =>
+      val sessionId = req.cookies.find(_.name == UserSessionCookie).fold(UUID.randomUUID().toString)(_.content)
+      val res       = routes(req.addCookie(RequestCookie(UserSessionCookie, sessionId)))
+      res.map(_.addCookie(ResponseCookie(UserSessionCookie, sessionId, httpOnly = true)))
+    }
 
   protected def withErrorHandling(
       response: => F[Response[F]]
@@ -55,14 +59,6 @@ trait Controller[F[_]] extends Http4sDsl[F] with JsonCodecs {
       .map(c => UserSessionId(c.content))
       .toRight(MissingUserSessionCookie)
 
-  private def userSessionMiddleware(httpRoutes: HttpRoutes[F])(implicit F: Functor[F]): HttpRoutes[F] =
-    Kleisli { (req: Request[F]) =>
-      val sessionId = req.cookies.find(_.name == UserSessionCookie).fold(UUID.randomUUID().toString)(_.content)
-      val res = httpRoutes(req.addCookie(RequestCookie(UserSessionCookie, sessionId)))
-      res.map { r =>
-        r.addCookie(ResponseCookie(UserSessionCookie, sessionId, httpOnly = true))
-      }
-    }
 }
 
 object Controller {
