@@ -4,7 +4,7 @@ import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
 class KeySpec extends AnyWordSpec with Matchers {
-  import Key._
+  import Key.*
 
   "A ket.distance" should {
 

@@ -1,7 +1,7 @@
 package io.kirill.playlistoptimizer.core.optimizer
 
 import cats.effect.Async
-import cats.implicits._
+import cats.implicits.*
 import io.kirill.playlistoptimizer.core.common.controllers.Controller
 import org.typelevel.log4cats.Logger
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.OptimizationAlgorithm

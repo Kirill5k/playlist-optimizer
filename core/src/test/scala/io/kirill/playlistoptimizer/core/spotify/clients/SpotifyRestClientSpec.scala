@@ -2,16 +2,16 @@ package io.kirill.playlistoptimizer.core.spotify.clients
 
 import cats.effect.IO
 import io.kirill.playlistoptimizer.core.ApiClientSpec
-import io.kirill.playlistoptimizer.core.RequestOps._
+import io.kirill.playlistoptimizer.core.RequestOps.*
 import io.kirill.playlistoptimizer.core.common.errors.SpotifyTrackNotFound
-import io.kirill.playlistoptimizer.core.playlist.Key._
-import io.kirill.playlistoptimizer.core.playlist._
+import io.kirill.playlistoptimizer.core.playlist.Key.*
+import io.kirill.playlistoptimizer.core.playlist.*
 import sttp.client3.Response
 import sttp.client3.asynchttpclient.cats.AsyncHttpClientCatsBackend
 import sttp.client3.testing.SttpBackendStub
 
 import java.time.LocalDate
-import scala.concurrent.duration._
+import scala.concurrent.duration.*
 
 class SpotifyRestClientSpec extends ApiClientSpec {
 

@@ -3,7 +3,7 @@ package io.kirill.playlistoptimizer.core.common
 import java.time.Instant
 
 import cats.effect.IO
-import io.circe.generic.auto._
+import io.circe.generic.auto.*
 import io.kirill.playlistoptimizer.core.CatsIOSpec
 import io.kirill.playlistoptimizer.core.common.config.JwtConfig
 import io.kirill.playlistoptimizer.core.common.errors.{InvalidJwtEncryptionAlgorithm, JwtDecodeError}

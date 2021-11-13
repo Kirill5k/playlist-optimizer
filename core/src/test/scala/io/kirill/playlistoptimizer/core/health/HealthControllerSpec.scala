@@ -2,8 +2,8 @@ package io.kirill.playlistoptimizer.core.health
 
 import cats.effect.IO
 import io.kirill.playlistoptimizer.core.ControllerSpec
-import org.http4s._
-import org.http4s.implicits._
+import org.http4s.*
+import org.http4s.implicits.*
 
 class HealthControllerSpec extends ControllerSpec {
   "A HealthController" when {

@@ -1,8 +1,8 @@
 package io.kirill.playlistoptimizer.core.common
 
 import cats.effect.Sync
-import io.circe._
-import io.circe.syntax._
+import io.circe.*
+import io.circe.syntax.*
 import io.kirill.playlistoptimizer.core.common.config.JwtConfig
 import io.kirill.playlistoptimizer.core.common.errors.{InvalidJwtEncryptionAlgorithm, JwtDecodeError}
 import pdi.jwt.algorithms.{JwtAsymmetricAlgorithm, JwtHmacAlgorithm}

@@ -22,7 +22,7 @@ trait ApiClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
 
 object RequestOps {
 
-  implicit final class RequestSyntax(private val req: client3.Request[_, _]) extends AnyVal {
+  implicit final class RequestSyntax(private val req: client3.Request[?, ?]) extends AnyVal {
     def isPost: Boolean =
       req.method == Method.POST
 

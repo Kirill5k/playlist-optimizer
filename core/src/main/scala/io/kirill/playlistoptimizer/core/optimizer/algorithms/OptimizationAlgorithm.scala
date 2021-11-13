@@ -2,7 +2,7 @@ package io.kirill.playlistoptimizer.core.optimizer.algorithms
 
 import cats.effect.Async
 import io.kirill.playlistoptimizer.core.optimizer.OptimizationParameters
-import io.kirill.playlistoptimizer.core.optimizer.algorithms.operators._
+import io.kirill.playlistoptimizer.core.optimizer.algorithms.operators.*
 
 import scala.reflect.ClassTag
 import scala.util.Random

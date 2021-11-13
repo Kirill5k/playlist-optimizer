@@ -2,21 +2,21 @@ package io.kirill.playlistoptimizer.core.optimizer
 
 import java.time.Instant
 import java.util.UUID
-import cats.effect._
-import io.circe.generic.auto._
-import io.circe.syntax._
+import cats.effect.*
+import io.circe.generic.auto.*
+import io.circe.syntax.*
 import io.kirill.playlistoptimizer.core.ControllerSpec
 import io.kirill.playlistoptimizer.core.common.controllers.Controller
 import io.kirill.playlistoptimizer.core.common.errors.OptimizationNotFound
 import io.kirill.playlistoptimizer.core.optimizer.OptimizationController.PlaylistOptimizationRequest
 import io.kirill.playlistoptimizer.core.playlist.{Playlist, PlaylistBuilder, PlaylistView, Track}
-import org.http4s._
-import org.http4s.implicits._
-import org.http4s.circe.CirceEntityCodec._
+import org.http4s.*
+import org.http4s.implicits.*
+import org.http4s.circe.CirceEntityCodec.*
 import org.mockito.ArgumentCaptor
 
 class OptimizationControllerSpec extends ControllerSpec {
-  import Controller._
+  import Controller.*
 
   val playlist          = PlaylistBuilder.playlist
   val shortenedPlaylist = playlist.copy(tracks = Vector(playlist.tracks.head))

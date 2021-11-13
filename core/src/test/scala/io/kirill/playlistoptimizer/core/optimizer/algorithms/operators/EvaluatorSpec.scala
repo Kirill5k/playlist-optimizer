@@ -1,13 +1,13 @@
 package io.kirill.playlistoptimizer.core.optimizer.algorithms.operators
 
-import io.kirill.playlistoptimizer.core.playlist.Key._
+import io.kirill.playlistoptimizer.core.playlist.Key.*
 import io.kirill.playlistoptimizer.core.playlist.{Key, Track}
 import org.scalatest.Inspectors
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
 class EvaluatorSpec extends AnyWordSpec with Matchers with Inspectors {
-  import io.kirill.playlistoptimizer.core.playlist.TrackBuilder._
+  import io.kirill.playlistoptimizer.core.playlist.TrackBuilder.*
 
   "A harmonicSeqBasedTracksEvaluator" should {
 

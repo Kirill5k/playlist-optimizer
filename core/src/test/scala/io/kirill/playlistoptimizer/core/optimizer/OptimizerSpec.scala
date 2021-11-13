@@ -3,7 +3,7 @@ package io.kirill.playlistoptimizer.core.optimizer
 import java.util.UUID
 import cats.effect.IO
 import cats.effect.testing.scalatest.AsyncIOSpec
-import cats.implicits._
+import cats.implicits.*
 import io.kirill.playlistoptimizer.core.common.controllers.Controller.UserSessionId
 import io.kirill.playlistoptimizer.core.common.errors.OptimizationNotFound
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.{Optimizable, OptimizationAlgorithm}
@@ -11,11 +11,11 @@ import io.kirill.playlistoptimizer.core.playlist.{Playlist, PlaylistBuilder, Tra
 import org.scalatest.freespec.AsyncFreeSpec
 import org.scalatest.matchers.must.Matchers
 
-import scala.concurrent.duration._
+import scala.concurrent.duration.*
 import scala.util.Random
 
 class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
-  implicit val random = new Random(1)
+  implicit val random: Random = new Random(1)
 
   val playlist        = PlaylistBuilder.playlist
   val optimizedTracks = random.shuffle(playlist.tracks).toArray

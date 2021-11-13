@@ -1,5 +1,6 @@
 package io.kirill.playlistoptimizer.core.optimizer
 
+import io.circe.Encoder
 import java.time.Instant
 import java.util.UUID
 
@@ -12,7 +13,7 @@ final case class OptimizationView[V](
     durationMs: Option[Long] = None,
     result: Option[V] = None,
     score: Option[BigDecimal] = None
-)
+) derives Encoder.AsObject
 
 object OptimizationView {
   def from[A, V](opt: Optimization[A], mapper: A => V): OptimizationView[V] =

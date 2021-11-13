@@ -1,7 +1,7 @@
 package io.kirill.playlistoptimizer.core.playlist
 
 import io.kirill.playlistoptimizer.core.common.errors.{InvalidKey, InvalidMode}
-import io.kirill.playlistoptimizer.core.utils.common._
+import io.kirill.playlistoptimizer.core.utils.common.*
 
 sealed abstract class Mode(val number: Int)
 object Mode {
@@ -17,7 +17,7 @@ object Mode {
 
 sealed abstract class Key(val number: Int, val name: String, val mode: Mode, val abbreviation: String, val altAbbreviation: String = "n/a")
 object Key {
-  import Mode._
+  import Mode.*
 
   case object AFlatMinor extends Key(1, "A-Flat Minor", Minor, "Abm", "G#m")
   case object BMajor extends Key(1, "B Major", Major, "B")

@@ -2,7 +2,7 @@ package io.kirill.playlistoptimizer.core.optimizer.algorithms.operators
 
 import io.kirill.playlistoptimizer.core.Benchmark
 import org.scalameter.KeyValue
-import org.scalameter.api._
+import org.scalameter.api.*
 
 object SelectorBenchmark extends Benchmark {
 

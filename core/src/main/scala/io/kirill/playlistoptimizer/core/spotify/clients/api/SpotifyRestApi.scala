@@ -1,16 +1,15 @@
 package io.kirill.playlistoptimizer.core.spotify.clients.api
 
-import cats.implicits._
-import io.circe.generic.auto._
-import responses._
-import requests._
-import errors._
+import cats.implicits.*
+import responses.*
+import requests.*
+import errors.*
 import cats.effect.Sync
 import org.typelevel.log4cats.Logger
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
 import io.kirill.playlistoptimizer.core.common.errors.SpotifyApiError
-import sttp.client3._
-import sttp.client3.circe._
+import sttp.client3.*
+import sttp.client3.circe.*
 import sttp.model.MediaType
 
 object SpotifyRestApi {
@@ -180,8 +179,5 @@ object SpotifyRestApi {
       case Left(HttpError(spotifyError, code)) =>
         Logger[F].error(s"http error sending rest api request to spotify: $code - ${spotifyError.error.message}") *>
           SpotifyApiError(spotifyError.error.message).raiseError[F, R]
-      case Left(error) =>
-        Logger[F].error(s"internal error sending rest api request to spotify: ${error.getMessage}") *>
-          SpotifyApiError(error.getMessage).raiseError[F, R]
     }
 }

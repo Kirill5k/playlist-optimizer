@@ -2,7 +2,7 @@ package io.kirill.playlistoptimizer.core.optimizer
 
 import java.time.Instant
 import java.util.UUID
-import scala.concurrent.duration._
+import scala.concurrent.duration.*
 
 final case class OptimizationParameters(
     populationSize: Int,

@@ -4,17 +4,17 @@ import cats.effect.IO
 import cats.effect.unsafe.IORuntime
 import org.typelevel.log4cats.Logger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
-import io.circe.parser._
-import org.http4s.circe._
-import org.http4s.{Response, Status, _}
+import io.circe.parser.*
+import org.http4s.circe.*
+import org.http4s.*
 import org.scalatest.Assertion
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
 trait ControllerSpec extends AnyWordSpec with MockitoMatchers with Matchers {
 
-  implicit val rt = IORuntime.global
-  implicit val logger: Logger[IO]   = Slf4jLogger.getLogger[IO]
+  implicit val rt: IORuntime      = IORuntime.global
+  implicit val logger: Logger[IO] = Slf4jLogger.getLogger[IO]
 
   val shortenedPlaylistJson =
     s"""{
@@ -46,10 +46,12 @@ trait ControllerSpec extends AnyWordSpec with MockitoMatchers with Matchers {
     val actualResp = actual.unsafeRunSync()
 
     actualResp.status must be(expectedStatus)
-    actualResp.cookies.map(c => (c.name -> c.content)) must contain allElementsOf cookies
+    actualResp.cookies.map(c =>
+      (c.name -> c.content)
+    ) must contain allElementsOf cookies
     expectedBody match {
       case Some(expected) => actualResp.as[A].unsafeRunSync() must be(expected)
-      case None           => actualResp.body.compile.toVector.unsafeRunSync() mustBe empty
+      case None => actualResp.body.compile.toVector.unsafeRunSync() mustBe empty
     }
   }
 
@@ -62,10 +64,15 @@ trait ControllerSpec extends AnyWordSpec with MockitoMatchers with Matchers {
     val actualResp = actual.unsafeRunSync()
 
     actualResp.status must be(expectedStatus)
-    actualResp.cookies.map(c => c.name -> c.content) must contain allElementsOf cookies
+    actualResp.cookies.map(c =>
+      c.name -> c.content
+    ) must contain allElementsOf cookies
     expectedBody match {
-      case Some(expected) => actualResp.asJson.unsafeRunSync() must be(parse(expected).getOrElse(throw new RuntimeException))
-      case None           => actualResp.body.compile.toVector.unsafeRunSync() mustBe empty
+      case Some(expected) =>
+        actualResp.asJson.unsafeRunSync() must be(
+          parse(expected).getOrElse(throw new RuntimeException)
+        )
+      case None => actualResp.body.compile.toVector.unsafeRunSync() mustBe empty
     }
   }
 }

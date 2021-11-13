@@ -1,7 +1,7 @@
 package io.kirill.playlistoptimizer.core.health
 
 import cats.effect.Sync
-import cats.implicits._
+import cats.implicits.*
 import io.kirill.playlistoptimizer.core.common.controllers.Controller
 
 trait Health[F[_]] {
