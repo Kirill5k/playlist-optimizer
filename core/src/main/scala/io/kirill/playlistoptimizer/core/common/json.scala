@@ -9,11 +9,9 @@ import scala.util.Try
 
 object json extends JsonCodecs
 
-trait JsonCodecs {
-
+trait JsonCodecs:
   implicit val oidEncoder: Encoder[OptimizationId] = Encoder.encodeString.contramap[OptimizationId](_.toString)
   implicit val oidDecoder: Decoder[OptimizationId] = Decoder.decodeString.emapTry(str => Try(OptimizationId.fromString(str)))
 
   implicit val instantEncode: Encoder[Instant]  = Encoder.encodeString.contramap[Instant](_.toString)
   implicit val instantDecoder: Decoder[Instant] = Decoder.decodeString.emapTry(str => Try(Instant.parse(str)))
-}

@@ -6,8 +6,8 @@ import java.util.UUID
 import cats.data.Kleisli
 import cats.effect.*
 import cats.implicits.*
+import io.circe.Codec
 import org.typelevel.log4cats.Logger
-import io.circe.generic.auto.*
 import io.kirill.playlistoptimizer.core.common.JsonCodecs
 import io.kirill.playlistoptimizer.core.common.controllers.Controller.{ErrorResponse, UserSessionId}
 import io.kirill.playlistoptimizer.core.common.errors.*
@@ -61,11 +61,10 @@ trait Controller[F[_]] extends Http4sDsl[F] with JsonCodecs {
 
 }
 
-object Controller {
+object Controller:
 
-  final case class ErrorResponse(message: String)
+  final case class ErrorResponse(message: String) derives Codec.AsObject
 
   opaque type UserSessionId = String
   object UserSessionId:
     def apply(id: String): UserSessionId = id
-}
