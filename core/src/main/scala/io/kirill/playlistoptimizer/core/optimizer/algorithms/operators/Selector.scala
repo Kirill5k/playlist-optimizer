@@ -68,7 +68,7 @@ final private class RouletteWheelSelector[A] extends Selector[A] {
 }
 
 object Selector {
-  def rouletteWheelSelector[A]: Selector[A] = new RouletteWheelSelector[A]
+  inline def rouletteWheelSelector[A]: Selector[A] = new RouletteWheelSelector[A]
 
-  def fitnessBasedSelector[A]: Selector[A] = new FitnessBasedSelector[A]
+  inline def fitnessBasedSelector[A]: Selector[A] = new FitnessBasedSelector[A]
 }

@@ -18,7 +18,7 @@ trait OptimizationAlgorithm[F[_], A]:
   ): F[(T, BigDecimal)]
 
 object OptimizationAlgorithm:
-  def geneticAlgorithm[F[_]: Async, A: ClassTag](
+  inline def geneticAlgorithm[F[_]: Async, A: ClassTag](
       crossover: Crossover[A],
       mutator: Mutator[A],
       evaluator: Evaluator[A],

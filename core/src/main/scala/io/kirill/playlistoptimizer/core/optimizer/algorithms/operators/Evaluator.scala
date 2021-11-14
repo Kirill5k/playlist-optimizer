@@ -33,7 +33,7 @@ trait Evaluator[A] {
   def evaluatePopulation(population: Seq[Array[A]]): Seq[(Array[A], Fitness)] =
     population.map(ind => (ind, evaluateIndividual(ind)))
 
-  protected def calcFitness(individual: Array[A])(calculation: FitnessCalculation[A]): Fitness = {
+  protected inline def calcFitness(individual: Array[A])(calculation: FitnessCalculation[A]): Fitness = {
     var i = 0
     var score = 0d
     while (i < individual.length - 1) {
@@ -45,12 +45,12 @@ trait Evaluator[A] {
 }
 
 object Evaluator:
-  val harmonicSeqBasedTracksEvaluator: Evaluator[Track] = new Evaluator[Track] {
+  inline def harmonicSeqBasedTracksEvaluator: Evaluator[Track] = new Evaluator[Track] {
     override def evaluateIndividual(tracks: Array[Track]): Fitness =
       calcFitness(tracks)(HarmonicSeqBasedTracksFitnessCalculation)
   }
 
-  val energyFlowBasedTracksEvaluator: Evaluator[Track] = new Evaluator[Track] {
+  inline def energyFlowBasedTracksEvaluator: Evaluator[Track] = new Evaluator[Track] {
     override def evaluateIndividual(individual: Array[Track]): Fitness =
       calcFitness(individual)(EnergyFlowBasedTracksFitnessCalculation)
   }

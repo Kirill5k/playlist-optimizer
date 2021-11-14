@@ -7,7 +7,7 @@ trait Optimizable[T, I]:
   def update(target: T)(optimizedRepr: Array[I]): T
 
 object Optimizable:
-  given playlistOptimizable: Optimizable[Playlist, Track] with
+  inline given playlistOptimizable: Optimizable[Playlist, Track] with
     override def repr(target: Playlist): Array[Track] = target.tracks.toArray[Track]
     override def update(target: Playlist)(optimizedRepr: Array[Track]): Playlist =
       target.copy(name = s"${target.name} optimized", tracks = optimizedRepr.toVector)

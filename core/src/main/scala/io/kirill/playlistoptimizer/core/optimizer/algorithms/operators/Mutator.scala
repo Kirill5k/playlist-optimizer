@@ -6,7 +6,7 @@ trait Mutator[A]:
   def mutate(ind: Array[A], mutationProbability: Double)(using r: Random): Array[A]
 
 object Mutator {
-  def randomSwapMutator[A]: Mutator[A] = new Mutator[A] {
+  inline def randomSwapMutator[A]: Mutator[A] = new Mutator[A] {
     override def mutate(ind: Array[A], mutationFactor: Double)(using r: Random): Array[A] = {
       val swaps = ind.length * mutationFactor / 2.0
       val result = ind.clone()
@@ -24,7 +24,7 @@ object Mutator {
     }
   }
 
-  def neighbourSwapMutator[A]: Mutator[A] = new Mutator[A] {
+  inline def neighbourSwapMutator[A]: Mutator[A] = new Mutator[A] {
     override def mutate(ind: Array[A], mutationFactor: Double)(using r: Random): Array[A] = {
       val result = ind.clone()
       var i = 0

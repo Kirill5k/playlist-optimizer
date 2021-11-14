@@ -13,7 +13,7 @@ sealed trait Crossover[A] {
 }
 
 object Crossover {
-  val bestKeySequenceTrackCrossover: Crossover[Track] = new Crossover[Track] {
+  inline def bestKeySequenceTrackCrossover: Crossover[Track] = new Crossover[Track] {
 
     private def getStreakLength(i: Int, tracks: Array[Track]): Int = {
       @scala.annotation.tailrec
@@ -55,7 +55,7 @@ object Crossover {
     }
   }
 
-  def threeWaySplitCrossover[A: ClassTag]: Crossover[A] = new Crossover[A] {
+  inline def threeWaySplitCrossover[A: ClassTag]: Crossover[A] = new Crossover[A] {
     override def cross(par1: Array[A], par2: Array[A])(using r: Random): Array[A] = {
       val middle             = par1.length / 2
       val point1: Int        = r.nextInt(middle)
