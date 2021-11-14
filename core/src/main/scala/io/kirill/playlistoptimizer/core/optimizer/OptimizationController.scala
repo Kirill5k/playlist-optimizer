@@ -27,7 +27,7 @@ final class OptimizationController[F[_]](
           for {
             userSessionId  <- F.fromEither(getUserSessionIdFromCookie(req))
             requestBody    <- req.as[PlaylistOptimizationRequest]
-            _              <- logger.info(s"optimize playlist ${requestBody.playlist.name} for user ${userSessionId.value}")
+            _              <- logger.info(s"optimize playlist ${requestBody.playlist.name} for user $userSessionId")
             optimizationId <- optimizer.optimize(userSessionId, requestBody.playlist.toDomain, requestBody.optimizationParameters)
             resp           <- Created(PlaylistOptimizationResponse(optimizationId))
           } yield resp
@@ -36,7 +36,7 @@ final class OptimizationController[F[_]](
         withErrorHandling {
           for {
             userSessionId <- F.fromEither(getUserSessionIdFromCookie(req))
-            _             <- logger.info(s"get playlist optimization $optimizationId for user ${userSessionId.value}")
+            _             <- logger.info(s"get playlist optimization $optimizationId for user $userSessionId")
             opt           <- optimizer.get(userSessionId, OptimizationId(optimizationId))
             resp          <- Ok(OptimizationView.from(opt, PlaylistView.from))
           } yield resp
@@ -45,7 +45,7 @@ final class OptimizationController[F[_]](
         withErrorHandling {
           for {
             userSessionId <- F.fromEither(getUserSessionIdFromCookie(req))
-            _             <- logger.info(s"get all playlist optimizations for user ${userSessionId.value}")
+            _             <- logger.info(s"get all playlist optimizations for user $userSessionId")
             opts          <- optimizer.getAll(userSessionId)
             sortedOpts = opts.sortBy(_.dateInitiated)(Ordering[Instant].reverse)
             resp <- Ok(sortedOpts.map(OptimizationView.from(_, PlaylistView.from)))
@@ -55,7 +55,7 @@ final class OptimizationController[F[_]](
         withErrorHandling {
           for {
             userSessionId <- F.fromEither(getUserSessionIdFromCookie(req))
-            _             <- logger.info(s"delete optimization $optimizationId for user ${userSessionId.value}")
+            _             <- logger.info(s"delete optimization $optimizationId for user $userSessionId")
             _             <- optimizer.delete(userSessionId, OptimizationId(optimizationId))
             resp          <- NoContent()
           } yield resp

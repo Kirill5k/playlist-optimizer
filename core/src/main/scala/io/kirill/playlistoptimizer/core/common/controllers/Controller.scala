@@ -65,5 +65,7 @@ object Controller {
 
   final case class ErrorResponse(message: String)
 
-  final case class UserSessionId(value: String) extends AnyVal
+  opaque type UserSessionId = String
+  object UserSessionId:
+    def apply(id: String): UserSessionId = id
 }
