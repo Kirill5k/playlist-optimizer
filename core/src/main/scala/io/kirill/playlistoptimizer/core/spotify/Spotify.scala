@@ -2,7 +2,7 @@ package io.kirill.playlistoptimizer.core.spotify
 
 import cats.effect.Async
 import cats.implicits.*
-import io.circe.generic.auto.*
+import io.circe.Codec
 import io.kirill.playlistoptimizer.core.common.config.{JwtConfig, SpotifyConfig}
 import io.kirill.playlistoptimizer.core.common.controllers.Controller
 import io.kirill.playlistoptimizer.core.common.jwt.JwtEncoder
@@ -17,7 +17,7 @@ final case class SpotifyAccessToken(
     refreshToken: String,
     userId: String,
     validUntil: Instant
-) {
+) derives Codec.AsObject {
   def isValid: Boolean = validUntil.isAfter(Instant.now())
 }
 
