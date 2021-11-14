@@ -1,6 +1,6 @@
 package io.kirill.playlistoptimizer.core.playlist
 
-import io.circe.Encoder
+import io.circe.Codec
 import java.util.concurrent.TimeUnit
 import scala.concurrent.duration.*
 
@@ -17,7 +17,7 @@ final case class TrackView(
     energy: Double,
     uri: String,
     url: Option[String]
-) derives Encoder.AsObject {
+) derives Codec.AsObject {
   def toDomain: Track =
     Track(
       SongDetails(name, artists, release, artwork),
@@ -50,7 +50,7 @@ final case class PlaylistView(
     description: Option[String],
     tracks: List[TrackView],
     source: String
-) derives Encoder.AsObject {
+) derives Codec.AsObject {
   def toDomain: Playlist =
     Playlist(name, description, tracks.map(_.toDomain).toVector, PlaylistSource.valueOf(source))
 }

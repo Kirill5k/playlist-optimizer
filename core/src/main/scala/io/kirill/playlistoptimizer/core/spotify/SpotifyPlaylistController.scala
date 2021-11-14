@@ -3,8 +3,8 @@ package io.kirill.playlistoptimizer.core.spotify
 import cats.Monad
 import cats.effect.*
 import cats.implicits.*
+import io.circe.Codec
 import org.typelevel.log4cats.Logger
-import io.circe.generic.auto.*
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
 import io.kirill.playlistoptimizer.core.common.controllers.Controller
 import io.kirill.playlistoptimizer.core.common.errors.{MissingRequiredQueryParam, MissingSpotifySessionCookie}
@@ -132,7 +132,7 @@ object SpotifyPlaylistController {
       name: String,
       description: Option[String],
       tracks: List[String]
-  )
+  ) derives Codec.AsObject
 
   def make[F[_]: Async: Logger](
       jwtEncoder: JwtEncoder[F, SpotifyAccessToken],
