@@ -63,13 +63,13 @@ private class InmemoryOptimizer[F[_]: Concurrent, T, A](
 
 object Optimizer {
 
-  def inmemoryPlaylistOptimizer[F[_]: Temporal](
-      alg: OptimizationAlgorithm[F, Track],
+  def inmemoryOptimizer[F[_]: Temporal, Target, Genom](
+      alg: OptimizationAlgorithm[F, Genom],
       expiresIn: FiniteDuration = 24.hours,
       checkOnExpirationsEvery: FiniteDuration = 15.minutes
-  ): F[Optimizer[F, Playlist, Track]] = {
-    def runExpiration(state: Ref[F, Map[UserSessionId, Map[OptimizationId, Optimization[Playlist]]]]): F[Unit] = {
-      def expire: F[Unit] = state.update(_.foldLeft(Map.empty[UserSessionId, Map[OptimizationId, Optimization[Playlist]]]) {
+  )(using optimizable: Optimizable[Target, Genom]): F[Optimizer[F, Target, Genom]] = {
+    def runExpiration(state: Ref[F, Map[UserSessionId, Map[OptimizationId, Optimization[Target]]]]): F[Unit] = {
+      def expire: F[Unit] = state.update(_.foldLeft(Map.empty[UserSessionId, Map[OptimizationId, Optimization[Target]]]) {
         case (res, (uid, optsMap)) =>
           res + (uid -> optsMap.filter { case (_, opt) => !opt.isExpired(expiresIn) })
       })
@@ -77,8 +77,15 @@ object Optimizer {
     }
 
     Ref
-      .of[F, Map[UserSessionId, Map[OptimizationId, Optimization[Playlist]]]](Map.empty)
+      .of[F, Map[UserSessionId, Map[OptimizationId, Optimization[Target]]]](Map.empty)
       .flatTap(s => runExpiration(s).start.void)
-      .map(s => new InmemoryOptimizer[F, Playlist, Track](s, alg))
+      .map(s => InmemoryOptimizer[F, Target, Genom](s, alg))
   }
+
+  def inmemoryPlaylistOptimizer[F[_]: Temporal](
+      alg: OptimizationAlgorithm[F, Track],
+      expiresIn: FiniteDuration = 24.hours,
+      checkOnExpirationsEvery: FiniteDuration = 15.minutes
+  ): F[Optimizer[F, Playlist, Track]] =
+    inmemoryOptimizer[F, Playlist, Track](alg, expiresIn, checkOnExpirationsEvery)
 }
