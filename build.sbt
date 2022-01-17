@@ -3,6 +3,8 @@ import com.typesafe.sbt.packager.docker._
 ThisBuild / organization := "io.github.kirill5k"
 ThisBuild / version := scala.sys.process.Process("git rev-parse HEAD").!!.trim.slice(0, 7)
 ThisBuild / scalaVersion := "3.1.0"
+ThisBuild / githubWorkflowPublishTargetBranches := Nil
+ThisBuild / githubWorkflowJavaVersions          := Seq("amazon-corretto@1.17")
 
 lazy val noPublish = Seq(
   publish := {},
@@ -19,7 +21,7 @@ lazy val docker = Seq(
   dockerUpdateLatest := true,
   Docker / maintainer := "kirill5k",
   dockerRepository := Some("us.gcr.io"),
-  makeBatScripts := List(),
+  makeBatScripts := Nil,
   dockerCommands := {
     val commands         = dockerCommands.value
     val (stage0, stage1) = commands.span(_ != DockerStageBreak)
