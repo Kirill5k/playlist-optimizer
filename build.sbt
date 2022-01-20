@@ -77,4 +77,4 @@ val root = project
   .settings(
     name := "playlist-optimizer"
   )
-  .aggregate(core, frontend, benchmark, free)
+  .aggregate(core, frontend, free)
