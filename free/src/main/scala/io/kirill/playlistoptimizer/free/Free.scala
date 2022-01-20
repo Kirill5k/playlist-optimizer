@@ -12,5 +12,7 @@ object Free:
   def pure[F[_], A](a: A): Free[F, A]      = Free.Pure(a)
   def liftM[F[_], A](fa: F[A]): Free[F, A] = Free.Suspend(fa)
 
-  extension [F[_], A](fa: F[A])
-    def lift: Free[F, A] = Free.liftM(fa)
+  def iterate[F[_], A](a: A, n: Int)(f: A => Free[F, A]): Free[F, A] =
+    List.fill(n)(0).foldLeft[Free[F, A]](pure(a))((res, _) => res.flatMap(f))
+
+  def traverse[F[_], A, B](la: List[A], f: A => F[B]): Free[F, List[A]] = ???
