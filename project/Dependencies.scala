@@ -76,4 +76,6 @@ object Dependencies {
   lazy val benchmark = Seq(
     Libraries.scalameter % Test
   )
+
+  lazy val free = Seq()
 }

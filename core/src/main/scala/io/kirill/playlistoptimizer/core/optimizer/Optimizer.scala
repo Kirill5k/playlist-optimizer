@@ -63,11 +63,11 @@ private class InmemoryOptimizer[F[_]: Concurrent, T, A](
 
 object Optimizer {
 
-  def inmemoryOptimizer[F[_]: Temporal, Target, Genom](
-      alg: OptimizationAlgorithm[F, Genom],
+  def inmemoryOptimizer[F[_]: Temporal, Target, Gene](
+      alg: OptimizationAlgorithm[F, Gene],
       expiresIn: FiniteDuration = 24.hours,
       checkOnExpirationsEvery: FiniteDuration = 15.minutes
-  )(using optimizable: Optimizable[Target, Genom]): F[Optimizer[F, Target, Genom]] = {
+  )(using optimizable: Optimizable[Target, Gene]): F[Optimizer[F, Target, Gene]] = {
     def runExpiration(state: Ref[F, Map[UserSessionId, Map[OptimizationId, Optimization[Target]]]]): F[Unit] = {
       def expire: F[Unit] = state.update(_.foldLeft(Map.empty[UserSessionId, Map[OptimizationId, Optimization[Target]]]) {
         case (res, (uid, optsMap)) =>
@@ -79,7 +79,7 @@ object Optimizer {
     Ref
       .of[F, Map[UserSessionId, Map[OptimizationId, Optimization[Target]]]](Map.empty)
       .flatTap(s => runExpiration(s).start.void)
-      .map(s => InmemoryOptimizer[F, Target, Genom](s, alg))
+      .map(s => InmemoryOptimizer[F, Target, Gene](s, alg))
   }
 
   def inmemoryPlaylistOptimizer[F[_]: Temporal](

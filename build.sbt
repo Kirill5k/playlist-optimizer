@@ -4,16 +4,16 @@ ThisBuild / organization := "io.github.kirill5k"
 ThisBuild / version := scala.sys.process.Process("git rev-parse HEAD").!!.trim.slice(0, 7)
 ThisBuild / scalaVersion := "3.1.0"
 ThisBuild / githubWorkflowPublishTargetBranches := Nil
-ThisBuild / githubWorkflowJavaVersions          := Seq("amazon-corretto@1.17")
+ThisBuild / githubWorkflowJavaVersions          := List("amazon-corretto@1.17")
 
-lazy val noPublish = Seq(
+val noPublish = Seq(
   publish := {},
   publishLocal := {},
   publishArtifact := false,
   publish / skip := true
 )
 
-lazy val docker = Seq(
+val docker = Seq(
   packageName := moduleName.value,
   version := version.value,
   maintainer := "immotional@aol.com",
@@ -31,15 +31,7 @@ lazy val docker = Seq(
   }
 )
 
-lazy val root = project
-  .in(file("."))
-  .settings(noPublish)
-  .settings(
-    name := "playlist-optimizer"
-  )
-  .aggregate(core, frontend)
-
-lazy val core = project
+val core = project
   .in(file("core"))
   .enablePlugins(JavaAppPackaging, JavaAgent, DockerPlugin)
   .settings(docker)
@@ -50,7 +42,7 @@ lazy val core = project
     Docker / packageName := "playlist-optimizer/core"
   )
 
-lazy val frontend = project
+val frontend = project
   .in(file("frontend"))
   .settings(noPublish)
   .settings(
@@ -58,7 +50,7 @@ lazy val frontend = project
     moduleName := "playlist-optimizer-frontend"
   )
 
-lazy val benchmark = project
+val benchmark = project
   .in(file("benchmark"))
   .settings(noPublish)
   .dependsOn(core)
@@ -70,3 +62,19 @@ lazy val benchmark = project
     logBuffered := false,
     Test / parallelExecution := false
   )
+
+val free = project
+  .in(file("free"))
+  .settings(
+    name := "playlist-optimizer-free",
+    moduleName := "playlist-optimizer-free",
+    libraryDependencies ++= Dependencies.free,
+  )
+
+val root = project
+  .in(file("."))
+  .settings(noPublish)
+  .settings(
+    name := "playlist-optimizer"
+  )
+  .aggregate(core, frontend, benchmark, free)
