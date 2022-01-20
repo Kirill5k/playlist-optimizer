@@ -10,7 +10,7 @@ import scala.util.Random
 
 trait Benchmark extends Bench[Double] {
 
-  implicit val rand = Random
+  given rand: Random = Random
 
   @transient override lazy val persistor =
     Persistor.None

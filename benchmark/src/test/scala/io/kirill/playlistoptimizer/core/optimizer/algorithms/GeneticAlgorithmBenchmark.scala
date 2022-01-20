@@ -10,7 +10,7 @@ import org.scalameter.KeyValue
 import org.scalameter.api.*
 
 object GeneticAlgorithmBenchmark extends Benchmark {
-  implicit val rt = IORuntime.global
+  given rt: IORuntime = IORuntime.global
 
   val playlists = playlistGen(500, 500, 50)
 
