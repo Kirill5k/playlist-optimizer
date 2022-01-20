@@ -4,7 +4,7 @@ ThisBuild / organization := "io.github.kirill5k"
 ThisBuild / version := scala.sys.process.Process("git rev-parse HEAD").!!.trim.slice(0, 7)
 ThisBuild / scalaVersion := "3.1.0"
 ThisBuild / githubWorkflowPublishTargetBranches := Nil
-ThisBuild / githubWorkflowJavaVersions          := List("amazon-corretto@1.17")
+ThisBuild / githubWorkflowJavaVersions          := Seq("amazon-corretto@1.17")
 
 val noPublish = Seq(
   publish := {},
