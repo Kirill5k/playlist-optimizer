@@ -5,7 +5,7 @@ import io.kirill.playlistoptimizer.core.playlist.{Key, Track}
 import scala.reflect.ClassTag
 import scala.util.Random
 
-sealed trait Crossover[A] {
+trait Crossover[A] {
   def cross(par1: Array[A], par2: Array[A])(using r: Random): Array[A]
 
   def cross(par1: Array[A], par2: Array[A], crossoverProbability: Double)(using r: Random): Array[A] =

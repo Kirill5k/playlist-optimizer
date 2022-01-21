@@ -4,7 +4,7 @@ object Dependencies {
 
   private object Versions {
     val cats       = "2.7.0"
-    val fs2        = "3.2.4"
+    val catsEffect = "3.3.4"
     val pureConfig = "0.17.1"
     val circe      = "0.14.1"
     val sttp       = "3.3.18"
@@ -22,7 +22,7 @@ object Dependencies {
 
   private object Libraries {
     val catsFree       = "org.typelevel"         %% "cats-free"       % Versions.cats
-    val fs2            = "co.fs2"                %% "fs2-core"        % Versions.fs2
+    val catsEffect     = "org.typelevel"         %% "cats-effect"     % Versions.catsEffect
     val pureconfigCore = "com.github.pureconfig" %% "pureconfig-core" % Versions.pureConfig
 
     val logback  = "ch.qos.logback" % "logback-classic" % Versions.logback
@@ -79,6 +79,7 @@ object Dependencies {
   )
 
   lazy val free = Seq(
-    Libraries.catsFree
+    Libraries.catsFree,
+    Libraries.catsEffect
   )
 }

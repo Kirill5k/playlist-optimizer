@@ -68,7 +68,7 @@ val free = project
   .settings(
     name := "playlist-optimizer-free",
     moduleName := "playlist-optimizer-free",
-    libraryDependencies ++= Dependencies.free,
+    libraryDependencies ++= Dependencies.free ++ Dependencies.test,
   )
 
 val root = project
