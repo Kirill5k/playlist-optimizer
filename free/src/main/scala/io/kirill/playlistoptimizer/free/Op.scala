@@ -16,11 +16,3 @@ enum Op[A]:
   case SelectElites[G](population: EvaluatedPopulation[G], popSize: Int, ratio: Double) extends Op[Population[G]]
   case SelectPairs[G](population: EvaluatedPopulation[G], limit: Int) extends Op[DistributedPopulation[G]]
   case SelectFittest[G](population: EvaluatedPopulation[G]) extends Op[Ind[G]]
-
-  case Pure[A](value: A) extends Op[A]
-  case Bind[A, B](op: Op[A], f: A => Op[B]) extends Op[B]
-  case Traverse[A, B](ops: List[A], f: A => Op[B]) extends Op[List[B]]
-  case Iterate[A](a: A, n: Int, f: A => Op[A]) extends Op[A]
-
-  def flatMap[B](f: A => Op[B]): Op[B] = Bind(this, f)
-  def map[B](f: A => B): Op[B]         = Bind(this, a => Pure(f(a)))

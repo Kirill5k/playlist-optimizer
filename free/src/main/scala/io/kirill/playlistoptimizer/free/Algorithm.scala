@@ -1,9 +1,10 @@
 package io.kirill.playlistoptimizer.free
 
 trait Algorithm:
-  def optimize[G](target: Ind[G], params: Algorithm.OptimizationParameters): Op[Ind[G]]
+  def optimize[G](target: Ind[G], params: Algorithm.OptimizationParameters): Free[Op, Ind[G]]
 
 object Algorithm:
+
   final case class OptimizationParameters(
       populationSize: Int,
       maxGen: Int,
@@ -14,22 +15,28 @@ object Algorithm:
   )
 
   val genAlg = new Algorithm {
-    override def optimize[G](target: Ind[G], params: OptimizationParameters): Op[Ind[G]] = {
-      val singleIteration: (pop: Population[G]) => Op[Population[G]] = pop =>
+    override def optimize[G](target: Ind[G], params: OptimizationParameters): Free[Op, Ind[G]] = {
+      val singleIteration: Population[G] => Free[Op, Population[G]] = pop =>
         for
-          evPop    <- Op.EvaluatePopulation(pop)
-          elites   <- Op.SelectElites(evPop, params.populationSize, params.elitismRatio)
-          pairs    <- Op.SelectPairs(evPop, params.populationSize)
-          crossed1 <- Op.Traverse(pairs, (i1, i2) => Op.Crossover(i1, i2, params.crossoverProbability))
-          crossed2 <- Op.Traverse(pairs, (i1, i2) => Op.Crossover(i2, i1, params.crossoverProbability))
-          mutated  <- Op.Traverse(crossed1 ++ crossed2, i => Op.Mutate(i, params.mutationProbability))
+          evPop    <- Op.EvaluatePopulation(pop).freeM
+          elites   <- Op.SelectElites(evPop, params.populationSize, params.elitismRatio).freeM
+          pairs    <- Op.SelectPairs(evPop, params.populationSize).freeM
+          crossed1 <- pairs.traverse((i1, i2) => Op.Crossover(i1, i2, params.crossoverProbability))
+          crossed2 <- pairs.traverse((i1, i2) => Op.Crossover(i2, i1, params.crossoverProbability))
+          mutated  <- (crossed1 ++ crossed2).traverse(i => Op.Mutate(i, params.mutationProbability))
         yield mutated ++ elites
 
       for
-        pop      <- Op.InitPopulation(target, params.populationSize, params.shuffle)
-        finalPop <- Op.Iterate(pop, params.maxGen, singleIteration)
-        evPop    <- Op.EvaluatePopulation(finalPop)
-        fittest  <- Op.SelectFittest(evPop)
+        pop      <- Op.InitPopulation(target, params.populationSize, params.shuffle).freeM
+        finalPop <- Free.iterate(pop, params.maxGen)(singleIteration)
+        evPop    <- Op.EvaluatePopulation(finalPop).freeM
+        fittest  <- Op.SelectFittest(evPop).freeM
       yield fittest
     }
   }
+
+  extension [A](fa: Op[A])
+    def freeM: Free[Op, A] = Free.liftM(fa)
+
+  extension [A](ls: List[A])
+    def traverse[B](f: A => Op[B]): Free[Op, List[B]] = Free.traverse(ls, f)
