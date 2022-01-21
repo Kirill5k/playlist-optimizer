@@ -1,5 +1,7 @@
 package io.kirill.playlistoptimizer.free
 
+import cats.free.Free
+
 trait Algorithm:
   def optimize[G](target: Ind[G], params: Algorithm.OptimizationParameters): Free[Op, Ind[G]]
 
@@ -15,28 +17,26 @@ object Algorithm:
   )
 
   val genAlg = new Algorithm {
-    override def optimize[G](target: Ind[G], params: OptimizationParameters): Free[Op, Ind[G]] = {
-      val singleIteration: Population[G] => Free[Op, Population[G]] = pop =>
-        for
-          evPop    <- Op.EvaluatePopulation(pop).freeM
-          elites   <- Op.SelectElites(evPop, params.populationSize, params.elitismRatio).freeM
-          pairs    <- Op.SelectPairs(evPop, params.populationSize).freeM
-          crossed1 <- pairs.traverse((i1, i2) => Op.Crossover(i1, i2, params.crossoverProbability))
-          crossed2 <- pairs.traverse((i1, i2) => Op.Crossover(i2, i1, params.crossoverProbability))
-          mutated  <- (crossed1 ++ crossed2).traverse(i => Op.Mutate(i, params.mutationProbability))
-        yield mutated ++ elites
-
+    override def optimize[G](target: Ind[G], params: OptimizationParameters): Free[Op, Ind[G]] =
       for
         pop      <- Op.InitPopulation(target, params.populationSize, params.shuffle).freeM
-        finalPop <- Free.iterate(pop, params.maxGen)(singleIteration)
+        finalPop <- iterate(pop, params.maxGen) { currentPop =>
+          for
+            evPop    <- Op.EvaluatePopulation(currentPop).freeM
+            elites   <- Op.SelectElites(evPop, params.populationSize, params.elitismRatio).freeM
+            pairs    <- Op.SelectPairs(evPop, params.populationSize).freeM
+            crossed1 <- Op.ApplyToAll(pairs, (i1, i2) => Op.Crossover(i1, i2, params.crossoverProbability)).freeM
+            crossed2 <- Op.ApplyToAll(pairs, (i1, i2) => Op.Crossover(i2, i1, params.crossoverProbability)).freeM
+            mutated  <- Op.ApplyToAll(crossed1 ++ crossed2, i => Op.Mutate(i, params.mutationProbability)).freeM
+          yield mutated ++ elites
+        }
         evPop    <- Op.EvaluatePopulation(finalPop).freeM
         fittest  <- Op.SelectFittest(evPop).freeM
       yield fittest
-    }
   }
 
-  extension [A](fa: Op[A])
-    def freeM: Free[Op, A] = Free.liftM(fa)
+  def iterate[F[_], A](a: A, n: Int)(f: A => Free[F, A]): Free[F, A] =
+    LazyList.fill(n)(0).foldLeft[Free[F, A]](Free.pure(a))((res, _) => res.flatMap(f))
 
-  extension [A](ls: List[A])
-    def traverse[B](f: A => Op[B]): Free[Op, List[B]] = Free.traverse(ls, f)
+  extension [A](fa: Op[A])
+    def freeM: Free[Op, A] = Free.liftF(fa)

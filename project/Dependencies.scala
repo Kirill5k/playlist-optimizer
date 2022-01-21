@@ -3,6 +3,7 @@ import sbt._
 object Dependencies {
 
   private object Versions {
+    val cats       = "2.7.0"
     val fs2        = "3.2.4"
     val pureConfig = "0.17.1"
     val circe      = "0.14.1"
@@ -20,6 +21,7 @@ object Dependencies {
   }
 
   private object Libraries {
+    val catsFree       = "org.typelevel"         %% "cats-free"       % Versions.cats
     val fs2            = "co.fs2"                %% "fs2-core"        % Versions.fs2
     val pureconfigCore = "com.github.pureconfig" %% "pureconfig-core" % Versions.pureConfig
 
@@ -77,6 +79,6 @@ object Dependencies {
   )
 
   lazy val free = Seq(
-    Libraries.fs2
+    Libraries.catsFree
   )
 }

@@ -16,3 +16,4 @@ enum Op[A]:
   case SelectElites[G](population: EvaluatedPopulation[G], popSize: Int, ratio: Double) extends Op[Population[G]]
   case SelectPairs[G](population: EvaluatedPopulation[G], limit: Int) extends Op[DistributedPopulation[G]]
   case SelectFittest[G](population: EvaluatedPopulation[G]) extends Op[Ind[G]]
+  case ApplyToAll[A, B](population: List[A], op: A => Op[B]) extends Op[List[B]]
