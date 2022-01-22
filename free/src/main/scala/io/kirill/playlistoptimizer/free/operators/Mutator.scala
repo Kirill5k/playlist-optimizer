@@ -5,7 +5,7 @@ import scala.util.Random
 trait Mutator[A]:
   def mutate(ind: Array[A], mutationProbability: Double)(using r: Random): Array[A]
 
-object Mutator {
+object Mutator:
   inline def randomSwapMutator[A]: Mutator[A] = new Mutator[A] {
     override def mutate(ind: Array[A], mutationFactor: Double)(using r: Random): Array[A] = {
       val swaps = ind.length * mutationFactor / 2.0
@@ -41,5 +41,3 @@ object Mutator {
       result
     }
   }
-
-}

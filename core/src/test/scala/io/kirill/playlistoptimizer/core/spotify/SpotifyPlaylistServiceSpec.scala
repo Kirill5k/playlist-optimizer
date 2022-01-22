@@ -5,9 +5,9 @@ import cats.effect.IO
 import cats.effect.testing.scalatest.AsyncIOSpec
 import org.typelevel.log4cats.Logger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
-import io.kirill.playlistoptimizer.core.MockitoMatchers
 import io.kirill.playlistoptimizer.core.common.SpotifyConfigBuilder
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
+import io.kirill.playlistoptimizer.domain.MockitoMatchers
 import org.scalatest.freespec.AsyncFreeSpec
 import org.scalatest.matchers.must.Matchers
 import sttp.client3.SttpBackend

@@ -2,7 +2,6 @@ package io.kirill.playlistoptimizer.core.spotify.clients
 
 import cats.effect.IO
 import io.kirill.playlistoptimizer.core.ApiClientSpec
-import io.kirill.playlistoptimizer.core.RequestOps.*
 import io.kirill.playlistoptimizer.core.common.errors.SpotifyTrackNotFound
 import io.kirill.playlistoptimizer.core.playlist.Key.*
 import io.kirill.playlistoptimizer.core.playlist.*

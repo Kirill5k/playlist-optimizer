@@ -2,8 +2,8 @@ package io.kirill.playlistoptimizer.core.common
 
 import cats.effect.IO
 import cats.effect.unsafe.implicits.global
-import io.kirill.playlistoptimizer.core.CatsIOSpec
 import io.kirill.playlistoptimizer.core.common.config.AppConfig
+import io.kirill.playlistoptimizer.domain.CatsIOSpec
 
 class AppConfigSpec extends CatsIOSpec {
 

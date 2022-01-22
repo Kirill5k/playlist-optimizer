@@ -18,9 +18,6 @@ trait ApiClientSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
   implicit val sc: SpotifyConfig  = SpotifyConfigBuilder.testConfig
 
   def json(path: String): String = Source.fromResource(path).getLines().toList.mkString
-}
-
-object RequestOps {
 
   extension (req: client3.Request[?, ?])
     def isPost: Boolean =

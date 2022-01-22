@@ -31,8 +31,26 @@ val docker = Seq(
   }
 )
 
+val domain = project
+  .in(file("domain"))
+  .settings(
+    name := "playlist-optimizer-domain",
+    moduleName := "playlist-optimizer-domain",
+    libraryDependencies ++= Dependencies.test,
+  )
+
+val free = project
+  .in(file("free"))
+  .dependsOn(domain % "compile->compile;test->test")
+  .settings(
+    name := "playlist-optimizer-free",
+    moduleName := "playlist-optimizer-free",
+    libraryDependencies ++= Dependencies.free ++ Dependencies.test,
+  )
+
 val core = project
   .in(file("core"))
+  .dependsOn(domain % "compile->compile;test->test")
   .enablePlugins(JavaAppPackaging, JavaAgent, DockerPlugin)
   .settings(docker)
   .settings(
@@ -63,18 +81,10 @@ val benchmark = project
     Test / parallelExecution := false
   )
 
-val free = project
-  .in(file("free"))
-  .settings(
-    name := "playlist-optimizer-free",
-    moduleName := "playlist-optimizer-free",
-    libraryDependencies ++= Dependencies.free ++ Dependencies.test,
-  )
-
 val root = project
   .in(file("."))
   .settings(noPublish)
   .settings(
     name := "playlist-optimizer"
   )
-  .aggregate(core, frontend, free)
+  .aggregate(domain, core, frontend, free)

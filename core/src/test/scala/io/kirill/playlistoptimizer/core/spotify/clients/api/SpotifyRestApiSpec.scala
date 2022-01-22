@@ -2,7 +2,6 @@ package io.kirill.playlistoptimizer.core.spotify.clients.api
 
 import cats.effect.IO
 import io.kirill.playlistoptimizer.core.ApiClientSpec
-import io.kirill.playlistoptimizer.core.RequestOps.*
 import io.kirill.playlistoptimizer.core.common.errors.SpotifyApiError
 import io.kirill.playlistoptimizer.core.spotify.clients.api.responses.*
 import sttp.client3.asynchttpclient.cats.AsyncHttpClientCatsBackend

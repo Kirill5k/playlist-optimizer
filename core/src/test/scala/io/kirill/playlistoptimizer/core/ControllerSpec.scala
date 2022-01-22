@@ -5,6 +5,7 @@ import cats.effect.unsafe.IORuntime
 import org.typelevel.log4cats.Logger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
 import io.circe.parser.*
+import io.kirill.playlistoptimizer.domain.MockitoMatchers
 import org.http4s.circe.*
 import org.http4s.*
 import org.scalatest.Assertion
