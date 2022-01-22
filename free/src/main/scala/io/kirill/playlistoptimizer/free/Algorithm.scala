@@ -37,6 +37,3 @@ object Algorithm:
 
   def iterate[F[_], A](a: A, n: Int)(f: A => Free[F, A]): Free[F, A] =
     LazyList.fill(n)(0).foldLeft[Free[F, A]](Free.pure(a))((res, _) => res.flatMap(f))
-
-  extension [A, G](fa: Op[A, G])
-    def freeM: Free[Op[*, G], A] = Free.liftF(fa)

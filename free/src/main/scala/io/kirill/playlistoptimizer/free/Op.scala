@@ -1,8 +1,10 @@
 package io.kirill.playlistoptimizer.free
 
 import cats.effect.Sync
+import cats.free.Free
 import cats.~>
 import io.kirill.playlistoptimizer.free.operators.*
+import io.kirill.playlistoptimizer.free.collections.*
 
 import scala.reflect.ClassTag
 import scala.util.Random
@@ -31,7 +33,9 @@ enum Op[A, G]:
   case ApplyToAll[A, B, G](population: List[A], op: A => Op[B, G]) extends Op[List[B], G]
 
 object Op {
-  def ioInterpreter[F[_], G](
+  extension [A, G](fa: Op[A, G]) def freeM: Free[Op[*, G], A] = Free.liftF(fa)
+
+  def ioInterpreter[F[_], G: ClassTag](
       crossover: Crossover[G],
       mutator: Mutator[G],
       evaluator: Evaluator[G],
@@ -40,7 +44,7 @@ object Op {
   )(using F: Sync[F], rand: Random): Op[*, G] ~> F = new (Op[*, G] ~> F) {
     def apply[A](fa: Op[A, G]): F[A] =
       fa match {
-        case Op.InitPopulation(seed, size, shuffle)      => ???
+        case Op.InitPopulation(seed, size, shuffle)      => F.delay(List.fill(size)(if (shuffle) seed.shuffle else seed))
         case Op.Cross(ind1, ind2, prob)                  => ???
         case Op.Mutate(ind, prob)                        => F.delay(mutator.mutate(ind, prob))
         case Op.EvaluateOne(ind)                         => ???
