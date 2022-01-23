@@ -23,6 +23,7 @@ type EvaluatedPopulation[G]   = List[(Ind[G], Fitness)]
 type DistributedPopulation[G] = List[(Ind[G], Ind[G])]
 
 enum Op[A, G]:
+  case UpdateOnProgress[G](iteration: Int, maxGen: Int) extends Op[Unit, G]
   case InitPopulation[G](seed: Ind[G], size: Int, shuffle: Boolean) extends Op[Population[G], G]
   case Cross[G](ind1: Ind[G], ind2: Ind[G], prob: Double) extends Op[Ind[G], G]
   case Mutate[G](ind: Ind[G], prob: Double) extends Op[Ind[G], G]
@@ -45,6 +46,8 @@ object Op:
   )(using F: Async[F], rand: Random): Op[*, G] ~> F = new (Op[*, G] ~> F) {
     def apply[A](fa: Op[A, G]): F[A] =
       fa match
+        case Op.UpdateOnProgress(_, _) =>
+          F.unit
         case Op.InitPopulation(seed, size, shuffle) =>
           F.delay(List.fill(size)(if (shuffle) seed.shuffle else seed))
         case Op.SelectFittest(population) =>
