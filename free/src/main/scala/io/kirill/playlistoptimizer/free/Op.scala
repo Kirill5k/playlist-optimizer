@@ -37,7 +37,7 @@ enum Op[A, G]:
 object Op:
   extension [A, G](fa: Op[A, G]) def freeM: Free[Op[*, G], A] = Free.liftF(fa)
 
-  def ioInterpreter[F[_], G: ClassTag](
+  inline def ioInterpreter[F[_], G: ClassTag](
       crossover: Crossover[G],
       mutator: Mutator[G],
       evaluator: Evaluator[G],

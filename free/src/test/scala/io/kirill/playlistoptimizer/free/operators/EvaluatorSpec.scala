@@ -1,7 +1,8 @@
-package io.kirill.playlistoptimizer.core.optimizer.algorithms.operators
+package io.kirill.playlistoptimizer.free.operators
 
 import io.kirill.playlistoptimizer.domain.playlist.Key.*
 import io.kirill.playlistoptimizer.domain.playlist.{Key, Track}
+import io.kirill.playlistoptimizer.free.Fitness
 import org.scalatest.Inspectors
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -14,15 +15,14 @@ class EvaluatorSpec extends AnyWordSpec with Matchers with Inspectors {
     val evaluator = Evaluator.harmonicSeqBasedTracksEvaluator
 
     "evaluate a sequence of tracks based on keys position" in {
-      val keysWithScore   = Map(
+      val keysWithScore = Map(
         List(BMajor, EMajor, EMajor, AMajor, DMajor, GMajor, GMajor, GMajor, GMajor, GMajor) -> 4,
-        List(EMajor, GMinor, BFlatMinor, EMinor) -> 94
+        List(EMajor, GMinor, BFlatMinor, EMinor)                                             -> 94
       )
 
-      forAll(keysWithScore) {
-        case (keys, expected) =>
-          val tracks = tracksSeq(keys = keys)
-          evaluator.evaluateIndividual(tracks) must be(Fitness(expected))
+      forAll(keysWithScore) { case (keys, expected) =>
+        val tracks = tracksSeq(keys = keys)
+        evaluator.evaluateIndividual(tracks) must be(Fitness(expected))
       }
     }
   }
@@ -38,10 +38,9 @@ class EvaluatorSpec extends AnyWordSpec with Matchers with Inspectors {
         List(0.50, 0.49, 0.48, 0.47, 0.95, 0.45, 0.44, 0.43, 0.42, 0.41) -> 105
       )
 
-      forAll(energiesWithScore) {
-        case (en, expected) =>
-          val tracks = tracksSeq(energies = en)
-          evaluator.evaluateIndividual(tracks) must be(Fitness(expected))
+      forAll(energiesWithScore) { case (en, expected) =>
+        val tracks = tracksSeq(energies = en)
+        evaluator.evaluateIndividual(tracks) must be(Fitness(expected))
       }
     }
 
@@ -52,10 +51,9 @@ class EvaluatorSpec extends AnyWordSpec with Matchers with Inspectors {
         List(0.50, 0.49, 0.48, 0.47, 0.95, 0.45, 0.44, 0.43, 0.42, 0.41) -> 105
       )
 
-      forAll(danceabilitiesWithScore) {
-        case (dance, expected) =>
-          val tracks = tracksSeq(danceabilities = dance)
-          evaluator.evaluateIndividual(tracks) must be(Fitness(expected))
+      forAll(danceabilitiesWithScore) { case (dance, expected) =>
+        val tracks = tracksSeq(danceabilities = dance)
+        evaluator.evaluateIndividual(tracks) must be(Fitness(expected))
       }
     }
 
@@ -67,10 +65,9 @@ class EvaluatorSpec extends AnyWordSpec with Matchers with Inspectors {
         ) -> 90
       )
 
-      forAll(danceabilitiesWithScore) {
-        case ((energies, danceabilities), expected) =>
-          val tracks = tracksSeq(danceabilities = danceabilities, energies = energies)
-          evaluator.evaluateIndividual(tracks) must be(Fitness(expected))
+      forAll(danceabilitiesWithScore) { case ((energies, danceabilities), expected) =>
+        val tracks = tracksSeq(danceabilities = danceabilities, energies = energies)
+        evaluator.evaluateIndividual(tracks) mustBe Fitness(expected)
       }
     }
   }
@@ -79,9 +76,13 @@ class EvaluatorSpec extends AnyWordSpec with Matchers with Inspectors {
       keys: List[Key] = Nil,
       energies: List[Double] = Nil,
       danceabilities: List[Double] = Nil
-  ): Array[Track] = {
-    keys.zipAll(energies, EMajor, 0.5).zipAll(danceabilities, (EMajor, 0.5), 0.5).zipWithIndex.map {
-      case (((key, en), dance), i) => track(s"song $i", key = key, energy = en, danceability = dance)
-    }.toArray
-  }
+  ): Array[Track] =
+    keys
+      .zipAll(energies, EMajor, 0.5)
+      .zipAll(danceabilities, (EMajor, 0.5), 0.5)
+      .zipWithIndex
+      .map { case (((key, en), dance), i) =>
+        track(s"song $i", key = key, energy = en, danceability = dance)
+      }
+      .toArray
 }

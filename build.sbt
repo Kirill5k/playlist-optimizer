@@ -50,7 +50,7 @@ val free = project
 
 val core = project
   .in(file("core"))
-  .dependsOn(domain % "compile->compile;test->test")
+  .dependsOn(domain % "compile->compile;test->test", free)
   .enablePlugins(JavaAppPackaging, JavaAgent, DockerPlugin)
   .settings(docker)
   .settings(
@@ -70,10 +70,7 @@ val frontend = project
 
 val benchmark = project
   .in(file("benchmark"))
-  .dependsOn(
-    domain % "compile->compile;test->test",
-    core
-  )
+  .dependsOn(domain, core)
   .settings(noPublish)
   .settings(
     name := "playlist-optimizer-benchmark",

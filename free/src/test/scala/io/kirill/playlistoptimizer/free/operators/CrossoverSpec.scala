@@ -1,5 +1,6 @@
-package io.kirill.playlistoptimizer.core.optimizer.algorithms.operators
+package io.kirill.playlistoptimizer.free.operators
 
+import org.scalatest.freespec.AnyFreeSpec
 import io.kirill.playlistoptimizer.domain.playlist.Track
 import io.kirill.playlistoptimizer.domain.playlist.Key.*
 import io.kirill.playlistoptimizer.domain.playlist.TrackBuilder.track

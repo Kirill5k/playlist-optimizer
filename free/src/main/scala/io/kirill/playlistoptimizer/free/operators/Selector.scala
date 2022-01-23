@@ -1,18 +1,18 @@
 package io.kirill.playlistoptimizer.free.operators
 
 import io.kirill.playlistoptimizer.free.collections.*
-import io.kirill.playlistoptimizer.free.Fitness
+import io.kirill.playlistoptimizer.free.{Ind, Fitness}
 import scala.annotation.tailrec
 import scala.util.Random
 
 trait Selector[A]:
-  def selectPairs(population: Seq[(Array[A], Fitness)], populationLimit: Int)(using r: Random): Seq[(Array[A], Array[A])]
+  def selectPairs(population: Seq[(Ind[A], Fitness)], populationLimit: Int)(using r: Random): Seq[(Ind[A], Ind[A])]
 
 final private class FitnessBasedSelector[A] extends Selector[A] {
   override def selectPairs(
-      population: Seq[(Array[A], Fitness)],
+      population: Seq[(Ind[A], Fitness)],
       populationLimit: Int
-  )(using r: Random): Seq[(Array[A], Array[A])] =
+  )(using r: Random): Seq[(Ind[A], Ind[A])] =
     population
       .sortBy(_._2)
       .take(populationLimit)
@@ -22,9 +22,9 @@ final private class FitnessBasedSelector[A] extends Selector[A] {
 
 final private class RouletteWheelSelector[A] extends Selector[A] {
   override def selectPairs(
-      population: Seq[(Array[A], Fitness)],
+      population: Seq[(Ind[A], Fitness)],
       populationLimit: Int
-  )(using r: Random): Seq[(Array[A], Array[A])] = {
+  )(using r: Random): Seq[(Ind[A], Ind[A])] = {
     val popByFitness = population
       .sortBy(_._2)
       .map { case (i, f) => (i, 100 / f.value) }
@@ -32,7 +32,7 @@ final private class RouletteWheelSelector[A] extends Selector[A] {
     val fTotal = popByFitness.map(_._2).sum
 
     @tailrec
-    def go(newPop: List[Array[A]], remPop: Seq[(Array[A], BigDecimal)], f: BigDecimal): List[Array[A]] =
+    def go(newPop: List[Ind[A]], remPop: Seq[(Ind[A], BigDecimal)], f: BigDecimal): List[Ind[A]] =
       if (remPop.isEmpty || newPop.size >= populationLimit) newPop
       else {
         val ((pickedInd, indFitness), remaining) = pickOne(remPop, f)
@@ -42,9 +42,9 @@ final private class RouletteWheelSelector[A] extends Selector[A] {
   }
 
   private def pickOne(
-      popByFitness: Seq[(Array[A], BigDecimal)],
+      popByFitness: Seq[(Ind[A], BigDecimal)],
       fTotal: BigDecimal
-  )(using r: Random): ((Array[A], BigDecimal), Seq[(Array[A], BigDecimal)]) = {
+  )(using r: Random): ((Ind[A], BigDecimal), Seq[(Ind[A], BigDecimal)]) = {
     var remFitness = BigDecimal(1.0)
 
     val n = r.nextDouble()
