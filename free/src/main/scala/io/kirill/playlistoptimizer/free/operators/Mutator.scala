@@ -1,13 +1,14 @@
 package io.kirill.playlistoptimizer.free.operators
 
+import io.kirill.playlistoptimizer.free.Ind
 import scala.util.Random
 
 trait Mutator[A]:
-  def mutate(ind: Array[A], mutationProbability: Double)(using r: Random): Array[A]
+  def mutate(ind: Ind[A], mutationProbability: Double)(using r: Random): Ind[A]
 
 object Mutator:
   inline def randomSwapMutator[A]: Mutator[A] = new Mutator[A] {
-    override def mutate(ind: Array[A], mutationFactor: Double)(using r: Random): Array[A] = {
+    override def mutate(ind: Ind[A], mutationFactor: Double)(using r: Random): Ind[A] = {
       val swaps = ind.length * mutationFactor / 2.0
       val result = ind.clone()
       var i = 0
@@ -25,7 +26,7 @@ object Mutator:
   }
 
   inline def neighbourSwapMutator[A]: Mutator[A] = new Mutator[A] {
-    override def mutate(ind: Array[A], mutationFactor: Double)(using r: Random): Array[A] = {
+    override def mutate(ind: Ind[A], mutationFactor: Double)(using r: Random): Ind[A] = {
       val result = ind.clone()
       var i = 0
       while (i < result.length - 1) {

@@ -4,38 +4,74 @@ import cats.free.Free
 import cats.effect.IO
 import io.kirill.playlistoptimizer.domain.{CatsIOSpec, MockitoMatchers}
 import io.kirill.playlistoptimizer.free.operators.{Crossover, Elitism, Evaluator, Mutator, Selector}
+import io.kirill.playlistoptimizer.free.collections.*
+import org.mockito.Mockito.times
 
 import scala.util.Random
 
 class OpSpec extends CatsIOSpec with MockitoMatchers {
 
-  "An io interpreter when" - {
-    "mutate is submitted should" - {
-      "apply mutation op an array" in {
-        given r: Random                 = Random(42)
-        val (cross, _, eval, sel, elit) = mocks[Int]
-        val interpreter                 = Op.ioInterpreter[IO, Int](cross, Mutator.randomSwapMutator[Int], eval, sel, elit)
+  "An IO interpreter should" - {
+
+    given r: Random = Random(42)
+
+    val ind1 = Array.range(0, 10)
+    val ind2 = Array.range(0, 10).shuffle
+
+    "mutate an individual when" - {
+      "Op.Mutate op is submitted" in {
+        val (cross, mut, eval, sel, elit) = mocks[Int]
+        val interpreter = Op.ioInterpreter[IO, Int](cross, mut, eval, sel, elit)
+
+        when(mut.mutate(any[Ind[Int]], any[Double])(using eqTo(r))).thenReturn(ind2)
 
         Op.Mutate[Int](Array.range(0, 10), 0.2)
           .freeM
           .foldMap(interpreter)
-          .asserting(_ mustBe Array(3, 1, 2, 0, 4, 5, 6, 7, 8, 9))
+          .asserting { res =>
+            verify(mut).mutate(ind1, 0.2)
+            res mustBe ind2
+          }
       }
 
-      "apply mutation operation on array 3 times in the row" in {
-        given r: Random                 = Random(42)
-        val (cross, _, eval, sel, elit) = mocks[Int]
-        val interpreter                 = Op.ioInterpreter[IO, Int](cross, Mutator.randomSwapMutator[Int], eval, sel, elit)
+      "Op.Mutate op is submitted 3 times in the row" in {
+        val (cross, mut, eval, sel, elit) = mocks[Int]
+        val interpreter                 = Op.ioInterpreter[IO, Int](cross, mut, eval, sel, elit)
+
+        when(mut.mutate(any[Ind[Int]], any[Double])(using eqTo(r)))
+          .thenReturn(ind1)
+          .thenReturn(ind1)
+          .thenReturn(ind2)
 
         val result = for
-          i1 <- Op.Mutate(Array.range(0, 10), 0.2).freeM
+          i1 <- Op.Mutate(ind1, 0.2).freeM
           i2 <- Op.Mutate(i1, 0.2).freeM
           i3 <- Op.Mutate(i2, 0.2).freeM
         yield i3
 
         result
           .foldMap(interpreter)
-          .asserting(_ mustBe Array(5, 1, 2, 0, 8, 3, 6, 7, 4, 9))
+          .asserting { res =>
+            verify(mut, times(3)).mutate(any[Array[Int]], eqTo(0.2))(using eqTo(r))
+            res mustBe ind2
+          }
+      }
+    }
+
+    "evaluate entire population when" - {
+      "Op.EvaluatePopulation is submitted" in {
+        val (cross, mut, eval, sel, elit) = mocks[Int]
+        val interpreter                 = Op.ioInterpreter[IO, Int](cross, mut, eval, sel, elit)
+
+        when(eval.evaluateIndividual(any[Ind[Int]])).thenAnswer(a => (a.getArgument(0), Fitness(1)))
+
+        Op.EvaluatePopulation(List.fill(10)(ind1.shuffle))
+          .freeM
+          .foldMap(interpreter)
+          .asserting { res =>
+            verify(eval, times(10)).evaluateIndividual(any[Array[Int]])
+            res must have size 10
+          }
       }
     }
   }

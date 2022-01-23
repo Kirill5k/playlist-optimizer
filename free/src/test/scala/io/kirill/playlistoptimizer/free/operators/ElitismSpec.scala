@@ -20,7 +20,7 @@ class ElitismSpec extends AnyWordSpec with Matchers {
 
       val elitism = Elitism.simple[Int]
 
-      val result = elitism.select(population, 0.35)
+      val result = elitism.select(population, 6 * 0.35)
 
       result.map(_.head) mustBe List(5, 2)
     }

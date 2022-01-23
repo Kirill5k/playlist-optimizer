@@ -1,10 +1,11 @@
 package io.kirill.playlistoptimizer.free
 
-import cats.effect.Sync
-import cats.free.Free
 import cats.~>
+import cats.effect.{Async, Sync}
+import cats.free.Free
 import io.kirill.playlistoptimizer.free.operators.*
 import io.kirill.playlistoptimizer.free.collections.*
+import fs2.Stream
 
 import scala.reflect.ClassTag
 import scala.util.Random
@@ -41,15 +42,21 @@ object Op {
       evaluator: Evaluator[G],
       selector: Selector[G],
       elitism: Elitism[G]
-  )(using F: Sync[F], rand: Random): Op[*, G] ~> F = new (Op[*, G] ~> F) {
+  )(using F: Async[F], rand: Random): Op[*, G] ~> F = new (Op[*, G] ~> F) {
     def apply[A](fa: Op[A, G]): F[A] =
       fa match {
-        case Op.InitPopulation(seed, size, shuffle)      => F.delay(List.fill(size)(if (shuffle) seed.shuffle else seed))
-        case Op.Cross(ind1, ind2, prob)                  => ???
-        case Op.Mutate(ind, prob)                        => F.delay(mutator.mutate(ind, prob))
-        case Op.EvaluateOne(ind)                         => ???
-        case Op.EvaluatePopulation(population)           => ???
-        case Op.SelectElites(population, popSize, ratio) => ???
+        case Op.InitPopulation(seed, size, shuffle) =>
+          F.delay(List.fill(size)(if (shuffle) seed.shuffle else seed))
+        case Op.Cross(ind1, ind2, prob) =>
+          F.delay(crossover.cross(ind1, ind2, prob))
+        case Op.Mutate(ind, prob) =>
+          F.delay(mutator.mutate(ind, prob))
+        case Op.EvaluateOne(ind) =>
+          F.delay(evaluator.evaluateIndividual(ind))
+        case Op.EvaluatePopulation(population) =>
+          Stream.emits(population).mapAsync(Int.MaxValue)(i => apply(Op.EvaluateOne(i))).compile.toList
+        case Op.SelectElites(population, popSize, ratio) =>
+          F.delay(elitism.select(population, popSize * ratio))
         case Op.SelectPairs(population, limit)           => ???
         case Op.SelectFittest(population)                => ???
         case Op.ApplyToAll(population, op)               => ???
