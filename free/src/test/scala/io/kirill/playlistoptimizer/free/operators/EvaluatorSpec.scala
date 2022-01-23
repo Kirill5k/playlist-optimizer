@@ -22,7 +22,7 @@ class EvaluatorSpec extends AnyWordSpec with Matchers with Inspectors {
 
       forAll(keysWithScore) { case (keys, expected) =>
         val tracks = tracksSeq(keys = keys)
-        evaluator.evaluateIndividual(tracks) must be(Fitness(expected))
+        evaluator.evaluateIndividual(tracks) mustBe (tracks, Fitness(expected))
       }
     }
   }
@@ -40,7 +40,7 @@ class EvaluatorSpec extends AnyWordSpec with Matchers with Inspectors {
 
       forAll(energiesWithScore) { case (en, expected) =>
         val tracks = tracksSeq(energies = en)
-        evaluator.evaluateIndividual(tracks) must be(Fitness(expected))
+        evaluator.evaluateIndividual(tracks) mustBe (tracks, Fitness(expected))
       }
     }
 
@@ -53,7 +53,7 @@ class EvaluatorSpec extends AnyWordSpec with Matchers with Inspectors {
 
       forAll(danceabilitiesWithScore) { case (dance, expected) =>
         val tracks = tracksSeq(danceabilities = dance)
-        evaluator.evaluateIndividual(tracks) must be(Fitness(expected))
+        evaluator.evaluateIndividual(tracks) mustBe (tracks, Fitness(expected))
       }
     }
 
@@ -67,7 +67,7 @@ class EvaluatorSpec extends AnyWordSpec with Matchers with Inspectors {
 
       forAll(danceabilitiesWithScore) { case ((energies, danceabilities), expected) =>
         val tracks = tracksSeq(danceabilities = danceabilities, energies = energies)
-        evaluator.evaluateIndividual(tracks) mustBe Fitness(expected)
+        evaluator.evaluateIndividual(tracks) mustBe (tracks, Fitness(expected))
       }
     }
   }

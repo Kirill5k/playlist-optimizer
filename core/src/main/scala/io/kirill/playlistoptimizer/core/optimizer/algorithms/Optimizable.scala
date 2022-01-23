@@ -14,3 +14,4 @@ object Optimizable:
 
   extension [T, A](target: T)
     def repr(using optimizable: Optimizable[T, A]): Array[A] = optimizable.repr(target)
+    def update(optimizedRepr: Array[A])(using optimizable: Optimizable[T, A]): T = optimizable.update(target)(optimizedRepr)
