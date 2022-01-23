@@ -70,8 +70,11 @@ val frontend = project
 
 val benchmark = project
   .in(file("benchmark"))
+  .dependsOn(
+    domain % "compile->compile;test->test",
+    core
+  )
   .settings(noPublish)
-  .dependsOn(core)
   .settings(
     name := "playlist-optimizer-benchmark",
     moduleName := "playlist-optimizer-benchmark",
