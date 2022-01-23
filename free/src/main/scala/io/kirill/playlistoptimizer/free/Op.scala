@@ -30,7 +30,7 @@ enum Op[A, G]:
   case EvaluatePopulation[G](population: Population[G]) extends Op[EvaluatedPopulation[G], G]
   case SelectElites[G](population: EvaluatedPopulation[G], popSize: Int, ratio: Double) extends Op[Population[G], G]
   case SelectPairs[G](population: EvaluatedPopulation[G], limit: Int) extends Op[DistributedPopulation[G], G]
-  case SelectFittest[G](population: EvaluatedPopulation[G]) extends Op[Ind[G], G]
+  case SelectFittest[G](population: EvaluatedPopulation[G]) extends Op[(Ind[G], Fitness), G]
   case ApplyToAll[A, B, G](population: List[A], op: A => Op[B, G]) extends Op[List[B], G]
 
 object Op {
@@ -47,6 +47,8 @@ object Op {
       fa match {
         case Op.InitPopulation(seed, size, shuffle) =>
           F.delay(List.fill(size)(if (shuffle) seed.shuffle else seed))
+        case Op.SelectFittest(population) =>
+          F.delay(population.minBy(_._2))
         case Op.Cross(ind1, ind2, prob) =>
           F.delay(crossover.cross(ind1, ind2, prob))
         case Op.Mutate(ind, prob) =>
@@ -54,13 +56,15 @@ object Op {
         case Op.EvaluateOne(ind) =>
           F.delay(evaluator.evaluateIndividual(ind))
         case Op.EvaluatePopulation(population) =>
-          Stream.emits(population).mapAsync(Int.MaxValue)(i => apply(Op.EvaluateOne(i))).compile.toList
+          apply(Op.ApplyToAll(population, i => Op.EvaluateOne(i)))
         case Op.SelectElites(population, popSize, ratio) =>
           F.delay(elitism.select(population, popSize * ratio))
-        case Op.SelectPairs(population, limit)           => ???
-        case Op.SelectFittest(population)                => ???
-        case Op.ApplyToAll(population, op)               => ???
-        case _ | null                                    => ???
+        case Op.SelectPairs(population, limit) =>
+          F.delay(selector.selectPairs(population, limit).toList)
+        case Op.ApplyToAll(population, op) =>
+          Stream.emits(population).mapAsync(Int.MaxValue)(i => apply(op(i))).compile.toList
+        case _ | null =>
+          F.raiseError(new IllegalArgumentException("Unexpected Op type: null or something else"))
       }
   }
 }

@@ -3,7 +3,7 @@ package io.kirill.playlistoptimizer.free
 import cats.free.Free
 
 trait Algorithm:
-  def optimize[G](target: Ind[G], params: Algorithm.OptimizationParameters): Free[Op[*, G], Ind[G]]
+  def optimize[G](target: Ind[G], params: Algorithm.OptimizationParameters): Free[Op[*, G], (Ind[G], Fitness)]
 
 object Algorithm:
 
@@ -17,7 +17,7 @@ object Algorithm:
   )
 
   val genAlg = new Algorithm {
-    override def optimize[G](target: Ind[G], params: OptimizationParameters): Free[Op[*, G], Ind[G]] =
+    override def optimize[G](target: Ind[G], params: OptimizationParameters): Free[Op[*, G], (Ind[G], Fitness)] =
       for
         pop      <- Op.InitPopulation(target, params.populationSize, params.shuffle).freeM
         finalPop <- iterate(pop, params.maxGen) { currentPop =>
