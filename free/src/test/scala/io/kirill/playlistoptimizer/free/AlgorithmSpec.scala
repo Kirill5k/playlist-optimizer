@@ -3,7 +3,7 @@ package io.kirill.playlistoptimizer.free
 import cats.data.State
 import cats.~>
 import cats.syntax.flatMap.*
-import io.kirill.playlistoptimizer.free.Algorithm.OptimizationParameters
+import io.kirill.playlistoptimizer.domain.optimization.OptimizationParameters
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 

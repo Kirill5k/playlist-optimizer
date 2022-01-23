@@ -1,20 +1,12 @@
 package io.kirill.playlistoptimizer.free
 
+import io.kirill.playlistoptimizer.domain.optimization.OptimizationParameters
 import cats.free.Free
 
 trait Algorithm:
-  def optimize[G](target: Ind[G], params: Algorithm.OptimizationParameters): Free[Op[*, G], (Ind[G], Fitness)]
+  def optimize[G](target: Ind[G], params: OptimizationParameters): Free[Op[*, G], (Ind[G], Fitness)]
 
 object Algorithm:
-
-  final case class OptimizationParameters(
-      populationSize: Int,
-      maxGen: Int,
-      crossoverProbability: Double,
-      mutationProbability: Double,
-      elitismRatio: Double,
-      shuffle: Boolean
-  )
 
   case object GeneticAlgorithm extends Algorithm {
     override def optimize[G](target: Ind[G], params: OptimizationParameters): Free[Op[*, G], (Ind[G], Fitness)] =

@@ -54,9 +54,6 @@ object Dependencies {
     Libraries.pureconfigCore,
     Libraries.logback,
     Libraries.log4cats,
-    Libraries.circeCore,
-    Libraries.circeGeneric,
-    Libraries.circeParser,
     Libraries.sttpCore,
     Libraries.sttpCirce,
     Libraries.sttpCatsBackend,
@@ -65,7 +62,6 @@ object Dependencies {
     Libraries.http4sServer,
     Libraries.http4sBlaze,
     Libraries.http4sCirce,
-    Libraries.jwt
   )
 
   lazy val test = Seq(
@@ -81,5 +77,12 @@ object Dependencies {
   lazy val free = Seq(
     Libraries.catsFree,
     Libraries.fs2
+  )
+  
+  lazy val domain = Seq(
+    Libraries.circeCore,
+    Libraries.circeGeneric,
+    Libraries.circeParser,
+    Libraries.jwt
   )
 }

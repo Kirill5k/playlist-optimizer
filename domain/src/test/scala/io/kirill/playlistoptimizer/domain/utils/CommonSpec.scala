@@ -1,9 +1,11 @@
-package io.kirill.playlistoptimizer.core.utils
+package io.kirill.playlistoptimizer.domain.utils
 
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-class CommonUtilsSpec extends AnyWordSpec with Matchers {
+class CommonSpec extends AnyWordSpec with Matchers {
+
+  import common.*
 
   "A BooleanModifier" should {
     "convert boolean to int" in {

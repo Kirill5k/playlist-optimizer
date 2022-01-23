@@ -36,7 +36,7 @@ val domain = project
   .settings(
     name := "playlist-optimizer-domain",
     moduleName := "playlist-optimizer-domain",
-    libraryDependencies ++= Dependencies.test,
+    libraryDependencies ++= Dependencies.domain ++ Dependencies.test,
   )
 
 val free = project

@@ -1,6 +1,8 @@
-package io.kirill.playlistoptimizer.core.playlist
+package io.kirill.playlistoptimizer.domain.playlist
 
-import io.kirill.playlistoptimizer.core.common.errors.{InvalidKey, InvalidMode}
+import io.kirill.playlistoptimizer.domain.errors.{InvalidKey, InvalidMode}
+import io.kirill.playlistoptimizer.domain.utils.common.*
+import io.kirill.playlistoptimizer.domain.playlist.{Key, Mode}
 
 enum Mode(val number: Int):
   case Minor extends Mode(0)
