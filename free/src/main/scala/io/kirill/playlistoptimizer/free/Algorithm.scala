@@ -20,7 +20,7 @@ object Algorithm:
     override def optimize[G](target: Ind[G], params: OptimizationParameters): Free[Op[*, G], (Ind[G], Fitness)] =
       for
         pop      <- Op.InitPopulation(target, params.populationSize, params.shuffle).freeM
-        finalPop <- iterate(pop, params.maxGen) { currentPop =>
+        finalPop <- iterate(pop, params.maxGen) { (currentPop, i) =>
           for
             evPop    <- Op.EvaluatePopulation(currentPop).freeM
             elites   <- Op.SelectElites(evPop, params.populationSize, params.elitismRatio).freeM
@@ -35,5 +35,5 @@ object Algorithm:
       yield fittest
   }
 
-  private def iterate[F[_], A](a: A, n: Int)(f: A => Free[F, A]): Free[F, A] =
-    LazyList.fill(n)(0).foldLeft[Free[F, A]](Free.pure(a))((res, _) => res.flatMap(f))
+  private def iterate[F[_], A](a: A, n: Int)(f: (A, Int) => Free[F, A]): Free[F, A] =
+    LazyList.range(1, n+1).foldLeft[Free[F, A]](Free.pure(a))((res, i) => res.flatMap(r => f(r, i)))
