@@ -1,9 +1,6 @@
 package io.kirill.playlistoptimizer.free.operators
 
-import io.kirill.playlistoptimizer.free.Fitness
+import io.kirill.playlistoptimizer.free.{Fitness, Ind}
 
 trait Evaluator[A]:
-  def evaluateIndividual(individual: Array[A]): (Array[A], Fitness)
-
-  def evaluatePopulation(population: Seq[Array[A]]): Seq[(Array[A], Fitness)] =
-    population.map(evaluateIndividual)
+  def evaluateIndividual(individual: Ind[A]): (Ind[A], Fitness)

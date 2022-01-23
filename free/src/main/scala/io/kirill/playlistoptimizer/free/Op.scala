@@ -33,7 +33,7 @@ enum Op[A, G]:
   case SelectFittest[G](population: EvaluatedPopulation[G]) extends Op[(Ind[G], Fitness), G]
   case ApplyToAll[A, B, G](population: List[A], op: A => Op[B, G]) extends Op[List[B], G]
 
-object Op {
+object Op:
   extension [A, G](fa: Op[A, G]) def freeM: Free[Op[*, G], A] = Free.liftF(fa)
 
   def ioInterpreter[F[_], G: ClassTag](
@@ -44,7 +44,7 @@ object Op {
       elitism: Elitism[G]
   )(using F: Async[F], rand: Random): Op[*, G] ~> F = new (Op[*, G] ~> F) {
     def apply[A](fa: Op[A, G]): F[A] =
-      fa match {
+      fa match
         case Op.InitPopulation(seed, size, shuffle) =>
           F.delay(List.fill(size)(if (shuffle) seed.shuffle else seed))
         case Op.SelectFittest(population) =>
@@ -65,6 +65,4 @@ object Op {
           Stream.emits(population).mapAsync(Int.MaxValue)(i => apply(op(i))).compile.toList
         case _ | null =>
           F.raiseError(new IllegalArgumentException("Unexpected Op type: null or something else"))
-      }
   }
-}

@@ -19,7 +19,7 @@ class OpSpec extends CatsIOSpec with MockitoMatchers {
     val ind2 = Array.range(0, 10).shuffle
 
     "mutate an individual when" - {
-      "Op.Mutate op is submitted" in {
+      "Op.Mutate is submitted" in {
         val (cross, mut, eval, sel, elit) = mocks[Int]
         val interpreter = Op.ioInterpreter[IO, Int](cross, mut, eval, sel, elit)
 
@@ -34,7 +34,7 @@ class OpSpec extends CatsIOSpec with MockitoMatchers {
           }
       }
 
-      "Op.Mutate op is submitted 3 times in the row" in {
+      "Op.Mutate is submitted 3 times in the row" in {
         val (cross, mut, eval, sel, elit) = mocks[Int]
         val interpreter                 = Op.ioInterpreter[IO, Int](cross, mut, eval, sel, elit)
 
