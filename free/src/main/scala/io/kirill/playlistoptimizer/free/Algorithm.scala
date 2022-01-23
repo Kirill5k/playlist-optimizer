@@ -16,7 +16,7 @@ object Algorithm:
       shuffle: Boolean
   )
 
-  val genAlg = new Algorithm {
+  case object GeneticAlgorithm extends Algorithm {
     override def optimize[G](target: Ind[G], params: OptimizationParameters): Free[Op[*, G], (Ind[G], Fitness)] =
       for
         pop      <- Op.InitPopulation(target, params.populationSize, params.shuffle).freeM
@@ -35,5 +35,5 @@ object Algorithm:
       yield fittest
   }
 
-  def iterate[F[_], A](a: A, n: Int)(f: A => Free[F, A]): Free[F, A] =
+  private def iterate[F[_], A](a: A, n: Int)(f: A => Free[F, A]): Free[F, A] =
     LazyList.fill(n)(0).foldLeft[Free[F, A]](Free.pure(a))((res, _) => res.flatMap(f))
