@@ -3,9 +3,9 @@ package io.kirill.playlistoptimizer.core.optimizer.algorithms
 import cats.effect.IO
 import cats.effect.unsafe.IORuntime
 import io.kirill.playlistoptimizer.core.Benchmark
-import io.kirill.playlistoptimizer.core.optimizer.OptimizationParameters
+import io.kirill.playlistoptimizer.domain.optimization.OptimizationParameters
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.operators.{Crossover, Elitism, Evaluator, Mutator, Selector}
-import io.kirill.playlistoptimizer.core.playlist.Track
+import io.kirill.playlistoptimizer.domain.playlist.Track
 import org.scalameter.KeyValue
 import org.scalameter.api.*
 

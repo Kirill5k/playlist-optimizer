@@ -7,9 +7,9 @@ import io.circe.Codec
 import org.typelevel.log4cats.Logger
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
 import io.kirill.playlistoptimizer.core.common.controllers.Controller
-import io.kirill.playlistoptimizer.core.common.errors.{MissingRequiredQueryParam, MissingSpotifySessionCookie}
+import io.kirill.playlistoptimizer.domain.errors.{MissingRequiredQueryParam, MissingSpotifySessionCookie}
 import io.kirill.playlistoptimizer.core.common.jwt.JwtEncoder
-import io.kirill.playlistoptimizer.core.playlist.*
+import io.kirill.playlistoptimizer.domain.playlist.*
 import io.kirill.playlistoptimizer.core.spotify.SpotifyPlaylistController.ImportPlaylistRequest
 import org.http4s.headers.Location
 import org.http4s.circe.CirceEntityCodec.*

@@ -4,10 +4,10 @@ import java.time.Instant
 
 import cats.effect.IO
 import cats.effect.testing.scalatest.AsyncIOSpec
-import io.kirill.playlistoptimizer.core.optimizer.OptimizationParameters
+import io.kirill.playlistoptimizer.domain.optimization.OptimizationParameters
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.operators.*
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.Optimizable.*
-import io.kirill.playlistoptimizer.core.playlist.{PlaylistBuilder, Track}
+import io.kirill.playlistoptimizer.domain.playlist.{PlaylistBuilder, Track}
 import org.scalatest.freespec.AsyncFreeSpec
 import org.scalatest.matchers.must.Matchers
 

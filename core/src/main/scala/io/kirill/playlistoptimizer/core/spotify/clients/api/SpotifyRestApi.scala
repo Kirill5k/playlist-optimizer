@@ -7,7 +7,7 @@ import errors.*
 import cats.effect.Sync
 import org.typelevel.log4cats.Logger
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
-import io.kirill.playlistoptimizer.core.common.errors.SpotifyApiError
+import io.kirill.playlistoptimizer.domain.errors.SpotifyApiError
 import sttp.client3.*
 import sttp.client3.circe.*
 import sttp.model.MediaType

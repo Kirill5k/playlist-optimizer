@@ -1,6 +1,6 @@
 package io.kirill.playlistoptimizer.core.optimizer.algorithms.operators
 
-import io.kirill.playlistoptimizer.core.playlist.{Key, Track}
+import io.kirill.playlistoptimizer.domain.playlist.{Key, Track}
 
 opaque type Fitness = BigDecimal
 

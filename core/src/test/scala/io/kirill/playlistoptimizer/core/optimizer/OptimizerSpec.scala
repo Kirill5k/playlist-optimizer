@@ -5,9 +5,10 @@ import cats.effect.IO
 import cats.effect.testing.scalatest.AsyncIOSpec
 import cats.implicits.*
 import io.kirill.playlistoptimizer.core.common.controllers.Controller.UserSessionId
-import io.kirill.playlistoptimizer.core.common.errors.OptimizationNotFound
+import io.kirill.playlistoptimizer.domain.errors.OptimizationNotFound
+import io.kirill.playlistoptimizer.domain.optimization.*
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.{Optimizable, OptimizationAlgorithm}
-import io.kirill.playlistoptimizer.core.playlist.{Playlist, PlaylistBuilder, Track}
+import io.kirill.playlistoptimizer.domain.playlist.{Playlist, PlaylistBuilder, Track}
 import org.scalatest.freespec.AsyncFreeSpec
 import org.scalatest.matchers.must.Matchers
 

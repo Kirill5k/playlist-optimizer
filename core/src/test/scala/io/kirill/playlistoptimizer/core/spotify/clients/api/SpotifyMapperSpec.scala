@@ -2,9 +2,9 @@ package io.kirill.playlistoptimizer.core.spotify.clients.api
 
 import java.time.LocalDate
 import java.util.concurrent.TimeUnit
-import io.kirill.playlistoptimizer.core.common.errors.{InvalidKey, InvalidMode}
-import io.kirill.playlistoptimizer.core.playlist.Key.GMinor
-import io.kirill.playlistoptimizer.core.playlist.{AudioDetails, Release, SongDetails, SourceDetails, Track}
+import io.kirill.playlistoptimizer.domain.errors.{InvalidKey, InvalidMode}
+import io.kirill.playlistoptimizer.domain.playlist.Key.GMinor
+import io.kirill.playlistoptimizer.domain.playlist.{AudioDetails, Release, SongDetails, SourceDetails, Track}
 import io.kirill.playlistoptimizer.core.spotify.clients.api.responses.*
 import org.scalatest.Inspectors
 import org.scalatest.matchers.must.Matchers

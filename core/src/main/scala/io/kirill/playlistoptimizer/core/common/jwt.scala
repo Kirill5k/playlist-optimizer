@@ -4,7 +4,7 @@ import cats.effect.Sync
 import io.circe.*
 import io.circe.syntax.*
 import io.kirill.playlistoptimizer.core.common.config.JwtConfig
-import io.kirill.playlistoptimizer.core.common.errors.{InvalidJwtEncryptionAlgorithm, JwtDecodeError}
+import io.kirill.playlistoptimizer.domain.errors.{InvalidJwtEncryptionAlgorithm, JwtDecodeError}
 import pdi.jwt.algorithms.{JwtAsymmetricAlgorithm, JwtHmacAlgorithm}
 import pdi.jwt.{JwtAlgorithm, JwtCirce}
 

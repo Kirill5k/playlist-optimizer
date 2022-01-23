@@ -3,7 +3,7 @@ package io.kirill.playlistoptimizer.core.spotify
 import cats.Monad
 import cats.effect.Concurrent
 import cats.implicits.*
-import io.kirill.playlistoptimizer.core.playlist.{Playlist, Track}
+import io.kirill.playlistoptimizer.domain.playlist.{Playlist, Track}
 import io.kirill.playlistoptimizer.core.spotify.clients.{SpotifyAuthClient, SpotifyRestClient}
 import fs2.Stream
 

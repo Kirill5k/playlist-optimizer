@@ -1,7 +1,7 @@
 package io.kirill.playlistoptimizer.core.common
 
 import io.circe.{Decoder, Encoder}
-import io.kirill.playlistoptimizer.core.optimizer.OptimizationId
+import io.kirill.playlistoptimizer.domain.optimization.OptimizationId
 
 import java.time.Instant
 import java.util.UUID

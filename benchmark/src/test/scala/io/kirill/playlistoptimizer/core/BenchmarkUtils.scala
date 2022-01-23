@@ -1,6 +1,6 @@
 package io.kirill.playlistoptimizer.core
 
-import io.kirill.playlistoptimizer.core.playlist.{AudioDetails, Key, Playlist, PlaylistSource, Release, SongDetails, SourceDetails, Track}
+import io.kirill.playlistoptimizer.domain.playlist.{AudioDetails, Key, Playlist, PlaylistSource, Release, SongDetails, SourceDetails, Track}
 
 import scala.util.Random
 import scala.concurrent.duration.*

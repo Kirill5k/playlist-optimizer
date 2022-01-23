@@ -3,7 +3,7 @@ package io.kirill.playlistoptimizer.core.optimizer.algorithms
 import cats.effect.Async
 import cats.implicits.*
 import fs2.Stream
-import io.kirill.playlistoptimizer.core.optimizer.OptimizationParameters
+import io.kirill.playlistoptimizer.domain.optimization.OptimizationParameters
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.operators.*
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.Optimizable.*
 

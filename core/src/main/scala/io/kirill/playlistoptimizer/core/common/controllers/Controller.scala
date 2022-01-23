@@ -10,7 +10,7 @@ import io.circe.Codec
 import org.typelevel.log4cats.Logger
 import io.kirill.playlistoptimizer.core.common.JsonCodecs
 import io.kirill.playlistoptimizer.core.common.controllers.Controller.{ErrorResponse, UserSessionId}
-import io.kirill.playlistoptimizer.core.common.errors.*
+import io.kirill.playlistoptimizer.domain.errors.*
 import org.http4s.{HttpRoutes, MessageFailure, Request, RequestCookie, Response, ResponseCookie}
 import org.http4s.dsl.Http4sDsl
 import org.http4s.circe.CirceEntityCodec.*

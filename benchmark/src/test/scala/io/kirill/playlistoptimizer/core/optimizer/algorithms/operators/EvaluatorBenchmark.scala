@@ -1,7 +1,7 @@
 package io.kirill.playlistoptimizer.core.optimizer.algorithms.operators
 
 import io.kirill.playlistoptimizer.core.Benchmark
-import io.kirill.playlistoptimizer.core.playlist.Playlist
+import io.kirill.playlistoptimizer.domain.playlist.Playlist
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.Optimizable.*
 import org.scalameter.KeyValue
 import org.scalameter.api.*

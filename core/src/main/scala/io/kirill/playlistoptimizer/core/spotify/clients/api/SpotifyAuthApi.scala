@@ -5,7 +5,7 @@ import cats.implicits.*
 import org.typelevel.log4cats.Logger
 import io.circe.Decoder
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
-import io.kirill.playlistoptimizer.core.common.errors.SpotifyApiError
+import io.kirill.playlistoptimizer.domain.errors.SpotifyApiError
 import io.kirill.playlistoptimizer.core.spotify.clients.api.errors.SpotifyAuthError
 import io.kirill.playlistoptimizer.core.spotify.clients.api.responses.{SpotifyAuthRefreshResponse, SpotifyAuthResponse}
 import sttp.client3.*

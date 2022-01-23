@@ -9,10 +9,10 @@ import io.kirill.playlistoptimizer.core.ControllerSpec
 import io.kirill.playlistoptimizer.core.common.SpotifyConfigBuilder
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig
 import io.kirill.playlistoptimizer.core.common.controllers.Controller.ErrorResponse
-import io.kirill.playlistoptimizer.core.common.errors.{AuthenticationRequiredError, JwtDecodeError}
+import io.kirill.playlistoptimizer.domain.errors.{AuthenticationRequiredError, JwtDecodeError}
 import io.kirill.playlistoptimizer.core.common.jwt.JwtEncoder
-import io.kirill.playlistoptimizer.core.optimizer.{Optimization, OptimizationId, OptimizationParameters}
-import io.kirill.playlistoptimizer.core.playlist.*
+import io.kirill.playlistoptimizer.domain.optimization.{Optimization, OptimizationId, OptimizationParameters}
+import io.kirill.playlistoptimizer.domain.playlist.*
 import io.kirill.playlistoptimizer.core.spotify.SpotifyPlaylistController.ImportPlaylistRequest
 import org.http4s.*
 import org.http4s.implicits.*

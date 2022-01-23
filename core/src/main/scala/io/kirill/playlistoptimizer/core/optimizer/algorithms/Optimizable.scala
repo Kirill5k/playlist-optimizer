@@ -1,6 +1,6 @@
 package io.kirill.playlistoptimizer.core.optimizer.algorithms
 
-import io.kirill.playlistoptimizer.core.playlist.{Playlist, Track}
+import io.kirill.playlistoptimizer.domain.playlist.{Playlist, Track}
 
 trait Optimizable[T, I]:
   def repr(target: T): Array[I]

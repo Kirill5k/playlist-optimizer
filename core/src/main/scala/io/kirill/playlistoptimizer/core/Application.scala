@@ -8,7 +8,7 @@ import io.kirill.playlistoptimizer.core.health.Health
 import io.kirill.playlistoptimizer.core.optimizer.Optimizers
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.OptimizationAlgorithm
 import io.kirill.playlistoptimizer.core.optimizer.algorithms.operators.*
-import io.kirill.playlistoptimizer.core.playlist.Track
+import io.kirill.playlistoptimizer.domain.playlist.Track
 import io.kirill.playlistoptimizer.core.spotify.Spotify
 import org.http4s.server.Router
 import org.http4s.blaze.server.BlazeServerBuilder

@@ -7,9 +7,10 @@ import io.circe.generic.auto.*
 import io.circe.syntax.*
 import io.kirill.playlistoptimizer.core.ControllerSpec
 import io.kirill.playlistoptimizer.core.common.controllers.Controller
-import io.kirill.playlistoptimizer.core.common.errors.OptimizationNotFound
+import io.kirill.playlistoptimizer.domain.errors.OptimizationNotFound
+import io.kirill.playlistoptimizer.domain.optimization.*
 import io.kirill.playlistoptimizer.core.optimizer.OptimizationController.PlaylistOptimizationRequest
-import io.kirill.playlistoptimizer.core.playlist.{Playlist, PlaylistBuilder, PlaylistView, Track}
+import io.kirill.playlistoptimizer.domain.playlist.{Playlist, PlaylistBuilder, PlaylistView, Track}
 import org.http4s.*
 import org.http4s.implicits.*
 import org.http4s.circe.CirceEntityCodec.*

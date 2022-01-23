@@ -6,7 +6,8 @@ import cats.implicits.*
 import io.circe.generic.auto.*
 import io.kirill.playlistoptimizer.core.common.controllers.Controller
 import io.kirill.playlistoptimizer.core.optimizer.OptimizationController.*
-import io.kirill.playlistoptimizer.core.playlist.{Playlist, PlaylistView, Track}
+import io.kirill.playlistoptimizer.domain.optimization.*
+import io.kirill.playlistoptimizer.domain.playlist.{Playlist, PlaylistView, Track}
 import org.http4s.HttpRoutes
 import org.http4s.circe.CirceEntityCodec.*
 import org.typelevel.log4cats.Logger

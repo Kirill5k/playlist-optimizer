@@ -1,6 +1,6 @@
 package io.kirill.playlistoptimizer.core.common
 
-import io.kirill.playlistoptimizer.core.optimizer.OptimizationId
+import io.kirill.playlistoptimizer.domain.optimization.OptimizationId
 import pdi.jwt.JwtAlgorithm
 
 object errors:

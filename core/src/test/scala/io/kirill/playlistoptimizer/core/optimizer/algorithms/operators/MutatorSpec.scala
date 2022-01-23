@@ -1,8 +1,8 @@
 package io.kirill.playlistoptimizer.core.optimizer.algorithms.operators
 
-import io.kirill.playlistoptimizer.core.playlist.Track
-import io.kirill.playlistoptimizer.core.playlist.Key.*
-import io.kirill.playlistoptimizer.core.playlist.TrackBuilder.track
+import io.kirill.playlistoptimizer.domain.playlist.Track
+import io.kirill.playlistoptimizer.domain.playlist.Key.*
+import io.kirill.playlistoptimizer.domain.playlist.TrackBuilder.track
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
