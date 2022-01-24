@@ -7,7 +7,7 @@ object Dependencies {
     val cats       = "2.7.0"
     val pureConfig = "0.17.1"
     val circe      = "0.14.1"
-    val sttp       = "3.3.18"
+    val sttp       = "3.4.0"
     val http4s     = "0.23.7"
     val jwt        = "9.0.3"
     val logback    = "1.2.10"
@@ -16,7 +16,7 @@ object Dependencies {
     val scalameter        = "0.21"
     val catsEffectTesting = "1.4.0"
 
-    val scalatest = "3.2.10"
+    val scalatest = "3.2.11"
     val mockito   = "3.2.10.0"
   }
 
