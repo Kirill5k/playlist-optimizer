@@ -42,12 +42,13 @@ object Op:
       mutator: Mutator[G],
       evaluator: Evaluator[G],
       selector: Selector[G],
-      elitism: Elitism[G]
+      elitism: Elitism[G],
+      updateFn: Option[(Int, Int) => F[Unit]] = None
   )(using F: Async[F], rand: Random): Op[*, G] ~> F = new (Op[*, G] ~> F) {
     def apply[A](fa: Op[A, G]): F[A] =
       fa match
-        case Op.UpdateOnProgress(_, _) =>
-          F.unit
+        case Op.UpdateOnProgress(iteration, maxGen) =>
+          updateFn.fold(F.unit)(f => f(iteration, maxGen))
         case Op.InitPopulation(seed, size, shuffle) =>
           F.delay(List.fill(size)(if (shuffle) seed.shuffle else seed))
         case Op.SelectFittest(population) =>
