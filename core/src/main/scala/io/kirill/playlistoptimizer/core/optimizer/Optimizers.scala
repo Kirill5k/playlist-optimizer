@@ -4,7 +4,6 @@ import cats.effect.Async
 import cats.implicits.*
 import io.kirill.playlistoptimizer.core.common.controllers.Controller
 import org.typelevel.log4cats.Logger
-import io.kirill.playlistoptimizer.core.optimizer.algorithms.OptimizationAlgorithm
 import io.kirill.playlistoptimizer.domain.playlist.Track
 
 trait Optimizers[F[_]]:

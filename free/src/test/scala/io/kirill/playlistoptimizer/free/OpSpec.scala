@@ -4,7 +4,7 @@ import cats.free.Free
 import cats.effect.IO
 import io.kirill.playlistoptimizer.domain.{CatsIOSpec, MockitoMatchers}
 import io.kirill.playlistoptimizer.free.operators.{Crossover, Elitism, Evaluator, Mutator, Selector}
-import io.kirill.playlistoptimizer.free.collections.*
+import io.kirill.playlistoptimizer.domain.utils.collections.*
 import org.mockito.Mockito.times
 
 import scala.util.Random

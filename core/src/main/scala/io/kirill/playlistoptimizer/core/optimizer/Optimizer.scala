@@ -5,7 +5,6 @@ import cats.effect.{Concurrent, Ref, Temporal}
 import cats.implicits.*
 import io.kirill.playlistoptimizer.core.common.controllers.Controller.UserSessionId
 import io.kirill.playlistoptimizer.domain.errors.OptimizationNotFound
-import io.kirill.playlistoptimizer.core.optimizer.algorithms.{Optimizable, OptimizationAlgorithm}
 import io.kirill.playlistoptimizer.domain.optimization.*
 import io.kirill.playlistoptimizer.domain.playlist.{Playlist, Track}
 

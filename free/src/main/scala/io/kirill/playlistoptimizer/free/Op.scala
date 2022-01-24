@@ -4,7 +4,7 @@ import cats.~>
 import cats.effect.{Async, Sync}
 import cats.free.Free
 import io.kirill.playlistoptimizer.free.operators.*
-import io.kirill.playlistoptimizer.free.collections.*
+import io.kirill.playlistoptimizer.domain.utils.collections.*
 import fs2.Stream
 
 import scala.reflect.ClassTag

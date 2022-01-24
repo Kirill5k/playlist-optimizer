@@ -12,7 +12,7 @@ class SpotifyAuthClientSpec extends ApiClientSpec {
   "A SpotifyAuthClient" - {
 
     "obtain authorization code" in {
-      implicit val testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
+      given testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
           case r if r.isGoingTo("account.spotify.com/api/token") && r.isPost && r.bodyContains("grant_type=authorization_code&code=code&redirect_uri=%2Fredirect") =>
             Response.ok(json("spotify/flow/auth/1-auth.json"))
@@ -33,7 +33,7 @@ class SpotifyAuthClientSpec extends ApiClientSpec {
     }
 
     "obtain new refreshed token when original token has expired" in {
-      implicit val testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
+      given testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
           case r if r.isGoingTo("account.spotify.com/api/token") && r.isPost && r.body.toString.contains("refresh_token=code") =>
             Response.ok(json("spotify/flow/auth/4-refreshed.json"))

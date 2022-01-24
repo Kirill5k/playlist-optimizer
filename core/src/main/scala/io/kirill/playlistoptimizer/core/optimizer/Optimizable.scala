@@ -1,5 +1,6 @@
-package io.kirill.playlistoptimizer.core.optimizer.algorithms
+package io.kirill.playlistoptimizer.core.optimizer
 
+import io.kirill.playlistoptimizer.core.optimizer.Optimizable
 import io.kirill.playlistoptimizer.domain.playlist.{Playlist, Track}
 
 trait Optimizable[T, I]:

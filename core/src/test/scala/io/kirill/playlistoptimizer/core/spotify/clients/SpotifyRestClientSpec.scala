@@ -19,7 +19,7 @@ class SpotifyRestClientSpec extends ApiClientSpec {
   "A SpotifyRestClient" - {
 
     "create new playlist" in {
-      implicit val testingBackend: SttpBackendStub[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
+      given testingBackend: SttpBackendStub[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
           case r if r.hasBearerToken(token) && r.isGoingTo("api.spotify.com/v1/users/user-1/playlists") && r.isPost && r.hasBody("""{"name":"Mel","description":"Melodic deep house and techno songs","public":true,"collaborative":false}""") =>
             Response.ok(json("spotify/flow/create/1-new-playlist.json"))
@@ -34,7 +34,7 @@ class SpotifyRestClientSpec extends ApiClientSpec {
     }
 
     "find playlist by name" in {
-      implicit val testingBackend: SttpBackendStub[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
+      given testingBackend: SttpBackendStub[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
           case r if r.hasBearerToken(token) && r.isGoingTo("api.spotify.com/v1/me/playlists") && r.isGet =>
             Response.ok(json("spotify/flow/find/2-users-playlists.json"))
@@ -57,7 +57,7 @@ class SpotifyRestClientSpec extends ApiClientSpec {
     }
 
     "return all playlists that belong to a user" in {
-      implicit val testingBackend: SttpBackendStub[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
+      given testingBackend: SttpBackendStub[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
           case r if r.hasBearerToken(token) && r.isGoingTo("api.spotify.com/v1/me/playlists") && r.isGet =>
             Response.ok(json("spotify/flow/get/2-users-playlists.json"))
@@ -74,7 +74,7 @@ class SpotifyRestClientSpec extends ApiClientSpec {
     }
 
     "find track by name" in {
-      implicit val testingBackend: SttpBackendStub[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
+      given testingBackend: SttpBackendStub[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
           case r if r.hasBearerToken(token) && r.isGoingTo("api.spotify.com/v1/search") =>
             Response.ok(json("spotify/flow/search/1-search-track.json"))
@@ -91,7 +91,7 @@ class SpotifyRestClientSpec extends ApiClientSpec {
     }
 
     "return track not found when search result empty" in {
-      implicit val testingBackend: SttpBackendStub[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
+      given testingBackend: SttpBackendStub[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
           case r if r.hasBearerToken(token) && r.isGoingTo("api.spotify.com/v1/search") =>
             Response.ok(json("spotify/flow/search/3-search-empty.json"))

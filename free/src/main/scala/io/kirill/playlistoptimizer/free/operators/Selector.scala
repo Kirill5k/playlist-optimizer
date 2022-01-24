@@ -1,7 +1,7 @@
 package io.kirill.playlistoptimizer.free.operators
 
-import io.kirill.playlistoptimizer.free.collections.*
 import io.kirill.playlistoptimizer.free.{Ind, Fitness}
+import io.kirill.playlistoptimizer.domain.utils.collections.*
 import scala.annotation.tailrec
 import scala.util.Random
 

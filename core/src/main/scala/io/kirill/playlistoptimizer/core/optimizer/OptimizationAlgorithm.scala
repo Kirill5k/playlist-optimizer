@@ -1,7 +1,8 @@
-package io.kirill.playlistoptimizer.core.optimizer.algorithms
+package io.kirill.playlistoptimizer.core.optimizer
 
 import cats.effect.Async
 import cats.syntax.functor.*
+import io.kirill.playlistoptimizer.core.optimizer.Optimizable
 import io.kirill.playlistoptimizer.domain.optimization.OptimizationParameters
 import io.kirill.playlistoptimizer.free.operators.*
 import io.kirill.playlistoptimizer.free.{Algorithm, Op}

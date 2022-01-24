@@ -13,7 +13,7 @@ class SpotifyAuthApiSpec extends ApiClientSpec {
   "A SpotifyAuthApi" - {
 
     "return auth response when success" in {
-      implicit val testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
+      given testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
           case r if r.isGoingTo("account.spotify.com/api/token") && r.isPost && r.bodyContains("grant_type=authorization_code&code=code&redirect_uri=%2Fredirect") =>
             Response.ok(json("spotify/api/auth-response.json"))
@@ -28,7 +28,7 @@ class SpotifyAuthApiSpec extends ApiClientSpec {
     }
 
     "return auth refresh response when success" in {
-      implicit val testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
+      given testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
           case r if r.isGoingTo("account.spotify.com/api/token") && r.isPost && r.bodyContains("refresh_token=token&grant_type=refresh_token") =>
             Response.ok(json("spotify/api/auth-refresh-response.json"))
@@ -43,7 +43,7 @@ class SpotifyAuthApiSpec extends ApiClientSpec {
     }
 
     "return auth error when failure" in {
-      implicit val testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
+      given testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
         .whenRequestMatchesPartial {
           case r if r.isGoingTo("account.spotify.com/api/token") && r.isPost =>
             Response(json("spotify/api/auth-error.json"), StatusCode.InternalServerError)

@@ -1,20 +1,17 @@
-package io.kirill.playlistoptimizer.core.optimizer.algorithms
-
-import java.time.Instant
+package io.kirill.playlistoptimizer.core.optimizer
 
 import cats.effect.IO
-import cats.effect.testing.scalatest.AsyncIOSpec
+import io.kirill.playlistoptimizer.core.optimizer.Optimizable.*
+import io.kirill.playlistoptimizer.domain.CatsIOSpec
 import io.kirill.playlistoptimizer.domain.optimization.OptimizationParameters
-import io.kirill.playlistoptimizer.free.operators.*
-import io.kirill.playlistoptimizer.core.optimizer.algorithms.Optimizable.*
 import io.kirill.playlistoptimizer.domain.playlist.{PlaylistBuilder, Track}
-import org.scalatest.freespec.AsyncFreeSpec
-import org.scalatest.matchers.must.Matchers
+import io.kirill.playlistoptimizer.free.operators.*
 
+import java.time.Instant
 import scala.util.Random
 
-class GeneticAlgorithmSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
-  implicit val random: Random = new Random(1)
+class GeneticAlgorithmSpec extends CatsIOSpec {
+  given random: Random = Random(1)
 
   "A GeneticAlgorithm" - {
 
