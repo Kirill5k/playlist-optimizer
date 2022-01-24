@@ -1,18 +1,18 @@
 package io.kirill.playlistoptimizer.free.operators
 
-import io.kirill.playlistoptimizer.free.{Ind, Fitness}
+import io.kirill.playlistoptimizer.free.{Ind, EvaluatedPopulation, DistributedPopulation, Fitness}
 import io.kirill.playlistoptimizer.domain.utils.collections.*
 import scala.annotation.tailrec
 import scala.util.Random
 
 trait Selector[A]:
-  def selectPairs(population: Seq[(Ind[A], Fitness)], populationLimit: Int)(using r: Random): Seq[(Ind[A], Ind[A])]
+  def selectPairs(population: EvaluatedPopulation[A], populationLimit: Int)(using r: Random): DistributedPopulation[A]
 
 final private class FitnessBasedSelector[A] extends Selector[A] {
   override def selectPairs(
-      population: Seq[(Ind[A], Fitness)],
+      population: EvaluatedPopulation[A],
       populationLimit: Int
-  )(using r: Random): Seq[(Ind[A], Ind[A])] =
+  )(using r: Random): DistributedPopulation[A] =
     population
       .sortBy(_._2)
       .take(populationLimit)
@@ -22,9 +22,9 @@ final private class FitnessBasedSelector[A] extends Selector[A] {
 
 final private class RouletteWheelSelector[A] extends Selector[A] {
   override def selectPairs(
-      population: Seq[(Ind[A], Fitness)],
+      population: EvaluatedPopulation[A],
       populationLimit: Int
-  )(using r: Random): Seq[(Ind[A], Ind[A])] = {
+  )(using r: Random): DistributedPopulation[A] = {
     val popByFitness = population
       .sortBy(_._2)
       .map { case (i, f) => (i, 100 / f.value) }
