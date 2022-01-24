@@ -29,7 +29,7 @@ class GeneticAlgorithmSpec extends CatsIOSpec {
       val playlist = PlaylistBuilder.playlist
       val params   = OptimizationParameters(200, 350, 0.75, 0.05, 0.25, true)
 
-      val optimizedPlaylist = alg.optimize(playlist, params, _ => IO.unit)
+      val optimizedPlaylist = alg.optimize(playlist, params, (_, _) => IO.unit)
 
       optimizedPlaylist.asserting { case (result, score) =>
         val end = Instant.now()

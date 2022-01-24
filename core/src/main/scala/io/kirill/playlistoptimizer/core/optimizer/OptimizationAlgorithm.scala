@@ -14,7 +14,7 @@ trait OptimizationAlgorithm[F[_], A]:
   def optimize[T](
       target: T,
       parameters: OptimizationParameters,
-      updateProgress: BigDecimal => F[Unit]
+      updateProgress: (Int, Int) => F[Unit]
   )(using
       optimizable: Optimizable[T, A],
       rand: Random
@@ -31,7 +31,7 @@ object OptimizationAlgorithm:
     def optimize[T](
         target: T,
         parameters: OptimizationParameters,
-        updateProgress: BigDecimal => F[Unit]
+        updateProgress: (Int, Int) => F[Unit]
     )(using
         optimizable: Optimizable[T, A],
         rand: Random
@@ -39,6 +39,6 @@ object OptimizationAlgorithm:
       Algorithm
         .GeneticAlgorithm
         .optimize[A](target.repr, parameters)
-        .foldMap(Op.ioInterpreter[F, A](crossover, mutator, evaluator, selector, elitism))
+        .foldMap(Op.ioInterpreter[F, A](crossover, mutator, evaluator, selector, elitism, Some(updateProgress)))
         .map((res, f) => (target.update(res), f.value))
   }

@@ -171,14 +171,13 @@ class OptimizerSpec extends AsyncFreeSpec with AsyncIOSpec with Matchers {
         override def optimize[T](
             target: T,
             parameters: OptimizationParameters,
-            updateProgress: BigDecimal => IO[Unit]
+            updateProgress: (Int, Int) => IO[Unit]
         )(implicit
             optimizable: Optimizable[T, Track],
             r: Random
         ): IO[(T, BigDecimal)] =
           (0 until duration.toSeconds.toInt).toList
-            .map(i => i.toDouble * 100 / duration.toSeconds)
-            .traverse(p => updateProgress(BigDecimal(p)) *> IO.sleep(1.second))
+            .traverse(i => updateProgress(i, duration.toSeconds.toInt) *> IO.sleep(1.second))
             .as((returnResult.asInstanceOf[T], score))
       }
   }
