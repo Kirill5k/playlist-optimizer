@@ -38,7 +38,7 @@ object OptimizationAlgorithm:
     ): F[(T, BigDecimal)] =
       Algorithm
         .GeneticAlgorithm
-        .optimize[A](optimizable.repr(target), parameters)
+        .optimize[A](target.repr, parameters)
         .foldMap(Op.ioInterpreter[F, A](crossover, mutator, evaluator, selector, elitism))
-        .map((res, f) => (optimizable.update(target)(res), f.value))
+        .map((res, f) => (target.update(res), f.value))
   }

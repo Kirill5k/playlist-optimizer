@@ -1,7 +1,7 @@
 package io.kirill.playlistoptimizer.core.optimizer
 
 import cats.effect.IO
-import io.kirill.playlistoptimizer.core.optimizer.Optimizable.*
+import io.kirill.playlistoptimizer.core.optimizer.Optimizable.given
 import io.kirill.playlistoptimizer.domain.CatsIOSpec
 import io.kirill.playlistoptimizer.domain.optimization.OptimizationParameters
 import io.kirill.playlistoptimizer.domain.playlist.{PlaylistBuilder, Track}
