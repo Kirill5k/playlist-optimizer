@@ -2,7 +2,6 @@ package io.kirill.playlistoptimizer.core.spotify.clients.api
 
 import io.circe.Codec
 
-
 object responses {
   final case class ExternalUrls(spotify: String) derives Codec.AsObject
   final case class ExternalIds(isrc: Option[String]) derives Codec.AsObject

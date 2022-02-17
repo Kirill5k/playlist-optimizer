@@ -44,7 +44,7 @@ object Crossover:
       val slicedBestSeq = if (bestStreakLength <= sliceSize) bestSeq else cut(bestSeq, sliceSize)
 
       val (left, right) = par2.splitAt(bestStreakPos + slicedBestSeq.length / 2)
-      val bestSeqGenes = slicedBestSeq.toSet
+      val bestSeqGenes  = slicedBestSeq.toSet
       left.filterNot(bestSeqGenes.contains) ++ slicedBestSeq ++ right.filterNot(bestSeqGenes.contains)
     }
 
@@ -56,12 +56,12 @@ object Crossover:
 
   inline def threeWaySplitCrossover[A: ClassTag]: Crossover[A] = new Crossover[A] {
     override def cross(par1: Array[A], par2: Array[A])(using r: Random): Array[A] = {
-      val middle             = par1.length / 2
-      val point1: Int        = r.nextInt(middle)
-      val point2: Int        = r.nextInt(middle) + middle
-      val left = par1.slice(0, point1)
-      val mid = par1.slice(point1, point2).toSet
-      val right = par1.slice(point2, par1.length)
+      val middle      = par1.length / 2
+      val point1: Int = r.nextInt(middle)
+      val point2: Int = r.nextInt(middle) + middle
+      val left        = par1.slice(0, point1)
+      val mid         = par1.slice(point1, point2).toSet
+      val right       = par1.slice(point2, par1.length)
       left ++ par2.filter(mid.contains) ++ right
     }
   }

@@ -1,7 +1,7 @@
 package io.kirill.playlistoptimizer.core.spotify.clients
 
 import cats.Monad
-import cats.effect.{Sync, Async}
+import cats.effect.{Async, Sync}
 import cats.implicits.*
 import fs2.Stream
 import io.kirill.playlistoptimizer.core.common.config.SpotifyConfig

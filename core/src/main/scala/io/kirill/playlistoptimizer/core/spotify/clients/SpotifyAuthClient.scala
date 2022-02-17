@@ -13,7 +13,7 @@ trait SpotifyAuthClient[F[_]] {
   def refresh(accessToken: SpotifyAccessToken): F[SpotifyAccessToken]
 }
 
-private[spotify] final class LiveSpotifyAuthClient[F[_]: Sync: Logger](implicit
+final private[spotify] class LiveSpotifyAuthClient[F[_]: Sync: Logger](implicit
     private val sc: SpotifyConfig,
     private val b: SttpBackend[F, Any]
 ) extends SpotifyAuthClient[F] {

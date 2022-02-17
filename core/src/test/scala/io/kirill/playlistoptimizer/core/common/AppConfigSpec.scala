@@ -4,7 +4,7 @@ import cats.effect.IO
 import io.kirill.playlistoptimizer.core.common.config.AppConfig
 import io.kirill.playlistoptimizer.domain.CatsIOSpec
 
-class  AppConfigSpec extends CatsIOSpec {
+class AppConfigSpec extends CatsIOSpec {
 
   "A MainConfig" - {
     "should be parsed from application.conf" in {

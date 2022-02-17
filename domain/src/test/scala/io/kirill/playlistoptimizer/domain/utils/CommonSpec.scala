@@ -9,8 +9,8 @@ class CommonSpec extends AnyWordSpec with Matchers {
 
   "A BooleanModifier" should {
     "convert boolean to int" in {
-      true.toInt must be (1)
-      false.toInt must be (0)
+      true.toInt must be(1)
+      false.toInt must be(0)
     }
   }
 }

@@ -16,7 +16,7 @@ trait SpotifyPlaylistService[F[_]] {
   def findTrackByName(accessToken: SpotifyAccessToken, name: String): F[(Track, SpotifyAccessToken)]
 }
 
-private final class LiveSpotifyPlaylistService[F[_]: Concurrent](
+final private class LiveSpotifyPlaylistService[F[_]: Concurrent](
     private val authClient: SpotifyAuthClient[F],
     private val apiClient: SpotifyRestClient[F]
 ) extends SpotifyPlaylistService[F] {

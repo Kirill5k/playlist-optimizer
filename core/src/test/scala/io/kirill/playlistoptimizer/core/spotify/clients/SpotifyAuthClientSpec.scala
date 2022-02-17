@@ -6,15 +6,18 @@ import io.kirill.playlistoptimizer.core.spotify.SpotifyAccessToken
 import sttp.client3.{Response, SttpBackend}
 import sttp.client3.asynchttpclient.cats.AsyncHttpClientCatsBackend
 
-
 class SpotifyAuthClientSpec extends ApiClientSpec {
 
   "A SpotifyAuthClient" - {
 
     "obtain authorization code" in {
-      given testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
+      given testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend
+        .stub[IO]
         .whenRequestMatchesPartial {
-          case r if r.isGoingTo("account.spotify.com/api/token") && r.isPost && r.bodyContains("grant_type=authorization_code&code=code&redirect_uri=%2Fredirect") =>
+          case r
+              if r.isGoingTo("account.spotify.com/api/token") && r.isPost && r.bodyContains(
+                "grant_type=authorization_code&code=code&redirect_uri=%2Fredirect"
+              ) =>
             Response.ok(json("spotify/flow/auth/1-auth.json"))
           case r if r.isGoingTo("api.spotify.com/v1/me") && r.isGet =>
             Response.ok(json("spotify/flow/auth/2-current-user.json"))
@@ -33,7 +36,8 @@ class SpotifyAuthClientSpec extends ApiClientSpec {
     }
 
     "obtain new refreshed token when original token has expired" in {
-      given testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
+      given testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend
+        .stub[IO]
         .whenRequestMatchesPartial {
           case r if r.isGoingTo("account.spotify.com/api/token") && r.isPost && r.body.toString.contains("refresh_token=code") =>
             Response.ok(json("spotify/flow/auth/4-refreshed.json"))
@@ -41,8 +45,7 @@ class SpotifyAuthClientSpec extends ApiClientSpec {
         }
 
       val accessToken = SpotifyAccessToken("expired-token", "code", "user-id", 0)
-      val client = new LiveSpotifyAuthClient[IO]()
-
+      val client      = new LiveSpotifyAuthClient[IO]()
 
       client
         .refresh(accessToken)

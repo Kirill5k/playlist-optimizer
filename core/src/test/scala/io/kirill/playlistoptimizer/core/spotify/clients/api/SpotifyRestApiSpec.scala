@@ -13,7 +13,8 @@ class SpotifyRestApiSpec extends ApiClientSpec {
   "A SpotifyRestApi" - {
 
     "find track by name" in {
-      given testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
+      given testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend
+        .stub[IO]
         .whenRequestMatchesPartial {
           case r if r.isGoingTo("api.spotify.com/v1/search") && r.hasBearerToken("token") =>
             Response.ok(json("spotify/api/search-track-response.json"))
@@ -32,7 +33,8 @@ class SpotifyRestApiSpec extends ApiClientSpec {
     }
 
     "return current user when success" in {
-      given testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
+      given testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend
+        .stub[IO]
         .whenRequestMatchesPartial {
           case r if r.isGoingTo("api.spotify.com/v1/me") && r.hasBearerToken("token") =>
             Response.ok(json("spotify/api/user-response.json"))
@@ -45,7 +47,8 @@ class SpotifyRestApiSpec extends ApiClientSpec {
     }
 
     "return audio analysis response when success" in {
-      given testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
+      given testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend
+        .stub[IO]
         .whenRequestMatchesPartial {
           case r if r.isGoingTo("api.spotify.com/v1/audio-analysis/track-1") && r.hasBearerToken("token") =>
             Response.ok(json("spotify/api/audio-analysis-response.json"))
@@ -58,7 +61,8 @@ class SpotifyRestApiSpec extends ApiClientSpec {
     }
 
     "return audio features response when success" in {
-      given testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
+      given testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend
+        .stub[IO]
         .whenRequestMatchesPartial {
           case r if r.isGoingTo("api.spotify.com/v1/audio-features/track-1") && r.hasBearerToken("token") =>
             Response.ok(json("spotify/api/audio-features-response.json"))
@@ -67,11 +71,12 @@ class SpotifyRestApiSpec extends ApiClientSpec {
 
       val response = SpotifyRestApi.getAudioFeatures[IO]("token", "track-1")
 
-      response.asserting(_ mustBe (SpotifyAudioFeaturesResponse("1wtxI9YhL1t4yDIwGAFljP", 7,0,535975.0,123.996, 0.807, 0.613)))
+      response.asserting(_ mustBe (SpotifyAudioFeaturesResponse("1wtxI9YhL1t4yDIwGAFljP", 7, 0, 535975.0, 123.996, 0.807, 0.613)))
     }
 
     "return multiple audio features response when success" in {
-      given testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
+      given testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend
+        .stub[IO]
         .whenRequestMatchesPartial {
           case r if r.isGoingTo("api.spotify.com/v1/audio-features") && r.hasBearerToken("token") =>
             Response.ok(json("spotify/api/multiple-audio-features-response.json"))
@@ -81,16 +86,19 @@ class SpotifyRestApiSpec extends ApiClientSpec {
       val response = SpotifyRestApi.getMultipleAudioFeatures[IO]("token", List("track-1", "track-2"))
 
       response.asserting { res =>
-        res mustBe SpotifyMultipleAudioFeaturesResponse(List(
-          SpotifyAudioFeaturesResponse("4JpKVNYnVcJ8tuMKjAj50A", 7,1,535223.0,123.99, 0.626, 0.808),
-          SpotifyAudioFeaturesResponse("2NRANZE9UCmPAS5XVbXL40", 1,1,187800.0,96.083, 0.815, 0.457),
-          SpotifyAudioFeaturesResponse("24JygzOLM0EmRQeGtFcIcG", 4,1,497493.0,115.7, 0.402, 0.281)
-        ))
+        res mustBe SpotifyMultipleAudioFeaturesResponse(
+          List(
+            SpotifyAudioFeaturesResponse("4JpKVNYnVcJ8tuMKjAj50A", 7, 1, 535223.0, 123.99, 0.626, 0.808),
+            SpotifyAudioFeaturesResponse("2NRANZE9UCmPAS5XVbXL40", 1, 1, 187800.0, 96.083, 0.815, 0.457),
+            SpotifyAudioFeaturesResponse("24JygzOLM0EmRQeGtFcIcG", 4, 1, 497493.0, 115.7, 0.402, 0.281)
+          )
+        )
       }
     }
 
     "return playlist response when success" in {
-      given testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
+      given testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend
+        .stub[IO]
         .whenRequestMatchesPartial {
           case r if r.isGoingTo("api.spotify.com/v1/playlists/playlist-1") && r.hasBearerToken("token") =>
             Response.ok(json("spotify/api/playlist-response.json"))
@@ -99,25 +107,46 @@ class SpotifyRestApiSpec extends ApiClientSpec {
 
       val response = SpotifyRestApi.getPlaylist[IO]("token", "playlist-1")
 
-      response.asserting(_ mustBe SpotifyPlaylistResponse(
-        "59ZbFPES4DQwEjBpWHzrtC",
-        "Dinner with Friends",
-        Some("Having friends over for dinner? Here´s the perfect playlist."),
-        PlaylistTracks(Vector(PlaylistItem(PlaylistTrack(
-          "4i9sYtSIlR80bxje5B3rUb",
-          "I'm Not The Only One - Radio Edit",
-          PlaylistTrackAlbum("5GWoXPsTQylMuaZ84PC563", "single", "I'm Not The Only One", Some("2012-10-10"), Some("day"), List(AlbumImage("https://i.scdn.co/image/47421900e7534789603de84c03a40a826c058e45",640,640), AlbumImage("https://i.scdn.co/image/0d447b6faae870f890dc5780cc58d9afdbc36a1d",300,300), AlbumImage("https://i.scdn.co/image/d926b3e5f435ef3ac0874b1ff1571cf675b3ef3b",64,64))),
-          List(PlaylistTrackArtist("2wY79sveU1sp5g7SokKOiI", "Sam Smith")),
-          45.0,
-          "spotify:track:4i9sYtSIlR80bxje5B3rUb",
-          ExternalUrls("https://open.spotify.com/track/4i9sYtSIlR80bxje5B3rUb"),
-          ExternalIds(Some("GBUM71403920"))
-        ))),105)
-      ))
+      response.asserting(
+        _ mustBe SpotifyPlaylistResponse(
+          "59ZbFPES4DQwEjBpWHzrtC",
+          "Dinner with Friends",
+          Some("Having friends over for dinner? Here´s the perfect playlist."),
+          PlaylistTracks(
+            Vector(
+              PlaylistItem(
+                PlaylistTrack(
+                  "4i9sYtSIlR80bxje5B3rUb",
+                  "I'm Not The Only One - Radio Edit",
+                  PlaylistTrackAlbum(
+                    "5GWoXPsTQylMuaZ84PC563",
+                    "single",
+                    "I'm Not The Only One",
+                    Some("2012-10-10"),
+                    Some("day"),
+                    List(
+                      AlbumImage("https://i.scdn.co/image/47421900e7534789603de84c03a40a826c058e45", 640, 640),
+                      AlbumImage("https://i.scdn.co/image/0d447b6faae870f890dc5780cc58d9afdbc36a1d", 300, 300),
+                      AlbumImage("https://i.scdn.co/image/d926b3e5f435ef3ac0874b1ff1571cf675b3ef3b", 64, 64)
+                    )
+                  ),
+                  List(PlaylistTrackArtist("2wY79sveU1sp5g7SokKOiI", "Sam Smith")),
+                  45.0,
+                  "spotify:track:4i9sYtSIlR80bxje5B3rUb",
+                  ExternalUrls("https://open.spotify.com/track/4i9sYtSIlR80bxje5B3rUb"),
+                  ExternalIds(Some("GBUM71403920"))
+                )
+              )
+            ),
+            105
+          )
+        )
+      )
     }
 
     "return current user playlists response when success" in {
-      given testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
+      given testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend
+        .stub[IO]
         .whenRequestMatchesPartial {
           case r if r.isGoingTo("api.spotify.com/v1/me/playlists") && r.hasBearerToken("token") =>
             Response.ok(json("spotify/api/playlists-response.json"))
@@ -126,13 +155,22 @@ class SpotifyRestApiSpec extends ApiClientSpec {
 
       val response = SpotifyRestApi.getUserPlaylists[IO]("token")
 
-      response.asserting(_ mustBe (SpotifyPlaylistsResponse(List(
-        PlaylistsItem("53Y8wT46QIMz5H4WQ8O22c", "Wizzlers Big Playlist"),
-        PlaylistsItem("1AVZz0mBuGbCEoNRQdYQju", "Another Playlist")),9)))
+      response.asserting(
+        _ mustBe (
+          SpotifyPlaylistsResponse(
+            List(
+              PlaylistsItem("53Y8wT46QIMz5H4WQ8O22c", "Wizzlers Big Playlist"),
+              PlaylistsItem("1AVZz0mBuGbCEoNRQdYQju", "Another Playlist")
+            ),
+            9
+          )
+        )
+      )
     }
 
     "return error when corrupted json" in {
-      given testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
+      given testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend
+        .stub[IO]
         .whenRequestMatchesPartial {
           case r if r.isGoingTo("api.spotify.com/v1/me/playlists") && r.hasBearerToken("token") =>
             Response.ok("""{"foo"}""")
@@ -147,36 +185,63 @@ class SpotifyRestApiSpec extends ApiClientSpec {
     }
 
     "create playlist for a user when success" in {
-      given testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
+      given testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend
+        .stub[IO]
         .whenRequestMatchesPartial {
-          case r if r.isGoingTo("api.spotify.com/v1/users/user-1/playlists") && r.hasBearerToken("token") && r.isPost && r.hasBody("""{"name":"my-playlist","description":"new-playlist-to-be-created","public":true,"collaborative":false}""") =>
+          case r
+              if r.isGoingTo("api.spotify.com/v1/users/user-1/playlists") && r.hasBearerToken("token") && r.isPost && r.hasBody(
+                """{"name":"my-playlist","description":"new-playlist-to-be-created","public":true,"collaborative":false}"""
+              ) =>
             Response.ok(json("spotify/api/playlist-response.json"))
           case _ => throw new RuntimeException()
         }
 
       val response = SpotifyRestApi.createPlaylist[IO]("token", "user-1", "my-playlist", Some("new-playlist-to-be-created"))
 
-      response.asserting(_ mustBe SpotifyPlaylistResponse(
-        "59ZbFPES4DQwEjBpWHzrtC",
-        "Dinner with Friends",
-        Some("Having friends over for dinner? Here´s the perfect playlist."),
-        PlaylistTracks(Vector(PlaylistItem(PlaylistTrack(
-          "4i9sYtSIlR80bxje5B3rUb",
-          "I'm Not The Only One - Radio Edit",
-          PlaylistTrackAlbum("5GWoXPsTQylMuaZ84PC563", "single", "I'm Not The Only One", Some("2012-10-10"), Some("day"), List(AlbumImage("https://i.scdn.co/image/47421900e7534789603de84c03a40a826c058e45",640,640), AlbumImage("https://i.scdn.co/image/0d447b6faae870f890dc5780cc58d9afdbc36a1d",300,300), AlbumImage("https://i.scdn.co/image/d926b3e5f435ef3ac0874b1ff1571cf675b3ef3b",64,64))),
-          List(PlaylistTrackArtist("2wY79sveU1sp5g7SokKOiI", "Sam Smith")),
-          45.0,
-          "spotify:track:4i9sYtSIlR80bxje5B3rUb",
-          ExternalUrls("https://open.spotify.com/track/4i9sYtSIlR80bxje5B3rUb"),
-          ExternalIds(Some("GBUM71403920"))
-        ))),105)
-      ))
+      response.asserting(
+        _ mustBe SpotifyPlaylistResponse(
+          "59ZbFPES4DQwEjBpWHzrtC",
+          "Dinner with Friends",
+          Some("Having friends over for dinner? Here´s the perfect playlist."),
+          PlaylistTracks(
+            Vector(
+              PlaylistItem(
+                PlaylistTrack(
+                  "4i9sYtSIlR80bxje5B3rUb",
+                  "I'm Not The Only One - Radio Edit",
+                  PlaylistTrackAlbum(
+                    "5GWoXPsTQylMuaZ84PC563",
+                    "single",
+                    "I'm Not The Only One",
+                    Some("2012-10-10"),
+                    Some("day"),
+                    List(
+                      AlbumImage("https://i.scdn.co/image/47421900e7534789603de84c03a40a826c058e45", 640, 640),
+                      AlbumImage("https://i.scdn.co/image/0d447b6faae870f890dc5780cc58d9afdbc36a1d", 300, 300),
+                      AlbumImage("https://i.scdn.co/image/d926b3e5f435ef3ac0874b1ff1571cf675b3ef3b", 64, 64)
+                    )
+                  ),
+                  List(PlaylistTrackArtist("2wY79sveU1sp5g7SokKOiI", "Sam Smith")),
+                  45.0,
+                  "spotify:track:4i9sYtSIlR80bxje5B3rUb",
+                  ExternalUrls("https://open.spotify.com/track/4i9sYtSIlR80bxje5B3rUb"),
+                  ExternalIds(Some("GBUM71403920"))
+                )
+              )
+            ),
+            105
+          )
+        )
+      )
     }
 
     "add tracks to a playlist" in {
-      given testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
+      given testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend
+        .stub[IO]
         .whenRequestMatchesPartial {
-          case r if r.isGoingTo("api.spotify.com/v1/playlists/playlist-1/tracks") && r.isPost && r.hasBearerToken("token") && r.hasBody("""{"uris":["uri-1","uri-2","uri-3"],"position":null}""") =>
+          case r
+              if r.isGoingTo("api.spotify.com/v1/playlists/playlist-1/tracks") && r.isPost && r
+                .hasBearerToken("token") && r.hasBody("""{"uris":["uri-1","uri-2","uri-3"],"position":null}""") =>
             Response(json("spotify/api/operation-success-response.json"), StatusCode.Created)
           case _ => throw new RuntimeException()
         }
@@ -187,9 +252,12 @@ class SpotifyRestApiSpec extends ApiClientSpec {
     }
 
     "replace tracks in a playlist" in {
-      given testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend.stub[IO]
+      given testingBackend: SttpBackend[IO, Any] = AsyncHttpClientCatsBackend
+        .stub[IO]
         .whenRequestMatchesPartial {
-          case r if r.isGoingTo("api.spotify.com/v1/playlists/playlist-1/tracks") && r.isPut && r.hasBearerToken("token") && r.hasBody("""{"uris":["uri-1","uri-2","uri-3"]}""") =>
+          case r
+              if r.isGoingTo("api.spotify.com/v1/playlists/playlist-1/tracks") && r.isPut && r
+                .hasBearerToken("token") && r.hasBody("""{"uris":["uri-1","uri-2","uri-3"]}""") =>
             Response(json("spotify/api/operation-success-response.json"), StatusCode.Created)
           case _ => throw new RuntimeException()
         }

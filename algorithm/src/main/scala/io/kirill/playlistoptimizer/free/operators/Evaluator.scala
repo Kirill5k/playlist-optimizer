@@ -21,10 +21,10 @@ trait Evaluator[A] {
   def evaluateIndividual(individual: Ind[A]): (Ind[A], Fitness)
 
   protected inline def calcFitness(individual: Ind[A])(calculation: FitnessCalculation[A]): (Ind[A], Fitness) = {
-    var i = 0
+    var i     = 0
     var score = 0d
     while (i < individual.length - 1) {
-      score += calculation.evaluate(individual(i), individual(i+1))
+      score += calculation.evaluate(individual(i), individual(i + 1))
       i += 1
     }
     (individual, Fitness(BigDecimal(score).setScale(0, BigDecimal.RoundingMode.HALF_UP)))

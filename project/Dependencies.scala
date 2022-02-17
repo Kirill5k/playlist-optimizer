@@ -7,8 +7,8 @@ object Dependencies {
     val cats       = "2.7.0"
     val pureConfig = "0.17.1"
     val circe      = "0.14.1"
-    val sttp       = "3.4.0"
-    val http4s     = "0.23.7"
+    val sttp       = "3.5.0"
+    val http4s     = "0.23.10"
     val jwt        = "9.0.3"
     val logback    = "1.2.10"
     val log4cats   = "2.2.0"
@@ -61,7 +61,7 @@ object Dependencies {
     Libraries.http4sDsl,
     Libraries.http4sServer,
     Libraries.http4sBlaze,
-    Libraries.http4sCirce,
+    Libraries.http4sCirce
   )
 
   lazy val test = Seq(
@@ -74,11 +74,11 @@ object Dependencies {
     Libraries.scalameter % Test
   )
 
-  lazy val free = Seq(
+  lazy val algorithm = Seq(
     Libraries.catsFree,
     Libraries.fs2
   )
-  
+
   lazy val domain = Seq(
     Libraries.circeCore,
     Libraries.circeGeneric,

@@ -6,7 +6,7 @@ import org.scalatest.wordspec.AnyWordSpec
 class KeySpec extends AnyWordSpec with Matchers {
   import Key.*
 
-  "A ket.distance" should {
+  "A Key::distance" should {
 
     "calculate distance for keys with the same mode" in {
       Key.distance(DFlatMajor, BMajor) mustBe 2

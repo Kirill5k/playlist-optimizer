@@ -21,7 +21,7 @@ class OpSpec extends CatsIOSpec with MockitoMatchers {
     "mutate an individual when" - {
       "Op.Mutate is submitted" in {
         val (cross, mut, eval, sel, elit) = mocks[Int]
-        val interpreter = Op.ioInterpreter[IO, Int](cross, mut, eval, sel, elit)
+        val interpreter                   = Op.ioInterpreter[IO, Int](cross, mut, eval, sel, elit)
 
         when(mut.mutate(any[Ind[Int]], any[Double])(using eqTo(r))).thenReturn(ind2)
 
@@ -36,7 +36,7 @@ class OpSpec extends CatsIOSpec with MockitoMatchers {
 
       "Op.Mutate is submitted 3 times in the row" in {
         val (cross, mut, eval, sel, elit) = mocks[Int]
-        val interpreter                 = Op.ioInterpreter[IO, Int](cross, mut, eval, sel, elit)
+        val interpreter                   = Op.ioInterpreter[IO, Int](cross, mut, eval, sel, elit)
 
         when(mut.mutate(any[Ind[Int]], any[Double])(using eqTo(r)))
           .thenReturn(ind1)
@@ -61,7 +61,7 @@ class OpSpec extends CatsIOSpec with MockitoMatchers {
     "evaluate entire population when" - {
       "Op.EvaluatePopulation is submitted" in {
         val (cross, mut, eval, sel, elit) = mocks[Int]
-        val interpreter                 = Op.ioInterpreter[IO, Int](cross, mut, eval, sel, elit)
+        val interpreter                   = Op.ioInterpreter[IO, Int](cross, mut, eval, sel, elit)
 
         when(eval.evaluateIndividual(any[Ind[Int]])).thenAnswer(a => (a.getArgument(0), Fitness(1)))
 

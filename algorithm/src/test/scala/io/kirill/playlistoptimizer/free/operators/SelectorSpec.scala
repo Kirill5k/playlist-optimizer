@@ -21,7 +21,7 @@ class SelectorSpec extends AnyWordSpec with Matchers {
 
       val selector = Selector.fitnessBasedSelector[Int]
 
-      given r: Random = Random(42)
+      given r: Random   = Random(42)
       val newPopulation = selector.selectPairs(population, 4)
 
       newPopulation.map { case (i1, i2) => (i1.head, i2.head) } mustBe List((5, 2), (1, 3))
@@ -42,7 +42,7 @@ class SelectorSpec extends AnyWordSpec with Matchers {
 
       val selector = Selector.rouletteWheelSelector[Int]
 
-      given r: Random = Random(42)
+      given r: Random   = Random(42)
       val newPopulation = selector.selectPairs(population, 4)
 
       newPopulation.map { case (i1, i2) => (i1.head, i2.head) } mustBe List((5, 2), (3, 4))

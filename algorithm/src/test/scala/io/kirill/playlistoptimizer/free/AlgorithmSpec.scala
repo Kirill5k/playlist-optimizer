@@ -15,7 +15,7 @@ class AlgorithmSpec extends AnyFreeSpec with Matchers {
   "A GeneticAlgorithm should" - {
     "optimize a target by applying principles of natural selection" in {
       val optResult = Algorithm.GeneticAlgorithm.optimize(ind, params)
-      val result = optResult.foldMap(stateInterpreter).run(List.empty).value._1
+      val result    = optResult.foldMap(stateInterpreter).run(List.empty).value._1
 
       result.mkString mustBe
         """Initialize population of size 5 with shuffle=true
@@ -70,7 +70,7 @@ class AlgorithmSpec extends AnyFreeSpec with Matchers {
       case Op.ApplyToAll(population, op) =>
         State.modify[List[String]](_ :+ "Applied to the entire population: ") >>
           apply(op(population.head)).map(r => List(r))
-      case _ | null                      => ???
+      case _ | null => ???
     }
   }
 }

@@ -20,7 +20,7 @@ final class SpotifyPlaylistController[F[_]: Async](
     private val playlistService: SpotifyPlaylistService[F],
     private val spotifyConfig: SpotifyConfig
 )(implicit
-  logger: Logger[F]
+    logger: Logger[F]
 ) extends Controller[F] {
 
   val SpotifySessionCookie = "spotify-session"
@@ -33,7 +33,7 @@ final class SpotifyPlaylistController[F[_]: Async](
     "client_id"     -> spotifyConfig.clientId,
     "scope"         -> "playlist-read-private playlist-modify-public playlist-modify-private user-read-private user-read-email",
     "redirect_uri"  -> spotifyConfig.redirectUrl,
-    "show_dialog" -> "true"
+    "show_dialog"   -> "true"
   )
 
   private val authUri =

@@ -1,6 +1,6 @@
 package io.kirill.playlistoptimizer.free.operators
 
-import io.kirill.playlistoptimizer.free.{Ind, EvaluatedPopulation, DistributedPopulation, Fitness}
+import io.kirill.playlistoptimizer.free.{DistributedPopulation, EvaluatedPopulation, Fitness, Ind}
 import io.kirill.playlistoptimizer.domain.utils.collections.*
 import scala.annotation.tailrec
 import scala.util.Random
